@@ -50,6 +50,8 @@ This creates:
 - Flutter web configuration (`web/` directory with webview-compatible setup)
 - Build scripts and `.gitignore`
 
+The scaffold also creates `lib/vscode_api.dart` as the default place to put your annotated controllers. Running build_runner will generate `lib/vscode_api.handlers.ts`, and the scaffolded `src/extension.ts` imports and uses it.
+
 ### 2. Define Your Extension Logic
 
 Create a controller class with annotations:

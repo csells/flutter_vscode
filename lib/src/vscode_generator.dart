@@ -62,6 +62,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     final methodName = method.name;
     final parameters = method.parameters;
     final returnType = method.returnType;
+    final commandId = _commandIdFor(method) ?? methodName;
 
     final buffer = StringBuffer();
     buffer.write('@override ');
@@ -74,7 +75,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     if (returnType is VoidType) {
       // This is a synchronous void method. It returns nothing.
       buffer.writeln(
-          '  VSCodeControllerBase.sendCommand(\'$methodName\', [$paramList], expectsResponse: false,);');
+          '  VSCodeControllerBase.sendCommand(\'$commandId\', [$paramList], expectsResponse: false,);');
     } else if (returnType is InterfaceType && returnType.isDartAsyncFuture) {
       // This is a Future.
       final futureTypeArg =
@@ -83,13 +84,13 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
       if (futureTypeArg != null && futureTypeArg is VoidType) {
         // This is a Future<void>.
         buffer.writeln(
-            '  return VSCodeControllerBase.sendCommand(\'$methodName\', [$paramList], expectsResponse: false,);');
+            '  return VSCodeControllerBase.sendCommand(\'$commandId\', [$paramList], expectsResponse: false,);');
       } else {
         // This is a Future<T> where T is not void.
         final returnTypeName =
             futureTypeArg?.getDisplayString() ?? 'dynamic';
         buffer.writeln(
-            '  return VSCodeControllerBase.sendCommand<$returnTypeName>(\'$methodName\', [$paramList], expectsResponse: true,);');
+            '  return VSCodeControllerBase.sendCommand<$returnTypeName>(\'$commandId\', [$paramList], expectsResponse: true,);');
       }
     } else {
       // This is a synchronous method with a return value, which isn't supported.
@@ -102,5 +103,14 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     buffer.writeln('}');
 
     return buffer.toString();
+  }
+
+  String? _commandIdFor(MethodElement method) {
+    final ann = const TypeChecker.fromRuntime(VSCodeCommand).firstAnnotationOf(method);
+    if (ann == null) return null;
+    final reader = ConstantReader(ann);
+    final field = reader.peek('command');
+    if (field == null || field.isNull) return null;
+    return field.stringValue;
   }
 }

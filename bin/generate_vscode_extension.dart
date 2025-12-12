@@ -13,6 +13,7 @@ void main() {
     _createLaunchConfig(currentDirectory);
     _createCompileScript(currentDirectory);
     _createExtensionFile(currentDirectory);
+    _createVSCodeApiController(currentDirectory);
     _createPackageJson(currentDirectory);
     _createTsConfig(currentDirectory);
     _createWebFolder(currentDirectory);
@@ -45,6 +46,7 @@ void _createDirectories(String currentDirectory) {
   Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'src')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'lib')).createSync(recursive: true);
 }
 
 void _createLaunchConfig(String currentDirectory) {
@@ -73,6 +75,12 @@ void _createExtensionFile(String currentDirectory) {
   } else {
     file.writeAsStringSync(_getExtensionTs());
   }
+}
+
+void _createVSCodeApiController(String currentDirectory) {
+  final file = File(p.join(currentDirectory, 'lib', 'vscode_api.dart'));
+  if (file.existsSync()) return;
+  file.writeAsStringSync(_getVSCodeApiControllerDart());
 }
 
 void _createPackageJson(String currentDirectory) {
@@ -275,15 +283,44 @@ String _getTsConfig() {
     "outDir": "out",
     "lib": ["es2020"],
     "sourceMap": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "out", "lib", "build", "web"]
+  "include": ["src/**/*.ts", "lib/**/*.handlers.ts"],
+  "exclude": ["node_modules", "out", "build", "web"]
 }''';
+}
+
+String _getVSCodeApiControllerDart() {
+  return '''import 'package:flutter_vscode/flutter_vscode.dart';
+
+part 'vscode_api.vscode.g.part';
+
+/// Put your `@VSCodeController` classes in this file (or create more).
+///
+/// Running:
+///   dart run build_runner build
+///
+/// will generate:
+/// - `lib/vscode_api.vscode.g.part` (Dart implementation)
+/// - `lib/vscode_api.handlers.ts` (TypeScript handlers used by `src/extension.ts`)
+@VSCodeController()
+abstract class VSCodeApi {
+  /// Calls `vscode.window.showInformationMessage(...)` in the extension host.
+  @VSCodeCommand('window.showInformationMessage')
+  Future<void> info(String message);
+
+  /// Calls `vscode.window.showInputBox(...)` and returns the result.
+  @VSCodeCommand('window.showInputBox')
+  Future<String?> inputBox(String prompt);
+}
+
+VSCodeApi createVSCodeApi() => _\$VSCodeApi();
+''';
 }
 
 String _getWebIndexHtml() {

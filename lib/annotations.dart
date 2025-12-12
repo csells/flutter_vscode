@@ -14,5 +14,15 @@ class VSCodeController {
 /// The annotated method must be abstract and part of a class
 /// annotated with [VSCodeController].
 class VSCodeCommand {
-  const VSCodeCommand();
+  /// Optional command identifier used over the method name.
+  ///
+  /// If omitted, generators use the annotated method's name.
+  ///
+  /// Examples:
+  /// - `@VSCodeCommand('showInformationMessage')` (defaults to `vscode.window.*`)
+  /// - `@VSCodeCommand('window.showInformationMessage')`
+  /// - `@VSCodeCommand('myExtension.someCommand')` (treated as VS Code command id)
+  final String? command;
+
+  const VSCodeCommand([this.command]);
 }
