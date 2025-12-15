@@ -8,23 +8,20 @@ environment:
   flutter: ">=1.17.0"
 
 dependencies:
+  analyzer: ^9.0.0
+  build: ^4.0.3
   flutter:
     sdk: flutter
-  # Add this for the annotations
   meta: ^1.9.1
-  # Path package for file manipulation in tools
   path: ^1.8.3
-  # Build dependencies needed for code generation
-  build: ^2.4.1
-  source_gen: ^1.4.0
-  analyzer: ^6.2.0
+  source_gen: ^4.1.1
+  web: ^1.1.0
 
 dev_dependencies:
+  build_runner: ^2.10.4
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.0
-  # Add these for the build_runner
-  build_runner: ^2.4.6
+  very_good_analysis: ^10.0.0
 
 executables:
   generate_vscode_extension: generate_vscode_extension

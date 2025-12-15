@@ -5,9 +5,14 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
+import 'package:flutter_vscode/annotations.dart';
 import 'package:source_gen/source_gen.dart';
-import '../annotations.dart';
 
+/// Generates Dart implementation files for classes annotated with [VSCodeController].
+///
+/// This generator creates concrete implementations of abstract methods annotated
+/// with [VSCodeCommand], providing the communication bridge to the VS Code
+/// extension runtime.
 class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
   @override
   String generateForAnnotatedElement(
@@ -27,25 +32,28 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     final className = classElement.name;
 
     // We will generate the implementation for the abstract class.
-    final buffer = StringBuffer();
+    final buffer = StringBuffer()
 
-    // Generate the part-of directive.
-    buffer.writeln('part of \'${_partOf(buildStep)}\';');
-    buffer.writeln();
+      // Generate the part-of directive.
+      ..writeln("part of '${_partOf(buildStep)}';")
+      ..writeln();
 
     // Generate the implementation class.
-    const implClassName = '_\$';
+    const implClassName = r'_$';
     buffer.writeln('class $implClassName$className implements $className {');
 
     // Find all methods annotated with @VSCodeCommand.
     for (final method in classElement.methods) {
-      if (const TypeChecker.fromRuntime(VSCodeCommand).hasAnnotationOf(method)) {
+      if (const TypeChecker.fromUrl(
+              'package:flutter_vscode/annotations.dart#VSCodeCommand',)
+          .hasAnnotationOf(method)) {
         buffer.writeln(_generateMethodImplementation(method));
       }
     }
 
-    buffer.writeln('}');
-    buffer.writeln();
+    buffer
+      ..writeln('}')
+      ..writeln();
 
     // In a real implementation, we would also generate the TypeScript file here.
     // For now, we'll just focus on the Dart side.
@@ -60,37 +68,46 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
 
   String _generateMethodImplementation(MethodElement method) {
     final methodName = method.name;
-    final parameters = method.parameters;
+    // MethodElement implements ExecutableElement which implements FunctionTypedElement
+    // FunctionTypedElement provides formalParameters with proper typing
+    final functionTyped = method as FunctionTypedElement;
+    final parameters = functionTyped.formalParameters;
+
     final returnType = method.returnType;
     final commandId = _commandIdFor(method) ?? methodName;
 
-    final buffer = StringBuffer();
-    buffer.write('@override ');
-    buffer.write('$returnType $methodName(');
-    buffer.write(parameters.map((p) => '${p.type} ${p.name}').join(', '));
-    buffer.writeln(') {');
+    final buffer = StringBuffer()
+      ..write('@override ')
+      ..write('$returnType $methodName(')
+      ..write(
+        parameters.map<String>((p) => '${p.type} ${p.name}').join(', '),
+      )
+      ..writeln(') {');
 
-    final paramList = parameters.map((p) => p.name).join(', ');
+    final paramList = parameters
+        .where((p) => p.name != null)
+        .map<String>((p) => p.name!)
+        .join(', ');
 
     if (returnType is VoidType) {
       // This is a synchronous void method. It returns nothing.
       buffer.writeln(
-          '  VSCodeControllerBase.sendCommand(\'$commandId\', [$paramList], expectsResponse: false,);');
+          "  VSCodeControllerBase.sendCommand('$commandId', [$paramList], expectsResponse: false,);",);
     } else if (returnType is InterfaceType && returnType.isDartAsyncFuture) {
       // This is a Future.
-      final futureTypeArg =
-          returnType.typeArguments.isNotEmpty ? returnType.typeArguments.first : null;
+      final futureTypeArg = returnType.typeArguments.isNotEmpty
+          ? returnType.typeArguments.first
+          : null;
 
       if (futureTypeArg != null && futureTypeArg is VoidType) {
         // This is a Future<void>.
         buffer.writeln(
-            '  return VSCodeControllerBase.sendCommand(\'$commandId\', [$paramList], expectsResponse: false,);');
+            "  return VSCodeControllerBase.sendCommand('$commandId', [$paramList], expectsResponse: false,);",);
       } else {
         // This is a Future<T> where T is not void.
-        final returnTypeName =
-            futureTypeArg?.getDisplayString() ?? 'dynamic';
+        final returnTypeName = futureTypeArg?.getDisplayString() ?? 'dynamic';
         buffer.writeln(
-            '  return VSCodeControllerBase.sendCommand<$returnTypeName>(\'$commandId\', [$paramList], expectsResponse: true,);');
+            "  return VSCodeControllerBase.sendCommand<$returnTypeName>('$commandId', [$paramList], expectsResponse: true,);",);
       }
     } else {
       // This is a synchronous method with a return value, which isn't supported.
@@ -106,7 +123,9 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
   }
 
   String? _commandIdFor(MethodElement method) {
-    final ann = const TypeChecker.fromRuntime(VSCodeCommand).firstAnnotationOf(method);
+    final ann = const TypeChecker.fromUrl(
+            'package:flutter_vscode/annotations.dart#VSCodeCommand',)
+        .firstAnnotationOf(method);
     if (ann == null) return null;
     final reader = ConstantReader(ann);
     final field = reader.peek('command');

@@ -1,4 +1,5 @@
-// ignore_for_file: avoid_print
+// this is a generator, having prints to interact with the user is important
+// ignore_for_file: avoid_print, cascade_invocations
 
 import 'dart:io';
 import 'package:path/path.dart' as p;
@@ -24,7 +25,7 @@ void main() {
     print('Next steps:');
     print('1. Run: npm install');
     print('2. Press F5 in VS Code to run the extension');
-  } catch (e, stackTrace) {
+  } on Object catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
     print('Error: $e');
@@ -100,17 +101,16 @@ void _createWebFolder(String currentDirectory) {
       .createSync(recursive: true);
 
   // Create or modify index.html for VSCode webview compatibility
-  final indexFile = File(p.join(currentDirectory, 'web', 'index.html'));
-  indexFile.writeAsStringSync(_getWebIndexHtml());
+  File(p.join(currentDirectory, 'web', 'index.html'))
+      .writeAsStringSync(_getWebIndexHtml());
 
   // Create flutter_bootstrap.js
-  final bootstrapFile =
-      File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'));
-  bootstrapFile.writeAsStringSync(_getFlutterBootstrapJs());
+  File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'))
+      .writeAsStringSync(_getFlutterBootstrapJs());
 
   // Create manifest.json
-  final manifestFile = File(p.join(currentDirectory, 'web', 'manifest.json'));
-  manifestFile.writeAsStringSync(_getManifestJson());
+  File(p.join(currentDirectory, 'web', 'manifest.json'))
+      .writeAsStringSync(_getManifestJson());
 
   // Copy favicon if it exists from example, otherwise create a placeholder
   final exampleFavicon =
@@ -169,28 +169,30 @@ void _updateGitignore(String currentDirectory) {
 
     if (newEntries.isNotEmpty) {
       file.writeAsStringSync(
-          '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
-          mode: FileMode.append);
+        '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
+        mode: FileMode.append,
+      );
     }
   } else {
-    file.writeAsStringSync(entries.join('\n') + '\n');
+    file.writeAsStringSync('${entries.join('\n')}\n');
   }
 }
 
 String _getLaunchJson() {
-  return '''{
+  return r'''
+{
   "version": "0.2.0",
   "configurations": [
     {
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "\${execPath}",
+      "runtimeExecutable": "${execPath}",
       "args": [
-        "--extensionDevelopmentPath=\${workspaceRoot}",
+        "--extensionDevelopmentPath=${workspaceRoot}",
         "--disable-extensions"
       ],
-      "outFiles": ["\${workspaceFolder}/build/web/*.js"],
+      "outFiles": ["${workspaceFolder}/build/web/*.js"],
       "preLaunchTask": "npm: vscode:prepublish"
     }
   ]
@@ -199,7 +201,8 @@ String _getLaunchJson() {
 }
 
 String _getCompileScript() {
-  return '''#!/bin/bash
+  return '''
+#!/bin/bash
 
 # Generate Dart code using build_runner
 dart run build_runner build --delete-conflicting-outputs
@@ -213,7 +216,8 @@ flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-sha
 }
 
 String _getExtensionTs() {
-  return '''import * as vscode from 'vscode';
+  return '''
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
@@ -237,7 +241,8 @@ export function deactivate() {
 }
 
 String _getPackageJson() {
-  return '''{
+  return '''
+{
   "name": "your_extension_name",
   "displayName": "Your Extension Display Name",
   "description": "Describe your extension",
@@ -276,7 +281,8 @@ String _getPackageJson() {
 }
 
 String _getTsConfig() {
-  return '''{
+  return '''
+{
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2020",
@@ -296,7 +302,8 @@ String _getTsConfig() {
 }
 
 String _getVSCodeApiControllerDart() {
-  return '''import 'package:flutter_vscode/flutter_vscode.dart';
+  return r'''
+import 'package:flutter_vscode/flutter_vscode.dart';
 
 part 'vscode_api.vscode.g.part';
 
@@ -319,19 +326,20 @@ abstract class VSCodeApi {
   Future<String?> inputBox(String prompt);
 }
 
-VSCodeApi createVSCodeApi() => _\$VSCodeApi();
+VSCodeApi createVSCodeApi() => _$VSCodeApi();
 ''';
 }
 
 String _getWebIndexHtml() {
-  return '''\u003c!DOCTYPE html>
+  return '''
+\u003c!DOCTYPE html>
 \u003chtml>
 \u003chead>
-  \u003cbase href=\"\$FLUTTER_BASE_HREF\">
+  \u003cbase href="\$FLUTTER_BASE_HREF">
 
-  \u003cmeta charset=\"UTF-8\">
-  \u003cmeta content=\"IE=Edge\" http-equiv=\"X-UA-Compatible\">
-  \u003cmeta name=\"description\" content=\"A new Flutter project.\">
+  \u003cmeta charset="UTF-8">
+  \u003cmeta content="IE=Edge" http-equiv="X-UA-Compatible">
+  \u003cmeta name="description" content="A new Flutter project.">
 
   \u003cscript>
     // Disable history API for webview compatibility
@@ -344,17 +352,18 @@ String _getWebIndexHtml() {
   \u003c/script>
 
   \u003ctitle>Your Flutter VSCode Extension\u003c/title>
-  \u003clink rel=\"manifest\" href=\"manifest.json\">
+  \u003clink rel="manifest" href="manifest.json">
 \u003c/head>
 \u003cbody>
-  \u003cscript src=\"main.dart.js\" async>\u003c/script>
+  \u003cscript src="main.dart.js" async>\u003c/script>
 \u003c/body>
 \u003c/html>
 ''';
 }
 
 String _getFlutterBootstrapJs() {
-  return '''{{flutter_js}}
+  return '''
+{{flutter_js}}
 {{flutter_build_config}}
 
 // the below loader ensures that the local copy of canvasKit is used
@@ -370,38 +379,39 @@ _flutter.loader.load({
 }
 
 String _getManifestJson() {
-  return '''{
-  \"name\": \"Flutter VSCode Extension\",
-  \"short_name\": \"Flutter VSCode\",
-  \"start_url\": \"./\",
-  \"display\": \"standalone\",
-  \"background_color\": \"#0175C2\",
-  \"theme_color\": \"#0175C2\",
-  \"description\": \"A Flutter app for VSCode extension\",
-  \"orientation\": \"portrait-primary\",
-  \"prefer_related_applications\": false,
-  \"icons\": [
+  return '''
+{
+  "name": "Flutter VSCode Extension",
+  "short_name": "Flutter VSCode",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0175C2",
+  "theme_color": "#0175C2",
+  "description": "A Flutter app for VSCode extension",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
     {
-      \"src\": \"icons/Icon-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-maskable-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
-      \"src\": \"icons/Icon-maskable-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }''';

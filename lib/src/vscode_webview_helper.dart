@@ -1,5 +1,8 @@
-import 'dart:html' as html;
-import 'vscode_controller_base.dart';
+import 'dart:convert';
+import 'dart:js_interop';
+
+import 'package:flutter_vscode/src/vscode_controller_base.dart';
+import 'package:web/web.dart' as web;
 
 /// Helper class to initialize VS Code webview message handling.
 class VSCodeWebViewHelper {
@@ -12,12 +15,24 @@ class VSCodeWebViewHelper {
     _initialized = true;
 
     // Listen for messages from VS Code
-    html.window.addEventListener('message', (event) {
-      final messageEvent = event as html.MessageEvent;
-      if (messageEvent.data is Map) {
-        final message = Map<String, dynamic>.from(messageEvent.data as Map);
-        VSCodeControllerBase.handleMessage(message);
-      }
-    });
+    web.window.addEventListener(
+      'message',
+      ((web.MessageEvent event) {
+        final data = event.data;
+        if (data != null) {
+          try {
+            // Convert JS object to Dart Map via JSON stringify/parse
+            final jsonString = _jsonStringify(data);
+            final message = jsonDecode(jsonString) as Map<String, dynamic>;
+            VSCodeControllerBase.handleMessage(message);
+          } on Object {
+            // Ignore invalid messages
+          }
+        }
+      }).toJS,
+    );
   }
 }
+
+@JS('JSON.stringify')
+external String _jsonStringify(JSAny? value);
