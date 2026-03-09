@@ -1,10 +1,8 @@
 include: package:very_good_analysis/analysis_options.yaml
 
-# analyzer:
-#   exclude:
-#     - lib/src/generated/**
-#     - test/integration/test_tools/serverpod_test_tools.dart
-#     - lib/src/models/sample-data/**
+analyzer:
+  exclude:
+    - example/**
 
 linter:
   rules:

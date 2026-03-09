@@ -6,6 +6,7 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_vscode/annotations.dart';
+import 'package:flutter_vscode/src/vscode_codegen_helpers.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Generates Dart implementation files for classes annotated with [VSCodeController].
@@ -45,8 +46,8 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     // Find all methods annotated with @VSCodeCommand.
     for (final method in classElement.methods) {
       if (const TypeChecker.fromUrl(
-              'package:flutter_vscode/annotations.dart#VSCodeCommand',)
-          .hasAnnotationOf(method)) {
+        'package:flutter_vscode/annotations.dart#VSCodeCommand',
+      ).hasAnnotationOf(method)) {
         buffer.writeln(_generateMethodImplementation(method));
       }
     }
@@ -88,48 +89,71 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
         .where((p) => p.name != null)
         .map<String>((p) => p.name!)
         .join(', ');
+    final body = _buildSendCommandBody(
+      returnType: returnType,
+      commandId: commandId,
+      paramListExpression: paramList,
+      method: method,
+    );
 
-    if (returnType is VoidType) {
-      // This is a synchronous void method. It returns nothing.
-      buffer.writeln(
-          "  VSCodeControllerBase.sendCommand('$commandId', [$paramList], expectsResponse: false,);",);
-    } else if (returnType is InterfaceType && returnType.isDartAsyncFuture) {
-      // This is a Future.
-      final futureTypeArg = returnType.typeArguments.isNotEmpty
-          ? returnType.typeArguments.first
-          : null;
-
-      if (futureTypeArg != null && futureTypeArg is VoidType) {
-        // This is a Future<void>.
-        buffer.writeln(
-            "  return VSCodeControllerBase.sendCommand('$commandId', [$paramList], expectsResponse: false,);",);
-      } else {
-        // This is a Future<T> where T is not void.
-        final returnTypeName = futureTypeArg?.getDisplayString() ?? 'dynamic';
-        buffer.writeln(
-            "  return VSCodeControllerBase.sendCommand<$returnTypeName>('$commandId', [$paramList], expectsResponse: true,);",);
-      }
-    } else {
-      // This is a synchronous method with a return value, which isn't supported.
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand must return a Future or void.',
-        element: method,
-      );
-    }
-
-    buffer.writeln('}');
+    buffer
+      ..writeln(body)
+      ..writeln('}');
 
     return buffer.toString();
   }
 
   String? _commandIdFor(MethodElement method) {
     final ann = const TypeChecker.fromUrl(
-            'package:flutter_vscode/annotations.dart#VSCodeCommand',)
-        .firstAnnotationOf(method);
+      'package:flutter_vscode/annotations.dart#VSCodeCommand',
+    ).firstAnnotationOf(method);
     if (ann == null) return null;
     final reader = ConstantReader(ann);
     final field = reader.peek('command');
     if (field == null || field.isNull) return null;
     return field.stringValue;
+  }
+
+  String _buildSendCommandBody({
+    required DartType returnType,
+    required String? commandId,
+    required String paramListExpression,
+    required MethodElement method,
+  }) {
+    if (returnType is VoidType) {
+      return buildDartSendCommandBody(
+        commandId: commandId,
+        paramListExpression: paramListExpression,
+        returnKind: VSCodeReturnKind.voidSync,
+      );
+    }
+
+    if (returnType is InterfaceType && returnType.isDartAsyncFuture) {
+      final futureTypeArg = returnType.typeArguments.isNotEmpty
+          ? returnType.typeArguments.first
+          : null;
+
+      if (futureTypeArg != null && futureTypeArg is VoidType) {
+        return buildDartSendCommandBody(
+          commandId: commandId,
+          paramListExpression: paramListExpression,
+          returnKind: VSCodeReturnKind.futureVoid,
+        );
+      }
+
+      final returnTypeName = futureTypeArg!.getDisplayString();
+      return buildDartSendCommandBody(
+        commandId: commandId,
+        paramListExpression: paramListExpression,
+        returnKind: VSCodeReturnKind.futureValue,
+        futureValueType: returnTypeName,
+      );
+    }
+
+    // This is a synchronous method with a return value, which isn't supported.
+    throw InvalidGenerationSourceError(
+      'Methods annotated with @VSCodeCommand must return a Future or void.',
+      element: method,
+    );
   }
 }

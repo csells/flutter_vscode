@@ -3,6 +3,8 @@ import * as vscode from 'vscode';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 function resolveVscodeFn(commandId: string): ((...args: any[]) => any) | undefined {
+  // If the id contains a dot, treat it as a path off the vscode module.
+  // Examples: "window.showInformationMessage", "workspace.getConfiguration".
   if (commandId.includes('.')) {
     const parts = commandId.split('.');
     let cur: any = vscode as any;
@@ -15,6 +17,7 @@ function resolveVscodeFn(commandId: string): ((...args: any[]) => any) | undefin
     return undefined;
   }
 
+  // Backwards compatible default: treat as vscode.window.*
   const fn = (vscode.window as any)?.[commandId];
   return typeof fn === 'function' ? fn.bind(vscode.window) : undefined;
 }

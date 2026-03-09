@@ -1,9 +1,12 @@
+// ignore_for_file: missing_whitespace_between_adjacent_strings for command concatinations
+
 import 'dart:async';
 
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:flutter_vscode/annotations.dart';
+import 'package:flutter_vscode/src/vscode_codegen_helpers.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Generates TypeScript handler files from classes annotated with [VSCodeController].
@@ -33,9 +36,17 @@ class VSCodeTsGenerator implements Builder {
       ..writeln()
       ..writeln('/* eslint-disable @typescript-eslint/no-explicit-any */')
       ..writeln()
-      ..writeln('function resolveVscodeFn(commandId: string): ((...args: any[]) => any) | undefined {')
-      ..writeln('  // If the id contains a dot, treat it as a path off the vscode module.')
-      ..writeln('  // Examples: "window.showInformationMessage", "workspace.getConfiguration".')
+      ..writeln(
+        'function resolveVscodeFn('
+        'commandId: string'
+        '): ((...args: any[]) => any) | undefined {',
+      )
+      ..writeln(
+        '  // If the id contains a dot, treat it as a path off the vscode module.',
+      )
+      ..writeln(
+        '  // Examples: "window.showInformationMessage", "workspace.getConfiguration".',
+      )
       ..writeln("  if (commandId.includes('.')) {")
       ..writeln("    const parts = commandId.split('.');")
       ..writeln('    let cur: any = vscode as any;')
@@ -50,19 +61,27 @@ class VSCodeTsGenerator implements Builder {
       ..writeln()
       ..writeln('  // Backwards compatible default: treat as vscode.window.*')
       ..writeln('  const fn = (vscode.window as any)?.[commandId];')
-      ..writeln("  return typeof fn === 'function' ? fn.bind(vscode.window) : undefined;")
+      ..writeln(
+        "  return typeof fn === 'function' ? fn.bind(vscode.window) : undefined;",
+      )
       ..writeln('}')
       ..writeln();
 
-    final controllers = library.classes
-        .where((c) => const TypeChecker.fromUrl('package:flutter_vscode/annotations.dart#VSCodeController').hasAnnotationOf(c));
+    final controllers = library.classes.where(
+      (c) => const TypeChecker.fromUrl(
+        'package:flutter_vscode/annotations.dart#VSCodeController',
+      ).hasAnnotationOf(c),
+    );
 
     if (controllers.isEmpty) {
       return null;
     }
 
     buffer
-      ..writeln('export async function handleCommand(message: any, webview: vscode.Webview) {')
+      ..writeln(
+        'export async function handleCommand(message: any, '
+        'webview: vscode.Webview) {',
+      )
       ..writeln('  const command = message?.command;')
       ..writeln('  const params: any[] = message?.params ?? [];')
       ..writeln('  const requestId: string | undefined = message?.requestId;')
@@ -72,8 +91,23 @@ class VSCodeTsGenerator implements Builder {
 
     for (final controller in controllers) {
       for (final method in controller.methods) {
-        if (const TypeChecker.fromUrl('package:flutter_vscode/annotations.dart#VSCodeCommand').hasAnnotationOf(method)) {
-          buffer.writeln(_generateCommandHandler(method));
+        if (const TypeChecker.fromUrl(
+          'package:flutter_vscode/annotations.dart#VSCodeCommand',
+        ).hasAnnotationOf(method)) {
+          final functionTyped = method as FunctionTypedElement;
+          final parameters = functionTyped.formalParameters;
+
+          final isVoid = method.returnType is VoidType ||
+              method.returnType.toString().contains('Future<void>');
+
+          final effectiveCommandId = _commandIdFor(method) ?? method.name;
+          buffer.writeln(
+            buildTsCommandHandler(
+              commandId: effectiveCommandId,
+              isVoidLike: isVoid,
+              positionalParamCount: parameters.length,
+            ),
+          );
         }
       }
     }
@@ -84,7 +118,9 @@ class VSCodeTsGenerator implements Builder {
       ..writeln('    }')
       ..writeln('  } catch (error) {')
       ..writeln('    if (requestId) {')
-      ..writeln('      void webview.postMessage({ requestId, error: String(error) });')
+      ..writeln(
+        '      void webview.postMessage({ requestId, error: String(error) });',
+      )
       ..writeln('    }')
       ..writeln('  }')
       ..writeln('}');
@@ -92,53 +128,14 @@ class VSCodeTsGenerator implements Builder {
     return buffer.toString();
   }
 
-  String _generateCommandHandler(MethodElement method) {
-    final methodName = method.name;
-    final commandId = _commandIdFor(method) ?? methodName;
-    // MethodElement implements ExecutableElement which implements FunctionTypedElement
-    // FunctionTypedElement provides formalParameters with proper typing
-    final functionTyped = method as FunctionTypedElement;
-    final parameters = functionTyped.formalParameters;
-
-    final paramNames =
-        parameters.asMap().entries.map((entry) => 'params[${entry.key}]').join(', ');
-
-    final isVoid = method.returnType is VoidType ||
-        method.returnType.toString().contains('Future<void>');
-
-    // Default behavior: if the command id doesn't contain a dot, treat it as
-    // a vscode.window method for backwards compatibility with the example.
-    final buffer = StringBuffer()
-      ..writeln("      case '$commandId': {")
-      ..writeln('        const fn = resolveVscodeFn(${_tsString(commandId)});')
-      ..writeln('        if (!fn) return;');
-
-    if (isVoid) {
-      buffer
-        ..writeln('        void fn($paramNames);')
-        ..writeln('        return;');
-    } else {
-      buffer
-        ..writeln('        const result = await fn($paramNames);')
-        ..writeln('        if (requestId) {')
-        ..writeln('          void webview.postMessage({ requestId, result });')
-        ..writeln('        }')
-        ..writeln('        return;');
-    }
-
-    buffer.writeln('      }');
-
-    return buffer.toString();
-  }
-
   String? _commandIdFor(MethodElement method) {
-    final ann = const TypeChecker.fromUrl('package:flutter_vscode/annotations.dart#VSCodeCommand').firstAnnotationOf(method);
+    final ann = const TypeChecker.fromUrl(
+      'package:flutter_vscode/annotations.dart#VSCodeCommand',
+    ).firstAnnotationOf(method);
     if (ann == null) return null;
     final reader = ConstantReader(ann);
     final field = reader.peek('command');
     if (field == null || field.isNull) return null;
     return field.stringValue;
   }
-
-  String _tsString(String? s) => "'${(s ?? '').replaceAll("'", r"\'")}'";
 }

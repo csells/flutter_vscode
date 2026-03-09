@@ -10,6 +10,7 @@ class _$ApiController implements ApiController {
     return VSCodeControllerBase.sendCommand(
       'showInformationMessage',
       [message],
+      expectsResponse: false,
     );
   }
 
@@ -27,6 +28,7 @@ class _$ApiController implements ApiController {
     return VSCodeControllerBase.sendCommand(
       'showErrorMessage',
       [message],
+      expectsResponse: false,
     );
   }
 }
