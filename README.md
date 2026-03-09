@@ -141,6 +141,16 @@ The build process automatically generates:
 - `*.g.dart` - Dart implementation classes for your controllers
 - Webview registration code in `extension.ts`
 
+## Documentation
+
+- [Documentation Index](docs/index.md)
+- [Agent and Contributor Index](AGENTS.md)
+- [Architecture](docs/architecture/index.md)
+- [Guides](docs/guides/index.md)
+- [Reference](docs/reference/index.md)
+- [Contributing](docs/contributing/index.md)
+- [Product Requirements Document](PRD.md)
+
 ## Additional Information
 
 ### Webview Constraints
@@ -160,7 +170,7 @@ The generated `compile.sh` script handles:
 
 ### Contributing
 
-Contributions are welcome! Please see our [contributing guidelines](CONTRIBUTING.md) for details.
+Contributions are welcome! Please see our [contributing guidelines](docs/contributing/index.md) for details.
 
 ### Issues
 
