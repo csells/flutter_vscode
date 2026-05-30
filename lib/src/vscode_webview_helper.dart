@@ -1,9 +1,15 @@
-import 'dart:html' as html;
-import 'vscode_controller_base.dart';
+import 'dart:convert';
+import 'dart:js_interop';
+
+import 'package:flutter_vscode/src/vscode_controller_base.dart';
+import 'package:web/web.dart' as web;
 
 /// Helper class to initialize VS Code webview message handling.
 class VSCodeWebViewHelper {
   static bool _initialized = false;
+
+  /// When true, invalid host messages are logged during debug-mode asserts.
+  static bool debugLogInvalidMessages = false;
 
   /// Initializes the message handler for VS Code webview communication.
   /// This should be called early in your Flutter app (e.g., in main()).
@@ -12,12 +18,37 @@ class VSCodeWebViewHelper {
     _initialized = true;
 
     // Listen for messages from VS Code
-    html.window.addEventListener('message', (event) {
-      final messageEvent = event as html.MessageEvent;
-      if (messageEvent.data is Map) {
-        final message = Map<String, dynamic>.from(messageEvent.data as Map);
-        VSCodeControllerBase.handleMessage(message);
-      }
-    });
+    web.window.addEventListener(
+      'message',
+      ((web.MessageEvent event) {
+        final data = event.data;
+        if (data != null) {
+          try {
+            // Convert JS object to Dart Map via JSON stringify/parse
+            final jsonString = _jsonStringify(data);
+            final message = jsonDecode(jsonString) as Map<String, dynamic>;
+            VSCodeControllerBase.handleMessage(message);
+          } on Object {
+            // Ignore invalid messages, optionally logging in debug asserts.
+            assert(
+              () {
+                if (debugLogInvalidMessages) {
+                  // Debug-only logging for malformed host messages.
+                  // ignore: avoid_print
+                  print(
+                    'flutter_vscode: ignored non-JSON or invalid host message.',
+                  );
+                }
+                return true;
+              }(),
+              'Invalid host message handling completed.',
+            );
+          }
+        }
+      }).toJS,
+    );
   }
 }
+
+@JS('JSON.stringify')
+external String _jsonStringify(JSAny? value);

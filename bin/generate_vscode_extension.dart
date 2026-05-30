@@ -1,29 +1,56 @@
-// ignore_for_file: avoid_print
+// this is a generator, having prints to interact with the user is important
 
+// ignore_for_file: avoid_print -- this is a script that is run by the user to generate the extension
+
+import 'dart:convert';
 import 'dart:io';
+import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+
+enum _WritePolicy { createOnly }
+
+/// Override package root resolution in tests.
+@visibleForTesting
+String? debugPackageRootOverride;
+
+class _ScaffoldSummary {
+  final List<String> created = <String>[];
+  final List<String> updated = <String>[];
+  final List<String> skipped = <String>[];
+
+  void printToStdout() {
+    print('');
+    print('Scaffold summary:');
+    print('  Created: ${created.length}');
+    print('  Updated: ${updated.length}');
+    print('  Skipped: ${skipped.length}');
+  }
+}
 
 void main() {
   final currentDirectory = Directory.current.path;
   print('Generating VSCode extension files in: $currentDirectory');
+  final summary = _ScaffoldSummary();
 
   try {
     // Create all necessary directories and files
     _createDirectories(currentDirectory);
-    _createLaunchConfig(currentDirectory);
-    _createCompileScript(currentDirectory);
-    _createExtensionFile(currentDirectory);
-    _createPackageJson(currentDirectory);
-    _createTsConfig(currentDirectory);
-    _createWebFolder(currentDirectory);
-    _updateGitignore(currentDirectory);
+    _createLaunchConfig(currentDirectory, summary);
+    _createCompileScript(currentDirectory, summary);
+    _createExtensionFile(currentDirectory, summary);
+    _createVSCodeApiController(currentDirectory, summary);
+    _createPackageJson(currentDirectory, summary);
+    _createTsConfig(currentDirectory, summary);
+    _createWebFolder(currentDirectory, summary);
+    _updateGitignore(currentDirectory, summary);
 
     print('');
     print('✅ VSCode extension files generated successfully!');
+    summary.printToStdout();
     print('Next steps:');
     print('1. Run: npm install');
     print('2. Press F5 in VS Code to run the extension');
-  } catch (e, stackTrace) {
+  } on Object catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
     print('Error: $e');
@@ -45,88 +72,148 @@ void _createDirectories(String currentDirectory) {
   Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'src')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, 'lib')).createSync(recursive: true);
 }
 
-void _createLaunchConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, '.vscode', 'launch.json'));
-  file.writeAsStringSync(_getLaunchJson());
+void _createLaunchConfig(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, '.vscode', 'launch.json'),
+    contents: _getLaunchJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createCompileScript(String currentDirectory) {
+void _createCompileScript(String currentDirectory, _ScaffoldSummary summary) {
   final file = File(p.join(currentDirectory, 'scripts', 'compile.sh'));
-  file.writeAsStringSync(_getCompileScript());
+  final wrote = _writeFile(
+    path: file.path,
+    contents: _getCompileScript(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
-  if (Platform.isLinux || Platform.isMacOS) {
+  if (wrote && (Platform.isLinux || Platform.isMacOS)) {
     Process.runSync('chmod', ['+x', file.path]);
   }
 }
 
-void _createExtensionFile(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
-
-  // Try to copy from template if it exists
+void _createExtensionFile(String currentDirectory, _ScaffoldSummary summary) {
   final templatePath =
-      p.join(Directory.current.path, 'tool', 'extension.ts.template');
+      p.join(_flutterVscodePackageRoot(), 'tool', 'extension.ts.template');
+  final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
   if (File(templatePath).existsSync()) {
     final content = File(templatePath).readAsStringSync();
-    file.writeAsStringSync(content);
+    _writeFile(
+      path: file.path,
+      contents: content,
+      summary: summary,
+      policy: _WritePolicy.createOnly,
+    );
   } else {
-    file.writeAsStringSync(_getExtensionTs());
+    _writeFile(
+      path: file.path,
+      contents: _getExtensionTs(),
+      summary: summary,
+      policy: _WritePolicy.createOnly,
+    );
   }
 }
 
-void _createPackageJson(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'package.json'));
-  file.writeAsStringSync(_getPackageJson());
+void _createVSCodeApiController(
+  String currentDirectory,
+  _ScaffoldSummary summary,
+) {
+  _writeFile(
+    path: p.join(currentDirectory, 'lib', 'vscode_api.dart'),
+    contents: _getVSCodeApiControllerDart(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createTsConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'tsconfig.json'));
-  file.writeAsStringSync(_getTsConfig());
+void _createPackageJson(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, 'package.json'),
+    contents: _getPackageJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createWebFolder(String currentDirectory) {
+void _createTsConfig(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, 'tsconfig.json'),
+    contents: _getTsConfig(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
+}
+
+void _createWebFolder(String currentDirectory, _ScaffoldSummary summary) {
   // Create web directory structure
   Directory(p.join(currentDirectory, 'web')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'web', 'icons'))
       .createSync(recursive: true);
 
   // Create or modify index.html for VSCode webview compatibility
-  final indexFile = File(p.join(currentDirectory, 'web', 'index.html'));
-  indexFile.writeAsStringSync(_getWebIndexHtml());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'index.html'),
+    contents: _getWebIndexHtml(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
   // Create flutter_bootstrap.js
-  final bootstrapFile =
-      File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'));
-  bootstrapFile.writeAsStringSync(_getFlutterBootstrapJs());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'flutter_bootstrap.js'),
+    contents: _getFlutterBootstrapJs(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
   // Create manifest.json
-  final manifestFile = File(p.join(currentDirectory, 'web', 'manifest.json'));
-  manifestFile.writeAsStringSync(_getManifestJson());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'manifest.json'),
+    contents: _getManifestJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
-  // Copy favicon if it exists from example, otherwise create a placeholder
-  final exampleFavicon =
-      File(p.join(Directory.current.path, 'example', 'web', 'favicon.png'));
+  // Copy favicon if it exists in the package example, otherwise skip.
+  final exampleFavicon = File(
+    p.join(_flutterVscodePackageRoot(), 'example', 'web', 'favicon.png'),
+  );
   final targetFavicon = File(p.join(currentDirectory, 'web', 'favicon.png'));
-  if (exampleFavicon.existsSync()) {
+  if (exampleFavicon.existsSync() && !targetFavicon.existsSync()) {
     exampleFavicon.copySync(targetFavicon.path);
+    summary.created.add(p.relative(targetFavicon.path, from: currentDirectory));
+  } else if (targetFavicon.existsSync()) {
+    summary.skipped.add(p.relative(targetFavicon.path, from: currentDirectory));
   }
 
-  // Copy icons from example if they exist
-  final iconsDir =
-      Directory(p.join(Directory.current.path, 'example', 'web', 'icons'));
+  // Copy icons from the package example if they exist.
+  final iconsDir = Directory(
+    p.join(_flutterVscodePackageRoot(), 'example', 'web', 'icons'),
+  );
   if (iconsDir.existsSync()) {
     for (final file in iconsDir.listSync()) {
       if (file is File) {
         final targetPath =
             p.join(currentDirectory, 'web', 'icons', p.basename(file.path));
-        file.copySync(targetPath);
+        final targetFile = File(targetPath);
+        if (!targetFile.existsSync()) {
+          file.copySync(targetPath);
+          summary.created.add(p.relative(targetPath, from: currentDirectory));
+        } else {
+          summary.skipped.add(p.relative(targetPath, from: currentDirectory));
+        }
       }
     }
   }
 }
 
-void _updateGitignore(String currentDirectory) {
+void _updateGitignore(String currentDirectory, _ScaffoldSummary summary) {
   final file = File(p.join(currentDirectory, '.gitignore'));
   final entries = [
     '# VSCode extension specific',
@@ -161,28 +248,65 @@ void _updateGitignore(String currentDirectory) {
 
     if (newEntries.isNotEmpty) {
       file.writeAsStringSync(
-          '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
-          mode: FileMode.append);
+        '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
+        mode: FileMode.append,
+      );
+      summary.updated.add('.gitignore');
+    } else {
+      summary.skipped.add('.gitignore');
     }
   } else {
-    file.writeAsStringSync(entries.join('\n') + '\n');
+    file.writeAsStringSync('${entries.join('\n')}\n');
+    summary.created.add('.gitignore');
   }
 }
 
+bool _writeFile({
+  required String path,
+  required String contents,
+  required _ScaffoldSummary summary,
+  required _WritePolicy policy,
+}) {
+  final file = File(path);
+  final relativePath = p.relative(path, from: Directory.current.path);
+
+  if (file.existsSync()) {
+    if (policy == _WritePolicy.createOnly) {
+      summary.skipped.add(relativePath);
+      return false;
+    }
+
+    final currentContents = file.readAsStringSync();
+    if (currentContents == contents) {
+      summary.skipped.add(relativePath);
+      return false;
+    }
+
+    file.writeAsStringSync(contents);
+    summary.updated.add(relativePath);
+    return true;
+  }
+
+  file.writeAsStringSync(contents);
+  summary.created.add(relativePath);
+  return true;
+}
+
 String _getLaunchJson() {
-  return '''{
+  return r'''
+{
   "version": "0.2.0",
   "configurations": [
     {
       "name": "Run Extension",
       "type": "extensionHost",
       "request": "launch",
-      "runtimeExecutable": "\${execPath}",
+      "runtimeExecutable": "${execPath}",
       "args": [
-        "--extensionDevelopmentPath=\${workspaceRoot}",
+        "--extensionDevelopmentPath=${workspaceRoot}",
         "--disable-extensions"
       ],
-      "outFiles": ["\${workspaceFolder}/build/web/*.js"],
+      "outFiles": ["${workspaceFolder}/build/web/*.js"],
       "preLaunchTask": "npm: vscode:prepublish"
     }
   ]
@@ -191,7 +315,8 @@ String _getLaunchJson() {
 }
 
 String _getCompileScript() {
-  return '''#!/bin/bash
+  return '''
+#!/bin/bash
 
 # Generate Dart code using build_runner
 dart run build_runner build --delete-conflicting-outputs
@@ -205,31 +330,93 @@ flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-sha
 }
 
 String _getExtensionTs() {
-  return '''import * as vscode from 'vscode';
+  final templatePath =
+      p.join(_flutterVscodePackageRoot(), 'tool', 'extension.ts.template');
+  if (File(templatePath).existsSync()) {
+    return File(templatePath).readAsStringSync();
+  }
+
+  return r'''
+import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
-// This extension is a starting template for a Flutter VSCode extension.
-// Extension configuration and commands will be generated by build_runner.
-// You can customize this file as needed for your specific extension logic.
+import { handleCommand } from '../lib/vscode_api.handlers';
 
 export function activate(context: vscode.ExtensionContext) {
-    console.log('Flutter VSCode extension is now active!');
+    const provider = new FlutterWebviewProvider(context.extensionUri);
 
-    // Extension initialization code will be generated here by build_runner
-    // based on your Flutter app configuration.
+    context.subscriptions.push(
+        vscode.window.registerWebviewViewProvider(FlutterWebviewProvider.viewType, provider)
+    );
 
-    // TODO: Add your extension initialization logic here
+    context.subscriptions.push(provider.statusBarItem);
 }
 
-export function deactivate() {
-    console.log('Flutter VSCode extension deactivated.');
+class FlutterWebviewProvider implements vscode.WebviewViewProvider {
+    public static readonly viewType = 'flutterVSCode.view';
+
+    public view?: vscode.WebviewView;
+    private _statusBarItem: vscode.StatusBarItem;
+
+    constructor(
+        private readonly _extensionUri: vscode.Uri,
+    ) {
+        this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
+        this._statusBarItem.text = "$(flutter) Flutter VS Code";
+        this._statusBarItem.tooltip = "Flutter VS Code webview";
+        this._statusBarItem.show();
+    }
+
+    public get statusBarItem(): vscode.StatusBarItem {
+        return this._statusBarItem;
+    }
+
+    public resolveWebviewView(
+        webviewView: vscode.WebviewView,
+        context: vscode.WebviewViewResolveContext,
+        _token: vscode.CancellationToken,
+    ) {
+        this.view = webviewView;
+
+        webviewView.webview.options = {
+            enableScripts: true,
+            localResourceRoots: [
+                vscode.Uri.joinPath(this._extensionUri, 'build', 'web')
+            ]
+        };
+
+        webviewView.webview.html = this._getHtml(webviewView.webview);
+
+        webviewView.webview.onDidReceiveMessage(async (message) => {
+            await handleCommand(message, webviewView.webview);
+        });
+    }
+
+    _getHtml(webview: vscode.Webview): string {
+        const webviewUri = webview.asWebviewUri(vscode.Uri.joinPath(this._extensionUri, "build", "web"));
+
+        const indexHtmlPath = path.join(this._extensionUri.fsPath, "build", "web", "index.html");
+        let indexHtml = '';
+        try {
+            indexHtml = fs.readFileSync(indexHtmlPath, 'utf8');
+        } catch (error) {
+            console.error('Could not read build/web/index.html:', error);
+            return `<html><body><h1>Error: Could not load Flutter app</h1><p>build/web/index.html not found</p></body></html>`;
+        }
+
+        indexHtml = indexHtml.replace('<base href="/">', '<base href="' + webviewUri + '/">');
+        return indexHtml;
+    }
 }
+
+export function deactivate() {}
 ''';
 }
 
 String _getPackageJson() {
-  return '''{
+  return r'''
+{
   "name": "your_extension_name",
   "displayName": "Your Extension Display Name",
   "description": "Describe your extension",
@@ -248,6 +435,25 @@ String _getPackageJson() {
     "build/web"
   ],
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "flutter-vscode-sidebar",
+          "title": "Flutter VS Code",
+          "icon": "$(flutter)"
+        }
+      ]
+    },
+    "views": {
+      "flutter-vscode-sidebar": [
+        {
+          "type": "webview",
+          "icon": "web/icons/Icon-192.png",
+          "id": "flutterVSCode.view",
+          "name": "Flutter Webview"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
@@ -267,34 +473,121 @@ String _getPackageJson() {
 }''';
 }
 
+String _flutterVscodePackageRoot() {
+  final override = debugPackageRootOverride;
+  if (override != null) {
+    return override;
+  }
+
+  final fromConfig = _packageRootFromConfig();
+  if (fromConfig != null) {
+    return fromConfig;
+  }
+
+  if (Platform.script.scheme == 'file') {
+    var dir = Directory(p.dirname(Platform.script.toFilePath()));
+    for (var depth = 0; depth < 12; depth++) {
+      if (File(p.join(dir.path, 'tool', 'extension.ts.template')).existsSync()) {
+        return dir.path;
+      }
+      dir = dir.parent;
+    }
+  }
+
+  throw StateError(
+    'Could not locate the flutter_vscode package root. '
+    'Ensure flutter_vscode is listed in pubspec.yaml and run `dart pub get`.',
+  );
+}
+
+String? _packageRootFromConfig() {
+  final configFile = File(
+    p.join(Directory.current.path, '.dart_tool', 'package_config.json'),
+  );
+  if (!configFile.existsSync()) {
+    return null;
+  }
+
+  final config = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
+  final packages = config['packages'] as List<dynamic>?;
+  if (packages == null) {
+    return null;
+  }
+
+  for (final package in packages) {
+    final packageMap = package as Map<String, dynamic>;
+    if (packageMap['name'] == 'flutter_vscode') {
+      final rootUri = packageMap['rootUri'] as String?;
+      if (rootUri == null) {
+        return null;
+      }
+      return Uri.parse(rootUri).toFilePath();
+    }
+  }
+
+  return null;
+}
+
 String _getTsConfig() {
-  return '''{
+  return '''
+{
   "compilerOptions": {
     "module": "commonjs",
     "target": "es2020",
     "outDir": "out",
     "lib": ["es2020"],
     "sourceMap": true,
-    "rootDir": "src",
+    "rootDir": ".",
     "strict": true,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   },
-  "exclude": ["node_modules", "out", "lib", "build", "web"]
+  "include": ["src/**/*.ts", "lib/**/*.handlers.ts"],
+  "exclude": ["node_modules", "out", "build", "web"]
 }''';
 }
 
+String _getVSCodeApiControllerDart() {
+  return r'''
+import 'package:flutter_vscode/flutter_vscode.dart';
+
+part 'vscode_api.vscode.g.part';
+
+/// Put your `@VSCodeController` classes in this file (or create more).
+///
+/// Running:
+///   dart run build_runner build
+///
+/// will generate:
+/// - `lib/vscode_api.vscode.g.part` (Dart implementation)
+/// - `lib/vscode_api.handlers.ts` (TypeScript handlers used by `src/extension.ts`)
+@VSCodeController()
+abstract class VSCodeApi {
+  /// Calls `vscode.window.showInformationMessage(...)` in the extension host.
+  @VSCodeCommand('window.showInformationMessage')
+  Future<void> info(String message);
+
+  /// Calls `vscode.window.showInputBox(...)` and returns the result.
+  @VSCodeCommand('window.showInputBox')
+  Future<String?> inputBox(String prompt);
+}
+
+VSCodeApi createVSCodeApi() => _$VSCodeApi();
+''';
+}
+
 String _getWebIndexHtml() {
-  return '''\u003c!DOCTYPE html>
+  return '''
+\u003c!DOCTYPE html>
 \u003chtml>
 \u003chead>
-  \u003cbase href=\"\$FLUTTER_BASE_HREF\">
+  \u003cbase href="\$FLUTTER_BASE_HREF">
 
-  \u003cmeta charset=\"UTF-8\">
-  \u003cmeta content=\"IE=Edge\" http-equiv=\"X-UA-Compatible\">
-  \u003cmeta name=\"description\" content=\"A new Flutter project.\">
+  \u003cmeta charset="UTF-8">
+  \u003cmeta content="IE=Edge" http-equiv="X-UA-Compatible">
+  \u003cmeta name="description" content="A new Flutter project.">
 
   \u003cscript>
     // Disable history API for webview compatibility
@@ -307,17 +600,18 @@ String _getWebIndexHtml() {
   \u003c/script>
 
   \u003ctitle>Your Flutter VSCode Extension\u003c/title>
-  \u003clink rel=\"manifest\" href=\"manifest.json\">
+  \u003clink rel="manifest" href="manifest.json">
 \u003c/head>
 \u003cbody>
-  \u003cscript src=\"main.dart.js\" async>\u003c/script>
+  \u003cscript src="main.dart.js" async>\u003c/script>
 \u003c/body>
 \u003c/html>
 ''';
 }
 
 String _getFlutterBootstrapJs() {
-  return '''{{flutter_js}}
+  return '''
+{{flutter_js}}
 {{flutter_build_config}}
 
 // the below loader ensures that the local copy of canvasKit is used
@@ -333,38 +627,39 @@ _flutter.loader.load({
 }
 
 String _getManifestJson() {
-  return '''{
-  \"name\": \"Flutter VSCode Extension\",
-  \"short_name\": \"Flutter VSCode\",
-  \"start_url\": \"./\",
-  \"display\": \"standalone\",
-  \"background_color\": \"#0175C2\",
-  \"theme_color\": \"#0175C2\",
-  \"description\": \"A Flutter app for VSCode extension\",
-  \"orientation\": \"portrait-primary\",
-  \"prefer_related_applications\": false,
-  \"icons\": [
+  return '''
+{
+  "name": "Flutter VSCode Extension",
+  "short_name": "Flutter VSCode",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0175C2",
+  "theme_color": "#0175C2",
+  "description": "A Flutter app for VSCode extension",
+  "orientation": "portrait-primary",
+  "prefer_related_applications": false,
+  "icons": [
     {
-      \"src\": \"icons/Icon-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\"
+      "src": "icons/Icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
     },
     {
-      \"src\": \"icons/Icon-maskable-192.png\",
-      \"sizes\": \"192x192\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
     },
     {
-      \"src\": \"icons/Icon-maskable-512.png\",
-      \"sizes\": \"512x512\",
-      \"type\": \"image/png\",
-      \"purpose\": \"maskable\"
+      "src": "icons/Icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }''';

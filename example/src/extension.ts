@@ -2,6 +2,8 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 
+import { handleCommand } from '../lib/api_controller.handlers';
+
 export function activate(context: vscode.ExtensionContext) {
     const provider = new FlutterWebviewProvider(context.extensionUri);
 
@@ -10,18 +12,6 @@ export function activate(context: vscode.ExtensionContext) {
     );
 
     context.subscriptions.push(provider.statusBarItem);
-
-    context.subscriptions.push(vscode.commands.registerCommand('flutterVSCodeExample.addOne', () => {
-        if (provider.view) {
-            provider.view.webview.postMessage({ type: 'add' });
-        }
-    }));
-
-    context.subscriptions.push(vscode.commands.registerCommand('flutterVSCodeExample.reset', () => {
-        if (provider.view) {
-            provider.view.webview.postMessage({ type: 'reset' });
-        }
-    }));
 }
 
 class FlutterWebviewProvider implements vscode.WebviewViewProvider {
@@ -59,16 +49,8 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
 
         webviewView.webview.html = this._getHtml(webviewView.webview);
 
-        webviewView.webview.onDidReceiveMessage(data => {
-            switch (data.type) {
-                case 'resetCounter':
-                    vscode.window.showInformationMessage(`Flutter app says: "Resetting counter." Old value was: ${data.value}`);
-                    this._updateStatusBar(data.value || 0);
-                    break;
-                case 'counterUpdate':
-                    this._updateStatusBar(data.value);
-                    break;
-            }
+        webviewView.webview.onDidReceiveMessage(async (message) => {
+            await handleCommand(message, webviewView.webview);
         });
     }
 

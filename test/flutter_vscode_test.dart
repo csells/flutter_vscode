@@ -12,4 +12,9 @@ void main() {
     const command = VSCodeCommand();
     expect(command, isA<VSCodeCommand>());
   });
+
+  test('VSCodeCommand supports custom command id', () {
+    const command = VSCodeCommand('window.showInformationMessage');
+    expect(command.command, 'window.showInformationMessage');
+  });
 }
