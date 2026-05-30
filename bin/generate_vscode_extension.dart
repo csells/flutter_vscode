@@ -121,7 +121,9 @@ void _createExtensionFile(String currentDirectory, _ScaffoldSummary summary) {
 }
 
 void _createVSCodeApiController(
-    String currentDirectory, _ScaffoldSummary summary) {
+  String currentDirectory,
+  _ScaffoldSummary summary,
+) {
   _writeFile(
     path: p.join(currentDirectory, 'lib', 'vscode_api.dart'),
     contents: _getVSCodeApiControllerDart(),
@@ -334,7 +336,7 @@ String _getExtensionTs() {
     return File(templatePath).readAsStringSync();
   }
 
-  return '''
+  return r'''
 import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -361,7 +363,7 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
         private readonly _extensionUri: vscode.Uri,
     ) {
         this._statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 100);
-        this._statusBarItem.text = "\$(flutter) Flutter VS Code";
+        this._statusBarItem.text = "$(flutter) Flutter VS Code";
         this._statusBarItem.tooltip = "Flutter VS Code webview";
         this._statusBarItem.show();
     }
@@ -403,7 +405,7 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
             return `<html><body><h1>Error: Could not load Flutter app</h1><p>build/web/index.html not found</p></body></html>`;
         }
 
-        indexHtml = indexHtml.replace('<base href="/">', `<base href="\${webviewUri}/">`);
+        indexHtml = indexHtml.replace('<base href="/">', '<base href="' + webviewUri + '/">');
         return indexHtml;
     }
 }
@@ -413,7 +415,7 @@ export function deactivate() {}
 }
 
 String _getPackageJson() {
-  return '''
+  return r'''
 {
   "name": "your_extension_name",
   "displayName": "Your Extension Display Name",
@@ -438,7 +440,7 @@ String _getPackageJson() {
         {
           "id": "flutter-vscode-sidebar",
           "title": "Flutter VS Code",
-          "icon": "\$(flutter)"
+          "icon": "$(flutter)"
         }
       ]
     },

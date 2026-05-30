@@ -1,4 +1,3 @@
-import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
 
 /// Package name used for synthetic controller fixtures in builder tests.

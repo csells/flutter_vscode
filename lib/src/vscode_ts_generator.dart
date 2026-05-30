@@ -7,7 +7,7 @@ import 'package:flutter_vscode/src/vscode_codegen_helpers.dart';
 import 'package:flutter_vscode/src/vscode_validation.dart';
 import 'package:source_gen/source_gen.dart';
 
-/// Generates TypeScript handler files from classes annotated with [VSCodeController].
+/// Generates TypeScript handler files from `@VSCodeController` annotations.
 class VSCodeTsGenerator implements Builder {
   @override
   Map<String, List<String>> get buildExtensions => {

@@ -10,6 +10,7 @@ import 'package:web/web.dart' as web;
 /// This class uses that API when available and falls back to `window.postMessage`
 /// (useful for running the Flutter app in a normal browser during development).
 class WebViewBridge {
+  /// Creates a bridge that prefers the VS Code webview API when available.
   WebViewBridge() {
     debugLastBridgeHadVsCodeApi = _vscodeApi != null;
   }
