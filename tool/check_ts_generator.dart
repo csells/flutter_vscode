@@ -7,6 +7,7 @@
 
 import 'package:build_test/build_test.dart';
 import 'package:flutter_vscode/src/vscode_ts_generator.dart';
+import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -40,6 +41,34 @@ abstract class MyController {
           ]),
         ),
       },
+    );
+  });
+
+  test('VSCodeTsGenerator rejects empty command ids', () async {
+    final builder = VSCodeTsGenerator();
+
+    await expectLater(
+      () => testBuilder(
+        builder,
+        {
+          'flutter_vscode|lib/empty_command.dart': '''
+import 'package:flutter_vscode/flutter_vscode.dart';
+
+@VSCodeController()
+abstract class EmptyCommandController {
+  @VSCodeCommand('   ')
+  Future<void> showInfo(String message);
+}
+''',
+        },
+      ),
+      throwsA(
+        isA<InvalidGenerationSourceError>().having(
+          (e) => e.message,
+          'message',
+          contains('cannot be empty'),
+        ),
+      ),
     );
   });
 }

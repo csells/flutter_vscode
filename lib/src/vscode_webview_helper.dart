@@ -7,6 +7,7 @@ import 'package:web/web.dart' as web;
 /// Helper class to initialize VS Code webview message handling.
 class VSCodeWebViewHelper {
   static bool _initialized = false;
+  static bool debugLogInvalidMessages = false;
 
   /// Initializes the message handler for VS Code webview communication.
   /// This should be called early in your Flutter app (e.g., in main()).
@@ -26,7 +27,16 @@ class VSCodeWebViewHelper {
             final message = jsonDecode(jsonString) as Map<String, dynamic>;
             VSCodeControllerBase.handleMessage(message);
           } on Object {
-            // Ignore invalid messages
+            // Ignore invalid messages, optionally logging in debug asserts.
+            assert(() {
+              if (debugLogInvalidMessages) {
+                // ignore: avoid_print
+                print(
+                  'flutter_vscode: ignored non-JSON or invalid host message.',
+                );
+              }
+              return true;
+            }());
           }
         }
       }).toJS,

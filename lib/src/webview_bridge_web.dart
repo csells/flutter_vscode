@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:js_interop';
 
+import 'package:meta/meta.dart';
 import 'package:web/web.dart' as web;
 
 /// Web implementation of the VS Code webview bridge.
@@ -9,7 +10,15 @@ import 'package:web/web.dart' as web;
 /// This class uses that API when available and falls back to `window.postMessage`
 /// (useful for running the Flutter app in a normal browser during development).
 class WebViewBridge {
+  WebViewBridge() {
+    debugLastBridgeHadVsCodeApi = _vscodeApi != null;
+  }
+
   final VsCodeApi? _vscodeApi = _tryAcquireVsCodeApi();
+
+  /// Exposes whether the last created bridge instance could access VS Code API.
+  @visibleForTesting
+  static bool? debugLastBridgeHadVsCodeApi;
 
   /// Sends a message to the VS Code extension or falls back to window.postMessage.
   ///

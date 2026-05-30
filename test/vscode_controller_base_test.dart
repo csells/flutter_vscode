@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_vscode/src/vscode_controller_base.dart';
 
@@ -5,6 +7,7 @@ void main() {
   group('VSCodeControllerBase', () {
     tearDown(() {
       VSCodeControllerBase.debugRequestIdFactory = null;
+      VSCodeControllerBase.debugResponseTimeout = const Duration(seconds: 30);
       VSCodeControllerBase.debugPendingRequests.clear();
     });
 
@@ -67,6 +70,39 @@ void main() {
       );
 
       expect(future, completes);
+      expect(VSCodeControllerBase.debugPendingRequests, isEmpty);
+    });
+
+    test('ignores messages with unknown request ids', () {
+      VSCodeControllerBase.handleMessage(<String, dynamic>{
+        'requestId': 'missing-request',
+        'result': 'ignored',
+      });
+
+      expect(VSCodeControllerBase.debugPendingRequests, isEmpty);
+    });
+
+    test('ignores messages without request id', () {
+      VSCodeControllerBase.handleMessage(<String, dynamic>{
+        'result': 'ignored',
+      });
+
+      expect(VSCodeControllerBase.debugPendingRequests, isEmpty);
+    });
+
+    test('times out pending requests and cleans them up', () async {
+      VSCodeControllerBase.debugRequestIdFactory = () => 'req-timeout';
+      VSCodeControllerBase.debugResponseTimeout = const Duration(
+        milliseconds: 10,
+      );
+
+      final future = VSCodeControllerBase.sendCommand<String>(
+        'window.showInputBox',
+        <dynamic>['hello'],
+        expectsResponse: true,
+      );
+
+      await expectLater(future, throwsA(isA<TimeoutException>()));
       expect(VSCodeControllerBase.debugPendingRequests, isEmpty);
     });
   });

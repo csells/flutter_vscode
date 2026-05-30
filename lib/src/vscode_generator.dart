@@ -30,6 +30,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
     }
 
     final classElement = element;
+    _validateController(classElement);
     final className = classElement.name;
 
     // We will generate the implementation for the abstract class.
@@ -48,6 +49,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
       if (const TypeChecker.fromUrl(
         'package:flutter_vscode/annotations.dart#VSCodeCommand',
       ).hasAnnotationOf(method)) {
+        _validateCommandMethod(method);
         buffer.writeln(_generateMethodImplementation(method));
       }
     }
@@ -133,7 +135,14 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
           ? returnType.typeArguments.first
           : null;
 
-      if (futureTypeArg != null && futureTypeArg is VoidType) {
+      if (futureTypeArg == null) {
+        throw InvalidGenerationSourceError(
+          'Methods annotated with @VSCodeCommand must use Future<T> with an explicit type argument.',
+          element: method,
+        );
+      }
+
+      if (futureTypeArg is VoidType) {
         return buildDartSendCommandBody(
           commandId: commandId,
           paramListExpression: paramListExpression,
@@ -141,7 +150,7 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
         );
       }
 
-      final returnTypeName = futureTypeArg!.getDisplayString();
+      final returnTypeName = futureTypeArg.getDisplayString();
       return buildDartSendCommandBody(
         commandId: commandId,
         paramListExpression: paramListExpression,
@@ -155,5 +164,49 @@ class VSCodeGenerator extends GeneratorForAnnotation<VSCodeController> {
       'Methods annotated with @VSCodeCommand must return a Future or void.',
       element: method,
     );
+  }
+
+  void _validateController(ClassElement classElement) {
+    if (!classElement.isAbstract) {
+      throw InvalidGenerationSourceError(
+        'Classes annotated with @VSCodeController must be abstract. '
+        'Define an abstract API and use the generated factory (e.g., createMyController()).',
+        element: classElement,
+      );
+    }
+  }
+
+  void _validateCommandMethod(MethodElement method) {
+    if (!method.isAbstract) {
+      throw InvalidGenerationSourceError(
+        'Methods annotated with @VSCodeCommand must be abstract.',
+        element: method,
+      );
+    }
+
+    if (method.typeParameters.isNotEmpty) {
+      throw InvalidGenerationSourceError(
+        'Methods annotated with @VSCodeCommand cannot declare generic type parameters.',
+        element: method,
+      );
+    }
+
+    final functionTyped = method as FunctionTypedElement;
+    final parameters = functionTyped.formalParameters;
+
+    if (parameters.any((p) => p.isNamed || p.isOptional)) {
+      throw InvalidGenerationSourceError(
+        'Methods annotated with @VSCodeCommand only support required positional parameters.',
+        element: method,
+      );
+    }
+
+    final commandId = _commandIdFor(method);
+    if (commandId != null && commandId.trim().isEmpty) {
+      throw InvalidGenerationSourceError(
+        'The command id passed to @VSCodeCommand cannot be empty.',
+        element: method,
+      );
+    }
   }
 }

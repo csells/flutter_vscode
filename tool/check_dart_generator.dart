@@ -49,4 +49,64 @@ abstract class MyController {
       },
     );
   });
+
+  test('VSCodeGenerator rejects non-abstract controllers', () async {
+    final builder = SharedPartBuilder([VSCodeGenerator()], 'vscode');
+
+    await expectLater(
+      () => testBuilder(
+        builder,
+        {
+          'flutter_vscode|lib/non_abstract.dart': '''
+import 'package:flutter_vscode/flutter_vscode.dart';
+
+part 'non_abstract.vscode.g.part';
+
+@VSCodeController()
+class NotAbstractController {
+  @VSCodeCommand('window.showInformationMessage')
+  Future<void> showInfo(String message) async {}
+}
+''',
+        },
+      ),
+      throwsA(
+        isA<InvalidGenerationSourceError>().having(
+          (e) => e.message,
+          'message',
+          contains('must be abstract'),
+        ),
+      ),
+    );
+  });
+
+  test('VSCodeGenerator rejects optional parameters on commands', () async {
+    final builder = SharedPartBuilder([VSCodeGenerator()], 'vscode');
+
+    await expectLater(
+      () => testBuilder(
+        builder,
+        {
+          'flutter_vscode|lib/optional_params.dart': '''
+import 'package:flutter_vscode/flutter_vscode.dart';
+
+part 'optional_params.vscode.g.part';
+
+@VSCodeController()
+abstract class OptionalParamsController {
+  @VSCodeCommand('window.showInformationMessage')
+  Future<void> showInfo([String? message]);
+}
+''',
+        },
+      ),
+      throwsA(
+        isA<InvalidGenerationSourceError>().having(
+          (e) => e.message,
+          'message',
+          contains('required positional parameters'),
+        ),
+      ),
+    );
+  });
 }

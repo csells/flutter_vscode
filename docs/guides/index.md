@@ -2,12 +2,11 @@
 
 Task-oriented documentation for common development workflows.
 
-## Suggested Guide Areas
+## Guides
 
-- Scaffolding a new extension with `generate_vscode_extension`
-- Adding and generating new `@VSCodeCommand` APIs
-- Debugging Flutter webviews in VS Code extension host
-- Iterating with build_runner and TypeScript compile loops
+- [Quickstart: build your first extension](quickstart.md)
+- [Generated file ownership and regeneration rules](generated-file-ownership.md)
+- [Troubleshooting common extension issues](troubleshooting.md)
 
 ## Related
 

@@ -10,8 +10,12 @@ import 'package:meta/meta.dart';
 /// to the VS Code extension and handling responses.
 abstract class VSCodeControllerBase {
   static final WebViewBridge _bridge = WebViewBridge();
-  static final Map<String, Completer<dynamic>> _pendingRequests = {};
+  static final Map<String, _PendingRequest> _pendingRequests = {};
   static final Random _random = Random();
+
+  /// Default timeout used for request/response commands.
+  @visibleForTesting
+  static Duration debugResponseTimeout = const Duration(seconds: 30);
 
   /// Optional factory used in tests to control generated request IDs.
   @visibleForTesting
@@ -33,7 +37,18 @@ abstract class VSCodeControllerBase {
 
     if (expectsResponse) {
       final completer = Completer<T>();
-      _pendingRequests[requestId] = completer;
+      final timeoutTimer = Timer(debugResponseTimeout, () {
+        final pending = _pendingRequests.remove(requestId);
+        if (pending != null && !pending.completer.isCompleted) {
+          pending.completer.completeError(
+            TimeoutException(
+              'Timed out waiting for VS Code response for "$command".',
+              debugResponseTimeout,
+            ),
+          );
+        }
+      });
+      _pendingRequests[requestId] = _PendingRequest(completer, timeoutTimer);
 
       _bridge.postMessage(message);
 
@@ -60,7 +75,9 @@ abstract class VSCodeControllerBase {
   static void handleMessage(Map<String, dynamic> message) {
     final requestId = message['requestId'] as String?;
     if (requestId != null && _pendingRequests.containsKey(requestId)) {
-      final completer = _pendingRequests.remove(requestId)!;
+      final pending = _pendingRequests.remove(requestId)!;
+      pending.timer.cancel();
+      final completer = pending.completer;
 
       if (message.containsKey('error')) {
         completer.completeError(Exception(message['error']));
@@ -72,6 +89,18 @@ abstract class VSCodeControllerBase {
 
   /// Exposes the pending request map for tests.
   @visibleForTesting
-  static Map<String, Completer<dynamic>> get debugPendingRequests =>
-      _pendingRequests;
+  static Map<String, Completer<dynamic>> get debugPendingRequests {
+    return Map<String, Completer<dynamic>>.fromEntries(
+      _pendingRequests.entries.map(
+        (entry) => MapEntry(entry.key, entry.value.completer),
+      ),
+    );
+  }
+}
+
+class _PendingRequest {
+  _PendingRequest(this.completer, this.timer);
+
+  final Completer<dynamic> completer;
+  final Timer timer;
 }

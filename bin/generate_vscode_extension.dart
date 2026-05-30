@@ -1,27 +1,46 @@
 // this is a generator, having prints to interact with the user is important
-// ignore_for_file: avoid_print, cascade_invocations
+
+// ignore_for_file: avoid_print -- this is a script that is run by the user to generate the extension
 
 import 'dart:io';
 import 'package:path/path.dart' as p;
 
+enum _WritePolicy { createOnly }
+
+class _ScaffoldSummary {
+  final List<String> created = <String>[];
+  final List<String> updated = <String>[];
+  final List<String> skipped = <String>[];
+
+  void printToStdout() {
+    print('');
+    print('Scaffold summary:');
+    print('  Created: ${created.length}');
+    print('  Updated: ${updated.length}');
+    print('  Skipped: ${skipped.length}');
+  }
+}
+
 void main() {
   final currentDirectory = Directory.current.path;
   print('Generating VSCode extension files in: $currentDirectory');
+  final summary = _ScaffoldSummary();
 
   try {
     // Create all necessary directories and files
     _createDirectories(currentDirectory);
-    _createLaunchConfig(currentDirectory);
-    _createCompileScript(currentDirectory);
-    _createExtensionFile(currentDirectory);
-    _createVSCodeApiController(currentDirectory);
-    _createPackageJson(currentDirectory);
-    _createTsConfig(currentDirectory);
-    _createWebFolder(currentDirectory);
-    _updateGitignore(currentDirectory);
+    _createLaunchConfig(currentDirectory, summary);
+    _createCompileScript(currentDirectory, summary);
+    _createExtensionFile(currentDirectory, summary);
+    _createVSCodeApiController(currentDirectory, summary);
+    _createPackageJson(currentDirectory, summary);
+    _createTsConfig(currentDirectory, summary);
+    _createWebFolder(currentDirectory, summary);
+    _updateGitignore(currentDirectory, summary);
 
     print('');
     print('✅ VSCode extension files generated successfully!');
+    summary.printToStdout();
     print('Next steps:');
     print('1. Run: npm install');
     print('2. Press F5 in VS Code to run the extension');
@@ -50,74 +69,119 @@ void _createDirectories(String currentDirectory) {
   Directory(p.join(currentDirectory, 'lib')).createSync(recursive: true);
 }
 
-void _createLaunchConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, '.vscode', 'launch.json'));
-  file.writeAsStringSync(_getLaunchJson());
+void _createLaunchConfig(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, '.vscode', 'launch.json'),
+    contents: _getLaunchJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createCompileScript(String currentDirectory) {
+void _createCompileScript(String currentDirectory, _ScaffoldSummary summary) {
   final file = File(p.join(currentDirectory, 'scripts', 'compile.sh'));
-  file.writeAsStringSync(_getCompileScript());
+  final wrote = _writeFile(
+    path: file.path,
+    contents: _getCompileScript(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
-  if (Platform.isLinux || Platform.isMacOS) {
+  if (wrote && (Platform.isLinux || Platform.isMacOS)) {
     Process.runSync('chmod', ['+x', file.path]);
   }
 }
 
-void _createExtensionFile(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
-
+void _createExtensionFile(String currentDirectory, _ScaffoldSummary summary) {
   // Try to copy from template if it exists
   final templatePath =
       p.join(Directory.current.path, 'tool', 'extension.ts.template');
+  final file = File(p.join(currentDirectory, 'src', 'extension.ts'));
   if (File(templatePath).existsSync()) {
     final content = File(templatePath).readAsStringSync();
-    file.writeAsStringSync(content);
+    _writeFile(
+      path: file.path,
+      contents: content,
+      summary: summary,
+      policy: _WritePolicy.createOnly,
+    );
   } else {
-    file.writeAsStringSync(_getExtensionTs());
+    _writeFile(
+      path: file.path,
+      contents: _getExtensionTs(),
+      summary: summary,
+      policy: _WritePolicy.createOnly,
+    );
   }
 }
 
-void _createVSCodeApiController(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'lib', 'vscode_api.dart'));
-  if (file.existsSync()) return;
-  file.writeAsStringSync(_getVSCodeApiControllerDart());
+void _createVSCodeApiController(
+    String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, 'lib', 'vscode_api.dart'),
+    contents: _getVSCodeApiControllerDart(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createPackageJson(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'package.json'));
-  file.writeAsStringSync(_getPackageJson());
+void _createPackageJson(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, 'package.json'),
+    contents: _getPackageJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createTsConfig(String currentDirectory) {
-  final file = File(p.join(currentDirectory, 'tsconfig.json'));
-  file.writeAsStringSync(_getTsConfig());
+void _createTsConfig(String currentDirectory, _ScaffoldSummary summary) {
+  _writeFile(
+    path: p.join(currentDirectory, 'tsconfig.json'),
+    contents: _getTsConfig(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 }
 
-void _createWebFolder(String currentDirectory) {
+void _createWebFolder(String currentDirectory, _ScaffoldSummary summary) {
   // Create web directory structure
   Directory(p.join(currentDirectory, 'web')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'web', 'icons'))
       .createSync(recursive: true);
 
   // Create or modify index.html for VSCode webview compatibility
-  File(p.join(currentDirectory, 'web', 'index.html'))
-      .writeAsStringSync(_getWebIndexHtml());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'index.html'),
+    contents: _getWebIndexHtml(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
   // Create flutter_bootstrap.js
-  File(p.join(currentDirectory, 'web', 'flutter_bootstrap.js'))
-      .writeAsStringSync(_getFlutterBootstrapJs());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'flutter_bootstrap.js'),
+    contents: _getFlutterBootstrapJs(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
   // Create manifest.json
-  File(p.join(currentDirectory, 'web', 'manifest.json'))
-      .writeAsStringSync(_getManifestJson());
+  _writeFile(
+    path: p.join(currentDirectory, 'web', 'manifest.json'),
+    contents: _getManifestJson(),
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
 
   // Copy favicon if it exists from example, otherwise create a placeholder
   final exampleFavicon =
       File(p.join(Directory.current.path, 'example', 'web', 'favicon.png'));
   final targetFavicon = File(p.join(currentDirectory, 'web', 'favicon.png'));
-  if (exampleFavicon.existsSync()) {
+  if (exampleFavicon.existsSync() && !targetFavicon.existsSync()) {
     exampleFavicon.copySync(targetFavicon.path);
+    summary.created.add(p.relative(targetFavicon.path, from: currentDirectory));
+  } else if (targetFavicon.existsSync()) {
+    summary.skipped.add(p.relative(targetFavicon.path, from: currentDirectory));
   }
 
   // Copy icons from example if they exist
@@ -128,13 +192,19 @@ void _createWebFolder(String currentDirectory) {
       if (file is File) {
         final targetPath =
             p.join(currentDirectory, 'web', 'icons', p.basename(file.path));
-        file.copySync(targetPath);
+        final targetFile = File(targetPath);
+        if (!targetFile.existsSync()) {
+          file.copySync(targetPath);
+          summary.created.add(p.relative(targetPath, from: currentDirectory));
+        } else {
+          summary.skipped.add(p.relative(targetPath, from: currentDirectory));
+        }
       }
     }
   }
 }
 
-void _updateGitignore(String currentDirectory) {
+void _updateGitignore(String currentDirectory, _ScaffoldSummary summary) {
   final file = File(p.join(currentDirectory, '.gitignore'));
   final entries = [
     '# VSCode extension specific',
@@ -172,10 +242,45 @@ void _updateGitignore(String currentDirectory) {
         '\n# VSCode extension entries\n${newEntries.join('\n')}\n',
         mode: FileMode.append,
       );
+      summary.updated.add('.gitignore');
+    } else {
+      summary.skipped.add('.gitignore');
     }
   } else {
     file.writeAsStringSync('${entries.join('\n')}\n');
+    summary.created.add('.gitignore');
   }
+}
+
+bool _writeFile({
+  required String path,
+  required String contents,
+  required _ScaffoldSummary summary,
+  required _WritePolicy policy,
+}) {
+  final file = File(path);
+  final relativePath = p.relative(path, from: Directory.current.path);
+
+  if (file.existsSync()) {
+    if (policy == _WritePolicy.createOnly) {
+      summary.skipped.add(relativePath);
+      return false;
+    }
+
+    final currentContents = file.readAsStringSync();
+    if (currentContents == contents) {
+      summary.skipped.add(relativePath);
+      return false;
+    }
+
+    file.writeAsStringSync(contents);
+    summary.updated.add(relativePath);
+    return true;
+  }
+
+  file.writeAsStringSync(contents);
+  summary.created.add(relativePath);
+  return true;
 }
 
 String _getLaunchJson() {
