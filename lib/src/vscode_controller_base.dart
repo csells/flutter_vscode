@@ -55,11 +55,11 @@ abstract class VSCodeControllerBase {
       return completer.future;
     } else {
       _bridge.postMessage(message);
-      // For void methods, we need to return a completed future
-      // This is a bit of a hack, but works for Future<void>
-      return (null as dynamic) as T;
+      return _completedFuture<T>();
     }
   }
+
+  static Future<T> _completedFuture<T>() => Future<void>.value() as Future<T>;
 
   /// Generates a unique request ID for message tracking.
   static String _generateRequestId() {
@@ -95,6 +95,15 @@ abstract class VSCodeControllerBase {
         (entry) => MapEntry(entry.key, entry.value.completer),
       ),
     );
+  }
+
+  /// Clears pending requests and cancels their timeout timers.
+  @visibleForTesting
+  static void debugClearPendingRequests() {
+    for (final pending in _pendingRequests.values) {
+      pending.timer.cancel();
+    }
+    _pendingRequests.clear();
   }
 }
 

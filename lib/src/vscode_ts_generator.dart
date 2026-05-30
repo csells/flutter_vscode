@@ -1,12 +1,10 @@
 // ignore_for_file: missing_whitespace_between_adjacent_strings for command concatinations
 
-import 'dart:async';
-
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
-import 'package:flutter_vscode/annotations.dart';
 import 'package:flutter_vscode/src/vscode_codegen_helpers.dart';
+import 'package:flutter_vscode/src/vscode_validation.dart';
 import 'package:source_gen/source_gen.dart';
 
 /// Generates TypeScript handler files from classes annotated with [VSCodeController].
@@ -68,9 +66,7 @@ class VSCodeTsGenerator implements Builder {
       ..writeln();
 
     final controllers = library.classes.where(
-      (c) => const TypeChecker.fromUrl(
-        'package:flutter_vscode/annotations.dart#VSCodeController',
-      ).hasAnnotationOf(c),
+      vscodeControllerChecker.hasAnnotationOf,
     );
 
     if (controllers.isEmpty) {
@@ -90,18 +86,16 @@ class VSCodeTsGenerator implements Builder {
       ..writeln('    switch (command) {');
 
     for (final controller in controllers) {
-      _validateController(controller);
+      validateController(controller);
       for (final method in controller.methods) {
-        if (const TypeChecker.fromUrl(
-          'package:flutter_vscode/annotations.dart#VSCodeCommand',
-        ).hasAnnotationOf(method)) {
-          _validateCommandMethod(method);
+        if (vscodeCommandChecker.hasAnnotationOf(method)) {
+          validateCommandMethod(method);
           final functionTyped = method as FunctionTypedElement;
           final parameters = functionTyped.formalParameters;
 
           final isVoid = _isVoidLike(method.returnType);
 
-          final effectiveCommandId = _commandIdFor(method) ?? method.name;
+          final effectiveCommandId = commandIdFor(method) ?? method.name;
           buffer.writeln(
             buildTsCommandHandler(
               commandId: effectiveCommandId,
@@ -129,17 +123,6 @@ class VSCodeTsGenerator implements Builder {
     return buffer.toString();
   }
 
-  String? _commandIdFor(MethodElement method) {
-    final ann = const TypeChecker.fromUrl(
-      'package:flutter_vscode/annotations.dart#VSCodeCommand',
-    ).firstAnnotationOf(method);
-    if (ann == null) return null;
-    final reader = ConstantReader(ann);
-    final field = reader.peek('command');
-    if (field == null || field.isNull) return null;
-    return field.stringValue;
-  }
-
   bool _isVoidLike(DartType returnType) {
     if (returnType is VoidType) {
       return true;
@@ -153,66 +136,5 @@ class VSCodeTsGenerator implements Builder {
     }
 
     return false;
-  }
-
-  void _validateController(ClassElement classElement) {
-    if (!classElement.isAbstract) {
-      throw InvalidGenerationSourceError(
-        'Classes annotated with @VSCodeController must be abstract.',
-        element: classElement,
-      );
-    }
-  }
-
-  void _validateCommandMethod(MethodElement method) {
-    if (!method.isAbstract) {
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand must be abstract.',
-        element: method,
-      );
-    }
-
-    if (method.typeParameters.isNotEmpty) {
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand cannot declare generic type parameters.',
-        element: method,
-      );
-    }
-
-    final functionTyped = method as FunctionTypedElement;
-    final parameters = functionTyped.formalParameters;
-    if (parameters.any((p) => p.isNamed || p.isOptional)) {
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand only support required positional parameters.',
-        element: method,
-      );
-    }
-
-    final returnType = method.returnType;
-    final interfaceReturnType =
-        returnType is InterfaceType ? returnType : null;
-    final isFuture =
-        interfaceReturnType != null && interfaceReturnType.isDartAsyncFuture;
-    if (returnType is! VoidType && !isFuture) {
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand must return a Future or void.',
-        element: method,
-      );
-    }
-
-    if (isFuture && interfaceReturnType.typeArguments.isEmpty) {
-      throw InvalidGenerationSourceError(
-        'Methods annotated with @VSCodeCommand must use Future<T> with an explicit type argument.',
-        element: method,
-      );
-    }
-
-    final commandId = _commandIdFor(method);
-    if (commandId != null && commandId.trim().isEmpty) {
-      throw InvalidGenerationSourceError(
-        'The command id passed to @VSCodeCommand cannot be empty.',
-        element: method,
-      );
-    }
   }
 }

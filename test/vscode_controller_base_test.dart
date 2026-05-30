@@ -8,7 +8,7 @@ void main() {
     tearDown(() {
       VSCodeControllerBase.debugRequestIdFactory = null;
       VSCodeControllerBase.debugResponseTimeout = const Duration(seconds: 30);
-      VSCodeControllerBase.debugPendingRequests.clear();
+      VSCodeControllerBase.debugClearPendingRequests();
     });
 
     test('stores pending request and completes with result', () async {

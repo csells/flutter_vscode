@@ -10,18 +10,26 @@ import 'package:flutter_vscode/src/vscode_generator.dart';
 import 'package:source_gen/source_gen.dart';
 import 'package:test/test.dart';
 
+import 'build_test_support.dart';
+
 void main() {
+  late TestReaderWriter readerWriter;
+
+  setUp(() async {
+    readerWriter = await createBuilderTestReaderWriter();
+  });
+
   test('VSCodeGenerator generates implementation for annotated controller',
       () async {
     final builder = SharedPartBuilder([VSCodeGenerator()], 'vscode');
 
-    await testBuilder(
-      builder,
+    await testBuilders(
+      [builder],
       {
-        'flutter_vscode|lib/controller.dart': '''
+        '$builderTestPackage|lib/controller.dart': '''
 import 'package:flutter_vscode/flutter_vscode.dart';
 
-part 'controller.g.part';
+part 'controller.vscode.g.part';
 
 @VSCodeController()
 abstract class MyController {
@@ -33,8 +41,10 @@ abstract class MyController {
 }
 ''',
       },
+      readerWriter: readerWriter,
+      visibleOutputBuilders: {builder},
       outputs: {
-        'flutter_vscode|lib/controller.g.part': decodedMatches(
+        '$builderTestPackage|lib/controller.vscode.g.part': decodedMatches(
           allOf([
             contains("part of 'controller.dart';"),
             contains(r'class _$MyController implements MyController {'),
@@ -53,11 +63,10 @@ abstract class MyController {
   test('VSCodeGenerator rejects non-abstract controllers', () async {
     final builder = SharedPartBuilder([VSCodeGenerator()], 'vscode');
 
-    await expectLater(
-      () => testBuilder(
-        builder,
-        {
-          'flutter_vscode|lib/non_abstract.dart': '''
+    final result = await testBuilders(
+      [builder],
+      {
+        '$builderTestPackage|lib/non_abstract.dart': '''
 import 'package:flutter_vscode/flutter_vscode.dart';
 
 part 'non_abstract.vscode.g.part';
@@ -68,26 +77,22 @@ class NotAbstractController {
   Future<void> showInfo(String message) async {}
 }
 ''',
-        },
-      ),
-      throwsA(
-        isA<InvalidGenerationSourceError>().having(
-          (e) => e.message,
-          'message',
-          contains('must be abstract'),
-        ),
-      ),
+      },
+      readerWriter: readerWriter,
+      visibleOutputBuilders: {builder},
     );
+
+    expect(result.succeeded, isFalse);
+    expect(result.errors.join('\n'), contains('must be abstract'));
   });
 
   test('VSCodeGenerator rejects optional parameters on commands', () async {
     final builder = SharedPartBuilder([VSCodeGenerator()], 'vscode');
 
-    await expectLater(
-      () => testBuilder(
-        builder,
-        {
-          'flutter_vscode|lib/optional_params.dart': '''
+    final result = await testBuilders(
+      [builder],
+      {
+        '$builderTestPackage|lib/optional_params.dart': '''
 import 'package:flutter_vscode/flutter_vscode.dart';
 
 part 'optional_params.vscode.g.part';
@@ -98,15 +103,15 @@ abstract class OptionalParamsController {
   Future<void> showInfo([String? message]);
 }
 ''',
-        },
-      ),
-      throwsA(
-        isA<InvalidGenerationSourceError>().having(
-          (e) => e.message,
-          'message',
-          contains('required positional parameters'),
-        ),
-      ),
+      },
+      readerWriter: readerWriter,
+      visibleOutputBuilders: {builder},
+    );
+
+    expect(result.succeeded, isFalse);
+    expect(
+      result.errors.join('\n'),
+      contains('required positional parameters'),
     );
   });
 }

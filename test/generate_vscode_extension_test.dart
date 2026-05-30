@@ -1,11 +1,22 @@
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 
 import '../bin/generate_vscode_extension.dart' as generator;
 
 void main() {
   group('generate_vscode_extension CLI', () {
+    setUp(() {
+      generator.debugPackageRootOverride = p.normalize(
+        p.join(Directory.current.path),
+      );
+    });
+
+    tearDown(() {
+      generator.debugPackageRootOverride = null;
+    });
+
     test('scaffolds a VS Code extension project structure', () async {
       final originalDir = Directory.current;
       final tempDir = await Directory.systemTemp.createTemp('flutter_vscode_test_');
@@ -30,6 +41,13 @@ void main() {
           packageJson,
           contains('"vscode:prepublish": "npm run compile"'),
         );
+        expect(packageJson, contains('"flutterVSCode.view"'));
+        expect(packageJson, contains('"type": "webview"'));
+
+        final extensionTs =
+            File('${tempDir.path}/src/extension.ts').readAsStringSync();
+        expect(extensionTs, contains('handleCommand'));
+        expect(extensionTs, contains('registerWebviewViewProvider'));
 
         final launchJson =
             File('${tempDir.path}/.vscode/launch.json').readAsStringSync();
