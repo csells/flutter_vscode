@@ -4,6 +4,7 @@ Reference material for APIs, conventions, and generated outputs.
 
 ## Contents
 
+- [Roadmap](roadmap.md)
 - [PRD Traceability and MVP Acceptance](prd-traceability.md)
 - [Dart to VS Code Message Contract](message-contract.md)
 - Annotation and generation conventions (see [Code Generation Rules](../agent-guidelines/code-generation.md))

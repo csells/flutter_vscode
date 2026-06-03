@@ -225,6 +225,7 @@ These are initial, high-level indicators; they can be refined once we have real 
   - How opinionated should we be about project layout beyond the basics?
 
 - **Future directions**
+  - **Tiered integration testing** (next priority): CI build smoke on `example/`, local extension-host checklist, periodic greenfield regression. See [docs/reference/roadmap.md](docs/reference/roadmap.md).
   - Additional templates and generators (e.g., opinionated starters for dashboards, inspectors, or wizards).
   - Richer tooling around the generator (e.g., validation commands, health checks, code actions).
   - More comprehensive examples and tutorial-style documentation to showcase best practices.

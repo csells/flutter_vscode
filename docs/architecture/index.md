@@ -32,6 +32,7 @@ flowchart LR
 ## Key Contracts
 
 - [Dart to VS Code Message Contract](../reference/message-contract.md)
+- [Roadmap](../reference/roadmap.md)
 - [PRD Traceability and MVP Acceptance](../reference/prd-traceability.md)
 
 ## Related

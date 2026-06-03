@@ -111,6 +111,7 @@ The default compile flow is:
 ## Documentation
 
 - [Documentation Index](docs/index.md)
+- [Roadmap](docs/reference/roadmap.md)
 - [Architecture](docs/architecture/index.md)
 - [Guides](docs/guides/index.md)
 - [Reference](docs/reference/index.md)
