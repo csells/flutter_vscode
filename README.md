@@ -45,7 +45,7 @@ npm install
 4. Define controller API in Dart:
 
 ```dart
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'package:flutter_vscode/runtime.dart';
 
 part 'vscode_api.vscode.g.part';
 
@@ -100,6 +100,16 @@ The default compile flow is:
   - `lib/vscode_api.dart`
 - Merge behavior:
   - `.gitignore` entries are appended when missing.
+
+## Example project
+
+The `example/` directory is the integration fixture. Run its tests with:
+
+```bash
+cd example && flutter test
+```
+
+They are also included in `./scripts/test_all.sh`.
 
 ## Troubleshooting
 

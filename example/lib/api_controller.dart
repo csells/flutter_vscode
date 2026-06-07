@@ -1,4 +1,4 @@
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'package:flutter_vscode/runtime.dart';
 
 part 'api_controller.vscode.g.part';
 

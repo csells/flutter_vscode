@@ -10,7 +10,7 @@ Reliable end-to-end confidence without running a full greenfield `flutter create
 
 **Goal:** Prove scaffold → codegen → TypeScript → Flutter web all succeed.
 
-**Fixture:** `example/` (path dependency on package root).
+**Fixture:** `example/` (path dependency on package root; `flutter test` in `example/`).
 
 **Steps:**
 

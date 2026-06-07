@@ -551,7 +551,7 @@ String _getTsConfig() {
 
 String _getVSCodeApiControllerDart() {
   return r'''
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'package:flutter_vscode/runtime.dart';
 
 part 'vscode_api.vscode.g.part';
 

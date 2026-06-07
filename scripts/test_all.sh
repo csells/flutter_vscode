@@ -31,6 +31,14 @@ echo "==> Running builder integration checks..."
 dart test tool/check_dart_generator.dart tool/check_ts_generator.dart
 
 echo
+echo "==> Running example project tests..."
+(
+  cd example
+  flutter pub get
+  flutter test
+)
+
+echo
 echo "All tests and build_runner checks completed successfully."
 
 

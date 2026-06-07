@@ -20,6 +20,8 @@ npm install
 Create an abstract controller with annotations in `lib/vscode_api.dart` (or another Dart library):
 
 ```dart
+import 'package:flutter_vscode/runtime.dart';
+
 @VSCodeController()
 abstract class VSCodeApi {
   @VSCodeCommand('window.showInformationMessage')
@@ -38,6 +40,8 @@ dart run build_runner build --delete-conflicting-outputs
 In `main()`:
 
 ```dart
+import 'package:flutter_vscode/flutter_vscode.dart';
+
 VSCodeWebViewHelper.initialize();
 ```
 
