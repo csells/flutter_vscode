@@ -1,8 +1,8 @@
 /// VM-testable runtime exports for generated controllers.
 ///
 /// Use this library in annotated controller files and tests. Import
-/// [package:flutter_vscode/flutter_vscode.dart] in `main()` when you need
-/// [VSCodeWebViewHelper.initialize].
+/// `package:flutter_vscode/flutter_vscode.dart` in `main()` when you need
+/// `VSCodeWebViewHelper.initialize()`.
 library;
 
 export 'annotations.dart';
