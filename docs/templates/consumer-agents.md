@@ -59,20 +59,19 @@ User wants VS Code behavior
 
 ## Common API Patterns
 
-See [VS Code API Mapping](../reference/vscode-api-mapping.md) in the flutter_vscode package docs.
+Use `VSCode.instance.invoke` for quick experiments, or annotations for stable APIs:
 
 ```dart
+// Dynamic invoke (no build_runner)
+await VSCode.instance.invoke<void>(
+  'window.showInformationMessage',
+  ['Hello'],
+  expectsResponse: false,
+);
+
+// Annotated controller
 @VSCodeCommand('window.showInformationMessage')
 Future<void> info(String message);
-
-@VSCodeCommand('window.showInputBox')
-Future<String?> inputBox(Map<String, dynamic> options);
-
-@VSCodeCommand('window.showQuickPick')
-Future<String?> quickPick(List<String> items);
-
-@VSCodeCommand('commands.executeCommand')
-Future<dynamic> executeCommand(String command, List<dynamic> args);
 ```
 
 ## Build Pipeline

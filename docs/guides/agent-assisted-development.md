@@ -20,7 +20,23 @@ format** — not something you should translate from VS Code docs by hand.
 dart run flutter_vscode:generate_vscode_extension
 ```
 
-This creates `AGENTS.md` and copies skills to `.cursor/skills/` automatically.
+This creates `AGENTS.md`, `.cursor/skills/`, and `src/vscode_invoke.ts` automatically.
+
+## Dynamic invoke vs annotations
+
+| | `VSCode.instance.invoke` | `@VSCodeCommand` |
+|---|---|---|
+| build_runner | Not required | Required after changes |
+| Typed API | Runtime / manual generics | Generated controller |
+| Best for | Prototyping, agent experiments | Stable extension API |
+
+```dart
+await VSCode.instance.invoke<void>(
+  'window.showWarningMessage',
+  ['Check this before shipping'],
+  expectsResponse: false,
+);
+```
 
 ### 2. Install skills in Cursor
 

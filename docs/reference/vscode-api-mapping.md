@@ -252,6 +252,29 @@ Reading active editor state typically requires custom host logic in
 
 ## Full Controller Example
 
+For stable APIs, prefer annotations. For experiments, use [dynamic invoke](#dynamic-invoke-vscodeinstanceinvoke).
+
+### Dynamic invoke (`VSCode.instance.invoke`)
+
+No annotations or `build_runner` required when `src/vscode_invoke.ts` is present:
+
+```dart
+import 'package:flutter_vscode/runtime.dart';
+
+final choice = await VSCode.instance.invoke<String?>(
+  'window.showQuickPick',
+  [['Option A', 'Option B', 'Option C']],
+);
+
+await VSCode.instance.invoke<void>(
+  'window.showWarningMessage',
+  ['Heads up!'],
+  expectsResponse: false,
+);
+```
+
+### Annotated controller
+
 ```dart
 import 'package:flutter_vscode/runtime.dart';
 

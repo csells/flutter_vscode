@@ -48,6 +48,7 @@ void main() {
             File('${tempDir.path}/src/extension.ts').readAsStringSync();
         expect(extensionTs, contains('handleCommand'));
         expect(extensionTs, contains('registerWebviewViewProvider'));
+        expect(extensionTs, contains('routeWebviewMessage'));
 
         final launchJson =
             File('${tempDir.path}/.vscode/launch.json').readAsStringSync();
@@ -79,6 +80,11 @@ void main() {
           File('${tempDir.path}/.cursor/skills/flutter-vscode-build/SKILL.md')
               .existsSync(),
           isTrue,
+        );
+
+        expect(
+          File('${tempDir.path}/src/vscode_invoke.ts').readAsStringSync(),
+          contains('routeWebviewMessage'),
         );
 
         final vscodeApi =

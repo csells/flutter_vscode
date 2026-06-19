@@ -8,6 +8,7 @@ import * as fs from 'fs';
 // By default the scaffold creates `lib/vscode_api.dart`, which generates:
 //   lib/vscode_api.handlers.ts
 import { handleCommand } from '../lib/vscode_api.handlers';
+import { routeWebviewMessage } from './vscode_invoke';
 
 export function activate(context: vscode.ExtensionContext) {
     const provider = new FlutterWebviewProvider(context.extensionUri);
@@ -57,8 +58,8 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtml(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (message) => {
-            // Route Flutter -> VS Code calls from generated annotations.
-            await handleCommand(message, webviewView.webview);
+            // Dotted VS Code API paths use generic invoke; others use generated handlers.
+            await routeWebviewMessage(message, webviewView.webview, handleCommand);
         });
     }
 

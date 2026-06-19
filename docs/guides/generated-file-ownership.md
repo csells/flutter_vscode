@@ -18,6 +18,7 @@ dart run build_runner build --delete-conflicting-outputs
 `generate_vscode_extension` creates these files and skips them if they already exist:
 
 - `src/extension.ts`
+- `src/vscode_invoke.ts` (generic VS Code API dispatcher)
 - `package.json`
 - `tsconfig.json`
 - `web/index.html`

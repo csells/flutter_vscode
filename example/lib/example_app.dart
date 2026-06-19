@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_vscode/runtime.dart';
 import 'package:flutter_vscode_example/api_controller.dart';
 
 /// Root widget for the example Flutter VS Code extension UI.
@@ -45,6 +46,17 @@ class ExampleApp extends StatelessWidget {
                   }
                 },
                 child: const Text('Show Quick Pick'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () async {
+                  await VSCode.instance.invoke<void>(
+                    'window.showWarningMessage',
+                    ['Called via VSCode.invoke (no build_runner needed)'],
+                    expectsResponse: false,
+                  );
+                },
+                child: const Text('Invoke Warning (dynamic)'),
               ),
             ],
           ),

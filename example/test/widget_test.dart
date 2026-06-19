@@ -9,6 +9,7 @@ void main() {
     expect(find.text('Flutter VS Code Example'), findsOneWidget);
     expect(find.text('Show Input Box'), findsOneWidget);
     expect(find.text('Show Quick Pick'), findsOneWidget);
-    expect(find.byType(ElevatedButton), findsNWidgets(2));
+    expect(find.text('Invoke Warning (dynamic)'), findsOneWidget);
+    expect(find.byType(ElevatedButton), findsNWidgets(3));
   });
 }

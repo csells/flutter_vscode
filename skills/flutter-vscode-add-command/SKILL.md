@@ -11,6 +11,34 @@ description: >-
 
 Add a VS Code extension API call callable from Flutter webview code.
 
+## Choose an approach
+
+| Approach | When to use |
+|---|---|
+| **`VSCode.instance.invoke`** | Experiments, one-off calls, prototyping — no `build_runner` |
+| **`@VSCodeCommand` annotations** | Stable extension API surface, typed controller, tests |
+
+### Quick invoke (no build_runner)
+
+Requires `src/vscode_invoke.ts` and `routeWebviewMessage` in `extension.ts` (scaffold default).
+
+```dart
+import 'package:flutter_vscode/runtime.dart';
+
+final name = await VSCode.instance.invoke<String?>(
+  'window.showInputBox',
+  [{'prompt': 'Name?'}],
+);
+
+await VSCode.instance.invoke<void>(
+  'window.showInformationMessage',
+  ['Hello!'],
+  expectsResponse: false,
+);
+```
+
+### Annotated controller (typed, codegen)
+
 ## Prerequisites
 
 - Controller file exists (usually `lib/vscode_api.dart`) with `@VSCodeController()`

@@ -3,6 +3,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 
 import { handleCommand } from '../lib/api_controller.handlers';
+import { routeWebviewMessage } from './vscode_invoke';
 
 export function activate(context: vscode.ExtensionContext) {
     const provider = new FlutterWebviewProvider(context.extensionUri);
@@ -50,7 +51,7 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
         webviewView.webview.html = this._getHtml(webviewView.webview);
 
         webviewView.webview.onDidReceiveMessage(async (message) => {
-            await handleCommand(message, webviewView.webview);
+            await routeWebviewMessage(message, webviewView.webview, handleCommand);
         });
     }
 
@@ -80,4 +81,3 @@ class FlutterWebviewProvider implements vscode.WebviewViewProvider {
 }
 
 export function deactivate() {}
-

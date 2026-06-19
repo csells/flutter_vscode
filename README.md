@@ -11,6 +11,7 @@ and a scaffold command so you can avoid hand-written webview wiring.
 - Scaffold CLI: `dart run flutter_vscode:generate_vscode_extension`.
 - Webview-safe default build assets and compile script.
 - **Agent toolkit:** curated skills and `AGENTS.md` template so AI agents handle VS Code API translation (see [Agent-Assisted Development](docs/guides/agent-assisted-development.md)).
+- **Dynamic invoke:** `VSCode.instance.invoke('window.showInputBox', [...])` for VS Code API calls without `build_runner` (see [Message Contract](docs/reference/message-contract.md)).
 
 ## Prerequisites
 
@@ -109,6 +110,7 @@ The default compile flow is:
 - Created once by scaffold (not overwritten by default on rerun):
   - `AGENTS.md`
   - `.cursor/skills/`
+  - `src/vscode_invoke.ts`
   - `src/extension.ts`
   - `package.json`
   - `tsconfig.json`

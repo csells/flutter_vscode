@@ -38,6 +38,7 @@ void main() {
     _createLaunchConfig(currentDirectory, summary);
     _createCompileScript(currentDirectory, summary);
     _createExtensionFile(currentDirectory, summary);
+    _createVscodeInvokeFile(currentDirectory, summary);
     _createVSCodeApiController(currentDirectory, summary);
     _createPackageJson(currentDirectory, summary);
     _createTsConfig(currentDirectory, summary);
@@ -217,6 +218,26 @@ void _createExtensionFile(String currentDirectory, _ScaffoldSummary summary) {
       summary: summary,
       policy: _WritePolicy.createOnly,
     );
+  }
+}
+
+void _createVscodeInvokeFile(
+  String currentDirectory,
+  _ScaffoldSummary summary,
+) {
+  final templatePath =
+      p.join(_flutterVscodePackageRoot(), 'tool', 'vscode_invoke.ts');
+  final file = File(p.join(currentDirectory, 'src', 'vscode_invoke.ts'));
+  if (File(templatePath).existsSync()) {
+    final content = File(templatePath).readAsStringSync();
+    _writeFile(
+      path: file.path,
+      contents: content,
+      summary: summary,
+      policy: _WritePolicy.createOnly,
+    );
+  } else {
+    summary.skipped.add('src/vscode_invoke.ts');
   }
 }
 
