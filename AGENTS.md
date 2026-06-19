@@ -31,5 +31,14 @@ This file is the root index for AI and contributor documentation.
 - For generation errors, provide actionable user-facing failures.
 - Keep documentation and examples aligned with API behavior.
 
+## Consumer Agent Toolkit
+
+Extension authors (not package contributors) use:
+
+- [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
+- [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
+- [Consumer AGENTS.md template](docs/templates/consumer-agents.md)
+- Skills in [`skills/`](skills/) — copy to extension projects under `.cursor/skills/`
+
 For full detail, follow the linked topic pages under `docs/agent-guidelines/`.
 

@@ -22,10 +22,29 @@ class ExampleApp extends StatelessWidget {
               ElevatedButton(
                 onPressed: () async {
                   final api = createApiController();
-                  final response = await api.showInputBox('Enter your name');
-                  unawaited(api.showInformationMessage('Hello, $response!'));
+                  final response = await api.showInputBox(
+                    {'prompt': 'Enter your name', 'placeHolder': 'Jane Doe'},
+                  );
+                  if (response != null) {
+                    unawaited(
+                      api.showInformationMessage('Hello, $response!'),
+                    );
+                  }
                 },
                 child: const Text('Show Input Box'),
+              ),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: () async {
+                  final api = createApiController();
+                  final choice = await api.showQuickPick(
+                    ['Deploy staging', 'Deploy production', 'Cancel'],
+                  );
+                  if (choice != null) {
+                    unawaited(api.showInformationMessage('Selected: $choice'));
+                  }
+                },
+                child: const Text('Show Quick Pick'),
               ),
             ],
           ),

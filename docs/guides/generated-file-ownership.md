@@ -24,6 +24,8 @@ dart run build_runner build --delete-conflicting-outputs
 - `web/flutter_bootstrap.js`
 - `web/manifest.json`
 - `lib/vscode_api.dart`
+- `AGENTS.md`
+- `.cursor/skills/` (consumer agent skills)
 
 This behavior prevents clobbering local customizations.
 

@@ -42,6 +42,8 @@ void main() {
     _createPackageJson(currentDirectory, summary);
     _createTsConfig(currentDirectory, summary);
     _createWebFolder(currentDirectory, summary);
+    _createConsumerAgentsMd(currentDirectory, summary);
+    _copyAgentSkills(currentDirectory, summary);
     _updateGitignore(currentDirectory, summary);
 
     print('');
@@ -49,7 +51,11 @@ void main() {
     summary.printToStdout();
     print('Next steps:');
     print('1. Run: npm install');
-    print('2. Press F5 in VS Code to run the extension');
+    print('2. Run: dart run build_runner build --delete-conflicting-outputs');
+    print('3. Run: npm run compile');
+    print('4. Press F5 in VS Code to run the extension');
+    print('');
+    print('Agent toolkit: AGENTS.md and .cursor/skills/ are ready for AI-assisted development.');
   } on Object catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
@@ -69,10 +75,104 @@ void main() {
 
 void _createDirectories(String currentDirectory) {
   Directory(p.join(currentDirectory, '.vscode')).createSync(recursive: true);
+  Directory(p.join(currentDirectory, '.cursor', 'skills'))
+      .createSync(recursive: true);
   Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'src')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'lib')).createSync(recursive: true);
+}
+
+void _createConsumerAgentsMd(
+  String currentDirectory,
+  _ScaffoldSummary summary,
+) {
+  final templateCandidates = [
+    p.join(_flutterVscodePackageRoot(), 'docs', 'templates', 'consumer-agents.md'),
+    p.join(_flutterVscodePackageRoot(), 'tool', 'consumer-agents.md.template'),
+  ];
+
+  String? contents;
+  for (final templatePath in templateCandidates) {
+    final templateFile = File(templatePath);
+    if (templateFile.existsSync()) {
+      contents = templateFile.readAsStringSync();
+      break;
+    }
+  }
+
+  if (contents == null) {
+    summary.skipped.add('AGENTS.md');
+    return;
+  }
+
+  _writeFile(
+    path: p.join(currentDirectory, 'AGENTS.md'),
+    contents: contents,
+    summary: summary,
+    policy: _WritePolicy.createOnly,
+  );
+}
+
+void _copyAgentSkills(String currentDirectory, _ScaffoldSummary summary) {
+  final skillsSource = Directory(
+    p.join(_flutterVscodePackageRoot(), 'skills'),
+  );
+  if (!skillsSource.existsSync()) {
+    summary.skipped.add('.cursor/skills/');
+    return;
+  }
+
+  final skillsTarget = p.join(currentDirectory, '.cursor', 'skills');
+  for (final entity in skillsSource.listSync()) {
+    if (entity is Directory) {
+      _copyDirectoryCreateOnly(
+        source: entity,
+        targetPath: p.join(skillsTarget, p.basename(entity.path)),
+        currentDirectory: currentDirectory,
+        summary: summary,
+      );
+    } else if (entity is File) {
+      final targetPath = p.join(skillsTarget, p.basename(entity.path));
+      if (File(targetPath).existsSync()) {
+        summary.skipped.add(p.relative(targetPath, from: currentDirectory));
+      } else {
+        entity.copySync(targetPath);
+        summary.created.add(p.relative(targetPath, from: currentDirectory));
+      }
+    }
+  }
+}
+
+void _copyDirectoryCreateOnly({
+  required Directory source,
+  required String targetPath,
+  required String currentDirectory,
+  required _ScaffoldSummary summary,
+}) {
+  final targetDir = Directory(targetPath);
+  if (!targetDir.existsSync()) {
+    targetDir.createSync(recursive: true);
+  }
+
+  for (final entity in source.listSync(recursive: true)) {
+    if (entity is! File) {
+      continue;
+    }
+
+    final relativePath = p.relative(entity.path, from: source.path);
+    final destination = p.join(targetPath, relativePath);
+    final destinationFile = File(destination);
+
+    if (destinationFile.existsSync()) {
+      summary.skipped.add(p.relative(destination, from: currentDirectory));
+      continue;
+    }
+
+    destinationFile.parent.createSync(recursive: true);
+    entity.copySync(destination);
+    summary.created.add(p.relative(destination, from: currentDirectory));
+  }
 }
 
 void _createLaunchConfig(String currentDirectory, _ScaffoldSummary summary) {
@@ -558,20 +658,36 @@ part 'vscode_api.vscode.g.part';
 /// Put your `@VSCodeController` classes in this file (or create more).
 ///
 /// Running:
-///   dart run build_runner build
+///   dart run build_runner build --delete-conflicting-outputs
 ///
 /// will generate:
 /// - `lib/vscode_api.vscode.g.part` (Dart implementation)
 /// - `lib/vscode_api.handlers.ts` (TypeScript handlers used by `src/extension.ts`)
+///
+/// More API patterns: see AGENTS.md and `.cursor/skills/flutter-vscode-add-command/`.
 @VSCodeController()
 abstract class VSCodeApi {
-  /// Calls `vscode.window.showInformationMessage(...)` in the extension host.
+  /// Calls `vscode.window.showInformationMessage(...)`.
   @VSCodeCommand('window.showInformationMessage')
   Future<void> info(String message);
 
-  /// Calls `vscode.window.showInputBox(...)` and returns the result.
+  /// Calls `vscode.window.showWarningMessage(...)`.
+  @VSCodeCommand('window.showWarningMessage')
+  Future<void> warning(String message);
+
+  /// Calls `vscode.window.showErrorMessage(...)`.
+  @VSCodeCommand('window.showErrorMessage')
+  Future<void> error(String message);
+
+  /// Calls `vscode.window.showInputBox(...)` with an options map.
+  ///
+  /// Example: `inputBox({'prompt': 'Name?', 'placeHolder': 'Jane Doe'})`
   @VSCodeCommand('window.showInputBox')
-  Future<String?> inputBox(String prompt);
+  Future<String?> inputBox(Map<String, dynamic> options);
+
+  /// Calls `vscode.window.showQuickPick(...)` with string items.
+  @VSCodeCommand('window.showQuickPick')
+  Future<String?> quickPick(List<String> items);
 }
 
 VSCodeApi createVSCodeApi() => _$VSCodeApi();

@@ -56,3 +56,12 @@ This compiles TypeScript and builds Flutter web output used by the VS Code webvi
 ## 5) Debug
 
 Open project in VS Code and press F5 to start the extension host.
+
+## Agent-assisted workflow
+
+Copy skills and consumer `AGENTS.md` into your project (see
+[Agent-Assisted Development](agent-assisted-development.md)). Describe VS Code
+API needs in plain language; your agent adds `@VSCodeCommand` methods and runs
+`build_runner`.
+
+API patterns: [VS Code API Mapping](../reference/vscode-api-mapping.md).

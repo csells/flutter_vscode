@@ -65,6 +65,26 @@ void main() {
             File('${tempDir.path}/.gitignore').readAsStringSync();
         expect(gitignore, contains('node_modules/'));
         expect(gitignore, contains('*.handlers.ts'));
+
+        final agentsMd = File('${tempDir.path}/AGENTS.md').readAsStringSync();
+        expect(agentsMd, contains('flutter-vscode-add-command'));
+        expect(agentsMd, contains('@VSCodeCommand'));
+
+        expect(
+          File('${tempDir.path}/.cursor/skills/flutter-vscode-add-command/SKILL.md')
+              .existsSync(),
+          isTrue,
+        );
+        expect(
+          File('${tempDir.path}/.cursor/skills/flutter-vscode-build/SKILL.md')
+              .existsSync(),
+          isTrue,
+        );
+
+        final vscodeApi =
+            File('${tempDir.path}/lib/vscode_api.dart').readAsStringSync();
+        expect(vscodeApi, contains("@VSCodeCommand('window.showQuickPick')"));
+        expect(vscodeApi, contains('Map<String, dynamic> options'));
       } finally {
         Directory.current = originalDir;
         await tempDir.delete(recursive: true);

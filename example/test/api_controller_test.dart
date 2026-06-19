@@ -14,7 +14,7 @@ void main() {
       VSCodeControllerBase.debugRequestIdFactory = () => 'req-input';
 
       final api = createApiController();
-      final future = api.showInputBox('Name?');
+      final future = api.showInputBox({'prompt': 'Name?'});
 
       expect(
         VSCodeControllerBase.debugPendingRequests.containsKey('req-input'),
@@ -29,10 +29,25 @@ void main() {
       expect(await future, 'Ada');
     });
 
+    test('showQuickPick waits for host response', () async {
+      VSCodeControllerBase.debugRequestIdFactory = () => 'req-pick';
+
+      final api = createApiController();
+      final future = api.showQuickPick(['A', 'B']);
+
+      VSCodeControllerBase.handleMessage(<String, dynamic>{
+        'requestId': 'req-pick',
+        'result': 'B',
+      });
+
+      expect(await future, 'B');
+    });
+
     test('void commands do not register pending requests', () async {
       final api = createApiController();
 
       await api.showInformationMessage('hello');
+      await api.showWarningMessage('careful');
       await api.showErrorMessage('oops');
 
       expect(VSCodeControllerBase.debugPendingRequests, isEmpty);

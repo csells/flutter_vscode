@@ -10,6 +10,7 @@ and a scaffold command so you can avoid hand-written webview wiring.
 - Runtime request/response messaging between Flutter webview code and VS Code extension host.
 - Scaffold CLI: `dart run flutter_vscode:generate_vscode_extension`.
 - Webview-safe default build assets and compile script.
+- **Agent toolkit:** curated skills and `AGENTS.md` template so AI agents handle VS Code API translation (see [Agent-Assisted Development](docs/guides/agent-assisted-development.md)).
 
 ## Prerequisites
 
@@ -79,6 +80,19 @@ npm run compile
 
 7. Open the extension project in VS Code and press F5.
 
+## Agent-assisted development
+
+The scaffold command copies an agent toolkit into your extension project:
+
+- `AGENTS.md` — rules for AI agents working in your extension
+- `.cursor/skills/` — flutter_vscode skills (add commands, build, troubleshoot)
+
+Describe VS Code behavior in plain language; your agent adds annotations and
+runs the build pipeline. See [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
+and [VS Code API Mapping](docs/reference/vscode-api-mapping.md).
+
+To install skills globally: `cp -r skills/* ~/.cursor/skills/`
+
 ## Build pipeline
 
 The default compile flow is:
@@ -93,6 +107,8 @@ The default compile flow is:
   - `*.vscode.g.part`
   - `*.handlers.ts`
 - Created once by scaffold (not overwritten by default on rerun):
+  - `AGENTS.md`
+  - `.cursor/skills/`
   - `src/extension.ts`
   - `package.json`
   - `tsconfig.json`
