@@ -83,16 +83,20 @@ npm run compile
 
 ## Agent-assisted development
 
-The scaffold command copies an agent toolkit into your extension project:
+The scaffold command copies a **portable agent toolkit** into your extension project:
 
-- `AGENTS.md` — rules for AI agents working in your extension
-- `.cursor/skills/` — flutter_vscode skills (add commands, build, troubleshoot)
+- `AGENTS.md` — project rules for AI coding agents (supported by many tools)
+- `agent-skills/` — workflow guides as plain markdown (`SKILL.md` files)
 
-Describe VS Code behavior in plain language; your agent adds annotations and
-runs the build pipeline. See [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
-and [VS Code API Mapping](docs/reference/vscode-api-mapping.md).
+These work with any agent product that reads `AGENTS.md` or custom instructions
+(Cursor, Claude Code, GitHub Copilot, Windsurf, Cline, etc.). Wire skills into
+your tool if needed — for example, symlink or copy `agent-skills/*` into your
+product's skills directory, or `@`-reference the skill files in prompts.
 
-To install skills globally: `cp -r skills/* ~/.cursor/skills/`
+Describe VS Code behavior in plain language; your agent adds annotations, uses
+`VSCode.instance.invoke`, or runs the build pipeline. See
+[Agent-Assisted Development](docs/guides/agent-assisted-development.md) and
+[VS Code API Mapping](docs/reference/vscode-api-mapping.md).
 
 ## Build pipeline
 
@@ -109,7 +113,7 @@ The default compile flow is:
   - `*.handlers.ts`
 - Created once by scaffold (not overwritten by default on rerun):
   - `AGENTS.md`
-  - `.cursor/skills/`
+  - `agent-skills/`
   - `src/vscode_invoke.ts`
   - `src/extension.ts`
   - `package.json`

@@ -20,7 +20,7 @@ format** — not something you should translate from VS Code docs by hand.
 dart run flutter_vscode:generate_vscode_extension
 ```
 
-This creates `AGENTS.md`, `.cursor/skills/`, and `src/vscode_invoke.ts` automatically.
+This creates `AGENTS.md`, `agent-skills/`, and `src/vscode_invoke.ts` automatically.
 
 ## Dynamic invoke vs annotations
 
@@ -38,9 +38,11 @@ await VSCode.instance.invoke<void>(
 );
 ```
 
-### 2. Install skills in Cursor
+### 2. Wire skills into your agent tool
 
-Skills ship in the `flutter_vscode` package under `skills/`:
+Skills ship in the `flutter_vscode` package under `skills/` and are copied to
+`agent-skills/` in scaffolded projects. They are plain markdown — not tied to
+one vendor.
 
 | Skill | Purpose |
 |---|---|
@@ -51,7 +53,26 @@ Skills ship in the `flutter_vscode` package under `skills/`:
 | `flutter-vscode-test` | VM tests without webview |
 | `flutter-vscode-troubleshoot` | Diagnose common failures |
 
-Copy to `~/.cursor/skills/` for global use or `.cursor/skills/` per project.
+**Per project (default after scaffold):** use `agent-skills/` in your extension
+root. Point your agent at `AGENTS.md` and the relevant `SKILL.md` files.
+
+**Manual install from the package repo:**
+
+```bash
+cp docs/templates/consumer-agents.md ./AGENTS.md
+mkdir -p agent-skills
+cp -r /path/to/flutter_vscode/skills/* agent-skills/
+```
+
+**Tool-specific wiring (optional):** if your product expects skills elsewhere,
+copy or symlink from `agent-skills/`:
+
+| Product | Typical skills location |
+|---|---|
+| Cursor | `.cursor/skills/` or `~/.cursor/skills/` |
+| Other agents | Follow that product's docs for custom rules / skills |
+
+`AGENTS.md` at the project root is the primary, tool-agnostic entry point.
 
 ### 3. Point your agent at project rules
 
@@ -98,7 +119,7 @@ Verify your agent workflow with these scenarios:
 
 | You | Use |
 |---|---|
-| AI-assisted | Skills + AGENTS.md + natural language prompts |
+| AI-assisted | `AGENTS.md` + `agent-skills/` + natural language prompts |
 | Manual coding | API mapping reference + scaffold examples |
 
 ## Related

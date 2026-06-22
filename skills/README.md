@@ -1,28 +1,39 @@
-# flutter_vscode Consumer Skills
+# flutter_vscode Agent Skills
 
-Curated Cursor/agent skills for building extensions with `flutter_vscode`.
-Copy into your extension project or install globally.
+Portable workflow guides for building extensions with `flutter_vscode`. Each
+skill is a `SKILL.md` file — plain markdown usable with any AI coding agent.
 
-## Install (per project)
+## Install (per extension project)
+
+**Automatic:** `dart run flutter_vscode:generate_vscode_extension` copies skills
+to `agent-skills/` in your project.
+
+**Manual from this package repo:**
 
 ```bash
-mkdir -p .cursor/skills
-cp -r skills/* .cursor/skills/
 cp docs/templates/consumer-agents.md ./AGENTS.md
+mkdir -p agent-skills
+cp -r skills/* agent-skills/
 ```
 
-## Install (global, Cursor)
+## Wire into your agent tool
+
+`agent-skills/` is tool-neutral. If your product expects skills in a different
+path, copy or symlink:
 
 ```bash
-mkdir -p ~/.cursor/skills
-cp -r skills/* ~/.cursor/skills/
+# Example: Cursor (optional)
+mkdir -p .cursor/skills
+cp -r agent-skills/* .cursor/skills/
 ```
+
+`AGENTS.md` at the project root is the main entry point most tools recognize.
 
 ## Skills
 
 | Directory | Use when |
 |---|---|
-| `flutter-vscode-add-command` | Call VS Code APIs from Flutter via annotations |
+| `flutter-vscode-add-command` | Call VS Code APIs from Flutter via annotations or invoke |
 | `flutter-vscode-contributions` | Edit `package.json` contributions |
 | `flutter-vscode-extension-host` | Code in `src/extension.ts` |
 | `flutter-vscode-build` | build_runner + npm compile pipeline |

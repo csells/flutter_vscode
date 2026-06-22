@@ -72,12 +72,12 @@ void main() {
         expect(agentsMd, contains('@VSCodeCommand'));
 
         expect(
-          File('${tempDir.path}/.cursor/skills/flutter-vscode-add-command/SKILL.md')
+          File('${tempDir.path}/agent-skills/flutter-vscode-add-command/SKILL.md')
               .existsSync(),
           isTrue,
         );
         expect(
-          File('${tempDir.path}/.cursor/skills/flutter-vscode-build/SKILL.md')
+          File('${tempDir.path}/agent-skills/flutter-vscode-build/SKILL.md')
               .existsSync(),
           isTrue,
         );

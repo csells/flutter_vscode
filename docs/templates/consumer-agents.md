@@ -8,7 +8,7 @@ project** (not the flutter_vscode package itself).
 
 ## Skills
 
-Project skills live in `.cursor/skills/`. Use them for common tasks:
+Project skills live in `agent-skills/` (portable markdown). Use them for common tasks:
 
 | Skill | When to use |
 |---|---|
@@ -18,6 +18,9 @@ Project skills live in `.cursor/skills/`. Use them for common tasks:
 | `flutter-vscode-build` | build_runner, tsc, flutter build web |
 | `flutter-vscode-test` | VM tests for controllers without a webview |
 | `flutter-vscode-troubleshoot` | Webview blank, CSP, timeouts, missing handlers |
+
+If your agent tool uses a different skills location, copy or symlink from
+`agent-skills/` (for example `.cursor/skills/` or a product-specific rules path).
 
 ## Decision Tree
 

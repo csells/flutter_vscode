@@ -56,7 +56,7 @@ void main() {
     print('3. Run: npm run compile');
     print('4. Press F5 in VS Code to run the extension');
     print('');
-    print('Agent toolkit: AGENTS.md and .cursor/skills/ are ready for AI-assisted development.');
+    print('Agent toolkit: AGENTS.md and agent-skills/ are ready for AI-assisted development.');
   } on Object catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
@@ -76,7 +76,7 @@ void main() {
 
 void _createDirectories(String currentDirectory) {
   Directory(p.join(currentDirectory, '.vscode')).createSync(recursive: true);
-  Directory(p.join(currentDirectory, '.cursor', 'skills'))
+  Directory(p.join(currentDirectory, 'agent-skills'))
       .createSync(recursive: true);
   Directory(p.join(currentDirectory, 'out')).createSync(recursive: true);
   Directory(p.join(currentDirectory, 'scripts')).createSync(recursive: true);
@@ -120,11 +120,11 @@ void _copyAgentSkills(String currentDirectory, _ScaffoldSummary summary) {
     p.join(_flutterVscodePackageRoot(), 'skills'),
   );
   if (!skillsSource.existsSync()) {
-    summary.skipped.add('.cursor/skills/');
+    summary.skipped.add('agent-skills/');
     return;
   }
 
-  final skillsTarget = p.join(currentDirectory, '.cursor', 'skills');
+  final skillsTarget = p.join(currentDirectory, 'agent-skills');
   for (final entity in skillsSource.listSync()) {
     if (entity is Directory) {
       _copyDirectoryCreateOnly(
@@ -685,7 +685,7 @@ part 'vscode_api.vscode.g.part';
 /// - `lib/vscode_api.vscode.g.part` (Dart implementation)
 /// - `lib/vscode_api.handlers.ts` (TypeScript handlers used by `src/extension.ts`)
 ///
-/// More API patterns: see AGENTS.md and `.cursor/skills/flutter-vscode-add-command/`.
+/// More API patterns: see AGENTS.md and `agent-skills/flutter-vscode-add-command/`.
 @VSCodeController()
 abstract class VSCodeApi {
   /// Calls `vscode.window.showInformationMessage(...)`.
