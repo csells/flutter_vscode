@@ -5,19 +5,42 @@ and generated TypeScript command handlers.
 
 ## Outbound Message (Dart -> extension host)
 
-Sent by `VSCodeControllerBase.sendCommand(...)` through the bridge.
+Sent by `VSCodeControllerBase.sendCommand(...)` or `VSCode.instance.invoke(...)`
+through the bridge.
 
 ```json
 {
   "command": "window.showInputBox",
-  "params": ["Enter your name"],
+  "params": [{"prompt": "Enter your name"}],
   "requestId": "req_1730842969000_1234"
 }
 ```
 
-- `command` (string): command id generated from `@VSCodeCommand`.
+- `command` (string): dotted VS Code API path or generated `@VSCodeCommand` id.
 - `params` (array): positional arguments in declaration order.
 - `requestId` (string): correlation id for request/response mapping.
+
+## Dynamic invoke (`VSCode.instance.invoke`)
+
+Call any dotted VS Code API path without `@VSCodeCommand` annotations:
+
+```dart
+final name = await VSCode.instance.invoke<String?>(
+  'window.showInputBox',
+  [{'prompt': 'Name?'}],
+);
+
+await VSCode.instance.invoke<void>(
+  'window.showInformationMessage',
+  ['Hello!'],
+  expectsResponse: false,
+);
+```
+
+The extension host must route webview messages through `routeWebviewMessage`
+from `src/vscode_invoke.ts` (included in the scaffold). Dotted `command` ids
+are dispatched by generic `handleInvoke`; undotted ids fall through to
+generated `handleCommand`.
 
 ## Inbound Message (extension host -> Dart)
 

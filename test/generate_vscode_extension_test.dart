@@ -48,6 +48,7 @@ void main() {
             File('${tempDir.path}/src/extension.ts').readAsStringSync();
         expect(extensionTs, contains('handleCommand'));
         expect(extensionTs, contains('registerWebviewViewProvider'));
+        expect(extensionTs, contains('routeWebviewMessage'));
 
         final launchJson =
             File('${tempDir.path}/.vscode/launch.json').readAsStringSync();
@@ -65,6 +66,31 @@ void main() {
             File('${tempDir.path}/.gitignore').readAsStringSync();
         expect(gitignore, contains('node_modules/'));
         expect(gitignore, contains('*.handlers.ts'));
+
+        final agentsMd = File('${tempDir.path}/AGENTS.md').readAsStringSync();
+        expect(agentsMd, contains('flutter-vscode-add-command'));
+        expect(agentsMd, contains('@VSCodeCommand'));
+
+        expect(
+          File('${tempDir.path}/agent-skills/flutter-vscode-add-command/SKILL.md')
+              .existsSync(),
+          isTrue,
+        );
+        expect(
+          File('${tempDir.path}/agent-skills/flutter-vscode-build/SKILL.md')
+              .existsSync(),
+          isTrue,
+        );
+
+        expect(
+          File('${tempDir.path}/src/vscode_invoke.ts').readAsStringSync(),
+          contains('routeWebviewMessage'),
+        );
+
+        final vscodeApi =
+            File('${tempDir.path}/lib/vscode_api.dart').readAsStringSync();
+        expect(vscodeApi, contains("@VSCodeCommand('window.showQuickPick')"));
+        expect(vscodeApi, contains('Map<String, dynamic> options'));
       } finally {
         Directory.current = originalDir;
         await tempDir.delete(recursive: true);

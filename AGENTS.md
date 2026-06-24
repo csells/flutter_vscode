@@ -13,6 +13,7 @@ This file is the root index for AI and contributor documentation.
 - [Architecture](docs/architecture/index.md)
 - [Guides](docs/guides/index.md)
 - [Reference](docs/reference/index.md)
+- [Roadmap](docs/reference/roadmap.md)
 - [Contributing](docs/contributing/index.md)
 
 ## Root Project Documents
@@ -29,6 +30,15 @@ This file is the root index for AI and contributor documentation.
 - Prefer `package:web` and `dart:js_interop`; do not add `dart:js_util`.
 - For generation errors, provide actionable user-facing failures.
 - Keep documentation and examples aligned with API behavior.
+
+## Consumer Agent Toolkit
+
+Extension authors (not package contributors) use:
+
+- [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
+- [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
+- [Consumer AGENTS.md template](docs/templates/consumer-agents.md)
+- Skills in [`skills/`](skills/) — scaffolded into extension projects as `agent-skills/`
 
 For full detail, follow the linked topic pages under `docs/agent-guidelines/`.
 

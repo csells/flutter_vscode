@@ -29,15 +29,29 @@ export async function handleCommand(message: any, webview: vscode.Webview) {
 
   try {
     switch (command) {
-      case 'showInformationMessage': {
-        const fn = resolveVscodeFn('showInformationMessage');
+      case 'window.showInformationMessage': {
+        const fn = resolveVscodeFn('window.showInformationMessage');
         if (!fn) return;
         void fn(params[0]);
         return;
       }
 
-      case 'showInputBox': {
-        const fn = resolveVscodeFn('showInputBox');
+      case 'window.showWarningMessage': {
+        const fn = resolveVscodeFn('window.showWarningMessage');
+        if (!fn) return;
+        void fn(params[0]);
+        return;
+      }
+
+      case 'window.showErrorMessage': {
+        const fn = resolveVscodeFn('window.showErrorMessage');
+        if (!fn) return;
+        void fn(params[0]);
+        return;
+      }
+
+      case 'window.showInputBox': {
+        const fn = resolveVscodeFn('window.showInputBox');
         if (!fn) return;
         const result = await fn(params[0]);
         if (requestId) {
@@ -46,10 +60,13 @@ export async function handleCommand(message: any, webview: vscode.Webview) {
         return;
       }
 
-      case 'showErrorMessage': {
-        const fn = resolveVscodeFn('showErrorMessage');
+      case 'window.showQuickPick': {
+        const fn = resolveVscodeFn('window.showQuickPick');
         if (!fn) return;
-        void fn(params[0]);
+        const result = await fn(params[0]);
+        if (requestId) {
+          void webview.postMessage({ requestId, result });
+        }
         return;
       }
 

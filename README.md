@@ -10,6 +10,8 @@ and a scaffold command so you can avoid hand-written webview wiring.
 - Runtime request/response messaging between Flutter webview code and VS Code extension host.
 - Scaffold CLI: `dart run flutter_vscode:generate_vscode_extension`.
 - Webview-safe default build assets and compile script.
+- **Agent toolkit:** curated skills and `AGENTS.md` template so AI agents handle VS Code API translation (see [Agent-Assisted Development](docs/guides/agent-assisted-development.md)).
+- **Dynamic invoke:** `VSCode.instance.invoke('window.showInputBox', [...])` for VS Code API calls without `build_runner` (see [Message Contract](docs/reference/message-contract.md)).
 
 ## Prerequisites
 
@@ -45,7 +47,7 @@ npm install
 4. Define controller API in Dart:
 
 ```dart
-import 'package:flutter_vscode/flutter_vscode.dart';
+import 'package:flutter_vscode/runtime.dart';
 
 part 'vscode_api.vscode.g.part';
 
@@ -79,6 +81,23 @@ npm run compile
 
 7. Open the extension project in VS Code and press F5.
 
+## Agent-assisted development
+
+The scaffold command copies a **portable agent toolkit** into your extension project:
+
+- `AGENTS.md` — project rules for AI coding agents (supported by many tools)
+- `agent-skills/` — workflow guides as plain markdown (`SKILL.md` files)
+
+These work with any agent product that reads `AGENTS.md` or custom instructions
+(Cursor, Claude Code, GitHub Copilot, Windsurf, Cline, etc.). Wire skills into
+your tool if needed — for example, symlink or copy `agent-skills/*` into your
+product's skills directory, or `@`-reference the skill files in prompts.
+
+Describe VS Code behavior in plain language; your agent adds annotations, uses
+`VSCode.instance.invoke`, or runs the build pipeline. See
+[Agent-Assisted Development](docs/guides/agent-assisted-development.md) and
+[VS Code API Mapping](docs/reference/vscode-api-mapping.md).
+
 ## Build pipeline
 
 The default compile flow is:
@@ -93,6 +112,9 @@ The default compile flow is:
   - `*.vscode.g.part`
   - `*.handlers.ts`
 - Created once by scaffold (not overwritten by default on rerun):
+  - `AGENTS.md`
+  - `agent-skills/`
+  - `src/vscode_invoke.ts`
   - `src/extension.ts`
   - `package.json`
   - `tsconfig.json`
@@ -100,6 +122,16 @@ The default compile flow is:
   - `lib/vscode_api.dart`
 - Merge behavior:
   - `.gitignore` entries are appended when missing.
+
+## Example project
+
+The `example/` directory is the integration fixture. Run its tests with:
+
+```bash
+cd example && flutter test
+```
+
+They are also included in `./scripts/test_all.sh`.
 
 ## Troubleshooting
 
@@ -111,6 +143,7 @@ The default compile flow is:
 ## Documentation
 
 - [Documentation Index](docs/index.md)
+- [Roadmap](docs/reference/roadmap.md)
 - [Architecture](docs/architecture/index.md)
 - [Guides](docs/guides/index.md)
 - [Reference](docs/reference/index.md)

@@ -59,6 +59,7 @@ Use it as the release gate for the v0.1 MVP.
   - Message contract in `docs/reference/message-contract.md`.
 - **Remaining (post-MVP):**
   - Browser/webview integration tests for `VSCodeWebViewHelper` message parsing.
+  - See [Roadmap](roadmap.md) for the tiered integration testing plan.
 - **Primary files:** `lib/src/vscode_controller_base.dart`, `lib/src/vscode_webview_helper.dart`, `lib/src/webview_bridge_web.dart`.
 
 ### 5.4 Webview-Safe Build and Assets
@@ -69,7 +70,7 @@ Use it as the release gate for the v0.1 MVP.
   - Compile script includes webview-safe `flutter build web` flags.
   - Example project and quickstart document the F5 verification flow.
 - **Remaining (post-MVP):**
-  - Automated CI E2E verification of example project F5 + webview load.
+  - Tiered integration testing (build smoke in CI, manual webview checklist, greenfield regression). See [Roadmap](roadmap.md).
 - **Primary files:** `bin/generate_vscode_extension.dart`, `example/scripts/compile.sh`, `README.md`, `docs/guides/quickstart.md`.
 
 ## MVP Acceptance Criteria (v0.1)
@@ -89,3 +90,7 @@ v0.1 is ready when all checks pass:
 7. Changelog and package metadata reflect a non-placeholder release baseline. **Met**
 
 Automated enforcement: `./scripts/test_all.sh` and `.github/workflows/test.yml`.
+
+## Post-MVP roadmap
+
+Planned work after v0.1 is tracked in [Roadmap](roadmap.md). **Next priority:** tiered integration testing (`scripts/integration_test.sh`, `example/` CI build smoke, manual webview checklist, optional greenfield fixture).

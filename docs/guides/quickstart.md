@@ -20,6 +20,8 @@ npm install
 Create an abstract controller with annotations in `lib/vscode_api.dart` (or another Dart library):
 
 ```dart
+import 'package:flutter_vscode/runtime.dart';
+
 @VSCodeController()
 abstract class VSCodeApi {
   @VSCodeCommand('window.showInformationMessage')
@@ -38,6 +40,8 @@ dart run build_runner build --delete-conflicting-outputs
 In `main()`:
 
 ```dart
+import 'package:flutter_vscode/flutter_vscode.dart';
+
 VSCodeWebViewHelper.initialize();
 ```
 
@@ -52,3 +56,12 @@ This compiles TypeScript and builds Flutter web output used by the VS Code webvi
 ## 5) Debug
 
 Open project in VS Code and press F5 to start the extension host.
+
+## Agent-assisted workflow
+
+Copy skills and consumer `AGENTS.md` into your project (see
+[Agent-Assisted Development](agent-assisted-development.md)). Describe VS Code
+API needs in plain language; your agent adds `@VSCodeCommand` methods and runs
+`build_runner`.
+
+API patterns: [VS Code API Mapping](../reference/vscode-api-mapping.md).

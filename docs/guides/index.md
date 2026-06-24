@@ -5,6 +5,7 @@ Task-oriented documentation for common development workflows.
 ## Guides
 
 - [Quickstart: build your first extension](quickstart.md)
+- [Agent-assisted development](agent-assisted-development.md)
 - [Generated file ownership and regeneration rules](generated-file-ownership.md)
 - [Troubleshooting common extension issues](troubleshooting.md)
 
