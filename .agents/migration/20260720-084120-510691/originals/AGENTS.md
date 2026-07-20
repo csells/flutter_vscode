@@ -6,14 +6,8 @@ This file is the root index for AI and contributor documentation.
 
 - Use `AGENTS.md` (uppercase) as the only canonical root agent-instruction file.
 
-## Shared Agent Layout
-
-- `CLAUDE.md` and `GEMINI.md` import the shared rules from `AGENTS.md`.
-- Keep project skills in `.claude/skills/`; `.agents/skills` points there.
-
 ## Quick Navigation
 
-- [Project Vision](specs/vision/vision.md)
 - [Documentation Root](docs/index.md)
 - [Agent Guidelines](docs/agent-guidelines/index.md)
 - [Architecture](docs/architecture/index.md)
@@ -47,3 +41,4 @@ Extension authors (not package contributors) use:
 - Skills in [`skills/`](skills/) — scaffolded into extension projects as `agent-skills/`
 
 For full detail, follow the linked topic pages under `docs/agent-guidelines/`.
+
