@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "product": {
+    "name": "Visual Studio Code",
+    "version": "1.129.1",
+    "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8"
+  },
+  "parser": {
+    "name": "typescript",
+    "version": "6.0.0-dev.20260416"
+  },
+  "manifestSchema": {
+    "schemaUri": "vscode://schemas/vscode-extensions",
+    "standalone": false,
+    "composition": "Extension-point modules populate contributes.properties at runtime"
+  },
+  "inputs": [
+    {
+      "name": "VS Code API declarations",
+      "kind": "apiDeclarations",
+      "path": "vscode.d.ts",
+      "version": "1.129.1",
+      "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+      "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vscode-dts/vscode.d.ts",
+      "sha256": "ee11e767c8ab76f6c0de8dc88222796147a6f0bc82f3a1ec644e41b39b52f2cd",
+      "license": "MIT",
+      "licensePath": "LICENSE.txt"
+    },
+    {
+      "name": "VS Code extension manifest schema source",
+      "kind": "extensionManifestSchemaSource",
+      "path": "extension-manifest-schema.ts",
+      "version": "1.129.1",
+      "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+      "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/services/extensions/common/extensionsRegistry.ts",
+      "sha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
+      "license": "MIT",
+      "licensePath": "LICENSE.txt"
+    },
+    {
+      "name": "VS Code extension manifest validator source",
+      "kind": "extensionManifestValidatorSource",
+      "path": "extension-validator.ts",
+      "version": "1.129.1",
+      "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+      "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/platform/extensions/common/extensionValidator.ts",
+      "sha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+      "license": "MIT",
+      "licensePath": "LICENSE.txt"
+    },
+    {
+      "name": "VS Code license",
+      "kind": "license",
+      "path": "LICENSE.txt",
+      "version": "1.129.1",
+      "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+      "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/LICENSE.txt",
+      "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
+      "license": "MIT"
+    }
+  ],
+  "contributionSchemas": []
+}

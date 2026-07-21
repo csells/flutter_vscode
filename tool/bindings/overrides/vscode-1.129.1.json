@@ -1,0 +1,237 @@
+{
+  "schemaVersion": 1,
+  "vscodeVersion": "1.129.1",
+  "manifestSchemaSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
+  "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+  "targets": [
+    "callSignature:vscode.Event.$call@00d877bcd478273b6bafb74ceed20260eab023f2569cccd28d6f939bd4b030fd",
+    "class:vscode.Disposable",
+    "class:vscode.Hover",
+    "class:vscode.MarkdownString",
+    "class:vscode.Position",
+    "class:vscode.Range",
+    "class:vscode.RelativePattern",
+    "constructor:vscode.Hover.constructor@ba542e9f5fc2931b2263cfd40cedcb0b3f62795cc6c64e9d945f68fe93e1a733",
+    "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763",
+    "constructor:vscode.Range.constructor@96fdd2143cf2ad164603faafc0bc158b86ecec84199402dcbea3c53247046e73",
+    "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2",
+    "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4",
+    "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811",
+    "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c",
+    "interface:global.Thenable",
+    "interface:vscode.CancellationToken",
+    "interface:vscode.DocumentFilter",
+    "interface:vscode.Event",
+    "interface:vscode.ExtensionContext",
+    "interface:vscode.HoverProvider",
+    "interface:vscode.TextDocument",
+    "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:vscode.ExtensionContext.subscriptions.$element.$type.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
+    "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47",
+    "namespace:vscode.commands",
+    "namespace:vscode.languages",
+    "namespace:vscode.workspace",
+    "property:class:vscode.Position/$instance/character",
+    "property:class:vscode.Position/$instance/line",
+    "property:interface:vscode.CancellationToken/$instance/isCancellationRequested",
+    "property:interface:vscode.ExtensionContext/$instance/subscriptions",
+    "typeAlias:vscode.DocumentSelector",
+    "typeAlias:vscode.GlobPattern",
+    "typeAlias:vscode.MarkedString",
+    "typeAlias:vscode.ProviderResult",
+    "typeLiteral:vscode.ExtensionContext.subscriptions.$element.$type@f5716cc35f40e12ce43adfbf37b72dc3bb90a514875ac7efb9346af4aa710ba9",
+    "variable:vscode.workspace.onDidOpenTextDocument"
+  ],
+  "entries": {
+    "callSignature:vscode.Event.$call@00d877bcd478273b6bafb74ceed20260eab023f2569cccd28d6f939bd4b030fd": {
+      "strategy": "eventSubscription",
+      "declarationSha256": "3af853f386439b3cd5e15a694963d9099a10935477cb0e2beec808da35706ce1",
+      "hostVerified": true
+    },
+    "class:vscode.Disposable": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "1eba264714f0cad5d9a858df05fef41cc3be8cfe9facd3cfa0f102cec538e649",
+      "hostVerified": true
+    },
+    "class:vscode.Hover": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "25cbf4169de0deb709e3def61d3b08c5ed8fcaa9b5b46abfcd1e8015108e05d2",
+      "hostVerified": true
+    },
+    "class:vscode.MarkdownString": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "f2068f543d06f4e70541c9ca9e984252997169dbb866ff59956ef31d995787fc",
+      "hostVerified": true
+    },
+    "class:vscode.Position": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "d2fce03aa863387f23981337e1c134aa8c8720ef34151d16c7f703feadbe5ded",
+      "hostVerified": true
+    },
+    "class:vscode.Range": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "794e7638721abbb808f34f2d49c7deeef1ff50d68f43ec6230cb3969883ca005",
+      "hostVerified": true
+    },
+    "class:vscode.RelativePattern": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "ba41ef233970989c328a63d6ee66b4996578423da4ea9d490ad55f0678ca4c6b",
+      "hostVerified": false,
+      "reason": "Only needed by the excluded GlobPattern object branch."
+    },
+    "constructor:vscode.Hover.constructor@ba542e9f5fc2931b2263cfd40cedcb0b3f62795cc6c64e9d945f68fe93e1a733": {
+      "strategy": "markdownHoverConstructor",
+      "declarationSha256": "0d15d70717bb5c73ae10ae57f20daa5338ee6ed1a8481c8a7fdbf41aa1135894",
+      "hostVerified": true
+    },
+    "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763": {
+      "strategy": "markdownStringConstructor",
+      "declarationSha256": "4f310e85efd27c6d5a6cbab22798cab719db9a4da0a2f61d3c9e8f996c2f1039",
+      "hostVerified": true
+    },
+    "constructor:vscode.Range.constructor@96fdd2143cf2ad164603faafc0bc158b86ecec84199402dcbea3c53247046e73": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "7f3f83c5cd1e88389a50df27154b6ca9583da115fc567ce6764859447643c210",
+      "hostVerified": false,
+      "reason": "The walking slice constructs Range from four numeric coordinates."
+    },
+    "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2": {
+      "strategy": "numericRangeConstructor",
+      "declarationSha256": "b0973cd3331b6ef5c6f3433570236ee2ad5174fa5dd4dc0527db652c4ea8989c",
+      "hostVerified": true
+    },
+    "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4": {
+      "strategy": "commandExecution",
+      "declarationSha256": "569e90162614430b5f8854135373ea1102e786ac40c46f13141431d0b2eb195c",
+      "hostVerified": true
+    },
+    "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811": {
+      "strategy": "commandRegistration",
+      "declarationSha256": "6fb97ecbc1721f32bff56e508f2d081bf83fdb22fd38b8b00fae5df788226d94",
+      "hostVerified": true
+    },
+    "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c": {
+      "strategy": "hoverProviderRegistration",
+      "declarationSha256": "8d20af4b1684d0a2b63fd02fbd46d7780d0e9a1fc01792397307945c7d4a542d",
+      "hostVerified": true
+    },
+    "interface:global.Thenable": {
+      "strategy": "thenableFutureBridge",
+      "declarationSha256": "943f9cce48fa4d88f856ffdccfda6de08f9cbf6ab836eb241cd4163f9754696f",
+      "hostVerified": true
+    },
+    "interface:vscode.CancellationToken": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "135ab16bcde56dde54ee22b0f0d6b397b4d054cdbb333ad2cb2ba8aad417ae84",
+      "hostVerified": true
+    },
+    "interface:vscode.DocumentFilter": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "698f6f49a5e3826b0fe6e74c7c130a7d55324fd20fc4fe322dfc24c2522b63c1",
+      "hostVerified": false,
+      "reason": "The walking slice selects DocumentSelector's string branch."
+    },
+    "interface:vscode.Event": {
+      "strategy": "eventType",
+      "declarationSha256": "4329ce64055763bf1ad5e88d1bdae795e8943ba26cb0052228f8b17a98475b6d",
+      "hostVerified": true
+    },
+    "interface:vscode.ExtensionContext": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "79c500e8ad87721909584cec606aeace4662a37c0c45f8df27b3246446ae9b70",
+      "hostVerified": true
+    },
+    "interface:vscode.HoverProvider": {
+      "strategy": "providerObject",
+      "declarationSha256": "54550e78e259f6f4ba50a5d3cb5a4faee9a038b6655730815198c90ef6adf014",
+      "hostVerified": true
+    },
+    "interface:vscode.TextDocument": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "33bbc14559c955c29d55456c0d246eb1de5ae9704a91abd2bd9ea113df4ea359",
+      "hostVerified": true
+    },
+    "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "ba71f989ea18c8fea7b8a94a5164101c346fe02e4be78ace4c5b2a6bc4640ac8",
+      "hostVerified": true
+    },
+    "method:vscode.ExtensionContext.subscriptions.$element.$type.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "510f78b079ae209a0b8f30144e0820c933c61246e46d034954f3a1ffeb42978a",
+      "hostVerified": true
+    },
+    "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47": {
+      "strategy": "providerCallback",
+      "declarationSha256": "a2acf15ef4412b76396b2c3a108df38199539090cc47d9f9d54894a0d36ccae6",
+      "hostVerified": true
+    },
+    "namespace:vscode.commands": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "844bd4d3e0252e900c9bb20845c0968d7b983d91451ab9f3c38b0fcacc5836ca",
+      "hostVerified": true
+    },
+    "namespace:vscode.languages": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "bb4ce6caf0043fb1b9dd816829627ecf94de4ba98263f0d3f29554c1e61b453e",
+      "hostVerified": true
+    },
+    "namespace:vscode.workspace": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "f14b753f2b1af510b1ee1841989c77644e27c01bdc8ed57e48b987de0c8d5a0c",
+      "hostVerified": true
+    },
+    "property:class:vscode.Position/$instance/character": {
+      "strategy": "intGetterProjection",
+      "declarationSha256": "ab0256e6cd3c8f2a29ba4cc6852014355841e4430398ab1f0a6cbd150590d214",
+      "hostVerified": true
+    },
+    "property:class:vscode.Position/$instance/line": {
+      "strategy": "intGetterProjection",
+      "declarationSha256": "b3d84ba97f2a2461960d9ba47943ac5c70e8d2e17b3f398d43240a66f5d799b6",
+      "hostVerified": true
+    },
+    "property:interface:vscode.CancellationToken/$instance/isCancellationRequested": {
+      "strategy": "boolGetterProjection",
+      "declarationSha256": "c52cac5fb926c17ffa421c2375dc2bcf3cb99a874c77f28afa05c82b57b1cb5c",
+      "hostVerified": true
+    },
+    "property:interface:vscode.ExtensionContext/$instance/subscriptions": {
+      "strategy": "subscriptionsArray",
+      "declarationSha256": "624147b905c50f27a1760b94c3536681a12dd65c8f23ff7ae504035489d9c254",
+      "hostVerified": true
+    },
+    "typeAlias:vscode.DocumentSelector": {
+      "strategy": "stringSelectorProjection",
+      "declarationSha256": "ded1c3dbfe60fa01acc96d2a88ff1a5ccb574c2feea1c9bbb5f9a96b616707a7",
+      "hostVerified": true
+    },
+    "typeAlias:vscode.GlobPattern": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "1b7871a420bea60ebd522af585bcdba56312b38fec203558aeb5b1edf66057c3",
+      "hostVerified": false,
+      "reason": "Only needed by the excluded DocumentFilter pattern branch."
+    },
+    "typeAlias:vscode.MarkedString": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "70555334422e4a9e57e7ba447710bc73f4975667b8be378beb44b7dad84d0c80",
+      "hostVerified": false,
+      "reason": "The walking slice constructs Hover from MarkdownString."
+    },
+    "typeAlias:vscode.ProviderResult": {
+      "strategy": "providerResultProjection",
+      "declarationSha256": "b8870a34ca6664b5c5a21fe1a0aa7d8480212865d48654c8248694c93969ba98",
+      "hostVerified": true
+    },
+    "typeLiteral:vscode.ExtensionContext.subscriptions.$element.$type@f5716cc35f40e12ce43adfbf37b72dc3bb90a514875ac7efb9346af4aa710ba9": {
+      "strategy": "disposableStructuralType",
+      "declarationSha256": "03d3fb86d923a8ce4b9ddb43aa20e3c158de49cc83136e596e411978b3048340",
+      "hostVerified": true
+    },
+    "variable:vscode.workspace.onDidOpenTextDocument": {
+      "strategy": "eventValue",
+      "declarationSha256": "5416cb13ffede9d90c72b649f679b971fc7e48d06d12a8fdc59d31f4fc0934c7",
+      "hostVerified": true
+    }
+  }
+}

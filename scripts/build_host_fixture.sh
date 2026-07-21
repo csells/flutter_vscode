@@ -10,6 +10,16 @@ OUT_ROOT="${FIXTURE_ROOT}/out"
 mkdir -p "${OUT_ROOT}"
 
 (
+  cd "${REPO_ROOT}"
+  flutter pub get
+  dart tool/binding_generator/generate.dart \
+    --inventory tool/bindings/ir/vscode-1.129.1.json \
+    --overrides tool/bindings/overrides/vscode-1.129.1.json \
+    --project test/fixtures/host_extension/extension.json \
+    --output-root test/fixtures/host_extension
+)
+
+(
   cd "${HOST_ROOT}"
   dart pub get
 )

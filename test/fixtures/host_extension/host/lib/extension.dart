@@ -1,7 +1,6 @@
-import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode_host_fixture/src/vscode_interop.dart';
+import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
 
 const _pingCommand = 'flutter-vscode.host-test.ping';
 const _eventCountCommand = 'flutter-vscode.host-test.openEventCount';
@@ -14,11 +13,6 @@ const _jsPromiseRoundTripCommand =
     'flutter-vscode.host-test.jsPromiseRoundTrip';
 const _hoverReceivedCancellationTokenCommand =
     'flutter-vscode.host-test.hoverReceivedCancellationToken';
-
-@JS(
-  '__flutterVscode.hosts.e_ded70adb722dcc045c085661384a28efd7439f252df0117d72ecce65644f64f6',
-)
-external set _exports(JSObject value);
 
 @JSExport()
 class _VSCodeHostExtension {
@@ -33,7 +27,7 @@ class _VSCodeHostExtension {
     JSObject rawVscode,
     JSBoolean failActivation,
   ) {
-    return _toHostPromise(
+    return toHostPromise(
       Future<JSAny?>(() {
         try {
           final context = ExtensionContext.fromJS(rawContext);
@@ -52,7 +46,7 @@ class _VSCodeHostExtension {
             final source = vscode.commands
                 .executeCommand(_jsPromiseSourceCommand.toJS)
                 .toDart;
-            return _toHostPromise(
+            return toHostPromise(
               source.then<JSAny?>((value) {
                 final text = (value! as JSString).toDart;
                 return 'Dart received: $text'.toJS;
@@ -67,7 +61,7 @@ class _VSCodeHostExtension {
           context.subscriptions.toDart.add(jsPromiseRoundTripRegistration);
 
           final failAsync = (() {
-            return _toHostPromise(
+            return toHostPromise(
               Future<JSAny?>.error(
                 StateError('Dart command failed intentionally'),
                 StackTrace.current,
@@ -185,24 +179,5 @@ class _VSCodeHostExtension {
 }
 
 void main() {
-  _exports = createJSInteropWrapper(_VSCodeHostExtension());
-}
-
-JSPromise<T> _toHostPromise<T extends JSAny?>(Future<T> future) {
-  return JSPromise<T>(
-    (JSFunction resolve, JSFunction reject) {
-      unawaited(
-        future.then<void>(
-          (value) {
-            resolve.callAsFunction(resolve, value);
-          },
-          onError: (Object error, StackTrace stackTrace) {
-            final hostError = JavaScriptError(error.toString().toJS);
-            hostError.stack = '${hostError.stack.toDart}\n$stackTrace'.toJS;
-            reject.callAsFunction(reject, hostError);
-          },
-        ),
-      );
-    }.toJS,
-  );
+  registerHostExports(createJSInteropWrapper(_VSCodeHostExtension()));
 }

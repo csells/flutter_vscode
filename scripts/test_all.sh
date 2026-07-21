@@ -8,6 +8,7 @@ set -euo pipefail
 #
 # This script assumes:
 # - You have Flutter on your PATH
+# - Docker is installed and its daemon is running
 # - You've cloned this repo and are running from any directory inside it
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -31,6 +32,10 @@ echo "==> Running builder integration checks..."
 dart test tool/check_dart_generator.dart tool/check_ts_generator.dart
 
 echo
+echo "==> Running deterministic binding importer checks..."
+./scripts/test_binding_importer.sh
+
+echo
 echo "==> Running example project tests..."
 (
   cd example
@@ -44,4 +49,3 @@ echo "==> Running pinned VS Code Extension Host checks..."
 
 echo
 echo "All tests and build_runner checks completed successfully."
-
