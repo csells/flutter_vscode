@@ -1,74 +1,34 @@
 ---
 name: flutter-vscode-test
 description: >-
-  Write VM tests for flutter_vscode controllers without a webview. Use when
-  testing @VSCodeCommand round-trips, request/response correlation, or
-  timeout behavior.
+  Test Host Dart, generated VS Code behavior, or a Flutter View protocol in a
+  flutter_vscode Extension Project.
 ---
 
-# Test Controllers (flutter_vscode)
+# Test a flutter_vscode Extension
 
-Test generated controller logic on the Dart VM without a VS Code webview.
+Test at the narrowest real seam that owns the behavior:
 
-## Setup
+- Pure Dart tests for shared logic and protocol validation.
+- Flutter tests for view rendering and typed protocol calls.
+- A pinned VS Code Extension Host test for activation, commands, providers,
+  native object identity, events, and disposal.
+- An installed-VSIX test for packaging and auto-activation.
 
-```dart
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_vscode/runtime.dart';
-import 'package:my_extension/vscode_api.dart';
+For protocol work, test the handshake and happy call first, then wrong version,
+invalid schema, session/nonce mismatch, disallowed operation, duplicate request,
+structured operation failure, close/reload, late replies, and zero pending or
+subscription counts.
 
-void main() {
-  tearDown(VSCodeControllerBase.debugClearPendingRequests);
+Use red-green-refactor: observe the new test fail for the intended reason, add
+the smallest implementation, then run the focused test before broader gates.
 
-  test('inputBox waits for host response', () async {
-    VSCodeControllerBase.debugRequestIdFactory = () => 'req-input';
-    final api = createVSCodeApi();
-    final future = api.inputBox({'prompt': 'Name?'});
+Always finish with:
 
-    VSCodeControllerBase.handleMessage(<String, dynamic>{
-      'requestId': 'req-input',
-      'result': 'Ada',
-    });
-
-    expect(await future, 'Ada');
-  });
-}
+```sh
+flutter_vscode build
+flutter_vscode package
 ```
 
-## APIs
-
-| API | Purpose |
-|---|---|
-| `debugRequestIdFactory` | Fix request id for deterministic tests |
-| `handleMessage` | Simulate extension host response |
-| `debugClearPendingRequests` | Reset pending state in `tearDown` |
-| `debugResponseTimeout` | Adjust timeout for slow tests |
-
-## Fire-and-Forget Commands
-
-`Future<void>` / `void` commands do not wait for response:
-
-```dart
-await api.info('hello'); // completes without handleMessage
-```
-
-## Error Path
-
-```dart
-VSCodeControllerBase.handleMessage({
-  'requestId': 'req-1',
-  'error': 'command failed',
-});
-// future completes with Exception
-```
-
-## Timeout Path
-
-```dart
-VSCodeControllerBase.debugResponseTimeout = Duration(milliseconds: 50);
-// don't call handleMessage — expect TimeoutException
-```
-
-## Reference
-
-See `example/test/api_controller_test.dart` in the flutter_vscode package.
+Framework contributors additionally run `flutter analyze` and
+`./scripts/test_all.sh`.

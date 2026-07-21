@@ -1,7 +1,24 @@
 # First Working Extension Plan
 
-Status: Approved for execution
+Status: Implemented and verified
 Date: 2026-07-20
+
+## Execution Evidence
+
+- Checkpoint 1 passes in VS Code 1.129.1 with Dart-owned activation, command,
+  hover provider, event unsubscribe, native identity, promise/error bridging,
+  activation-failure cleanup, and repeated teardown.
+- Checkpoint 2 deterministically imports pinned official sources and transitive
+  validators into canonical IR. The ledger records 2,979 discovered entries:
+  53 emitted and host-verified, 17 reviewed exclusions, and 2,909 pending. It
+  makes no full-parity claim.
+- Checkpoint 3 creates, builds, packages, installs, auto-activates, and exercises
+  a host-only extension without author-managed Node or npm.
+- Checkpoint 4 packages a real Flutter View with a typed, allowlisted v1
+  protocol; the Host and View report zero live requests/subscriptions at close.
+- Final gates: `scripts/test_all.sh` passes 112 Dart/Flutter tests, 33 importer
+  tests, deterministic generation/build checks, real Extension Host tests, and
+  two clean installed-VSIX tests. `flutter analyze` reports no issues.
 
 ## Goal and Stop Rule
 

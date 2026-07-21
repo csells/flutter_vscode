@@ -2,17 +2,19 @@
 
 ## Build Configuration
 
-- Configure build extensions in `build.yaml`.
-- Use `.g.part` for generated Dart part files.
-- Use `.handlers.ts` for generated TypeScript handlers.
+- Keep the canonical CLI exposed as `flutter_vscode` in `pubspec.yaml`.
+- Treat `package.json`, host bindings/bootstrap, bundles, source maps, launch
+  configuration, view build output, coverage, and VSIX files as managed.
+- Keep `.g.part` and `.handlers.ts` conventions only for the supported v0
+  annotation pipeline.
 
 ## API Design
 
-- Keep annotation APIs focused:
-  - `@VSCodeController` marks controller classes.
-  - `@VSCodeCommand` marks command methods.
-- Prefer abstract base classes for generated implementations.
-- Provide factory helpers for generated instances where needed.
+- Keep Project API Target explicit in Dart-owned configuration.
+- Expose native host behavior through generated parity and idiomatic layers.
+- Expose a small typed view protocol rather than raw envelopes or arbitrary
+  host API dispatch.
+- Preserve legacy annotation APIs without making them the new host architecture.
 
 ## Documentation Standards
 

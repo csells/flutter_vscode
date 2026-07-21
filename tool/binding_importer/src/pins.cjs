@@ -22,6 +22,8 @@ function verifyPinnedInputs(manifestPath) {
   ];
   const supportedKinds = new Set([
     'apiDeclarations',
+    'contributionSchemaSource',
+    'contributionValidationHelperSource',
     'extensionManifestSchemaSource',
     'extensionManifestValidatorSource',
     'license',

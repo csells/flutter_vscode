@@ -47,6 +47,7 @@ Extension authors (not package contributors) use:
 - [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
 - [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
 - [Consumer AGENTS.md template](docs/templates/consumer-agents.md)
-- Skills in [`skills/`](skills/) — scaffolded into extension projects as `agent-skills/`
+- Skills in [`skills/`](skills/) — copy into an extension project as `agent-skills/`
+  when they are not already present
 
 For full detail, follow the linked topic pages under `docs/agent-guidelines/`.

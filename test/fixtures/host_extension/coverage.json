@@ -4,14 +4,15 @@
     "vscodeVersion": "1.129.1",
     "inputSha256": "ee11e767c8ab76f6c0de8dc88222796147a6f0bc82f3a1ec644e41b39b52f2cd",
     "manifestSchemaSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
-    "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1"
+    "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+    "commandsContributionSchemaSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33"
   },
   "scope": {
-    "name": "checkpoint2WalkingSlice",
+    "name": "checkpoint4FlutterViewSlice",
     "fullApiParity": false,
-    "selectedTargets": 37,
-    "implementedTargets": 32,
-    "reviewedExcludedTargets": 5
+    "selectedTargets": 60,
+    "implementedTargets": 53,
+    "reviewedExcludedTargets": 7
   },
   "inventory": {
     "logicalEntries": 2979,
@@ -21,15 +22,15 @@
   },
   "summary": {
     "discovered": 2979,
-    "semanticsReviewed": 32,
-    "semanticsExcluded": 15,
-    "semanticsPending": 2932,
-    "bindingsEmitted": 32,
-    "bindingsExcluded": 15,
-    "bindingsPending": 2932,
-    "hostVerified": 32,
-    "hostNotApplicable": 15,
-    "hostPending": 2932
+    "semanticsReviewed": 53,
+    "semanticsExcluded": 17,
+    "semanticsPending": 2909,
+    "bindingsEmitted": 53,
+    "bindingsExcluded": 17,
+    "bindingsPending": 2909,
+    "hostVerified": 53,
+    "hostNotApplicable": 17,
+    "hostPending": 2909
   },
   "entries": [
     {
@@ -54,7 +55,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -744,7 +745,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -1016,7 +1017,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -1364,7 +1365,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -1579,7 +1580,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -1642,7 +1643,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -2375,18 +2376,24 @@
       "kind": "class",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "nativeJsClass"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -3311,7 +3318,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -3640,7 +3647,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -3954,7 +3961,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -5978,18 +5985,24 @@
       "kind": "enum",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "nativeJsEnum"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -10348,18 +10361,24 @@
       "kind": "enumMember",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "intEnumMember"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -10555,7 +10574,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -10599,7 +10618,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -11403,7 +11422,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -12171,18 +12190,24 @@
       "kind": "function",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "webviewPanelCreation"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -13879,7 +13904,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -14189,7 +14214,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -15832,7 +15857,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -15876,7 +15901,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -16224,7 +16249,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -18738,7 +18763,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -19316,18 +19341,24 @@
       "kind": "interface",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "opaqueHostObject"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -19335,18 +19366,24 @@
       "kind": "interface",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "jsObjectLiteral"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -19354,18 +19391,24 @@
       "kind": "interface",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "opaqueHostObject"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -19392,18 +19435,21 @@
       "kind": "interface",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "excluded",
+        "basis": "semanticOverride",
+        "strategy": "reviewedExcluded",
+        "reason": "The first Flutter View uses no WebviewPanelOptions fields."
       },
       "binding": {
-        "status": "pending"
+        "status": "excluded"
       },
       "host": {
-        "status": "pending"
+        "status": "notApplicable"
       }
     },
     {
@@ -21138,7 +21184,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -21809,7 +21855,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -22480,7 +22526,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -26535,18 +26581,24 @@
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "uriJoinPath"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -26592,18 +26644,24 @@
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "uriToString"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -26649,18 +26707,24 @@
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "unaryUriMethod"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -26668,18 +26732,24 @@
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "thenableBoolMethod"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -26687,18 +26757,24 @@
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "disposeMethod"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -27217,7 +27293,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -27337,7 +27413,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -27440,18 +27516,24 @@
       "kind": "namespace",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "namespaceObject"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -27476,7 +27558,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -32023,7 +32105,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -32048,7 +32130,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -35189,7 +35271,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -38332,18 +38414,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "objectGetterProjection"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -38539,7 +38627,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49510,18 +49598,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "stringGetterProjection"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49529,18 +49623,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "stringGetterSetterProjection"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49548,18 +49648,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "eventValue"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49624,18 +49730,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "boolObjectField"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49643,18 +49755,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "uriArrayObjectField"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49738,18 +49856,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "voidEventValue"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -49852,18 +49976,24 @@
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "reviewed",
+        "basis": "semanticOverride",
+        "strategy": "objectGetterProjection"
       },
       "binding": {
-        "status": "pending"
+        "status": "emitted",
+        "artifacts": [
+          "host/lib/generated/vscode_parity.g.dart"
+        ]
       },
       "host": {
-        "status": "pending"
+        "status": "verified",
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -53061,7 +53191,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -53244,7 +53374,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -53459,7 +53589,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {
@@ -54683,18 +54813,21 @@
       "kind": "typeLiteral",
       "visibility": "public",
       "occurrenceCount": 1,
-      "selected": false,
+      "selected": true,
       "discovery": {
         "status": "discovered"
       },
       "semantics": {
-        "status": "pending"
+        "status": "excluded",
+        "basis": "semanticOverride",
+        "strategy": "reviewedExcluded",
+        "reason": "The first Flutter View selects the ViewColumn union branch."
       },
       "binding": {
-        "status": "pending"
+        "status": "excluded"
       },
       "host": {
-        "status": "pending"
+        "status": "notApplicable"
       }
     },
     {
@@ -56619,7 +56752,7 @@
       },
       "host": {
         "status": "verified",
-        "contract": "checkpoint1ExtensionHost"
+        "contract": "checkpoint4ExtensionHost"
       }
     },
     {

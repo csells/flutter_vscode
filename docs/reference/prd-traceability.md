@@ -1,5 +1,9 @@
 # PRD Traceability and MVP Acceptance
 
+> **Legacy v0 traceability:** This checklist covers the original
+> annotation/TypeScript webview MVP. It is retained as the compatibility gate
+> for existing v0 projects, not as the Dart-host workflow specification.
+
 This checklist maps PRD requirements to concrete implementation artifacts.
 Use it as the release gate for the v0.1 MVP.
 

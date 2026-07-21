@@ -1,74 +1,42 @@
 ---
 name: flutter-vscode-troubleshoot
 description: >-
-  Diagnose flutter_vscode extension issues — blank webview, CSP errors,
-  missing handlers, command timeouts, acquireVsCodeApi. Use when F5 fails
-  or VS Code API calls from Flutter do nothing.
+  Diagnose flutter_vscode build, packaging, Host Dart, generated-binding, or
+  Flutter View protocol failures.
 ---
 
-# Troubleshoot (flutter_vscode)
+# Troubleshoot a flutter_vscode Extension
 
-## Symptom: Webview Is Blank
+## Build/configuration
 
-1. Run `npm run compile` — confirm `build/web/main.dart.js` exists.
-2. Check extension host debug console for `index.html` read errors.
-3. Confirm `localResourceRoots` includes `build/web` in `extension.ts`.
-4. Verify Flutter build used CSP flags (see `scripts/compile.sh`).
+- Run from the project root containing `extension.dart`.
+- Keep the restricted constant descriptor shape emitted by `create`.
+- Retain the explicit `apiTarget`; do not silently substitute another version.
+- Fix the author-owned file named by a dependency-boundary diagnostic.
 
-## Symptom: Command Does Nothing
+## Missing API
 
-1. Run `dart run build_runner build --delete-conflicting-outputs`.
-2. Check `lib/*.handlers.ts` has a `case` for your command id.
-3. Use **dotted** command id: `'window.showInputBox'`.
-4. Confirm `VSCodeWebViewHelper.initialize()` in `main()`.
-5. Run full `npm run compile` and reload extension host.
+Check `coverage.json` and `host/lib/generated/**`. Pending or excluded symbols
+are not available. Do not add raw interop or edit generated files; report the
+pinned declaration ID so the framework pipeline can classify it.
 
-## Symptom: TimeoutException (30s)
+## Stale artifacts or VSIX
 
-- Extension host did not post `{ requestId, result }` back.
-- Handler may be missing or `expectsResponse` mismatch.
-- Check generated handler awaits async VS Code API and posts result.
-
-## Symptom: Handler Not Found / default case
-
-- Command id in Dart does not match generated switch case.
-- Regenerate with build_runner.
-
-## Symptom: Works in Browser, Not in Webview
-
-- `acquireVsCodeApi()` only exists inside VS Code webview.
-- Browser dev uses `window.postMessage` fallback — VS Code APIs won't run.
-
-## Symptom: CSP / CanvasKit Errors
-
-Rebuild with:
-
-```bash
-flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons
+```sh
+flutter_vscode build
+flutter_vscode package
 ```
 
-Ensure `web/flutter_bootstrap.js` uses local `canvaskit/`.
+If packaging still fails, use its exact stale/malformed path diagnostic. Never
+patch `package.json`, `out/**`, or the archive manually.
 
-## Symptom: InvalidGenerationSourceError
+## Flutter View
 
-| Message | Fix |
-|---|---|
-| must be abstract | Add `abstract` to class/method |
-| positional parameters only | Remove named/optional params |
-| Future<T> explicit | Use `Future<String>` not `Future` |
-| cannot declare generic type parameters | Remove method generics |
+- Confirm built assets exist beneath `out/views/<name>/`.
+- Check CSP, webview-safe URIs, and private `acquireVsCodeApi` initialization.
+- Match protocol/version/session/nonce and use only allowlisted operations.
+- On close or reload, confirm pending request and subscription counts return to
+  zero and late messages are ignored.
 
-## Diagnostic Checklist
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-npm run compile
-ls build/web/main.dart.js out/extension.js lib/*.handlers.ts
-```
-
-Press F5 → open webview view → trigger command → check Extension Host console.
-
-## Related Docs
-
-- [Message Contract](../../docs/reference/message-contract.md)
-- [Troubleshooting Guide](../../docs/guides/troubleshooting.md)
+Host commands and providers should remain functional without the view and after
+it closes; if not, move their lifecycle out of the view session.

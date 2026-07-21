@@ -3,7 +3,9 @@
 import 'dart:js_interop';
 
 /// Fully qualified extension identifier used by the generated host.
-const generatedExtensionId = 'flutter-vscode-test.host-extension-fixture';
+// The JSON encoder deliberately emits a double-quoted, escaped Dart literal.
+// ignore: prefer_single_quotes
+const generatedExtensionId = "flutter-vscode-test.host-extension-fixture";
 
 /// Collision-resistant key used for this extension's JavaScript globals.
 const generatedExtensionKey =

@@ -3,6 +3,7 @@
   "vscodeVersion": "1.129.1",
   "manifestSchemaSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
   "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
+  "commandsContributionSchemaSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
   "targets": [
     "callSignature:vscode.Event.$call@00d877bcd478273b6bafb74ceed20260eab023f2569cccd28d6f939bd4b030fd",
     "class:vscode.Disposable",
@@ -11,13 +12,17 @@
     "class:vscode.Position",
     "class:vscode.Range",
     "class:vscode.RelativePattern",
+    "class:vscode.Uri",
     "constructor:vscode.Hover.constructor@ba542e9f5fc2931b2263cfd40cedcb0b3f62795cc6c64e9d945f68fe93e1a733",
     "constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763",
     "constructor:vscode.Range.constructor@96fdd2143cf2ad164603faafc0bc158b86ecec84199402dcbea3c53247046e73",
     "constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2",
+    "enum:vscode.ViewColumn",
+    "enumMember:enum:vscode.ViewColumn/One",
     "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4",
     "function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811",
     "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c",
+    "function:vscode.window.createWebviewPanel@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71",
     "interface:global.Thenable",
     "interface:vscode.CancellationToken",
     "interface:vscode.DocumentFilter",
@@ -25,21 +30,40 @@
     "interface:vscode.ExtensionContext",
     "interface:vscode.HoverProvider",
     "interface:vscode.TextDocument",
+    "interface:vscode.Webview",
+    "interface:vscode.WebviewOptions",
+    "interface:vscode.WebviewPanel",
+    "interface:vscode.WebviewPanelOptions",
     "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
     "method:vscode.ExtensionContext.subscriptions.$element.$type.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
     "method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47",
+    "method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60",
+    "method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06",
+    "method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675",
+    "method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1",
+    "method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650",
     "namespace:vscode.commands",
     "namespace:vscode.languages",
+    "namespace:vscode.window",
     "namespace:vscode.workspace",
     "property:class:vscode.Position/$instance/character",
     "property:class:vscode.Position/$instance/line",
     "property:interface:vscode.CancellationToken/$instance/isCancellationRequested",
+    "property:interface:vscode.ExtensionContext/$instance/extensionUri",
     "property:interface:vscode.ExtensionContext/$instance/subscriptions",
+    "property:interface:vscode.Webview/$instance/cspSource",
+    "property:interface:vscode.Webview/$instance/html",
+    "property:interface:vscode.Webview/$instance/onDidReceiveMessage",
+    "property:interface:vscode.WebviewOptions/$instance/enableScripts",
+    "property:interface:vscode.WebviewOptions/$instance/localResourceRoots",
+    "property:interface:vscode.WebviewPanel/$instance/onDidDispose",
+    "property:interface:vscode.WebviewPanel/$instance/webview",
     "typeAlias:vscode.DocumentSelector",
     "typeAlias:vscode.GlobPattern",
     "typeAlias:vscode.MarkedString",
     "typeAlias:vscode.ProviderResult",
     "typeLiteral:vscode.ExtensionContext.subscriptions.$element.$type@f5716cc35f40e12ce43adfbf37b72dc3bb90a514875ac7efb9346af4aa710ba9",
+    "typeLiteral:vscode.window.createWebviewPanel.$signature@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71.$parameter2.$item1.$type@d5b6776560804b01b07459130bbbedf0f397f2e563430e59e2fd6209012306ac",
     "variable:vscode.workspace.onDidOpenTextDocument"
   ],
   "entries": {
@@ -79,6 +103,11 @@
       "hostVerified": false,
       "reason": "Only needed by the excluded GlobPattern object branch."
     },
+    "class:vscode.Uri": {
+      "strategy": "nativeJsClass",
+      "declarationSha256": "5c2a025a61dd2e00adfeb13a16e344bf98db72b6832edb0a066768344f88b912",
+      "hostVerified": true
+    },
     "constructor:vscode.Hover.constructor@ba542e9f5fc2931b2263cfd40cedcb0b3f62795cc6c64e9d945f68fe93e1a733": {
       "strategy": "markdownHoverConstructor",
       "declarationSha256": "0d15d70717bb5c73ae10ae57f20daa5338ee6ed1a8481c8a7fdbf41aa1135894",
@@ -100,6 +129,16 @@
       "declarationSha256": "b0973cd3331b6ef5c6f3433570236ee2ad5174fa5dd4dc0527db652c4ea8989c",
       "hostVerified": true
     },
+    "enum:vscode.ViewColumn": {
+      "strategy": "nativeJsEnum",
+      "declarationSha256": "5a4cc0dde64efd7715cb2b37f46956ab8cf1145b74a5234f49e163bc42753116",
+      "hostVerified": true
+    },
+    "enumMember:enum:vscode.ViewColumn/One": {
+      "strategy": "intEnumMember",
+      "declarationSha256": "dbb898e4296c7c9ce3cac2ed6706b25aed687206a78d8f923283994d6050042c",
+      "hostVerified": true
+    },
     "function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4": {
       "strategy": "commandExecution",
       "declarationSha256": "569e90162614430b5f8854135373ea1102e786ac40c46f13141431d0b2eb195c",
@@ -113,6 +152,11 @@
     "function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c": {
       "strategy": "hoverProviderRegistration",
       "declarationSha256": "8d20af4b1684d0a2b63fd02fbd46d7780d0e9a1fc01792397307945c7d4a542d",
+      "hostVerified": true
+    },
+    "function:vscode.window.createWebviewPanel@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71": {
+      "strategy": "webviewPanelCreation",
+      "declarationSha256": "1cc7eed436948afcbe49dcc4013ed40fb19b85956a325a1cac249d913ab528bc",
       "hostVerified": true
     },
     "interface:global.Thenable": {
@@ -151,6 +195,27 @@
       "declarationSha256": "33bbc14559c955c29d55456c0d246eb1de5ae9704a91abd2bd9ea113df4ea359",
       "hostVerified": true
     },
+    "interface:vscode.Webview": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "3f760022c9ce40122985f150a8ac9b1aa57287b08cccce6cc7472cf35902136d",
+      "hostVerified": true
+    },
+    "interface:vscode.WebviewOptions": {
+      "strategy": "jsObjectLiteral",
+      "declarationSha256": "4151443012ac90391d55950277e80d2152bb11c2957c77918313f595286c0967",
+      "hostVerified": true
+    },
+    "interface:vscode.WebviewPanel": {
+      "strategy": "opaqueHostObject",
+      "declarationSha256": "9129ba5530af83366765ae16a79882942b4539879552eede31e64f84ac5b7890",
+      "hostVerified": true
+    },
+    "interface:vscode.WebviewPanelOptions": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "517b58e47dcdda1237a38fe29c7d7798d6982cd90cfcebba8a74a63c65576abc",
+      "hostVerified": false,
+      "reason": "The first Flutter View uses no WebviewPanelOptions fields."
+    },
     "method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
       "strategy": "disposeMethod",
       "declarationSha256": "ba71f989ea18c8fea7b8a94a5164101c346fe02e4be78ace4c5b2a6bc4640ac8",
@@ -166,6 +231,31 @@
       "declarationSha256": "a2acf15ef4412b76396b2c3a108df38199539090cc47d9f9d54894a0d36ccae6",
       "hostVerified": true
     },
+    "method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60": {
+      "strategy": "uriJoinPath",
+      "declarationSha256": "83919e46834f18406583a8102d0ed14fc3347e3f12a427989351201e104da25f",
+      "hostVerified": true
+    },
+    "method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06": {
+      "strategy": "uriToString",
+      "declarationSha256": "bdc587e243251026f4e389a847b9e419255b65058597eadc7f43ef5cb3ba4d28",
+      "hostVerified": true
+    },
+    "method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675": {
+      "strategy": "unaryUriMethod",
+      "declarationSha256": "a91f6aa677d9637d030ad1293d82b457f09ffec38cb2729562573e7032407271",
+      "hostVerified": true
+    },
+    "method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1": {
+      "strategy": "thenableBoolMethod",
+      "declarationSha256": "ed683614b49ca20ade383fdea8e666895d7800d127ff9b25056d26e70a935184",
+      "hostVerified": true
+    },
+    "method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650": {
+      "strategy": "disposeMethod",
+      "declarationSha256": "b0b382862d026792bf47e4845fcab829f5e00a4a47a32f4bb7abb28e8d5ef8b0",
+      "hostVerified": true
+    },
     "namespace:vscode.commands": {
       "strategy": "namespaceObject",
       "declarationSha256": "844bd4d3e0252e900c9bb20845c0968d7b983d91451ab9f3c38b0fcacc5836ca",
@@ -174,6 +264,11 @@
     "namespace:vscode.languages": {
       "strategy": "namespaceObject",
       "declarationSha256": "bb4ce6caf0043fb1b9dd816829627ecf94de4ba98263f0d3f29554c1e61b453e",
+      "hostVerified": true
+    },
+    "namespace:vscode.window": {
+      "strategy": "namespaceObject",
+      "declarationSha256": "fb706691d240655bb59c01a8ec6f4eef317ad8bb0a12e051239c822eb6c50a69",
       "hostVerified": true
     },
     "namespace:vscode.workspace": {
@@ -196,9 +291,49 @@
       "declarationSha256": "c52cac5fb926c17ffa421c2375dc2bcf3cb99a874c77f28afa05c82b57b1cb5c",
       "hostVerified": true
     },
+    "property:interface:vscode.ExtensionContext/$instance/extensionUri": {
+      "strategy": "objectGetterProjection",
+      "declarationSha256": "9c8d82965dc7e0647c4539b21ceff40c8ce31dc08d034e7072bdf2d6e913f666",
+      "hostVerified": true
+    },
     "property:interface:vscode.ExtensionContext/$instance/subscriptions": {
       "strategy": "subscriptionsArray",
       "declarationSha256": "624147b905c50f27a1760b94c3536681a12dd65c8f23ff7ae504035489d9c254",
+      "hostVerified": true
+    },
+    "property:interface:vscode.Webview/$instance/cspSource": {
+      "strategy": "stringGetterProjection",
+      "declarationSha256": "a0d0cb5a9786cd6412df90a57170d9e3aad4d06575522545676e68a4ed04c4f8",
+      "hostVerified": true
+    },
+    "property:interface:vscode.Webview/$instance/html": {
+      "strategy": "stringGetterSetterProjection",
+      "declarationSha256": "bbecb4f01a218181b3e8ba33a8cecd62488dcafbded8ad8ab1bdf751ce941399",
+      "hostVerified": true
+    },
+    "property:interface:vscode.Webview/$instance/onDidReceiveMessage": {
+      "strategy": "eventValue",
+      "declarationSha256": "c8ce580a8f7040e6aeeb70ec538ae16dd8354598f546e25daa64fb9f3f528d1b",
+      "hostVerified": true
+    },
+    "property:interface:vscode.WebviewOptions/$instance/enableScripts": {
+      "strategy": "boolObjectField",
+      "declarationSha256": "62f086093c52231137fb570b585fe9607fefb59921081f57ece29c92675b9dfd",
+      "hostVerified": true
+    },
+    "property:interface:vscode.WebviewOptions/$instance/localResourceRoots": {
+      "strategy": "uriArrayObjectField",
+      "declarationSha256": "e8235fa8c1402910f3c2513541f0842e879eb0171bdfac5ffb30a634d21ee71c",
+      "hostVerified": true
+    },
+    "property:interface:vscode.WebviewPanel/$instance/onDidDispose": {
+      "strategy": "voidEventValue",
+      "declarationSha256": "2337de3210b652e3f813eb83efa1f06be20b3353e0d17780ab44ec795136d99a",
+      "hostVerified": true
+    },
+    "property:interface:vscode.WebviewPanel/$instance/webview": {
+      "strategy": "objectGetterProjection",
+      "declarationSha256": "60faaabf3169e705a65acbaf696ccf90d690e6247aabf770d5e631d6ab209578",
       "hostVerified": true
     },
     "typeAlias:vscode.DocumentSelector": {
@@ -227,6 +362,12 @@
       "strategy": "disposableStructuralType",
       "declarationSha256": "03d3fb86d923a8ce4b9ddb43aa20e3c158de49cc83136e596e411978b3048340",
       "hostVerified": true
+    },
+    "typeLiteral:vscode.window.createWebviewPanel.$signature@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71.$parameter2.$item1.$type@d5b6776560804b01b07459130bbbedf0f397f2e563430e59e2fd6209012306ac": {
+      "strategy": "reviewedExcluded",
+      "declarationSha256": "2e745044b51e6cc7d3a10f6ef0c9a9f25c069240ce10b5a7f4840be59c99fa50",
+      "hostVerified": false,
+      "reason": "The first Flutter View selects the ViewColumn union branch."
     },
     "variable:vscode.workspace.onDidOpenTextDocument": {
       "strategy": "eventValue",

@@ -5,6 +5,8 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 
+import 'ecmascript_whitespace.dart';
+
 const _walkingSliceStrategiesById = <String, String>{
   r'callSignature:vscode.Event.$call@00d877bcd478273b6bafb74ceed20260eab023f2569cccd28d6f939bd4b030fd':
       'eventSubscription',
@@ -14,6 +16,7 @@ const _walkingSliceStrategiesById = <String, String>{
   'class:vscode.Position': 'opaqueHostObject',
   'class:vscode.Range': 'nativeJsClass',
   'class:vscode.RelativePattern': 'reviewedExcluded',
+  'class:vscode.Uri': 'nativeJsClass',
   'constructor:vscode.Hover.constructor@ba542e9f5fc2931b2263cfd40cedcb0b3f62795cc6c64e9d945f68fe93e1a733':
       'markdownHoverConstructor',
   'constructor:vscode.MarkdownString.constructor@778db11e42722b5fdfd54cb5c08b7cbae6f446502675c24b6e1baafb768f8763':
@@ -22,12 +25,16 @@ const _walkingSliceStrategiesById = <String, String>{
       'reviewedExcluded',
   'constructor:vscode.Range.constructor@feb11e87d50082b0a3dce50eb837c5fb2141e1972675614c832daac107a42aa2':
       'numericRangeConstructor',
+  'enum:vscode.ViewColumn': 'nativeJsEnum',
+  'enumMember:enum:vscode.ViewColumn/One': 'intEnumMember',
   'function:vscode.commands.executeCommand@b17465f671e67bfe53e6a6035f410a9da4014065660ba0353f0c1819e01e51c4':
       'commandExecution',
   'function:vscode.commands.registerCommand@34f73a03df1575981702703e8a718cb4adc33e54b09dd607cb695dbc0a6fe811':
       'commandRegistration',
   'function:vscode.languages.registerHoverProvider@359bc682e80de72a8b404f4910825931a7d3218571ce6fbc7c24e51b6fdda82c':
       'hoverProviderRegistration',
+  'function:vscode.window.createWebviewPanel@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71':
+      'webviewPanelCreation',
   'interface:global.Thenable': 'thenableFutureBridge',
   'interface:vscode.CancellationToken': 'opaqueHostObject',
   'interface:vscode.DocumentFilter': 'reviewedExcluded',
@@ -35,27 +42,60 @@ const _walkingSliceStrategiesById = <String, String>{
   'interface:vscode.ExtensionContext': 'opaqueHostObject',
   'interface:vscode.HoverProvider': 'providerObject',
   'interface:vscode.TextDocument': 'opaqueHostObject',
+  'interface:vscode.Webview': 'opaqueHostObject',
+  'interface:vscode.WebviewOptions': 'jsObjectLiteral',
+  'interface:vscode.WebviewPanel': 'opaqueHostObject',
+  'interface:vscode.WebviewPanelOptions': 'reviewedExcluded',
   'method:vscode.Disposable.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650':
       'disposeMethod',
   r'method:vscode.ExtensionContext.subscriptions.$element.$type.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650':
       'disposeMethod',
   'method:vscode.HoverProvider.provideHover@a969cbd1bc9d722b55f274c6a1498f88b5a0f8111d844c87acb34af847215f47':
       'providerCallback',
+  'method:vscode.Uri.joinPath@def462330bbbdd12dba18cecdb919bfb417658caeb2e1f58c491cbffb8630c60':
+      'uriJoinPath',
+  'method:vscode.Uri.toString@f34ea61ca7bffcee2909bb6d6e58a9ac5b97c70f77ba6a2e899890a9aadbfd06':
+      'uriToString',
+  'method:vscode.Webview.asWebviewUri@d651d976be2224c53dd59a45880372a0ad40e686c697b38c14bcd4a900d02675':
+      'unaryUriMethod',
+  'method:vscode.Webview.postMessage@a2972cc260d088838e09de8dc683393276ed8c03d172023d9a807a9d585d71a1':
+      'thenableBoolMethod',
+  'method:vscode.WebviewPanel.dispose@0d951b53cb391f95a153c09ca504c6a20544ab772eee3ddde2cb90e82f2af650':
+      'disposeMethod',
   'namespace:vscode.commands': 'namespaceObject',
   'namespace:vscode.languages': 'namespaceObject',
+  'namespace:vscode.window': 'namespaceObject',
   'namespace:vscode.workspace': 'namespaceObject',
   r'property:class:vscode.Position/$instance/character': 'intGetterProjection',
   r'property:class:vscode.Position/$instance/line': 'intGetterProjection',
   r'property:interface:vscode.CancellationToken/$instance/isCancellationRequested':
       'boolGetterProjection',
+  r'property:interface:vscode.ExtensionContext/$instance/extensionUri':
+      'objectGetterProjection',
   r'property:interface:vscode.ExtensionContext/$instance/subscriptions':
       'subscriptionsArray',
+  r'property:interface:vscode.Webview/$instance/cspSource':
+      'stringGetterProjection',
+  r'property:interface:vscode.Webview/$instance/html':
+      'stringGetterSetterProjection',
+  r'property:interface:vscode.Webview/$instance/onDidReceiveMessage':
+      'eventValue',
+  r'property:interface:vscode.WebviewOptions/$instance/enableScripts':
+      'boolObjectField',
+  r'property:interface:vscode.WebviewOptions/$instance/localResourceRoots':
+      'uriArrayObjectField',
+  r'property:interface:vscode.WebviewPanel/$instance/onDidDispose':
+      'voidEventValue',
+  r'property:interface:vscode.WebviewPanel/$instance/webview':
+      'objectGetterProjection',
   'typeAlias:vscode.DocumentSelector': 'stringSelectorProjection',
   'typeAlias:vscode.GlobPattern': 'reviewedExcluded',
   'typeAlias:vscode.MarkedString': 'reviewedExcluded',
   'typeAlias:vscode.ProviderResult': 'providerResultProjection',
   r'typeLiteral:vscode.ExtensionContext.subscriptions.$element.$type@f5716cc35f40e12ce43adfbf37b72dc3bb90a514875ac7efb9346af4aa710ba9':
       'disposableStructuralType',
+  r'typeLiteral:vscode.window.createWebviewPanel.$signature@4af3ed891d6653b0e15049855163b86a1bb88077e84074494d213b532780dd71.$parameter2.$item1.$type@d5b6776560804b01b07459130bbbedf0f397f2e563430e59e2fd6209012306ac':
+      'reviewedExcluded',
   'variable:vscode.workspace.onDidOpenTextDocument': 'eventValue',
 };
 
@@ -87,6 +127,7 @@ final class VSCodeGeneratedBindings {
 /// Generates the reviewed VS Code API slice selected by Semantic Overrides.
 final class VSCodeBindingGenerator {
   static const _strategies = {
+    'boolObjectField',
     'boolGetterProjection',
     'commandExecution',
     'commandRegistration',
@@ -96,12 +137,16 @@ final class VSCodeBindingGenerator {
     'eventType',
     'eventValue',
     'hoverProviderRegistration',
+    'intEnumMember',
     'intGetterProjection',
+    'jsObjectLiteral',
     'markdownHoverConstructor',
     'markdownStringConstructor',
     'namespaceObject',
     'nativeJsClass',
+    'nativeJsEnum',
     'numericRangeConstructor',
+    'objectGetterProjection',
     'opaqueHostObject',
     'opaqueJsObject',
     'providerCallback',
@@ -109,8 +154,17 @@ final class VSCodeBindingGenerator {
     'providerResultProjection',
     'reviewedExcluded',
     'stringSelectorProjection',
+    'stringGetterProjection',
+    'stringGetterSetterProjection',
     'subscriptionsArray',
+    'thenableBoolMethod',
     'thenableFutureBridge',
+    'unaryUriMethod',
+    'uriArrayObjectField',
+    'uriJoinPath',
+    'uriToString',
+    'voidEventValue',
+    'webviewPanelCreation',
   };
 
   /// Validates [overrides] against [inventory] and emits deterministic files.
@@ -128,6 +182,23 @@ final class VSCodeBindingGenerator {
       product['version'],
       'inventory.source.product.version',
     );
+    final projectApiTargetValue = project['apiTarget'];
+    if (projectApiTargetValue is! String || projectApiTargetValue.isEmpty) {
+      throw const VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'project.apiTarget is required and must name an exact pinned VS Code '
+            'version.',
+      );
+    }
+    final projectApiTarget = projectApiTargetValue;
+    if (projectApiTarget != inventoryVersion) {
+      throw VSCodeBindingGenerationException(
+        'PROJECT_API_TARGET_MISMATCH',
+        'project.apiTarget $projectApiTarget differs from this build; the '
+            'inventory targets $inventoryVersion. Select $inventoryVersion '
+            'or provide the matching pinned inventory and Semantic Overrides.',
+      );
+    }
     final inputSha256 = _string(
       source['inputSha256'],
       'inventory.source.inputSha256',
@@ -176,7 +247,25 @@ final class VSCodeBindingGenerator {
             '$manifestValidatorSha256.',
       );
     }
-    final projectName = _nonEmptyString(project['name'], 'project.name');
+    final commandsContributionSchemaSha256 =
+        _validateCommandsContributionSchema(inventory);
+    final overrideCommandsContributionSchemaSha256 = _string(
+      overrides['commandsContributionSchemaSha256'],
+      'overrides.commandsContributionSchemaSha256',
+    );
+    if (overrideCommandsContributionSchemaSha256 !=
+        commandsContributionSchemaSha256) {
+      throw VSCodeBindingGenerationException(
+        'CONTRIBUTION_SCHEMA_PIN_MISMATCH',
+        'Semantic Overrides reviewed commands contribution schema '
+            '$overrideCommandsContributionSchemaSha256, but the inventory '
+            'uses $commandsContributionSchemaSha256.',
+      );
+    }
+    final projectName = _extensionIdentifierComponent(
+      project['name'],
+      'project.name',
+    );
     final displayName = _nonEmptyString(
       project['displayName'],
       'project.displayName',
@@ -192,7 +281,7 @@ final class VSCodeBindingGenerator {
         'project.version must be a valid semantic version.',
       );
     }
-    final publisher = _nonEmptyString(
+    final publisher = _extensionIdentifierComponent(
       project['publisher'],
       'project.publisher',
     );
@@ -205,6 +294,7 @@ final class VSCodeBindingGenerator {
       ))
         _string(event, 'project.activationEvents entry'),
     ];
+    final commands = _projectCommands(project['commands']);
     final declarations = _objectList(
       inventory['declarations'],
       'inventory.declarations',
@@ -297,7 +387,8 @@ final class VSCodeBindingGenerator {
       } else if (!hostVerified) {
         throw VSCodeBindingGenerationException(
           'INVALID_OVERRIDE',
-          'Emitted binding $id must be host-verified for Checkpoint 2.',
+          'Emitted binding $id must be host-verified before it enters the '
+              'reviewed slice.',
         );
       }
       strategiesById[id] = strategy;
@@ -347,6 +438,7 @@ final class VSCodeBindingGenerator {
       inputSha256: inputSha256,
       manifestSchemaSha256: manifestSchemaSha256,
       manifestValidatorSha256: manifestValidatorSha256,
+      commandsContributionSchemaSha256: commandsContributionSchemaSha256,
       declarationsById: declarationsById,
       entries: entries,
       strategiesById: strategiesById,
@@ -362,14 +454,20 @@ final class VSCodeBindingGenerator {
       'engines': <String, Object?>{'vscode': inventoryVersion},
       'main': './out/bootstrap.cjs',
       'activationEvents': activationEvents,
+      if (commands.isNotEmpty)
+        'contributes': <String, Object?>{'commands': commands},
     };
+    final dartExtensionId = jsonEncode(extensionId);
+    final javaScriptExtensionKey = jsonEncode(extensionKey);
     final hostExports = '''
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 
 import 'dart:js_interop';
 
 /// Fully qualified extension identifier used by the generated host.
-const generatedExtensionId = '$extensionId';
+// The JSON encoder deliberately emits a double-quoted, escaped Dart literal.
+// ignore: prefer_single_quotes
+const generatedExtensionId = $dartExtensionId;
 
 /// Collision-resistant key used for this extension's JavaScript globals.
 const generatedExtensionKey =
@@ -402,7 +500,7 @@ const extensionKey = `e_\${crypto
   .createHash('sha256')
   .update(extensionId)
   .digest('hex')}`;
-const emittedExtensionKey = '$extensionKey';
+const emittedExtensionKey = $javaScriptExtensionKey;
 if (extensionKey !== emittedExtensionKey) {
   throw new Error('Generated Dart and manifest extension identities differ.');
 }
@@ -450,6 +548,8 @@ void _validateInputSchemaVersion(
 void _validateProjectDescriptor(Map<String, Object?> project) {
   const expectedKeys = {
     'activationEvents',
+    'apiTarget',
+    'commands',
     'description',
     'displayName',
     'name',
@@ -532,6 +632,9 @@ extension type VSCode.fromJS(JSObject _) implements JSObject {
   /// Language feature registration APIs.
   external Languages get languages;
 
+  /// Window and Flutter View panel APIs.
+  external Window get window;
+
   /// Workspace state and event APIs.
   external Workspace get workspace;
 }
@@ -568,6 +671,9 @@ extension type Disposable.fromJS(JSObject _)
 
 /// Native VS Code extension activation context.
 extension type ExtensionContext.fromJS(JSObject _) implements JSObject {
+  /// Root URI of the installed extension.
+  external Uri get extensionUri;
+
   /// Registrations VS Code disposes with the extension.
   external JSArray<DisposableLike> get subscriptions;
 }
@@ -603,9 +709,56 @@ extension type Workspace.fromJS(JSObject _) implements JSObject {
   external Event<TextDocument> get onDidOpenTextDocument;
 }
 
+/// Selected `vscode.window` operations.
+extension type Window.fromJS(JSObject _) implements JSObject {
+  /// Creates a native VS Code panel that hosts one Flutter View.
+  external WebviewPanel createWebviewPanel(
+    JSString viewType,
+    JSString title,
+    int showOptions, [
+    WebviewOptions options,
+  ]);
+}
+
+/// Reviewed numeric values from VS Code's `ViewColumn` enum.
+abstract final class ViewColumn {
+  /// The first editor column.
+  static const int one = 1;
+}
+
+/// Native options passed when a Flutter View panel is created.
+@JS()
+extension type WebviewOptions._(JSObject _) implements JSObject {
+  /// Creates the reviewed options shape used by Flutter Views.
+  external factory WebviewOptions({
+    bool enableScripts,
+    JSArray<Uri> localResourceRoots,
+  });
+}
+
 /// Callable native VS Code event.
 extension type Event<T extends JSAny?>.fromJS(JSFunction _)
     implements JSFunction {
+  /// Subscribes [listener] and returns its native disposable.
+  Disposable call(
+    JSFunction listener, [
+    JSAny? thisArgs,
+    JSArray<Disposable>? disposables,
+  ]) {
+    final JSAny? result;
+    if (disposables != null) {
+      result = _.callAsFunction(null, listener, thisArgs, disposables);
+    } else if (thisArgs != null) {
+      result = _.callAsFunction(null, listener, thisArgs);
+    } else {
+      result = _.callAsFunction(null, listener);
+    }
+    return Disposable.fromJS(result! as JSObject);
+  }
+}
+
+/// Callable native VS Code event that carries no value.
+extension type VoidEvent.fromJS(JSFunction _) implements JSFunction {
   /// Subscribes [listener] and returns its native disposable.
   Disposable call(
     JSFunction listener, [
@@ -631,6 +784,56 @@ extension type Position.fromJS(JSObject _) implements JSObject {
 
   /// Zero-based character offset.
   external int get character;
+}
+
+/// Native VS Code URI with the reviewed Flutter View operations.
+@JS(
+  '__flutterVscode.apis.$extensionKey.Uri',
+)
+extension type Uri._(JSObject _) implements JSObject {
+  /// Joins one path segment onto [base].
+  @JS('joinPath')
+  external static Uri joinPath(Uri base, JSString pathSegment);
+
+  /// Serializes this URI using VS Code's URI implementation.
+  @JS('toString')
+  // VS Code defines this as a positional boolean parameter.
+  // ignore: avoid_positional_boolean_parameters
+  external JSString toUriString([bool skipEncoding]);
+}
+
+/// Native VS Code panel that hosts one Flutter View.
+extension type WebviewPanel.fromJS(JSObject _)
+    implements JSObject, DisposableLike {
+  /// The panel's web content surface.
+  external Webview get webview;
+
+  /// Fires once when the panel is disposed.
+  external VoidEvent get onDidDispose;
+
+  /// Closes the panel and releases its resources.
+  external JSAny? dispose();
+}
+
+/// Native VS Code web content surface for a Flutter View.
+extension type Webview.fromJS(JSObject _) implements JSObject {
+  /// Current HTML document source.
+  external JSString get html;
+
+  /// Replaces the HTML document source.
+  external set html(JSString value);
+
+  /// Source allowed by VS Code's content security policy.
+  external JSString get cspSource;
+
+  /// Converts an extension resource URI into a panel-safe URI.
+  external Uri asWebviewUri(Uri localResource);
+
+  /// Posts [message] to the Flutter View runtime.
+  external Thenable<JSBoolean> postMessage(JSAny? message);
+
+  /// Fires when the Flutter View posts a message to Host Dart.
+  external Event<JSAny?> get onDidReceiveMessage;
 }
 
 /// Native VS Code markdown content.
@@ -706,6 +909,58 @@ extension WorkspaceFacade on Workspace {
   Disposable listenOnDidOpenTextDocument(JSFunction listener) =>
       onDidOpenTextDocument(listener);
 }
+
+/// Dart-friendly Flutter View panel creation over the parity layer.
+extension WindowFacade on Window {
+  /// Creates a panel with scripts enabled and scoped local resource roots.
+  WebviewPanel createFlutterViewPanel({
+    required String viewType,
+    required String title,
+    required List<Uri> localResourceRoots,
+    int viewColumn = ViewColumn.one,
+  }) => createWebviewPanel(
+    viewType.toJS,
+    title.toJS,
+    viewColumn,
+    WebviewOptions(
+      enableScripts: true,
+      localResourceRoots: localResourceRoots.toJS,
+    ),
+  );
+}
+
+/// Dart-friendly URI helpers over VS Code's native URI values.
+extension UriFacade on Uri {
+  /// Serializes this URI to a Dart string.
+  String toDartString({bool skipEncoding = false}) =>
+      toUriString(skipEncoding).toDart;
+}
+
+/// Dart-friendly lifecycle helpers for a Flutter View panel.
+extension WebviewPanelFacade on WebviewPanel {
+  /// Subscribes [listener] to panel disposal.
+  Disposable listenOnDidDispose(JSFunction listener) => onDidDispose(listener);
+}
+
+/// Dart-friendly messaging helpers for a Flutter View.
+extension WebviewFacade on Webview {
+  /// Current HTML as a Dart string.
+  String get htmlText => html.toDart;
+
+  /// Replaces the HTML from a Dart string.
+  set htmlText(String value) => html = value.toJS;
+
+  /// Content security policy source as a Dart string.
+  String get contentSecurityPolicySource => cspSource.toDart;
+
+  /// Posts [message] and reports whether it was accepted by the panel.
+  Future<bool> postMessageFuture(JSAny? message) async =>
+      (await postMessage(message).toDart).toDart;
+
+  /// Subscribes [listener] to messages from the Flutter View.
+  Disposable listenOnDidReceiveMessage(JSFunction listener) =>
+      onDidReceiveMessage(listener);
+}
 ''';
 }
 
@@ -778,29 +1033,43 @@ void _validateWalkingSliceProfile(
   }
 
   const expectedCounts = <String, int>{
+    'boolObjectField': 1,
     'boolGetterProjection': 1,
     'commandExecution': 1,
     'commandRegistration': 1,
     'disposableStructuralType': 1,
-    'disposeMethod': 2,
+    'disposeMethod': 3,
     'eventSubscription': 1,
     'eventType': 1,
-    'eventValue': 1,
+    'eventValue': 2,
     'hoverProviderRegistration': 1,
+    'intEnumMember': 1,
     'intGetterProjection': 2,
+    'jsObjectLiteral': 1,
     'markdownHoverConstructor': 1,
     'markdownStringConstructor': 1,
-    'namespaceObject': 3,
-    'nativeJsClass': 4,
+    'namespaceObject': 4,
+    'nativeJsClass': 5,
+    'nativeJsEnum': 1,
     'numericRangeConstructor': 1,
-    'opaqueHostObject': 4,
+    'objectGetterProjection': 2,
+    'opaqueHostObject': 6,
     'providerCallback': 1,
     'providerObject': 1,
     'providerResultProjection': 1,
-    'reviewedExcluded': 5,
+    'reviewedExcluded': 7,
+    'stringGetterProjection': 1,
+    'stringGetterSetterProjection': 1,
     'stringSelectorProjection': 1,
     'subscriptionsArray': 1,
+    'thenableBoolMethod': 1,
     'thenableFutureBridge': 1,
+    'unaryUriMethod': 1,
+    'uriArrayObjectField': 1,
+    'uriJoinPath': 1,
+    'uriToString': 1,
+    'voidEventValue': 1,
+    'webviewPanelCreation': 1,
   };
   final actualCounts = <String, int>{};
   for (final strategy in strategiesById.values) {
@@ -818,19 +1087,38 @@ void _validateWalkingSliceProfile(
     declarationsById,
     strategiesById,
     'namespaceObject',
-    {'commands', 'languages', 'workspace'},
+    {'commands', 'languages', 'window', 'workspace'},
   );
   _expectStrategyNames(
     declarationsById,
     strategiesById,
     'nativeJsClass',
-    {'Disposable', 'Hover', 'MarkdownString', 'Range'},
+    {'Disposable', 'Hover', 'MarkdownString', 'Range', 'Uri'},
   );
   _expectStrategyNames(
     declarationsById,
     strategiesById,
     'opaqueHostObject',
-    {'CancellationToken', 'ExtensionContext', 'Position', 'TextDocument'},
+    {
+      'CancellationToken',
+      'ExtensionContext',
+      'Position',
+      'TextDocument',
+      'Webview',
+      'WebviewPanel',
+    },
+  );
+  _expectStrategyNames(
+    declarationsById,
+    strategiesById,
+    'jsObjectLiteral',
+    {'WebviewOptions'},
+  );
+  _expectStrategyNames(
+    declarationsById,
+    strategiesById,
+    'nativeJsEnum',
+    {'ViewColumn'},
   );
 }
 
@@ -861,6 +1149,7 @@ String _emitCoverageLedger({
   required String inputSha256,
   required String manifestSchemaSha256,
   required String manifestValidatorSha256,
+  required String commandsContributionSchemaSha256,
   required Map<String, Map<String, Object?>> declarationsById,
   required Map<String, Object?> entries,
   required Map<String, String> strategiesById,
@@ -961,7 +1250,7 @@ String _emitCoverageLedger({
       },
       'host': <String, Object?>{
         'status': host,
-        if (host == 'verified') 'contract': 'checkpoint1ExtensionHost',
+        if (host == 'verified') 'contract': 'checkpoint4ExtensionHost',
       },
     });
   }
@@ -978,9 +1267,10 @@ String _emitCoverageLedger({
       'inputSha256': inputSha256,
       'manifestSchemaSha256': manifestSchemaSha256,
       'manifestValidatorSha256': manifestValidatorSha256,
+      'commandsContributionSchemaSha256': commandsContributionSchemaSha256,
     },
     'scope': <String, Object?>{
-      'name': 'checkpoint2WalkingSlice',
+      'name': 'checkpoint4FlutterViewSlice',
       'fullApiParity':
           semanticsPending == 0 && bindingsPending == 0 && hostPending == 0,
       'selectedTargets': strategiesById.length,
@@ -1050,6 +1340,203 @@ String _validateManifestSchema(Map<String, Object?> inventory) {
   return inputSha256;
 }
 
+String _validateCommandsContributionSchema(
+  Map<String, Object?> inventory,
+) {
+  final schemas = _objectMap(
+    inventory['contributionSchemas'],
+    'inventory.contributionSchemas',
+  );
+  if (schemas.keys.length != 1 || !schemas.containsKey('commands')) {
+    throw const VSCodeBindingGenerationException(
+      'INVALID_GENERATOR_INPUT',
+      'Inventory must contain exactly the commands contribution schema.',
+    );
+  }
+  final commands = _objectMap(
+    schemas['commands'],
+    'inventory.contributionSchemas.commands',
+  );
+  final inputSha256 = _string(
+    commands['inputSha256'],
+    'inventory.contributionSchemas.commands.inputSha256',
+  );
+  const expectedProjection = <String, Object?>{
+    'extensionPoint': 'commands',
+    'accepts': <Object?>['object', 'array'],
+    'itemSchema': <String, Object?>{
+      'type': 'object',
+      'required': <Object?>['command', 'title'],
+      'properties': <String, Object?>{
+        'category': <String, Object?>{'type': 'string'},
+        'command': <String, Object?>{'type': 'string'},
+        'enablement': <String, Object?>{'type': 'string'},
+        'icon': <String, Object?>{
+          'anyOf': <Object?>[
+            <String, Object?>{'type': 'string'},
+            <String, Object?>{
+              'type': 'object',
+              'properties': <String, Object?>{
+                'dark': <String, Object?>{'type': 'string'},
+                'light': <String, Object?>{'type': 'string'},
+              },
+            },
+          ],
+        },
+        'shortTitle': <String, Object?>{'type': 'string'},
+        'title': <String, Object?>{'type': 'string'},
+      },
+    },
+    'validation': <String, Object?>{
+      'whitespacePredicate': 'ecmascript-trim-empty',
+      'nonWhitespaceStringProperties': <Object?>['command', 'title'],
+      'icon': <String, Object?>{
+        'objectRequiredStringProperties': <Object?>['dark', 'light'],
+      },
+    },
+  };
+  final projection = Map<String, Object?>.of(commands)..remove('inputSha256');
+  if (jsonEncode(projection) != jsonEncode(expectedProjection)) {
+    final differingPath = _firstJsonDifferencePath(
+      expectedProjection,
+      projection,
+      'inventory.contributionSchemas.commands',
+    );
+    throw VSCodeBindingGenerationException(
+      'INVALID_GENERATOR_INPUT',
+      'Commands contribution schema contains an unprojected change. '
+          'First differing path: $differingPath. Regenerate the IR from the '
+          'pinned inputs; if upstream changed, review and update the generator '
+          'projection before retrying.',
+    );
+  }
+  return inputSha256;
+}
+
+String _firstJsonDifferencePath(
+  Object? expected,
+  Object? actual,
+  String path,
+) {
+  if (expected is Map<Object?, Object?> && actual is Map<Object?, Object?>) {
+    final expectedKeys = expected.keys.whereType<String>().toSet();
+    final actualKeys = actual.keys.whereType<String>().toSet();
+    if (expectedKeys.length != expected.length ||
+        actualKeys.length != actual.length) {
+      return path;
+    }
+    final keys = {...expectedKeys, ...actualKeys}.toList()..sort();
+    for (final key in keys) {
+      final childPath = '$path.$key';
+      if (!expected.containsKey(key) || !actual.containsKey(key)) {
+        return childPath;
+      }
+      if (jsonEncode(expected[key]) != jsonEncode(actual[key])) {
+        return _firstJsonDifferencePath(
+          expected[key],
+          actual[key],
+          childPath,
+        );
+      }
+    }
+    return path;
+  }
+  if (expected is List<Object?> && actual is List<Object?>) {
+    final sharedLength =
+        expected.length < actual.length ? expected.length : actual.length;
+    for (var index = 0; index < sharedLength; index++) {
+      if (jsonEncode(expected[index]) != jsonEncode(actual[index])) {
+        return _firstJsonDifferencePath(
+          expected[index],
+          actual[index],
+          '$path[$index]',
+        );
+      }
+    }
+    return '$path[$sharedLength]';
+  }
+  return path;
+}
+
+List<Map<String, Object?>> _projectCommands(Object? value) {
+  if (value == null) {
+    return const [];
+  }
+  final result = <Map<String, Object?>>[];
+  final identifiers = <String>{};
+  const supportedKeys = {
+    'category',
+    'command',
+    'enablement',
+    'icon',
+    'shortTitle',
+    'title',
+  };
+  for (final rawCommand in _objectList(value, 'project.commands')) {
+    final command = _objectMap(rawCommand, 'project.commands entry');
+    final unknown = command.keys
+        .where((key) => !supportedKeys.contains(key))
+        .toList()
+      ..sort();
+    if (unknown.isNotEmpty) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'Unknown command contribution fields: ${unknown.join(', ')}.',
+      );
+    }
+    final identifier = _nonWhitespaceString(
+      command['command'],
+      'project.commands entry.command',
+    );
+    if (!identifiers.add(identifier)) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'Duplicate command contribution $identifier.',
+      );
+    }
+    final title = _nonWhitespaceString(
+      command['title'],
+      'project.commands entry.title',
+    );
+    result.add(<String, Object?>{
+      'command': identifier,
+      'title': title,
+      for (final key in ['shortTitle', 'category', 'enablement'])
+        if (command[key] != null)
+          key: _string(command[key], 'project.commands entry.$key'),
+      if (command['icon'] != null) 'icon': _projectCommandIcon(command['icon']),
+    });
+  }
+  return result;
+}
+
+Object _projectCommandIcon(Object? value) {
+  if (value is String) {
+    return value;
+  }
+  final icon = _objectMap(value, 'project.commands entry.icon');
+  final unknown = icon.keys
+      .where((key) => key != 'dark' && key != 'light')
+      .toList()
+    ..sort();
+  if (unknown.isNotEmpty ||
+      !icon.containsKey('dark') ||
+      !icon.containsKey('light')) {
+    throw const VSCodeBindingGenerationException(
+      'INVALID_PROJECT_MANIFEST',
+      'Command icon must be a string or an object containing both dark and '
+          'light string paths and no other fields.',
+    );
+  }
+  return <String, Object?>{
+    'dark': _string(icon['dark'], 'project.commands entry.icon.dark'),
+    'light': _string(
+      icon['light'],
+      'project.commands entry.icon.light',
+    ),
+  };
+}
+
 void _expectSchemaType(
   Map<String, Object?> properties,
   String name,
@@ -1113,6 +1600,31 @@ String _nonEmptyString(Object? value, String path) {
     throw VSCodeBindingGenerationException(
       'INVALID_PROJECT_MANIFEST',
       '$path must not be empty.',
+    );
+  }
+  return result;
+}
+
+String _extensionIdentifierComponent(Object? value, String path) {
+  final result = _nonEmptyString(value, path);
+  if (!RegExp(r'^[a-z0-9][a-z0-9-]*$').hasMatch(result)) {
+    throw VSCodeBindingGenerationException(
+      'INVALID_PROJECT_MANIFEST',
+      '$path "$result" is unsafe for a packaged extension identifier. '
+          'flutter_vscode requires lower-kebab components: start with a '
+          'lowercase ASCII letter or digit, then use only lowercase ASCII '
+          'letters, digits, or hyphens.',
+    );
+  }
+  return result;
+}
+
+String _nonWhitespaceString(Object? value, String path) {
+  final result = _string(value, path);
+  if (isEcmaScriptFalsyOrWhitespace(result)) {
+    throw VSCodeBindingGenerationException(
+      'INVALID_PROJECT_MANIFEST',
+      '$path must contain a non-whitespace character.',
     );
   }
   return result;

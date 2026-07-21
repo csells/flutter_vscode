@@ -14,7 +14,7 @@ const extensionKey = `e_${crypto
   .createHash('sha256')
   .update(extensionId)
   .digest('hex')}`;
-const emittedExtensionKey = 'e_ded70adb722dcc045c085661384a28efd7439f252df0117d72ecce65644f64f6';
+const emittedExtensionKey = "e_ded70adb722dcc045c085661384a28efd7439f252df0117d72ecce65644f64f6";
 if (extensionKey !== emittedExtensionKey) {
   throw new Error('Generated Dart and manifest extension identities differ.');
 }

@@ -19,7 +19,8 @@ void main() {
 
     test('scaffolds a VS Code extension project structure', () async {
       final originalDir = Directory.current;
-      final tempDir = await Directory.systemTemp.createTemp('flutter_vscode_test_');
+      final tempDir =
+          await Directory.systemTemp.createTemp('flutter_vscode_test_');
 
       try {
         Directory.current = tempDir;
@@ -62,8 +63,7 @@ void main() {
             File('${tempDir.path}/web/index.html').readAsStringSync();
         expect(webIndex, contains('History pushState blocked for webview'));
 
-        final gitignore =
-            File('${tempDir.path}/.gitignore').readAsStringSync();
+        final gitignore = File('${tempDir.path}/.gitignore').readAsStringSync();
         expect(gitignore, contains('node_modules/'));
         expect(gitignore, contains('*.handlers.ts'));
 
@@ -71,16 +71,45 @@ void main() {
         expect(agentsMd, contains('flutter-vscode-add-command'));
         expect(agentsMd, contains('@VSCodeCommand'));
 
+        const expectedSkillNames = <String>[
+          'flutter-vscode-add-command',
+          'flutter-vscode-build',
+          'flutter-vscode-contributions',
+          'flutter-vscode-extension-host',
+          'flutter-vscode-test',
+          'flutter-vscode-troubleshoot',
+        ];
+        final generatedSkillNames = Directory(
+          '${tempDir.path}/agent-skills',
+        ).listSync().whereType<Directory>().map((directory) {
+          return p.basename(directory.path);
+        });
         expect(
-          File('${tempDir.path}/agent-skills/flutter-vscode-add-command/SKILL.md')
-              .existsSync(),
-          isTrue,
+          generatedSkillNames,
+          unorderedEquals(expectedSkillNames),
         );
-        expect(
-          File('${tempDir.path}/agent-skills/flutter-vscode-build/SKILL.md')
-              .existsSync(),
-          isTrue,
-        );
+        for (final skillName in expectedSkillNames) {
+          expect(
+            File(
+              '${tempDir.path}/agent-skills/$skillName/SKILL.md',
+            ).existsSync(),
+            isTrue,
+            reason: '$skillName should include its advertised skill file',
+          );
+        }
+
+        final addCommandSkill = File(
+          '${tempDir.path}/agent-skills/flutter-vscode-add-command/SKILL.md',
+        ).readAsStringSync();
+        expect(addCommandSkill, contains('@VSCodeCommand'));
+        expect(addCommandSkill, isNot(contains('flutter_vscode build')));
+
+        final buildSkill = File(
+          '${tempDir.path}/agent-skills/flutter-vscode-build/SKILL.md',
+        ).readAsStringSync();
+        expect(buildSkill, contains('build_runner'));
+        expect(buildSkill, contains('npm run compile'));
+        expect(buildSkill, isNot(contains('flutter_vscode build')));
 
         expect(
           File('${tempDir.path}/src/vscode_invoke.ts').readAsStringSync(),
@@ -99,7 +128,8 @@ void main() {
 
     test('does not overwrite existing user-edited scaffold files', () async {
       final originalDir = Directory.current;
-      final tempDir = await Directory.systemTemp.createTemp('flutter_vscode_test_');
+      final tempDir =
+          await Directory.systemTemp.createTemp('flutter_vscode_test_');
 
       try {
         Directory.current = tempDir;
@@ -107,10 +137,14 @@ void main() {
         // Pre-existing user files that should not be clobbered.
         Directory('${tempDir.path}/src').createSync(recursive: true);
         Directory('${tempDir.path}/web').createSync(recursive: true);
-        File('${tempDir.path}/package.json').writeAsStringSync('{"name":"user-package"}');
-        File('${tempDir.path}/tsconfig.json').writeAsStringSync('{"compilerOptions":{"strict":false}}');
-        File('${tempDir.path}/src/extension.ts').writeAsStringSync('// custom extension');
-        File('${tempDir.path}/web/index.html').writeAsStringSync('<html>custom</html>');
+        File('${tempDir.path}/package.json')
+            .writeAsStringSync('{"name":"user-package"}');
+        File('${tempDir.path}/tsconfig.json')
+            .writeAsStringSync('{"compilerOptions":{"strict":false}}');
+        File('${tempDir.path}/src/extension.ts')
+            .writeAsStringSync('// custom extension');
+        File('${tempDir.path}/web/index.html')
+            .writeAsStringSync('<html>custom</html>');
 
         generator.main();
 

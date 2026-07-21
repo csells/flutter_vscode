@@ -1,5 +1,9 @@
 # Dart to VS Code Message Contract
 
+> **Legacy v0 contract:** This is the annotation/TypeScript webview bridge used
+> by existing v0 projects. Dart-owned extensions use direct generated host
+> interop and the versioned Flutter View protocol in `package:flutter_vscode/view.dart`.
+
 This document defines the wire contract between generated Dart controllers
 and generated TypeScript command handlers.
 

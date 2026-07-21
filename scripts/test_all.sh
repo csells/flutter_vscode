@@ -48,4 +48,8 @@ echo "==> Running pinned VS Code Extension Host checks..."
 ./scripts/test_host_extension.sh
 
 echo
+echo "==> Installing and exercising a packaged Dart-owned extension..."
+./scripts/test_packaged_extension.sh
+
+echo
 echo "All tests and build_runner checks completed successfully."

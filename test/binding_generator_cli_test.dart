@@ -50,7 +50,15 @@ void main() {
     final checkedInFiles = await _readManagedFixtureTree(
       Directory('test/fixtures/host_extension'),
     );
-    expect(checkedInFiles.keys, unorderedEquals(firstFiles.keys));
+    final nonBindingFiles = checkedInFiles.keys
+        .toSet()
+        .difference(firstFiles.keys.toSet());
+    expect(
+      nonBindingFiles,
+      anyOf(isEmpty, {'host/lib/generated/view_protocol.g.dart'}),
+      reason: 'Only the CLI-owned shared view protocol may live beside the '
+          'binding generator outputs.',
+    );
     for (final entry in firstFiles.entries) {
       if (!_bytesEqual(checkedInFiles[entry.key]!, entry.value)) {
         fail(

@@ -1,67 +1,63 @@
 # Quickstart
 
-## 1) Scaffold a project
+## 1. Install the CLI
 
-Run in your extension project root:
-
-```bash
-dart run flutter_vscode:generate_vscode_extension
+```sh
+dart pub global activate flutter_vscode
 ```
 
-Then install dependencies:
+For local repository development, use
+`dart pub global activate --source path /path/to/flutter_vscode`.
 
-```bash
-flutter pub get
-npm install
+## 2. Create an Extension Project
+
+```sh
+flutter_vscode create my_extension
+cd my_extension
 ```
 
-## 2) Define controller API in Dart
+The project separates pure host Dart, optional Flutter views, and a pure shared
+Dart package. It contains no author-maintained JavaScript, TypeScript, or
+`package.json`.
 
-Create an abstract controller with annotations in `lib/vscode_api.dart` (or another Dart library):
+`extension.dart` is the source of truth for metadata and contributions. Its
+`apiTarget` selects the exact pinned VS Code API and controls the generated
+`engines.vscode` value. Change that target only as an explicit compatibility
+decision.
 
-```dart
-import 'package:flutter_vscode/runtime.dart';
+## 3. Implement host behavior
 
-@VSCodeController()
-abstract class VSCodeApi {
-  @VSCodeCommand('window.showInformationMessage')
-  Future<void> info(String message);
-}
+Edit `host/lib/extension.dart`. Host code runs when the extension activates,
+even if no Flutter view exists. Keep Flutter, browser-only libraries, `dart:io`,
+and other unsupported platform APIs out of `host/` and `shared/`; `build` checks
+these boundaries.
+
+## 4. Build and debug
+
+```sh
+flutter_vscode build
 ```
 
-Run generation:
+This deterministically regenerates the manifest, bindings, bootstrap, host
+JavaScript, source map, and `.vscode/launch.json`. Open the project in VS Code
+and press F5 to launch the generated debug configuration.
 
-```bash
-dart run build_runner build --delete-conflicting-outputs
+## 5. Package
+
+```sh
+flutter_vscode package
 ```
 
-## 3) Initialize bridge in Flutter app
+The command validates framework-managed artifacts and writes the VSIX beneath
+`build/`. Install that file with VS Code's **Extensions: Install from VSIX…**
+command.
 
-In `main()`:
+The current proof targets VS Code 1.129.1 and a reviewed command/hover slice;
+consult [VS Code API Mapping](../reference/vscode-api-mapping.md) before assuming
+another API is generated.
 
-```dart
-import 'package:flutter_vscode/flutter_vscode.dart';
+## Legacy webview scaffold
 
-VSCodeWebViewHelper.initialize();
-```
-
-## 4) Build extension artifacts
-
-```bash
-npm run compile
-```
-
-This compiles TypeScript and builds Flutter web output used by the VS Code webview.
-
-## 5) Debug
-
-Open project in VS Code and press F5 to start the extension host.
-
-## Agent-assisted workflow
-
-Copy skills and consumer `AGENTS.md` into your project (see
-[Agent-Assisted Development](agent-assisted-development.md)). Describe VS Code
-API needs in plain language; your agent adds `@VSCodeCommand` methods and runs
-`build_runner`.
-
-API patterns: [VS Code API Mapping](../reference/vscode-api-mapping.md).
+`dart run flutter_vscode:generate_vscode_extension` remains for existing v0
+projects. It uses the older Node/TypeScript bridge and is not the canonical
+Dart-host workflow above.

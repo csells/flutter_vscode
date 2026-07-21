@@ -8,5 +8,17 @@
     "vscode": "1.129.1"
   },
   "main": "./out/bootstrap.cjs",
-  "activationEvents": []
+  "activationEvents": [],
+  "contributes": {
+    "commands": [
+      {
+        "command": "flutter-vscode.host-test.ping",
+        "title": "Ping Dart Host"
+      },
+      {
+        "command": "flutter-vscode.host-test.openFlutterView",
+        "title": "Open Flutter View Fixture"
+      }
+    ]
+  }
 }

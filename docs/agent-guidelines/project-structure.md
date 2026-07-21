@@ -2,14 +2,20 @@
 
 ## Project Type
 
-This repository is a Flutter package (library), not a standalone app. It provides code generation and runtime utilities for VS Code extension development.
+This repository is a Flutter package, not a standalone app. It provides the
+Extension Project CLI, deterministic VS Code binding generation, pure-Dart
+host utilities, an optional Flutter View protocol, and legacy v0 generators.
 
 ## Expected Layout
 
-- `lib/` package code (generators, annotations, runtime utilities)
-- `example/` example usage
-- `bin/` CLI tools, including `generate_vscode_extension`
-- `tool/` code generation templates
+- `lib/` public APIs and runtime/protocol implementation.
+- `bin/flutter_vscode.dart` canonical `create`, `build`, and `package` CLI.
+- `tool/binding_importer/` pinned TypeScript-to-IR maintainer tooling.
+- `tool/binding_generator/` IR/override-to-Dart and manifest generation.
+- `tool/bindings/` pinned inputs, canonical IR, and Semantic Overrides.
+- `test/fixtures/host_extension/` real Extension Host and Flutter View fixture.
+- `example/` legacy v0 integration fixture.
+- `bin/generate_vscode_extension.dart` and TypeScript templates: legacy v0.
 
 ## Dependency Guidance
 

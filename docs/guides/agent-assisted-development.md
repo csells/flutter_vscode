@@ -1,129 +1,73 @@
 # Agent-Assisted Development
 
-Build flutter_vscode extensions with AI agents handling VS Code API translation
-while you focus on Flutter UI and product behavior.
-
-## Model
-
-```
-You describe intent → Agent adds annotations + UI → build_runner + compile → F5
-```
-
-Annotations (`@VSCodeController`, `@VSCodeCommand`) are the **agent output
-format** — not something you should translate from VS Code docs by hand.
+Use an agent to translate product intent into Dart-owned extension metadata,
+Host Dart behavior, and optional Flutter UI without introducing an author-side
+Node or TypeScript layer.
 
 ## Setup
 
-### 1. Scaffold your extension
-
-```bash
-dart run flutter_vscode:generate_vscode_extension
+```sh
+dart pub global activate flutter_vscode
+flutter_vscode create my_extension
+cd my_extension
 ```
 
-This creates `AGENTS.md`, `agent-skills/`, and `src/vscode_invoke.ts` automatically.
+Point the agent at the project `AGENTS.md` and `agent-skills/`. If those files
+are not present yet, copy the [consumer template](../templates/consumer-agents.md)
+and the repository `skills/` tree.
 
-## Dynamic invoke vs annotations
+## Working model
 
-| | `VSCode.instance.invoke` | `@VSCodeCommand` |
-|---|---|---|
-| build_runner | Not required | Required after changes |
-| Typed API | Runtime / manual generics | Generated controller |
-| Best for | Prototyping, agent experiments | Stable extension API |
-
-```dart
-await VSCode.instance.invoke<void>(
-  'window.showWarningMessage',
-  ['Check this before shipping'],
-  expectsResponse: false,
-);
+```text
+intent -> check pinned API coverage -> edit author-owned Dart -> build -> test
 ```
 
-### 2. Wire skills into your agent tool
+An agent should first verify that the requested VS Code symbols exist in the
+generated bindings and `coverage.json`. It must not infer a likely binding,
+handwrite a shadow API, or edit generated interop to make an unsupported symbol
+compile. Expanding the API is a framework contribution: update pinned official
+inputs, IR, reviewed Semantic Overrides, generation, and host tests.
 
-Skills ship in the `flutter_vscode` package under `skills/` and are copied to
-`agent-skills/` in scaffolded projects. They are plain markdown — not tied to
-one vendor.
+For a supported feature, the agent edits:
 
-| Skill | Purpose |
-|---|---|
-| `flutter-vscode-add-command` | Add VS Code API calls from Flutter |
-| `flutter-vscode-contributions` | `package.json` views, commands, menus |
-| `flutter-vscode-extension-host` | `src/extension.ts` host patterns |
-| `flutter-vscode-build` | build_runner + compile pipeline |
-| `flutter-vscode-test` | VM tests without webview |
-| `flutter-vscode-troubleshoot` | Diagnose common failures |
+- `extension.dart` for metadata and contributions;
+- `host/lib/**` for activation, commands, providers, events, and native VS Code
+  object lifecycles;
+- `shared/lib/**` for runtime-neutral values; and
+- `views/**` for optional Flutter UI and typed, allowlisted host calls.
 
-**Per project (default after scaffold):** use `agent-skills/` in your extension
-root. Point your agent at `AGENTS.md` and the relevant `SKILL.md` files.
+It then runs:
 
-**Manual install from the package repo:**
-
-```bash
-cp docs/templates/consumer-agents.md ./AGENTS.md
-mkdir -p agent-skills
-cp -r /path/to/flutter_vscode/skills/* agent-skills/
+```sh
+flutter_vscode build
 ```
 
-**Tool-specific wiring (optional):** if your product expects skills elsewhere,
-copy or symlink from `agent-skills/`:
+The agent must not edit `package.json`, generated host bindings, the CommonJS
+bootstrap, JavaScript bundles, source maps, or VSIX contents.
 
-| Product | Typical skills location |
-|---|---|
-| Cursor | `.cursor/skills/` or `~/.cursor/skills/` |
-| Other agents | Follow that product's docs for custom rules / skills |
+## Example prompts
 
-`AGENTS.md` at the project root is the primary, tool-agnostic entry point.
+> Add a contributed command named “Show Greeting,” register it in Host Dart,
+> and return the selected editor language when the currently generated API
+> supports that operation.
 
-### 3. Point your agent at project rules
+> Add an optional Flutter view. Keep provider logic in Host Dart, expose one
+> allowlisted value operation to the view, and verify protocol cleanup when the
+> panel closes.
 
-Ensure `AGENTS.md` is in your extension project root (see
-[consumer template](../templates/consumer-agents.md)).
+> Check whether the pinned API target supports a tree data provider. If it does
+> not, report the missing IR entries instead of inventing bindings.
 
-## Example Prompts
+## Review checklist
 
-**Add a dialog:**
+1. `extension.dart` retains the explicit `apiTarget`.
+2. Host behavior works before any view opens and after a view closes.
+3. Cross-runtime messages use typed protocol operations and value snapshots.
+4. Host/shared dependency checks pass.
+5. A second `flutter_vscode build` reproduces managed artifacts.
+6. `flutter_vscode package` validates the VSIX.
+7. No author-owned `.js`, `.ts`, or `package.json` was added.
 
-> Add a quick pick with three deployment targets. When selected, show an
-> information message with the choice. Use our vscode_api controller.
-
-**Add workspace integration:**
-
-> Add a command to read `myExtension.serverUrl` from workspace configuration
-> and display it in the Flutter UI.
-
-**Add palette command:**
-
-> Register a "Refresh" command in the command palette that reloads data in
-> the Flutter webview.
-
-## Manual Fallback (No Agent)
-
-Use [VS Code API Mapping](../reference/vscode-api-mapping.md) as a copy-paste
-catalog of annotation patterns. The scaffold `lib/vscode_api.dart` includes
-starter examples.
-
-## Agent Eval Checklist
-
-Verify your agent workflow with these scenarios:
-
-1. Add `showWarningMessage` and call from a button
-2. Add `showQuickPick` with three options
-3. Add `showInputBox` with options map
-4. Chain pick → toast in Flutter UI
-5. Run build_runner without being reminded
-6. Do not edit `*.handlers.ts`
-7. `npm run compile` succeeds
-8. F5 smoke test passes
-
-## Mixed Audience
-
-| You | Use |
-|---|---|
-| AI-assisted | `AGENTS.md` + `agent-skills/` + natural language prompts |
-| Manual coding | API mapping reference + scaffold examples |
-
-## Related
-
-- [VS Code API Mapping](../reference/vscode-api-mapping.md)
-- [Quickstart](quickstart.md)
-- [Troubleshooting](troubleshooting.md)
+The original annotation/TypeScript agent workflow remains documented in the
+[legacy API mapping](../reference/vscode-api-mapping.md) for existing v0
+projects.

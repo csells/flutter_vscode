@@ -1,150 +1,78 @@
 # flutter_vscode
 
-Build VS Code extensions with Flutter web UI and Dart-first controller logic.
-`flutter_vscode` provides annotations, code generation, runtime bridge APIs,
-and a scaffold command so you can avoid hand-written webview wiring.
+Build VS Code extensions with Dart-owned activation, commands, and providers,
+plus optional Flutter webviews. Host Dart compiles to JavaScript that runs
+inside VS Code's Extension Host; generated bindings preserve native VS Code
+objects and callbacks.
 
-## What this package provides
+This repository currently proves one pinned slice against VS Code 1.129.1. It
+is an implementation milestone, not a claim of full API parity.
 
-- Annotation-driven Dart and TypeScript generation with `@VSCodeController` and `@VSCodeCommand`.
-- Runtime request/response messaging between Flutter webview code and VS Code extension host.
-- Scaffold CLI: `dart run flutter_vscode:generate_vscode_extension`.
-- Webview-safe default build assets and compile script.
-- **Agent toolkit:** curated skills and `AGENTS.md` template so AI agents handle VS Code API translation (see [Agent-Assisted Development](docs/guides/agent-assisted-development.md)).
-- **Dynamic invoke:** `VSCode.instance.invoke('window.showInputBox', [...])` for VS Code API calls without `build_runner` (see [Message Contract](docs/reference/message-contract.md)).
+## Dart-only author workflow
 
-## Prerequisites
+Install the CLI and create a dedicated Extension Project:
 
-- Flutter SDK (includes Dart)
-- Node.js + npm
-- VS Code
-
-## Quickstart
-
-1. Add dependency and generator tools:
-
-```yaml
-dependencies:
-  flutter_vscode: ^0.1.0
-
-dev_dependencies:
-  build_runner: ^2.10.4
+```sh
+dart pub global activate flutter_vscode
+flutter_vscode create my_extension
+cd my_extension
+flutter_vscode build
+flutter_vscode package
 ```
 
-2. Generate extension scaffold:
+From a repository checkout, replace the first command with:
 
-```bash
-dart run flutter_vscode:generate_vscode_extension
+```sh
+dart pub global activate --source path .
 ```
 
-3. Install dependencies:
+`build` generates the VS Code manifest, native interop bindings, CommonJS
+bootstrap, host bundle, source map, and launch configuration. `package` writes
+`build/my-extension-0.0.1.vsix` and validates its installable layout. Neither
+command asks an extension author to install Node, run npm, write TypeScript, or
+copy JavaScript files.
 
-```bash
-flutter pub get
-npm install
+The scaffold makes runtime boundaries visible:
+
+```text
+extension.dart       Dart-owned metadata and contributions
+host/                pure Dart Extension Host behavior
+shared/              pure Dart package shared across runtimes
+views/               optional Flutter webviews
 ```
 
-4. Define controller API in Dart:
+Edit `extension.dart` and `host/lib/extension.dart`, then rerun `build`.
+Treat `package.json`, `coverage.json`, `.vscode/launch.json`, generated host
+bindings, `out/`, and VSIX files as framework-managed artifacts.
 
-```dart
-import 'package:flutter_vscode/runtime.dart';
+See the [Quickstart](docs/guides/quickstart.md) and
+[Generated File Ownership](docs/guides/generated-file-ownership.md).
 
-part 'vscode_api.vscode.g.part';
+## Legacy v0 webview workflow
 
-@VSCodeController()
-abstract class VSCodeApi {
-  @VSCodeCommand('window.showInformationMessage')
-  Future<void> info(String message);
+The original `generate_vscode_extension` command, annotation generator, and
+TypeScript request/response bridge remain available while the Dart-host path is
+built out. That compatibility workflow requires Node/npm and should not be used
+as the architecture for new host callbacks or provider logic.
 
-  @VSCodeCommand('window.showInputBox')
-  Future<String?> inputBox(String prompt);
-}
+## Repository validation
 
-VSCodeApi createVSCodeApi() => _$VSCodeApi();
+Contributors need Flutter, Docker, and a running Docker daemon:
+
+```sh
+flutter analyze
+./scripts/test_all.sh
 ```
 
-5. Initialize runtime bridge in your Flutter app:
-
-```dart
-void main() {
-  VSCodeWebViewHelper.initialize();
-  runApp(const MyApp());
-}
-```
-
-6. Build generated code + extension:
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-npm run compile
-```
-
-7. Open the extension project in VS Code and press F5.
-
-## Agent-assisted development
-
-The scaffold command copies a **portable agent toolkit** into your extension project:
-
-- `AGENTS.md` — project rules for AI coding agents (supported by many tools)
-- `agent-skills/` — workflow guides as plain markdown (`SKILL.md` files)
-
-These work with any agent product that reads `AGENTS.md` or custom instructions
-(Cursor, Claude Code, GitHub Copilot, Windsurf, Cline, etc.). Wire skills into
-your tool if needed — for example, symlink or copy `agent-skills/*` into your
-product's skills directory, or `@`-reference the skill files in prompts.
-
-Describe VS Code behavior in plain language; your agent adds annotations, uses
-`VSCode.instance.invoke`, or runs the build pipeline. See
-[Agent-Assisted Development](docs/guides/agent-assisted-development.md) and
-[VS Code API Mapping](docs/reference/vscode-api-mapping.md).
-
-## Build pipeline
-
-The default compile flow is:
-
-1. `dart run build_runner build --delete-conflicting-outputs`
-2. `tsc -p ./`
-3. `flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons`
-
-## Generated file ownership
-
-- Safe to regenerate:
-  - `*.vscode.g.part`
-  - `*.handlers.ts`
-- Created once by scaffold (not overwritten by default on rerun):
-  - `AGENTS.md`
-  - `agent-skills/`
-  - `src/vscode_invoke.ts`
-  - `src/extension.ts`
-  - `package.json`
-  - `tsconfig.json`
-  - `web/index.html`, `web/flutter_bootstrap.js`, `web/manifest.json`
-  - `lib/vscode_api.dart`
-- Merge behavior:
-  - `.gitignore` entries are appended when missing.
-
-## Example project
-
-The `example/` directory is the integration fixture. Run its tests with:
-
-```bash
-cd example && flutter test
-```
-
-They are also included in `./scripts/test_all.sh`.
-
-## Troubleshooting
-
-- If commands are missing, rerun `dart run build_runner build`.
-- If VS Code host fails to load webview, ensure `npm run compile` has completed.
-- If extension cannot call VS Code APIs, verify command ids and generated handlers.
-- For runtime payload details, see `docs/reference/message-contract.md`.
+The full gate regenerates bindings, tests both generators, launches the pinned
+Extension Host fixture, then creates and installs a clean Dart-owned VSIX in an
+isolated VS Code profile.
 
 ## Documentation
 
 - [Documentation Index](docs/index.md)
-- [Roadmap](docs/reference/roadmap.md)
 - [Architecture](docs/architecture/index.md)
-- [Guides](docs/guides/index.md)
-- [Reference](docs/reference/index.md)
+- [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
+- [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
+- [Roadmap](docs/reference/roadmap.md)
 - [PRD](PRD.md)

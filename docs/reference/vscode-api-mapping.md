@@ -1,8 +1,12 @@
 # VS Code API Mapping Reference
 
-Cheat sheet for calling VS Code extension APIs from Flutter webview code via
-`flutter_vscode` annotations. Use this when writing controllers manually or
-when instructing an AI agent.
+> **Legacy v0 reference:** The catalog below describes the original
+> annotation/TypeScript webview bridge. New Extension Projects use generated
+> Host Dart bindings, Dart-owned `extension.dart` contributions, and the
+> `flutter_vscode build` workflow. Check `coverage.json` for the pinned symbols
+> currently available; do not translate an unsupported API by inference.
+
+This remains a cheat sheet for maintaining existing annotation-based projects.
 
 For wire format details, see [Message Contract](message-contract.md).
 

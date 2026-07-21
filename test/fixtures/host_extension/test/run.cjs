@@ -13,6 +13,8 @@ const jsPromiseRoundTripCommandId =
   'flutter-vscode.host-test.jsPromiseRoundTrip';
 const hoverReceivedCancellationTokenCommandId =
   'flutter-vscode.host-test.hoverReceivedCancellationToken';
+const openFlutterViewCommandId =
+  'flutter-vscode.host-test.openFlutterView';
 
 async function run() {
   console.log('[host-test] RED/GREEN: activation and Dart command');
@@ -109,6 +111,31 @@ async function run() {
     await vscode.commands.executeCommand(eventCountCommandId),
     1,
   );
+
+  console.log('[host-test] RED/GREEN: optional Flutter View protocol v1');
+  const viewReport = await vscode.commands.executeCommand(
+    openFlutterViewCommandId,
+  );
+  assert.equal(viewReport.renderedValue, 'hello from Host Dart');
+  assert.equal(viewReport.closed, true);
+  assert.equal(viewReport.viewPendingRequests, 0);
+  assert.equal(viewReport.viewSubscriptions, 0);
+  assert.equal(viewReport.hostPendingRequests, 0);
+  assert.equal(viewReport.hostSubscriptions, 0);
+  assert.equal(viewReport.hostPendingSends, 0);
+
+  console.log('[host-test] RED/GREEN: host behavior after view cleanup');
+  assert.equal(
+    await vscode.commands.executeCommand(commandId),
+    'pong from Dart',
+  );
+  const hoversAfterView = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    document.uri,
+    position,
+  );
+  assert.equal(hoversAfterView.length, 1);
+  assert.ok(hoversAfterView[0] instanceof vscode.Hover);
 }
 
 module.exports = {run};

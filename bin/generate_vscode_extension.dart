@@ -44,7 +44,7 @@ void main() {
     _createTsConfig(currentDirectory, summary);
     _createWebFolder(currentDirectory, summary);
     _createConsumerAgentsMd(currentDirectory, summary);
-    _copyAgentSkills(currentDirectory, summary);
+    _copyLegacyAgentSkills(currentDirectory, summary);
     _updateGitignore(currentDirectory, summary);
 
     print('');
@@ -56,7 +56,9 @@ void main() {
     print('3. Run: npm run compile');
     print('4. Press F5 in VS Code to run the extension');
     print('');
-    print('Agent toolkit: AGENTS.md and agent-skills/ are ready for AI-assisted development.');
+    print(
+      'Agent toolkit: AGENTS.md and agent-skills/ are ready for AI-assisted development.',
+    );
   } on Object catch (e, stackTrace) {
     print('');
     print('❌ Error generating VSCode extension files:');
@@ -89,7 +91,12 @@ void _createConsumerAgentsMd(
   _ScaffoldSummary summary,
 ) {
   final templateCandidates = [
-    p.join(_flutterVscodePackageRoot(), 'docs', 'templates', 'consumer-agents.md'),
+    p.join(
+      _flutterVscodePackageRoot(),
+      'docs',
+      'templates',
+      'consumer-agents-v0.md',
+    ),
     p.join(_flutterVscodePackageRoot(), 'tool', 'consumer-agents.md.template'),
   ];
 
@@ -115,9 +122,12 @@ void _createConsumerAgentsMd(
   );
 }
 
-void _copyAgentSkills(String currentDirectory, _ScaffoldSummary summary) {
+void _copyLegacyAgentSkills(
+  String currentDirectory,
+  _ScaffoldSummary summary,
+) {
   final skillsSource = Directory(
-    p.join(_flutterVscodePackageRoot(), 'skills'),
+    p.join(_flutterVscodePackageRoot(), 'tool', 'legacy-agent-skills'),
   );
   if (!skillsSource.existsSync()) {
     summary.skipped.add('agent-skills/');
@@ -608,7 +618,8 @@ String _flutterVscodePackageRoot() {
   if (Platform.script.scheme == 'file') {
     var dir = Directory(p.dirname(Platform.script.toFilePath()));
     for (var depth = 0; depth < 12; depth++) {
-      if (File(p.join(dir.path, 'tool', 'extension.ts.template')).existsSync()) {
+      if (File(p.join(dir.path, 'tool', 'extension.ts.template'))
+          .existsSync()) {
         return dir.path;
       }
       dir = dir.parent;
@@ -629,7 +640,8 @@ String? _packageRootFromConfig() {
     return null;
   }
 
-  final config = jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
+  final config =
+      jsonDecode(configFile.readAsStringSync()) as Map<String, dynamic>;
   final packages = config['packages'] as List<dynamic>?;
   if (packages == null) {
     return null;

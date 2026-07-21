@@ -1,0 +1,5 @@
+name: flutter_vscode_host_fixture_shared
+publish_to: none
+
+environment:
+  sdk: ^3.12.0

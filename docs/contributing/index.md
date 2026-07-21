@@ -25,8 +25,9 @@ flutter analyze
 ./scripts/test_all.sh
 ```
 
-The full gate includes the pinned Node-based binding importer inside Docker and
-the pinned VS Code Extension Host fixture.
+The full gate includes the pinned Node-based binding importer inside Docker,
+the source Extension Host fixture, and a clean CLI-created VSIX that is
+installed and exercised in an isolated pinned VS Code profile.
 
 ## Related
 

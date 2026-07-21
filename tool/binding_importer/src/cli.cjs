@@ -7,6 +7,9 @@ const ts = require('typescript');
 
 const {importVscodeDeclarations} = require('./importer.cjs');
 const {
+  extractContributionSchemaProjection,
+} = require('./contribution_schema.cjs');
+const {
   extractManifestSchemaProjection,
 } = require('./manifest_schema.cjs');
 const {verifyPinnedInputs} = require('./pins.cjs');
@@ -29,15 +32,7 @@ function main(arguments_) {
       'pins.json contributionSchemas must be an array.',
     );
   }
-  if (pinSet.contributionSchemas.length > 0) {
-    throw cliError(
-      'CONTRIBUTION_SCHEMAS_UNSUPPORTED',
-      'The walking slice has no generated contributions, so contribution ' +
-        `schemas must remain empty; found ${JSON.stringify(
-          pinSet.contributionSchemas,
-        )}.`,
-    );
-  }
+  validateContributionSchemaPins(pinSet.contributionSchemas);
   const apiInputs = pinSet.inputs.filter(
     (input) => input.kind === 'apiDeclarations',
   );
@@ -74,6 +69,67 @@ function main(arguments_) {
         `${manifestValidatorInputs.length}.`,
     );
   }
+  const contributionInputs = pinSet.inputs.filter(
+    (input) => input.kind === 'contributionSchemaSource',
+  );
+  const contributionValidationHelperInputs = pinSet.inputs.filter(
+    (input) => input.kind === 'contributionValidationHelperSource',
+  );
+  if (contributionValidationHelperInputs.length !== 1) {
+    throw cliError(
+      'CONTRIBUTION_SCHEMA_PIN_INVALID',
+      'Expected exactly one contributionValidationHelperSource input, found ' +
+        `${contributionValidationHelperInputs.length}.`,
+    );
+  }
+  const contributionValidationHelperInput =
+    contributionValidationHelperInputs[0];
+  const contributionValidationHelperPath = path.resolve(
+    path.dirname(options.pins),
+    contributionValidationHelperInput.path,
+  );
+  const contributionSchemas = {};
+  for (const input of contributionInputs) {
+    if (
+      input.version !== contributionValidationHelperInput.version ||
+      input.commit !== contributionValidationHelperInput.commit
+    ) {
+      throw cliError(
+        'CONTRIBUTION_SCHEMA_PIN_INVALID',
+        'Contribution schema and validation helper inputs must use the same ' +
+          'version and commit.',
+      );
+    }
+    const contributionPath = path.resolve(
+      path.dirname(options.pins),
+      input.path,
+    );
+    const projection = extractContributionSchemaProjection(
+      fs.readFileSync(contributionPath, 'utf8'),
+      contributionPath,
+      fs.readFileSync(contributionValidationHelperPath, 'utf8'),
+      contributionValidationHelperPath,
+    );
+    if (contributionSchemas[projection.extensionPoint] !== undefined) {
+      throw cliError(
+        'CONTRIBUTION_SCHEMA_PIN_INVALID',
+        `Multiple inputs define ${projection.extensionPoint}.`,
+      );
+    }
+    contributionSchemas[projection.extensionPoint] = {
+      inputSha256: input.sha256,
+      ...projection,
+    };
+  }
+  const extractedContributionNames = Object.keys(contributionSchemas).sort();
+  if (!arraysEqual(extractedContributionNames, pinSet.contributionSchemas)) {
+    throw cliError(
+      'CONTRIBUTION_SCHEMA_PIN_INVALID',
+      'Pinned contribution schema names do not match extracted inputs: ' +
+        `expected ${JSON.stringify(pinSet.contributionSchemas)}, found ` +
+        `${JSON.stringify(extractedContributionNames)}.`,
+    );
+  }
   const inventory = importVscodeDeclarations(
     fs.readFileSync(inputPath, 'utf8'),
     inputPath,
@@ -98,6 +154,7 @@ function main(arguments_) {
     manifestValidator: {
       inputSha256: manifestValidatorInputs[0].sha256,
     },
+    contributionSchemas,
     module: inventory.module,
     declarations: inventory.declarations,
   };
@@ -119,6 +176,39 @@ function main(arguments_) {
         JSON.stringify(options.check),
     );
   }
+}
+
+function validateContributionSchemaPins(contributionSchemas) {
+  const names = new Set();
+  for (const [index, name] of contributionSchemas.entries()) {
+    if (typeof name !== 'string' || name.length === 0) {
+      throw cliError(
+        'PIN_METADATA_INVALID',
+        `pins.json contributionSchemas[${index}] must be a non-empty string.`,
+      );
+    }
+    if (names.has(name)) {
+      throw cliError(
+        'PIN_METADATA_INVALID',
+        `pins.json contributionSchemas contains duplicate ${name}.`,
+      );
+    }
+    names.add(name);
+  }
+  const sorted = [...names].sort();
+  if (!arraysEqual(sorted, contributionSchemas)) {
+    throw cliError(
+      'PIN_METADATA_INVALID',
+      'pins.json contributionSchemas must be sorted.',
+    );
+  }
+}
+
+function arraysEqual(left, right) {
+  return (
+    left.length === right.length &&
+    left.every((value, index) => value === right[index])
+  );
 }
 
 function parseArguments(arguments_) {

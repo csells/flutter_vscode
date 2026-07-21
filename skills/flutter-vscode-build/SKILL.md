@@ -1,61 +1,35 @@
 ---
 name: flutter-vscode-build
 description: >-
-  Run the flutter_vscode build pipeline — build_runner, TypeScript compile,
-  flutter build web. Use when generated handlers are missing, compile fails,
-  or before F5 debugging.
+  Build or package a Dart-owned flutter_vscode Extension Project. Use before
+  F5, after metadata/Host Dart/view changes, or when managed artifacts are stale.
 ---
 
-# Build Pipeline (flutter_vscode)
+# Build a flutter_vscode Extension
 
-Standard compile order for extension projects.
+Run from the Extension Project root:
 
-## Full Compile
-
-```bash
-dart run build_runner build --delete-conflicting-outputs
-npm run compile
+```sh
+flutter_vscode build
 ```
 
-`npm run compile` typically runs `scripts/compile.sh`:
+The command validates `extension.dart` and the explicit `apiTarget`, enforces
+host/shared dependency boundaries, regenerates native host bindings and the VS
+Code manifest, compiles Host Dart, builds configured Flutter views, and writes
+the launch configuration.
 
-1. `dart run build_runner build --delete-conflicting-outputs`
-2. `tsc -p ./`
-3. `flutter build web --no-web-resources-cdn --csp --pwa-strategy none --no-tree-shake-icons`
+Do not run npm or edit generated JavaScript, TypeScript, `package.json`,
+`coverage.json`, `host/lib/generated/**`, `host/bootstrap.cjs`, or `out/**`.
 
-## When to Run build_runner
+To produce an installable artifact:
 
-Run after **any** change to:
-- `@VSCodeController` / `@VSCodeCommand` annotations
-- Method signatures on annotated controllers
+```sh
+flutter_vscode package
+```
 
-Outputs:
-- `lib/*.vscode.g.part` — Dart implementation
-- `lib/*.handlers.ts` — TypeScript dispatch (imported by `extension.ts`)
+Packaging must reject missing, stale, or unexpected managed artifacts and
+validate the exact VSIX layout. If it fails, repair author-owned Dart and rerun
+`build`; do not patch the archive.
 
-## When to Run npm run compile
-
-- Before F5 / extension host launch
-- After controller or `extension.ts` changes
-- After Flutter UI changes
-
-## Verify Outputs
-
-| Artifact | Purpose |
-|---|---|
-| `lib/*.handlers.ts` | TS command dispatch |
-| `out/extension.js` | Compiled extension entry |
-| `build/web/main.dart.js` | Flutter webview bundle |
-
-## Common Failures
-
-| Error | Fix |
-|---|---|
-| `handleCommand` not found | Run build_runner |
-| Webview blank | Run `npm run compile`; check `build/web/` exists |
-| TS compile error in handlers | Fix Dart controller; regenerate — don't edit handlers |
-| `InvalidGenerationSourceError` | Fix annotation rules (abstract, positional, Future<T>) |
-
-## Debug
-
-Press F5 in VS Code with extension project open (Extension Development Host).
+For reproducibility investigations, run `build` twice without source changes
+and byte-compare framework-managed outputs.

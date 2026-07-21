@@ -1,0 +1,138 @@
+'use strict';
+
+const childProcess = require('node:child_process');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
+const {
+  downloadAndUnzipVSCode,
+  resolveCliArgsFromVSCodeExecutablePath,
+  runTests,
+} = require('@vscode/test-electron');
+
+const repositoryRoot = path.resolve(__dirname, '../..');
+const driverRoot = path.join(
+  repositoryRoot,
+  'test',
+  'fixtures',
+  'packaged_test_driver',
+);
+const packagedProject = process.env.FLUTTER_VSCODE_PACKAGED_PROJECT;
+if (!packagedProject) {
+  throw new Error('FLUTTER_VSCODE_PACKAGED_PROJECT is required');
+}
+const manifest = require(path.join(packagedProject, 'package.json'));
+const vscodeVersion = manifest.engines.vscode;
+const vsixPath = path.join(
+  packagedProject,
+  'build',
+  `${manifest.name}-${manifest.version}.vsix`,
+);
+const commands = manifest.contributes?.commands;
+if (!Array.isArray(commands) || typeof commands[0]?.command !== 'string') {
+  throw new Error('Scaffolded package.json has no contributed command');
+}
+const commandResult = process.env.FLUTTER_VSCODE_PACKAGED_COMMAND_RESULT;
+if (!commandResult) {
+  throw new Error('FLUTTER_VSCODE_PACKAGED_COMMAND_RESULT is required');
+}
+const viewCommand = commands.find(
+  ({command}) => command.endsWith('.openFlutterView'),
+);
+if (
+  process.env.FLUTTER_VSCODE_PACKAGED_REQUIRE_VIEW === '1' &&
+  typeof viewCommand?.command !== 'string'
+) {
+  throw new Error('Packaged fixture has no contributed Flutter View command');
+}
+
+function installVsix(vscodeExecutablePath, extensionsDir, userDataDir) {
+  const [cliPath, ...cliArguments] =
+    resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath, {
+      reuseMachineInstall: true,
+    });
+  const result = childProcess.spawnSync(
+    cliPath,
+    [
+      ...cliArguments,
+      '--install-extension',
+      vsixPath,
+      '--force',
+      `--extensions-dir=${extensionsDir}`,
+      `--user-data-dir=${userDataDir}`,
+    ],
+    {
+      encoding: 'utf8',
+      stdio: 'pipe',
+    },
+  );
+
+  if (result.error) {
+    throw result.error;
+  }
+  if (result.status !== 0) {
+    throw new Error(
+      [
+        `VS Code CLI failed to install ${vsixPath}.`,
+        result.stdout,
+        result.stderr,
+      ].join('\n'),
+    );
+  }
+  process.stdout.write(result.stdout);
+  process.stderr.write(result.stderr);
+}
+
+async function main() {
+  if (!fs.existsSync(vsixPath)) {
+    throw new Error(`Packaged fixture does not exist: ${vsixPath}`);
+  }
+
+  const profileRoot = fs.mkdtempSync(
+    path.join(os.tmpdir(), 'flutter-vscode-packaged-host-'),
+  );
+  const extensionsDir = path.join(profileRoot, 'extensions');
+  const userDataDir = path.join(profileRoot, 'user-data');
+  fs.mkdirSync(extensionsDir, {recursive: true});
+  fs.mkdirSync(userDataDir, {recursive: true});
+
+  try {
+    console.log(`[packaged-host-test] resolving pinned VS Code ${vscodeVersion}`);
+    const vscodeExecutablePath = await downloadAndUnzipVSCode({
+      version: vscodeVersion,
+      cachePath:
+        process.env.VSCODE_TEST_CACHE_PATH ??
+        path.join(__dirname, '.vscode-test'),
+    });
+
+    console.log(`[packaged-host-test] installing ${vsixPath}`);
+    installVsix(vscodeExecutablePath, extensionsDir, userDataDir);
+
+    console.log('[packaged-host-test] launching separate development driver');
+    await runTests({
+      vscodeExecutablePath,
+      extensionDevelopmentPath: driverRoot,
+      extensionTestsPath: path.join(driverRoot, 'test', 'run.cjs'),
+      extensionTestsEnv: {
+        FLUTTER_VSCODE_PACKAGED_EXTENSIONS_DIR: extensionsDir,
+        FLUTTER_VSCODE_PACKAGED_EXTENSION_ID:
+          `${manifest.publisher}.${manifest.name}`,
+        FLUTTER_VSCODE_PACKAGED_COMMAND_ID: commands[0].command,
+        FLUTTER_VSCODE_PACKAGED_COMMAND_RESULT: commandResult,
+        FLUTTER_VSCODE_PACKAGED_VIEW_COMMAND_ID: viewCommand?.command ?? '',
+      },
+      launchArgs: [
+        `--extensions-dir=${extensionsDir}`,
+        `--user-data-dir=${userDataDir}`,
+      ],
+    });
+  } finally {
+    fs.rmSync(profileRoot, {recursive: true, force: true});
+  }
+}
+
+main().catch((error) => {
+  console.error('[packaged-host-test] failed');
+  console.error(error);
+  process.exitCode = 1;
+});

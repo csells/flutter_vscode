@@ -1,41 +1,42 @@
 # Architecture
 
-System-level structure for generation, runtime messaging, and extension hosting.
+`flutter_vscode` has two Dart runtimes with an explicit boundary between them.
 
-## Components
+## Extension Host
 
-- **Annotations**
-  - `@VSCodeController` and `@VSCodeCommand` define command surface in Dart.
-- **Generators**
-  - Dart generator emits `*.vscode.g.part`.
-  - TypeScript generator emits `*.handlers.ts`.
-- **Runtime bridge**
-  - `VSCodeControllerBase` posts commands and tracks pending responses.
-  - `VSCodeWebViewHelper` receives host messages and routes to runtime.
-- **Extension host**
-  - `src/extension.ts` registers webview and forwards incoming messages to generated handlers.
+Pure Dart in `host/` compiles to JavaScript and runs in VS Code's Node
+Extension Host. A framework-managed CommonJS bootstrap injects the native
+`vscode` module and forwards activation and deactivation. Mechanically generated
+`dart:js_interop` bindings preserve native object identity, prototypes,
+callbacks, promises, events, and disposables.
 
-## Data Flow
+Provider and command behavior belongs here. It must continue working when no
+Flutter view has opened.
 
-```mermaid
-flowchart LR
-  flutterSrc[FlutterAndControllerDart] --> codegen[BuildRunnerGeneration]
-  codegen --> dartPart[GeneratedDartPart]
-  codegen --> tsHandlers[GeneratedTsHandlers]
-  tsHandlers --> extensionHost[VsCodeExtensionHost]
-  extensionHost --> webview[VsCodeWebview]
-  webview --> flutterRuntime[FlutterWebRuntime]
-  flutterRuntime -->|"command params requestId"| extensionHost
-  extensionHost -->|"result or error requestId"| flutterRuntime
+## Flutter Views
+
+Each optional project beneath `views/` is a separate Flutter web runtime. A
+view cannot receive live Extension Host objects. It exchanges validated value
+snapshots with Host Dart through the versioned view protocol, including a
+session/nonce handshake, allowlisted calls, structured errors, and explicit
+close/reload cleanup.
+
+## Binding Pipeline
+
+Maintainer tooling parses pinned official VS Code TypeScript and contribution
+schema inputs, including transitive validator helpers, into a canonical IR.
+The importer projects exact predicates such as ECMAScript string trimming
+instead of inferring behavior from function names. The Dart generator combines
+that IR with reviewed Semantic Overrides to produce parity bindings, an
+idiomatic facade, manifest contributions, and a coverage ledger. Unknown or
+changed semantics fail closed; generation does not use inference.
+
+```text
+pinned VS Code inputs -> canonical IR + Semantic Overrides -> generated host API
+extension.dart        -> validated contributions             -> package.json
+host Dart             -> dart compile js                     -> host bundle
+Flutter view          -> flutter build web                   -> view assets
 ```
 
-## Key Contracts
-
-- [Dart to VS Code Message Contract](../reference/message-contract.md)
-- [Roadmap](../reference/roadmap.md)
-- [PRD Traceability and MVP Acceptance](../reference/prd-traceability.md)
-
-## Related
-
-- [Documentation Index](../index.md)
-- [Agent Guidelines](../agent-guidelines/index.md)
+See the accepted [architecture decisions](../adr/) and the
+[first working extension plan](../../specs/plans/first-working-extension.md).

@@ -51,6 +51,28 @@
         "licensePath": "LICENSE.txt"
       },
       {
+        "name": "VS Code commands contribution schema source",
+        "kind": "contributionSchemaSource",
+        "path": "menusExtensionPoint.ts",
+        "version": "1.129.1",
+        "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+        "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/services/actions/common/menusExtensionPoint.ts",
+        "sha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
+        "license": "MIT",
+        "licensePath": "LICENSE.txt"
+      },
+      {
+        "name": "VS Code string validation helper source",
+        "kind": "contributionValidationHelperSource",
+        "path": "strings.ts",
+        "version": "1.129.1",
+        "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+        "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/base/common/strings.ts",
+        "sha256": "c65ae37d623cf8a1dd0a5083cbb3f09f3433342accdc220c6bb8076aa12a1eec",
+        "license": "MIT",
+        "licensePath": "LICENSE.txt"
+      },
+      {
         "name": "VS Code license",
         "kind": "license",
         "path": "LICENSE.txt",
@@ -61,7 +83,9 @@
         "license": "MIT"
       }
     ],
-    "contributionSchemas": []
+    "contributionSchemas": [
+      "commands"
+    ]
   },
   "manifestSchema": {
     "inputSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
@@ -95,6 +119,71 @@
   },
   "manifestValidator": {
     "inputSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1"
+  },
+  "contributionSchemas": {
+    "commands": {
+      "inputSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
+      "extensionPoint": "commands",
+      "accepts": [
+        "object",
+        "array"
+      ],
+      "itemSchema": {
+        "type": "object",
+        "required": [
+          "command",
+          "title"
+        ],
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "command": {
+            "type": "string"
+          },
+          "enablement": {
+            "type": "string"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "dark": {
+                    "type": "string"
+                  },
+                  "light": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          },
+          "shortTitle": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "validation": {
+        "whitespacePredicate": "ecmascript-trim-empty",
+        "nonWhitespaceStringProperties": [
+          "command",
+          "title"
+        ],
+        "icon": {
+          "objectRequiredStringProperties": [
+            "dark",
+            "light"
+          ]
+        }
+      }
+    }
   },
   "module": {
     "id": "module:vscode",

@@ -149,4 +149,43 @@ test('repository VS Code inputs match their recorded checksums', () => {
   );
 
   assert.doesNotThrow(() => verifyPinnedInputs(manifestPath));
+
+  const pins = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const commands = pins.inputs.find(
+    (input) => input.kind === 'contributionSchemaSource',
+  );
+  assert.deepEqual(commands, {
+    name: 'VS Code commands contribution schema source',
+    kind: 'contributionSchemaSource',
+    path: 'menusExtensionPoint.ts',
+    version: '1.129.1',
+    commit: '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8',
+    source:
+      'https://raw.githubusercontent.com/microsoft/vscode/' +
+      '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/' +
+      'services/actions/common/menusExtensionPoint.ts',
+    sha256:
+      'a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33',
+    license: 'MIT',
+    licensePath: 'LICENSE.txt',
+  });
+  const whitespaceHelper = pins.inputs.find(
+    (input) => input.kind === 'contributionValidationHelperSource',
+  );
+  assert.deepEqual(whitespaceHelper, {
+    name: 'VS Code string validation helper source',
+    kind: 'contributionValidationHelperSource',
+    path: 'strings.ts',
+    version: '1.129.1',
+    commit: '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8',
+    source:
+      'https://raw.githubusercontent.com/microsoft/vscode/' +
+      '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/base/common/' +
+      'strings.ts',
+    sha256:
+      'c65ae37d623cf8a1dd0a5083cbb3f09f3433342accdc220c6bb8076aa12a1eec',
+    license: 'MIT',
+    licensePath: 'LICENSE.txt',
+  });
+  assert.deepEqual(pins.contributionSchemas, ['commands']);
 });
