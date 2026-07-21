@@ -39,6 +39,9 @@ echo "==> Running example project tests..."
 )
 
 echo
-echo "All tests and build_runner checks completed successfully."
+echo "==> Running pinned VS Code Extension Host checks..."
+./scripts/test_host_extension.sh
 
+echo
+echo "All tests and build_runner checks completed successfully."
 

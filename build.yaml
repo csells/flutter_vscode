@@ -3,8 +3,14 @@ targets:
     builders:
       flutter_vscode|vscode_dart:
         enabled: true
+        generate_for:
+          exclude:
+            - test/fixtures/host_extension/**
       flutter_vscode|vscode_ts:
         enabled: true
+        generate_for:
+          exclude:
+            - test/fixtures/host_extension/**
 
 builders:
   vscode_dart:
