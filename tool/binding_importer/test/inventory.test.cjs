@@ -1390,6 +1390,32 @@ test('nested type-literal IDs follow owner and shape across operand reorder', ()
   }
 });
 
+test('registered type literals carry their canonical member shape', () => {
+  const crypto = require('node:crypto');
+  const declarations = importVscodeDeclarations(`
+    declare module 'vscode' {
+      export function watch(options: {
+        recursive: boolean;
+        excludes: readonly string[];
+        [key: string]: unknown;
+      }): void;
+    }
+  `, 'registered-shape.d.ts').declarations;
+  const literal = declarations.find((item) => item.kind === 'typeLiteral');
+  assert.ok(literal.shape, 'registered type literal must carry its shape');
+  assert.deepEqual(Object.keys(literal.shape), ['members']);
+  assert.equal(
+    crypto.createHash('sha256')
+      .update(JSON.stringify(literal.shape))
+      .digest('hex'),
+    literal.shapeHash,
+  );
+  assert.deepEqual(
+    literal.shape.members.map((member) => `${member.kind}:${member.name ?? ''}`),
+    ['property:recursive', 'property:excludes', 'indexSignature:'],
+  );
+});
+
 test('private identifiers are mechanically excluded from public coverage', () => {
   const property = importVscodeDeclarations(`
     declare module 'vscode' { export class Service { #secret: string; } }
