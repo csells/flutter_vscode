@@ -5406,6 +5406,106 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
     );
   });
 
+  test('requires registered type-literal declarations to carry their shape',
+      () {
+    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+    final pair = _singlePropertyTypeLiteral(inventory);
+    pair.parent.remove('shape');
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: inventory,
+        overrides: _readJson(
+          'tool/bindings/overrides/vscode-1.129.1.json',
+        ),
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              contains('shape'),
+            ),
+      ),
+    );
+  });
+
+  test('recomputes multi-member type-literal shape hashes from children', () {
+    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+    final child = _multiPropertyTypeLiteralChild(inventory);
+    child['readonly'] = !(child['readonly']! as bool);
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: inventory,
+        overrides: _readJson(
+          'tool/bindings/overrides/vscode-1.129.1.json',
+        ),
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              allOf(contains('shapeHash'), contains('children')),
+            ),
+      ),
+    );
+  });
+
+  test('recomputes type-literal shape hashes over signature children', () {
+    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+    _tamperSignatureChildOfTypeLiteral(inventory);
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: inventory,
+        overrides: _readJson(
+          'tool/bindings/overrides/vscode-1.129.1.json',
+        ),
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              allOf(contains('shapeHash'), contains('children')),
+            ),
+      ),
+    );
+  });
+
+  test('rejects detached properties typed by registered literals', () {
+    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+    final child = _registeredLiteralTypedPropertyChild(inventory);
+    child['optional'] = !(child['optional']! as bool);
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: inventory,
+        overrides: _readJson(
+          'tool/bindings/overrides/vscode-1.129.1.json',
+        ),
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              allOf(contains('shapeHash'), contains('children')),
+            ),
+      ),
+    );
+  });
+
   test('rejects out-of-scope canonical refs in inline generic shapes', () {
     final inventory = _inventory(['interface:vscode.Box']);
     final declaration = (inventory['declarations']! as List<Object?>).single!
@@ -6771,6 +6871,86 @@ Map<String, Object?> _soleUnselectedCallable(Map<String, Object?> inventory) {
     }
   }
   throw StateError('No single-property type literal found.');
+}
+
+Map<String, Object?> _multiPropertyTypeLiteralChild(
+  Map<String, Object?> inventory,
+) {
+  final declarations = (inventory['declarations']! as List<Object?>)
+      .cast<Map<Object?, Object?>>();
+  for (final candidate in declarations) {
+    if (candidate['kind'] != 'typeLiteral') {
+      continue;
+    }
+    final children = declarations
+        .where((child) => child['parentId'] == candidate['id'])
+        .toList();
+    if (children.length >= 2 &&
+        children.every((child) => child['kind'] == 'property')) {
+      return children.first.cast<String, Object?>();
+    }
+  }
+  throw StateError('No multi-property type literal found.');
+}
+
+void _tamperSignatureChildOfTypeLiteral(Map<String, Object?> inventory) {
+  final declarations = (inventory['declarations']! as List<Object?>)
+      .cast<Map<Object?, Object?>>();
+  for (final candidate in declarations) {
+    if (candidate['kind'] != 'indexSignature') {
+      continue;
+    }
+    final parentId = candidate['parentId']! as String;
+    if (!parentId.startsWith('typeLiteral:')) {
+      continue;
+    }
+    final child = candidate.cast<String, Object?>();
+    final canonical = (jsonDecode(child['canonicalSignature']! as String)
+            as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    canonical['returnType'] = {'kind': 'primitive', 'name': 'string'};
+    final encodedCanonical = jsonEncode(canonical);
+    final id = child['id']! as String;
+    child['canonicalSignature'] = encodedCanonical;
+    child['id'] = id.substring(0, id.length - 64) +
+        crypto.sha256.convert(utf8.encode(encodedCanonical)).toString();
+    child['returnType'] = {'kind': 'primitive', 'name': 'string'};
+    return;
+  }
+  throw StateError('No signature-child type literal found.');
+}
+
+Map<String, Object?> _registeredLiteralTypedPropertyChild(
+  Map<String, Object?> inventory,
+) {
+  final declarations = (inventory['declarations']! as List<Object?>)
+      .cast<Map<Object?, Object?>>();
+  for (final candidate in declarations) {
+    if (candidate['kind'] != 'property') {
+      continue;
+    }
+    final parentId = candidate['parentId'] as String?;
+    if (parentId == null || !parentId.startsWith('typeLiteral:')) {
+      continue;
+    }
+    if (_containsRegisteredLiteralReference(candidate['type'])) {
+      return candidate.cast<String, Object?>();
+    }
+  }
+  throw StateError('No registered-literal-typed property child found.');
+}
+
+bool _containsRegisteredLiteralReference(Object? value) {
+  if (value is List<Object?>) {
+    return value.any(_containsRegisteredLiteralReference);
+  }
+  if (value is! Map<Object?, Object?>) {
+    return false;
+  }
+  if (value['kind'] == 'typeLiteral' && value.containsKey('id')) {
+    return true;
+  }
+  return value.values.any(_containsRegisteredLiteralReference);
 }
 
 Map<String, Object?> _project() {
