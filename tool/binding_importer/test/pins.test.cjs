@@ -34,13 +34,17 @@ function createRepositoryPinsFixture(context, prefix) {
   );
   const repositoryDirectory = path.dirname(repositoryManifestPath);
   const pins = JSON.parse(fs.readFileSync(repositoryManifestPath, 'utf8'));
-  for (const input of pins.inputs) {
-    input.path = path.resolve(repositoryDirectory, input.path);
-  }
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
+  for (const input of pins.inputs) {
+    fs.copyFileSync(
+      path.resolve(repositoryDirectory, input.path),
+      path.join(directory, input.path),
+    );
+  }
   return {
     pins,
+    directory,
     write(manifest, name) {
       const manifestPath = path.join(directory, name);
       fs.writeFileSync(
@@ -191,6 +195,52 @@ test('unknown pinned input kinds fail closed', (context) => {
       assert.equal(error.code, 'PIN_METADATA_INVALID');
       assert.match(error.message, /inputs\[0\]\.kind/);
       assert.match(error.message, /futureSchemaKind/);
+      return true;
+    },
+  );
+});
+
+test('pin input paths escaping the manifest directory fail closed', (context) => {
+  const fixture = createRepositoryPinsFixture(
+    context,
+    'flutter-vscode-pin-escape-',
+  );
+  const input = fixture.pins.inputs.find(
+    (candidate) => candidate.kind === 'apiDeclarations',
+  );
+  const escapedName = `flutter-vscode-pin-escaped-${process.pid}.d.ts`;
+  const escapedPath = path.join(fixture.directory, '..', escapedName);
+  fs.copyFileSync(path.join(fixture.directory, input.path), escapedPath);
+  context.after(() => fs.rmSync(escapedPath, {force: true}));
+  input.path = `../${escapedName}`;
+  const manifestPath = fixture.write(fixture.pins, 'pins.json');
+
+  assert.throws(
+    () => verifyPinnedInputs(manifestPath),
+    (error) => {
+      assert.equal(error.code, 'PIN_METADATA_INVALID');
+      assert.match(error.message, /inside the pin manifest directory/);
+      return true;
+    },
+  );
+});
+
+test('absolute pin input paths fail closed', (context) => {
+  const fixture = createRepositoryPinsFixture(
+    context,
+    'flutter-vscode-pin-absolute-',
+  );
+  const input = fixture.pins.inputs.find(
+    (candidate) => candidate.kind === 'apiDeclarations',
+  );
+  input.path = path.join(fixture.directory, input.path);
+  const manifestPath = fixture.write(fixture.pins, 'pins.json');
+
+  assert.throws(
+    () => verifyPinnedInputs(manifestPath),
+    (error) => {
+      assert.equal(error.code, 'PIN_METADATA_INVALID');
+      assert.match(error.message, /inside the pin manifest directory/);
       return true;
     },
   );
