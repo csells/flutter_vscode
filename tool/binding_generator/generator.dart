@@ -1074,7 +1074,7 @@ void _validateIrDeclarationKeys(
     'function' || 'constructor' || 'callSignature' => callable,
     'method' => {...callable, 'static', 'optional', 'abstract'},
     'indexSignature' => {...callable, 'readonly'},
-    'typeLiteral' => {...common, 'shapeHash'},
+    'typeLiteral' => {...common, 'shapeHash', 'shape'},
     _ => throw VSCodeBindingGenerationException(
         'INVALID_GENERATOR_INPUT',
         '$path.kind has unsupported IR declaration kind $kind.',
@@ -1568,13 +1568,13 @@ void _validateIrTypeLiteralGraph(
       );
     }
   }
-  _validateIrSingleChildTypeLiteralShapeHashes(
+  _validateIrRegisteredTypeLiteralShapes(
     declarationsById,
     declarationPathsById,
   );
 }
 
-void _validateIrSingleChildTypeLiteralShapeHashes(
+void _validateIrRegisteredTypeLiteralShapes(
   Map<String, Map<String, Object?>> declarationsById,
   Map<String, String> declarationPathsById,
 ) {
@@ -1589,56 +1589,232 @@ void _validateIrSingleChildTypeLiteralShapeHashes(
       continue;
     }
     final id = declaration['id']! as String;
-    final children = childrenByParent[id] ?? const [];
-    if (children.length != 1 || children.single['kind'] != 'property') {
-      continue;
-    }
-    final child = children.single;
-    final rawType = child['type'];
-    final scopes = _irInheritedTypeParameterScopes(
-      child,
-      declarationsById,
-      declarationPathsById[child['id']]!,
-    );
-    final hasGenericScope = scopes.any((scope) => scope.isNotEmpty);
-    if (!hasGenericScope && _containsRegisteredIrTypeLiteral(rawType)) {
-      continue;
-    }
-    final memberType =
-        hasGenericScope ? _canonicalizeIrType(rawType, scopes) : rawType;
-    final shape = <String, Object?>{
-      'members': <Object?>[
-        <String, Object?>{
-          'kind': 'property',
-          'name': child['name'],
-          'optional': child['optional'],
-          'readonly': child['readonly'],
-          'type': memberType,
-        },
-      ],
-    };
-    final expected = sha256.convert(utf8.encode(jsonEncode(shape))).toString();
+    final path = declarationPathsById[id]!;
+    final shape = _registeredTypeLiteralShape(declaration, path);
+    final expected =
+        sha256.convert(utf8.encode(jsonEncode(shape))).toString();
     if (declaration['shapeHash'] != expected) {
-      final path = declarationPathsById[id]!;
       throw VSCodeBindingGenerationException(
         'INVALID_GENERATOR_INPUT',
-        '$path.shapeHash must commit to its canonical children as $expected.',
+        '$path.shapeHash must commit to its canonical shape as $expected.',
       );
+    }
+    _validateRegisteredShapeChildren(
+      shape: shape,
+      children: childrenByParent[id] ?? const [],
+      declarationsById: declarationsById,
+      declarationPathsById: declarationPathsById,
+      path: path,
+    );
+  }
+}
+
+Map<String, Object?> _registeredTypeLiteralShape(
+  Map<String, Object?> declaration,
+  String path,
+) {
+  final shape = declaration['shape'];
+  if (shape is! Map<Object?, Object?> ||
+      shape.keys.length != 1 ||
+      shape['members'] is! List<Object?>) {
+    throw VSCodeBindingGenerationException(
+      'INVALID_GENERATOR_INPUT',
+      '$path.shape must be an object with exactly a members list.',
+    );
+  }
+  const memberKeysByKind = <String, Set<String>>{
+    'property': {'kind', 'name', 'optional', 'readonly', 'type'},
+    'method': {'kind', 'signature', 'name', 'optional', 'static', 'abstract'},
+    'callSignature': {'kind', 'signature'},
+    'indexSignature': {'kind', 'signature', 'readonly'},
+  };
+  final members = shape['members']! as List<Object?>;
+  for (var index = 0; index < members.length; index += 1) {
+    final member = members[index];
+    if (member is! Map<Object?, Object?>) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_GENERATOR_INPUT',
+        '$path.shape.members[$index] must be an object.',
+      );
+    }
+    final expectedKeys = memberKeysByKind[member['kind']];
+    final actualKeys = member.keys.whereType<String>().toSet();
+    if (expectedKeys == null ||
+        actualKeys.length != member.keys.length ||
+        actualKeys.length != expectedKeys.length ||
+        !actualKeys.containsAll(expectedKeys)) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_GENERATOR_INPUT',
+        '$path.shape.members[$index] has an unsupported member schema.',
+      );
+    }
+  }
+  return shape.cast<String, Object?>();
+}
+
+void _validateRegisteredShapeChildren({
+  required Map<String, Object?> shape,
+  required List<Map<String, Object?>> children,
+  required Map<String, Map<String, Object?>> declarationsById,
+  required Map<String, String> declarationPathsById,
+  required String path,
+}) {
+  VSCodeBindingGenerationException mismatch(String detail) =>
+      VSCodeBindingGenerationException(
+        'INVALID_GENERATOR_INPUT',
+        '$path.shape members must match the canonical children committed '
+            'by shapeHash: $detail.',
+      );
+
+  final members = [
+    for (final member in shape['members']! as List<Object?>)
+      (member! as Map<Object?, Object?>).cast<String, Object?>(),
+  ];
+  if (members.length != children.length) {
+    throw mismatch(
+      'expected ${members.length} children, found ${children.length}',
+    );
+  }
+  final used = <Map<String, Object?>>{};
+  final signatureOrdinals = <String, int>{};
+  for (final member in members) {
+    final kind = member['kind']! as String;
+    if (kind == 'property') {
+      final name = member['name'];
+      final matches = children
+          .where(
+            (child) => child['kind'] == 'property' && child['name'] == name,
+          )
+          .toList();
+      if (matches.length != 1 || !used.add(matches.single)) {
+        throw mismatch('property $name has no unique child declaration');
+      }
+      final child = matches.single;
+      if (member['optional'] != child['optional'] ||
+          member['readonly'] != child['readonly']) {
+        throw mismatch('property $name flags diverge');
+      }
+      final scopes = _irInheritedTypeParameterScopes(
+        child,
+        declarationsById,
+        declarationPathsById[child['id']!]!,
+      );
+      final childType = scopes.any((scope) => scope.isNotEmpty)
+          ? _canonicalizeIrType(child['type'], scopes)
+          : child['type'];
+      if (!_shapeTypeMatchesChildType(
+        member['type'],
+        childType,
+        declarationsById,
+      )) {
+        throw mismatch('property $name type diverges');
+      }
+    } else if (kind == 'method' ||
+        kind == 'callSignature' ||
+        kind == 'indexSignature') {
+      final name = member['name'];
+      final ordinal = signatureOrdinals.update(
+        '$kind@${name ?? ''}',
+        (value) => value + 1,
+        ifAbsent: () => 0,
+      );
+      final matches = children
+          .where(
+            (child) =>
+                child['kind'] == kind &&
+                child['overloadOrdinal'] == ordinal &&
+                (name == null || child['name'] == name),
+          )
+          .toList();
+      if (matches.length != 1 || !used.add(matches.single)) {
+        throw mismatch('$kind ${name ?? ordinal} has no unique child');
+      }
+      final child = matches.single;
+      final canonical =
+          (jsonDecode(child['canonicalSignature']! as String)
+                  as Map<Object?, Object?>)
+              .cast<String, Object?>();
+      if (kind == 'method') {
+        canonical
+          ..remove('static')
+          ..remove('optional');
+        if (member['optional'] != child['optional'] ||
+            member['static'] != child['static'] ||
+            member['abstract'] != child['abstract']) {
+          throw mismatch('method $name flags diverge');
+        }
+      }
+      if (kind == 'indexSignature') {
+        canonical.remove('readonly');
+        if (member['readonly'] != child['readonly']) {
+          throw mismatch('index signature flags diverge');
+        }
+      }
+      if (_encodeCanonicalJson(member['signature']) !=
+          _encodeCanonicalJson(canonical)) {
+        throw mismatch('$kind ${name ?? ordinal} signature diverges');
+      }
+    } else {
+      throw mismatch('unsupported member kind $kind');
     }
   }
 }
 
-bool _containsRegisteredIrTypeLiteral(Object? value) {
-  if (value is List<Object?>) {
-    return value.any(_containsRegisteredIrTypeLiteral);
-  }
-  if (value is! Map<Object?, Object?>) {
-    return false;
-  }
-  if (value['kind'] == 'typeLiteral' && value.containsKey('id')) {
+bool _shapeTypeMatchesChildType(
+  Object? shapeType,
+  Object? childType,
+  Map<String, Map<String, Object?>> declarationsById,
+) {
+  if (shapeType is List<Object?>) {
+    if (childType is! List<Object?> || childType.length != shapeType.length) {
+      return false;
+    }
+    for (var index = 0; index < shapeType.length; index += 1) {
+      if (!_shapeTypeMatchesChildType(
+        shapeType[index],
+        childType[index],
+        declarationsById,
+      )) {
+        return false;
+      }
+    }
     return true;
   }
-  return value.values.any(_containsRegisteredIrTypeLiteral);
+  if (shapeType is! Map<Object?, Object?>) {
+    return shapeType == childType;
+  }
+  if (childType is! Map<Object?, Object?>) {
+    return false;
+  }
+  final shapeMap = shapeType.cast<String, Object?>();
+  final childMap = childType.cast<String, Object?>();
+  if (shapeMap['kind'] == 'typeLiteral' &&
+      childMap['kind'] == 'typeLiteral' &&
+      shapeMap.containsKey('shape') &&
+      childMap.containsKey('id')) {
+    if (shapeMap['shapeHash'] != childMap['shapeHash']) {
+      return false;
+    }
+    final registered = declarationsById[childMap['id']];
+    return registered != null &&
+        _encodeCanonicalJson(shapeMap['shape']) ==
+            _encodeCanonicalJson(registered['shape']);
+  }
+  final shapeKeys = shapeMap.keys.toSet();
+  if (shapeKeys.length != childMap.keys.length ||
+      !childMap.keys.every(shapeKeys.contains)) {
+    return false;
+  }
+  for (final key in shapeKeys) {
+    if (!_shapeTypeMatchesChildType(
+      shapeMap[key],
+      childMap[key],
+      declarationsById,
+    )) {
+      return false;
+    }
+  }
+  return true;
 }
 
 void _validateIrDeclarationTypes(

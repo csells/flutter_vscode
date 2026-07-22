@@ -4992,7 +4992,8 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
 
   test('rejects registered type-literal declarations without inbound refs', () {
     final inventory = _inventory(['interface:vscode.Known']);
-    final hash = '0' * 64;
+    final orphanShape = <String, Object?>{'members': <Object?>[]};
+    final hash = _shapeHash(orphanShape);
     (inventory['declarations']! as List<Object?>)
       ..add({
         'id': 'typeAlias:vscode.OrphanOwner',
@@ -5015,6 +5016,7 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
         'deprecated': false,
         'visibility': 'public',
         'shapeHash': hash,
+        'shape': orphanShape,
         'coverage': _pendingCoverage(),
       });
     _sortDeclarationsLikeProducer(inventory);
@@ -6163,11 +6165,104 @@ String _renameProducerDeclaration(
   declarations.singleWhere(
     (candidate) => candidate['id'] == declarationId,
   )['name'] = name;
-  return _reindexProducerSubtree(
+  final renamedId = _reindexProducerSubtree(
     inventory,
     overrides,
     declarationId,
   )[declarationId]!;
+  return _resynchronizeAncestorTypeLiterals(
+    inventory,
+    overrides,
+    renamedId,
+  );
+}
+
+String _resynchronizeAncestorTypeLiterals(
+  Map<String, Object?> inventory,
+  Map<String, Object?> overrides,
+  String declarationId,
+) {
+  const callableKinds = {
+    'function',
+    'constructor',
+    'callSignature',
+    'method',
+    'indexSignature',
+  };
+  final declarations = (inventory['declarations']! as List<Object?>)
+      .cast<Map<Object?, Object?>>();
+  final tracked = declarations.singleWhere(
+    (candidate) => candidate['id'] == declarationId,
+  );
+  var changed = true;
+  var guard = 0;
+  while (changed) {
+    if (guard++ > 64) {
+      throw StateError('Ancestor type-literal resynchronization diverged.');
+    }
+    changed = false;
+    final byId = <String, Map<Object?, Object?>>{
+      for (final candidate in declarations) candidate['id']! as String: candidate,
+    };
+    final declarationsById = <String, Map<String, Object?>>{
+      for (final candidate in declarations)
+        candidate['id']! as String: candidate.cast<String, Object?>(),
+    };
+    final childrenByParent = <String, List<Map<Object?, Object?>>>{};
+    for (final declaration in declarations) {
+      childrenByParent
+          .putIfAbsent(declaration['parentId']! as String, () => [])
+          .add(declaration);
+    }
+    var node = byId[tracked['parentId']];
+    while (node != null) {
+      if (node['kind'] == 'typeLiteral') {
+        final literal = node.cast<String, Object?>();
+        final shape = _rebuildFixtureTypeLiteralShape(
+          literal,
+          childrenByParent[literal['id']] ?? const [],
+          declarationsById,
+        );
+        final shapeHash = _shapeHash(shape);
+        if (jsonEncode(literal['shape']) != jsonEncode(shape) ||
+            literal['shapeHash'] != shapeHash) {
+          final oldId = literal['id']! as String;
+          literal['shape'] = shape;
+          if (literal['shapeHash'] != shapeHash) {
+            literal['shapeHash'] = shapeHash;
+            _replaceRegisteredTypeLiteralShapeHash(
+              inventory,
+              oldId,
+              shapeHash,
+            );
+            _reindexProducerSubtree(inventory, overrides, oldId);
+          }
+          changed = true;
+          break;
+        }
+      } else if (callableKinds.contains(node['kind'])) {
+        final callable = node.cast<String, Object?>();
+        final expected = _fixtureCanonicalSignature(
+          callable,
+          _fixtureInheritedScopes(callable, declarationsById),
+        );
+        if (callable['canonicalSignature'] != expected) {
+          callable['canonicalSignature'] = expected;
+          _reindexProducerSubtree(
+            inventory,
+            overrides,
+            callable['id']! as String,
+          );
+          changed = true;
+          break;
+        }
+      }
+      node = byId[node['parentId']];
+    }
+  }
+  _refreshOverrideFingerprints(inventory, overrides);
+  _sortDeclarationsLikeProducer(inventory);
+  return tracked['id']! as String;
 }
 
 String _synchronizeCallableProducerEncoding(
@@ -6188,11 +6283,16 @@ String _synchronizeCallableProducerEncoding(
     declaration,
     _fixtureInheritedScopes(declaration, declarationsById),
   );
-  return _reindexProducerSubtree(
+  final refreshedId = _reindexProducerSubtree(
     inventory,
     overrides,
     declarationId,
   )[declarationId]!;
+  return _resynchronizeAncestorTypeLiterals(
+    inventory,
+    overrides,
+    refreshedId,
+  );
 }
 
 String _synchronizeProducerMutation(
@@ -6258,29 +6358,15 @@ void _synchronizeDescendantProducerEncodings(
       declaration['id']! as String: declaration.cast<String, Object?>(),
   };
   final changedTypeLiterals = <Map<Object?, Object?>>[];
-  for (final typeLiteral
-      in descendants.where((candidate) => candidate['kind'] == 'typeLiteral')) {
-    final children = childrenByParent[typeLiteral['id']] ?? const [];
-    if (children.length != 1 || children.single['kind'] != 'property') {
-      continue;
-    }
-    final child = children.single.cast<String, Object?>();
-    final scopes = _fixtureInheritedScopes(child, declarationsById);
-    final rawType = child['type'];
-    final memberType = scopes.any((scope) => scope.isNotEmpty)
-        ? _fixtureCanonicalType(rawType, scopes)
-        : rawType;
-    final shape = <String, Object?>{
-      'members': <Object?>[
-        <String, Object?>{
-          'kind': 'property',
-          'name': child['name'],
-          'optional': child['optional'],
-          'readonly': child['readonly'],
-          'type': memberType,
-        },
-      ],
-    };
+  for (final typeLiteral in descendants.reversed
+      .where((candidate) => candidate['kind'] == 'typeLiteral')) {
+    final literal = typeLiteral.cast<String, Object?>();
+    final shape = _rebuildFixtureTypeLiteralShape(
+      literal,
+      childrenByParent[literal['id']] ?? const [],
+      declarationsById,
+    );
+    literal['shape'] = shape;
     final shapeHash = _shapeHash(shape);
     if (shapeHash == typeLiteral['shapeHash']) {
       continue;
@@ -6327,6 +6413,112 @@ void _synchronizeDescendantProducerEncodings(
       callable['id']! as String,
     );
   }
+}
+
+Map<String, Object?> _matchFixtureShapeChild(
+  List<Map<Object?, Object?>> children,
+  Set<Map<Object?, Object?>> used,
+  String kind,
+  Object? name,
+  int? ordinal,
+) {
+  final sameKind = children
+      .where((candidate) => candidate['kind'] == kind && !used.contains(candidate))
+      .toList();
+  var matches = sameKind
+      .where(
+        (candidate) =>
+            (name == null || candidate['name'] == name) &&
+            (ordinal == null || candidate['overloadOrdinal'] == ordinal),
+      )
+      .toList();
+  if (matches.isEmpty && sameKind.length == 1) {
+    matches = sameKind;
+  }
+  if (matches.length != 1) {
+    throw StateError('No unique $kind child for fixture shape member $name.');
+  }
+  used.add(matches.single);
+  return matches.single.cast<String, Object?>();
+}
+
+Map<String, Object?> _rebuildFixtureTypeLiteralShape(
+  Map<String, Object?> literal,
+  List<Map<Object?, Object?>> children,
+  Map<String, Map<String, Object?>> declarationsById,
+) {
+  final oldMembers = [
+    for (final member
+        in (literal['shape']! as Map<Object?, Object?>)['members']!
+            as List<Object?>)
+      (member! as Map<Object?, Object?>).cast<String, Object?>(),
+  ];
+  final ordinals = <String, int>{};
+  final members = <Object?>[];
+  final used = <Map<Object?, Object?>>{};
+  for (final oldMember in oldMembers) {
+    final kind = oldMember['kind']! as String;
+    if (kind == 'property') {
+      final child = _matchFixtureShapeChild(
+        children,
+        used,
+        'property',
+        oldMember['name'],
+        null,
+      );
+      final scopes = _fixtureInheritedScopes(child, declarationsById);
+      final rawType = child['type'];
+      members.add(<String, Object?>{
+        'kind': 'property',
+        'name': child['name'],
+        'optional': child['optional'],
+        'readonly': child['readonly'],
+        'type': scopes.any((scope) => scope.isNotEmpty)
+            ? _fixtureCanonicalType(rawType, scopes)
+            : rawType,
+      });
+    } else {
+      final name = oldMember['name'];
+      final ordinal = ordinals.update(
+        '$kind@${name ?? ''}',
+        (value) => value + 1,
+        ifAbsent: () => 0,
+      );
+      final child = _matchFixtureShapeChild(
+        children,
+        used,
+        kind,
+        name,
+        ordinal,
+      );
+      final canonical = (jsonDecode(
+        _fixtureCanonicalSignature(
+          child,
+          _fixtureInheritedScopes(child, declarationsById),
+        ),
+      ) as Map<Object?, Object?>)
+          .cast<String, Object?>();
+      final member = <String, Object?>{
+        'kind': kind,
+        'signature': canonical,
+      };
+      if (kind == 'method') {
+        canonical
+          ..remove('static')
+          ..remove('optional');
+        member['name'] = child['name'];
+        member['optional'] = child['optional'];
+        member['static'] = child['static'];
+        member['abstract'] = child['abstract'];
+      }
+      if (kind == 'indexSignature') {
+        canonical.remove('readonly');
+        member['readonly'] = child['readonly'];
+      }
+      members.add(member);
+    }
+  }
+  return <String, Object?>{'members': members};
 }
 
 void _replaceRegisteredTypeLiteralShapeHash(
@@ -6708,7 +6900,30 @@ void _renameSelectedTypeReferences(
     for (final id in entries.keys)
       declarations.singleWhere((candidate) => candidate['id'] == id),
   ];
+  final childrenByParent = <String, List<Map<Object?, Object?>>>{};
+  for (final declaration in declarations) {
+    childrenByParent
+        .putIfAbsent(declaration['parentId']! as String, () => [])
+        .add(declaration);
+  }
+  final literalFirstChildren = <Map<Object?, Object?>>[];
+  final literalDescendants = <Map<Object?, Object?>>[];
   for (final declaration in selected) {
+    if (declaration['kind'] != 'typeLiteral') {
+      continue;
+    }
+    final children = childrenByParent[declaration['id']] ?? const [];
+    if (children.isNotEmpty) {
+      literalFirstChildren.add(children.first);
+    }
+    final pending = [...children];
+    while (pending.isNotEmpty) {
+      final child = pending.removeAt(0);
+      literalDescendants.add(child);
+      pending.addAll(childrenByParent[child['id']] ?? const []);
+    }
+  }
+  for (final declaration in [...selected, ...literalDescendants]) {
     _renameTypeReferences(declaration, replacements);
   }
   for (final declaration in selected) {
@@ -6725,6 +6940,13 @@ void _renameSelectedTypeReferences(
         declaration['id']! as String,
       );
     }
+  }
+  for (final child in literalFirstChildren) {
+    _resynchronizeAncestorTypeLiterals(
+      inventory,
+      overrides,
+      child['id']! as String,
+    );
   }
   _refreshOverrideFingerprints(inventory, overrides);
   _sortDeclarationsLikeProducer(inventory);
