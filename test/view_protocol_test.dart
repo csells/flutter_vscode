@@ -982,6 +982,14 @@ void main() {
       expect(transport.sentKinds, ['readyAck', 'readyAck', 'shutdown']);
       final readyAck =
           (transport.sent[1]! as Map<Object?, Object?>).cast<String, Object?>();
+      final shutdownFrame =
+          (transport.sent[2]! as Map<Object?, Object?>).cast<String, Object?>();
+      expect(
+        shutdownFrame['nonce'],
+        readyAck['activeNonce'],
+        reason: 'a shutdown emitted synchronously during ready-ack delivery '
+            'must already carry the newly installed nonce',
+      );
       await pair.view.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
@@ -1804,6 +1812,51 @@ void main() {
       });
 
       await connectionFailure;
+    });
+
+    test('peer shutdown during handshake settles Flutter View connect',
+        () async {
+      final transport = InMemoryViewTransportPair();
+      final closingFrame = Completer<Map<String, Object?>>();
+      final peer = transport.host.messages.listen((message) {
+        final frame =
+            (message! as Map<Object?, Object?>).cast<String, Object?>();
+        if (frame['kind'] == 'closing' && !closingFrame.isCompleted) {
+          closingFrame.complete(frame);
+        }
+      });
+      final connection = FlutterViewSession.connect(
+        transport: transport.view,
+        sessionId: 'session-1',
+        bootstrapNonce: 'bootstrap-1',
+      );
+      final connectionFailure = expectLater(
+        connection.timeout(const Duration(milliseconds: 100)),
+        throwsA(
+          isA<ViewProtocolException>().having(
+            (error) => error.code,
+            'code',
+            ViewProtocolErrorCode.sessionClosed,
+          ),
+        ),
+      );
+
+      await transport.host.send({
+        'protocol': 'flutter-vscode.view',
+        'version': 1,
+        'kind': 'shutdown',
+        'session': 'session-1',
+        'nonce': 'bootstrap-1',
+      });
+
+      await connectionFailure;
+      final frame =
+          await closingFrame.future.timeout(const Duration(milliseconds: 100));
+      final report =
+          (frame['report']! as Map<Object?, Object?>).cast<String, Object?>();
+      expect(report['pendingRequestCount'], 0);
+      expect(report['subscriptionCount'], 0);
+      await peer.cancel();
     });
 
     test('Flutter receive completion terminates a pending connection',

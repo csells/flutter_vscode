@@ -140,4 +140,127 @@ require(process.argv[2]);
       expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
     },
   );
+
+  test(
+    'a false native acceptance rejects the transport send future',
+    () async {
+      final temporary = await Directory.systemTemp.createTemp(
+        'flutter_vscode_transport_reject_probe_',
+      );
+      addTearDown(() => temporary.delete(recursive: true));
+      final probeSource = File(p.join(temporary.path, 'probe.dart'));
+      final compiledProbe = File(p.join(temporary.path, 'probe.js'));
+      final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
+      final hostPackageConfig = p.join(
+        'test',
+        'fixtures',
+        'host_extension',
+        'host',
+        '.dart_tool',
+        'package_config.json',
+      );
+      final runtime = File(
+        'test/fixtures/host_extension/host/lib/generated/'
+        'vscode_runtime.g.dart',
+      ).readAsStringSync();
+      final extensionKey = RegExp(
+        r"@JS\('__flutterVscode\.bindingObservers\.([^']+)'\)",
+      ).firstMatch(runtime)!.group(1)!;
+
+      await probeSource.writeAsString('''
+import 'dart:async';
+import 'dart:js_interop';
+
+import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
+import 'package:flutter_vscode_host_fixture/host_webview_transport.dart';
+
+@JS('transportRejectProbe')
+external set _transportRejectProbe(JSFunction value);
+
+void main() {
+  _transportRejectProbe = ((JSObject rawWebview) =>
+      _runProbe(Webview.fromJS(rawWebview)).toJS).toJS;
+}
+
+Future<JSAny?> _runProbe(Webview webview) async {
+  final transport = HostWebviewTransport(webview);
+  unawaited(
+    transport.failure.then<void>(
+      (_) {},
+      onError: (Object error, StackTrace stackTrace) {},
+    ),
+  );
+  var sendRejected = false;
+  var errorMentionsRejection = false;
+  try {
+    await transport.send(const <String, Object?>{'kind': 'probe'});
+  } on StateError catch (error) {
+    sendRejected = true;
+    errorMentionsRejection = error.message.contains('rejected');
+  }
+  return <String, Object?>{
+    'sendRejected': sendRejected,
+    'errorMentionsRejection': errorMentionsRejection,
+  }.jsify();
+}
+''');
+      await nodeHarness.writeAsString('''
+'use strict';
+
+const assert = require('node:assert/strict');
+
+globalThis.self = globalThis;
+globalThis.__flutterVscode = {
+  bindingObservers: {
+    ${jsonEncode(extensionKey)}: () => {},
+  },
+};
+require(process.argv[2]);
+
+(async () => {
+  const report = await globalThis.transportRejectProbe({
+    onDidReceiveMessage() {
+      return {
+        dispose() {},
+      };
+    },
+    postMessage() {
+      return Promise.resolve(false);
+    },
+  });
+
+  assert.equal(report.sendRejected, true);
+  assert.equal(report.errorMentionsRejection, true);
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+''');
+
+      final compile = await Process.run(
+        'dart',
+        [
+          'compile',
+          'js',
+          '--packages=$hostPackageConfig',
+          probeSource.path,
+          '-o',
+          compiledProbe.path,
+        ],
+        workingDirectory: Directory.current.path,
+      );
+      expect(
+        compile.exitCode,
+        0,
+        reason: '${compile.stdout}\n${compile.stderr}',
+      );
+
+      final probe = await Process.run(
+        'node',
+        [nodeHarness.path, compiledProbe.path],
+        workingDirectory: Directory.current.path,
+      );
+      expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
+    },
+  );
 }
