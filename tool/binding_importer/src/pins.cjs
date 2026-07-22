@@ -75,6 +75,21 @@ function verifyPinnedInputs(manifestPath) {
     if (!/^[a-f0-9]{64}$/.test(input.sha256)) {
       invalidMetadata(`inputs[${index}].sha256 must be lowercase SHA-256`);
     }
+    if (
+      path.isAbsolute(input.path) ||
+      input.path.includes('\\') ||
+      path.posix.normalize(input.path) !== input.path ||
+      input.path
+        .split('/')
+        .some(
+          (segment) =>
+            segment.length === 0 || segment === '.' || segment === '..',
+        )
+    ) {
+      invalidMetadata(
+        `inputs[${index}].path must stay inside the pin manifest directory`,
+      );
+    }
     let source;
     try {
       source = new URL(input.source);

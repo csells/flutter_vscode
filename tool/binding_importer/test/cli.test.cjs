@@ -6,6 +6,22 @@ const path = require('node:path');
 const {spawnSync} = require('node:child_process');
 const test = require('node:test');
 
+function materializeRepositoryPins(directory) {
+  const sourcePinsPath = path.resolve(
+    __dirname,
+    '../../bindings/inputs/vscode/1.129.1/pins.json',
+  );
+  const sourceDirectory = path.dirname(sourcePinsPath);
+  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
+  for (const input of pins.inputs) {
+    fs.copyFileSync(
+      path.resolve(sourceDirectory, input.path),
+      path.join(directory, input.path),
+    );
+  }
+  return pins;
+}
+
 test('CLI emits byte-identical canonical IR from verified pinned inputs', (context) => {
   const directory = fs.mkdtempSync(
     path.join(os.tmpdir(), 'flutter-vscode-ir-'),
@@ -247,18 +263,10 @@ test('CLI imports the pinned commands contribution schema', (context) => {
     path.join(os.tmpdir(), 'flutter-vscode-contribution-schema-'),
   );
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
+  const pins = materializeRepositoryPins(directory);
+  pins.inputs = pins.inputs.filter(
+    (input) => input.kind !== 'contributionSchemaSource',
   );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs
-    .filter((input) => input.kind !== 'contributionSchemaSource')
-    .map((input) => ({
-      ...input,
-      path: path.resolve(sourceDirectory, input.path),
-    }));
   const contributionSource = `
 import { isFalsyOrWhitespace } from '../../../../base/common/strings.js';
 namespace schema {
@@ -357,7 +365,7 @@ export const commandsExtensionPoint = ExtensionsRegistry.registerExtensionPoint(
   pins.inputs.push({
     name: 'VS Code commands contribution schema source',
     kind: 'contributionSchemaSource',
-    path: contributionPath,
+    path: 'menusExtensionPoint.ts',
     version: '1.129.1',
     commit: validationHelperInput.commit,
     source:
@@ -432,30 +440,22 @@ test('CLI fails closed on an unprojected command schema constraint', (context) =
     path.join(os.tmpdir(), 'flutter-vscode-command-schema-drift-'),
   );
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
-  );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs.map((input) => ({
-    ...input,
-    path: path.resolve(sourceDirectory, input.path),
-  }));
+  const pins = materializeRepositoryPins(directory);
   const contributionInput = pins.inputs.find(
     (input) => input.kind === 'contributionSchemaSource',
   );
   assert.notEqual(contributionInput, undefined);
-  const original = fs.readFileSync(contributionInput.path, 'utf8');
+  const original = fs.readFileSync(
+    path.join(directory, contributionInput.path),
+    'utf8',
+  );
   const changed = original.replace(
     "\t\ttype: 'object',\n\t\trequired: ['command', 'title'],",
     "\t\ttype: 'object',\n\t\tadditionalProperties: false,\n" +
       "\t\trequired: ['command', 'title'],",
   );
   assert.notEqual(changed, original);
-  const changedPath = path.join(directory, 'menusExtensionPoint.ts');
-  fs.writeFileSync(changedPath, changed);
-  contributionInput.path = changedPath;
+  fs.writeFileSync(path.join(directory, contributionInput.path), changed);
   contributionInput.sha256 = crypto
     .createHash('sha256')
     .update(changed)
@@ -492,29 +492,21 @@ test('CLI fails closed when command validator polarity changes', (context) => {
     path.join(os.tmpdir(), 'flutter-vscode-command-validator-drift-'),
   );
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
-  );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs.map((input) => ({
-    ...input,
-    path: path.resolve(sourceDirectory, input.path),
-  }));
+  const pins = materializeRepositoryPins(directory);
   const contributionInput = pins.inputs.find(
     (input) => input.kind === 'contributionSchemaSource',
   );
   assert.notEqual(contributionInput, undefined);
-  const original = fs.readFileSync(contributionInput.path, 'utf8');
+  const original = fs.readFileSync(
+    path.join(directory, contributionInput.path),
+    'utf8',
+  );
   const changed = original.replace(
     'if (!isValidLocalizedString(command.title, collector, \'title\')) {',
     'if (isValidLocalizedString(command.title, collector, \'title\')) {',
   );
   assert.notEqual(changed, original);
-  const changedPath = path.join(directory, 'menusExtensionPoint.ts');
-  fs.writeFileSync(changedPath, changed);
-  contributionInput.path = changedPath;
+  fs.writeFileSync(path.join(directory, contributionInput.path), changed);
   contributionInput.sha256 = crypto
     .createHash('sha256')
     .update(changed)
@@ -549,21 +541,15 @@ test('CLI fails closed on an added command validator branch', (context) => {
     path.join(os.tmpdir(), 'flutter-vscode-command-validator-branch-'),
   );
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
-  );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs.map((input) => ({
-    ...input,
-    path: path.resolve(sourceDirectory, input.path),
-  }));
+  const pins = materializeRepositoryPins(directory);
   const contributionInput = pins.inputs.find(
     (input) => input.kind === 'contributionSchemaSource',
   );
   assert.notEqual(contributionInput, undefined);
-  const original = fs.readFileSync(contributionInput.path, 'utf8');
+  const original = fs.readFileSync(
+    path.join(directory, contributionInput.path),
+    'utf8',
+  );
   const marker =
     "\t\tif (!isValidIcon(command.icon, collector)) {\n" +
     '\t\t\treturn false;\n' +
@@ -580,9 +566,7 @@ test('CLI fails closed on an added command validator branch', (context) => {
     ),
   );
   assert.notEqual(changed, original);
-  const changedPath = path.join(directory, 'menusExtensionPoint.ts');
-  fs.writeFileSync(changedPath, changed);
-  contributionInput.path = changedPath;
+  fs.writeFileSync(path.join(directory, contributionInput.path), changed);
   contributionInput.sha256 = crypto
     .createHash('sha256')
     .update(changed)
@@ -617,16 +601,7 @@ test('CLI fails closed when the imported whitespace helper changes', (context) =
     path.join(os.tmpdir(), 'flutter-vscode-whitespace-helper-drift-'),
   );
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
-  );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs.map((input) => ({
-    ...input,
-    path: path.resolve(sourceDirectory, input.path),
-  }));
+  const pins = materializeRepositoryPins(directory);
   const helperInput = pins.inputs.find(
     (input) => input.kind === 'contributionValidationHelperSource',
   );
@@ -635,15 +610,16 @@ test('CLI fails closed when the imported whitespace helper changes', (context) =
     undefined,
     'the transitive validation helper must be pinned',
   );
-  const original = fs.readFileSync(helperInput.path, 'utf8');
+  const original = fs.readFileSync(
+    path.join(directory, helperInput.path),
+    'utf8',
+  );
   const changed = original.replace(
     'return str.trim().length === 0;',
     'return str.trim().length <= 1;',
   );
   assert.notEqual(changed, original);
-  const changedPath = path.join(directory, 'strings.ts');
-  fs.writeFileSync(changedPath, changed);
-  helperInput.path = changedPath;
+  fs.writeFileSync(path.join(directory, helperInput.path), changed);
   helperInput.sha256 = crypto
     .createHash('sha256')
     .update(changed)
@@ -718,24 +694,13 @@ test('CLI rejects a contribution-local whitespace helper shadow', (context) => {
 function runPinnedInputMutation(context, prefix, inputKind, mutate) {
   const directory = fs.mkdtempSync(path.join(os.tmpdir(), prefix));
   context.after(() => fs.rmSync(directory, {recursive: true, force: true}));
-  const sourcePinsPath = path.resolve(
-    __dirname,
-    '../../bindings/inputs/vscode/1.129.1/pins.json',
-  );
-  const sourceDirectory = path.dirname(sourcePinsPath);
-  const pins = JSON.parse(fs.readFileSync(sourcePinsPath, 'utf8'));
-  pins.inputs = pins.inputs.map((input) => ({
-    ...input,
-    path: path.resolve(sourceDirectory, input.path),
-  }));
+  const pins = materializeRepositoryPins(directory);
   const input = pins.inputs.find((candidate) => candidate.kind === inputKind);
   assert.notEqual(input, undefined, `${inputKind} must be pinned`);
-  const original = fs.readFileSync(input.path, 'utf8');
+  const original = fs.readFileSync(path.join(directory, input.path), 'utf8');
   const changed = mutate(original);
   assert.notEqual(changed, original);
-  const changedPath = path.join(directory, path.basename(input.path));
-  fs.writeFileSync(changedPath, changed);
-  input.path = changedPath;
+  fs.writeFileSync(path.join(directory, input.path), changed);
   input.sha256 = crypto
     .createHash('sha256')
     .update(changed)
