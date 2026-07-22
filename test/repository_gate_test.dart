@@ -145,17 +145,15 @@ void main() {
 
     final repositoryFiles = Process.runSync(
       'git',
-      [
-        'ls-files',
-        '--cached',
-        '--others',
-        '--exclude-standard',
-        '--',
-        'pubspec.lock',
-      ],
+      ['ls-files', '--cached', '--', 'pubspec.lock'],
     );
     expect(repositoryFiles.exitCode, 0);
-    expect((repositoryFiles.stdout as String).trim(), 'pubspec.lock');
+    expect(
+      (repositoryFiles.stdout as String).trim(),
+      'pubspec.lock',
+      reason: 'pubspec.lock must be committed, not merely untracked and '
+          'unignored, so a fresh checkout satisfies --enforce-lockfile.',
+    );
   });
 
   test('generated Host API guide registers providers synchronously', () {
