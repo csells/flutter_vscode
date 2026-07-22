@@ -1,7 +1,7 @@
 # First Working Extension Plan
 
-Status: Reopened — fresh-audit hardening in progress
-Date: 2026-07-21
+Status: Reopened — third-audit hardening in progress
+Date: 2026-07-22
 
 ## Fresh Reopening Audit
 
@@ -90,6 +90,97 @@ The monolithic CLI orchestration module and the public naming-rule exception for
 upstream parity types are maintainability/documentation follow-ups. They do not
 invalidate this pinned first-extension exit gate, but the repository guidance
 must describe the naming exception honestly.
+
+## Third Audit (2026-07-22): Gap Analysis Hardening
+
+A third adversarial audit compared this tree against the plan's letter and
+spirit, executed the focused suites, and independently re-verified every
+finding. The recurring failure mode recurred inside the hardening round meant
+to eliminate it: green results and hashes were recorded in prose while later
+source edits moved the tree, so four focused tests fail and the real-host gate
+fail-closes on stale receipts. The fail-closed machinery works; the recorded
+claims drifted. Each item below requires an observed red — or, where the
+implementation already exists and only proof was missing, an explicitly
+recorded discrimination red under a temporary implementation mutation — and a
+focused green naming the exact command.
+
+### Durable Evidence Integrity
+
+- [ ] The durable Host Contract artifact is written only by a mechanical
+  regenerator that derives every field — source receipts, attributed bindings,
+  API and runtime targets — from tree state. A focused test proves the
+  checked-in artifact is byte-identical to regeneration output and that the
+  overrides pin matches the artifact bytes. Hand-editing evidence is no longer
+  a supported workflow. (Observed red: artifact hashes `eb403629…` while the
+  overrides pin, fixture coverage, generator test, and this plan all recorded
+  `c41b1853…`; six of 43 receipts stale; the artifact's attributed
+  `Event.$call@ca2a1c00…` identity contradicts its own receipted facade.)
+- [ ] The checked-in fixture protocol, facade, and coverage are regenerated so
+  the repository gate, evidence suite, and generator CLI byte-comparison pass
+  on the committed tree. (Observed red: the fixture `view_protocol.g.dart`
+  lacks the canonical pre-handshake guard, so the combined focused command
+  fails 4 of 270 tests.)
+- [ ] The generator coverage copy-through test asserts the coverage hash equals
+  the overrides pin rather than a third hand-maintained hash literal.
+
+### Dart IR Consumer (completes the open recompute clause)
+
+- [ ] Registered type-literal shape hashes are recomputed for every literal
+  shape — multi-member literals and non-property children included — not only
+  single-property literals. A tampered but internally consistent shape hash
+  fails closed. (Observed gap: 67 of 91 registered literals in the pinned IR
+  were accepted as opaque strings.)
+
+### Discriminating Protocol Tests
+
+- [ ] The nonce-installation test discriminates: a shutdown frame emitted
+  synchronously during ready-ack delivery must carry the newly installed
+  nonce, so moving installation after advertisement fails the test.
+- [ ] A peer `shutdown` frame delivered before the handshake completes settles
+  the lifecycle futures; both pre-handshake terminal frames now have tests,
+  not only `closing`.
+- [ ] A false native acceptance rejects the Host transport send future with the
+  transport error at the transport seam; the rejection is asserted by a test,
+  not only implemented.
+
+### Enforcement Robustness
+
+- [ ] The lockfile gate accepts only committed/index state
+  (`git ls-files --cached`); an untracked-but-unignored root lockfile fails
+  the gate instead of passing it.
+- [ ] Dart tests pin the lower-camel contract-ID and nonempty-contract-map
+  rules so Node/Dart Host Contract parity is test-pinned on both sides, not
+  only in the Node suite.
+- [ ] The pin manifest rejects input paths that resolve outside the pinned
+  input directory.
+
+### Installed Workflow Honesty
+
+- [ ] The view-fixture installed run proves the same inactive-start,
+  `onLanguage`, single-hover-first flow as the host-only fixture, or this plan
+  states explicitly that only the host-only fixture proves it.
+- [ ] The staged-package E2E either consumes pub's actual file selection or the
+  plan and script state the rsync approximation explicitly as a superset of
+  the true publish archive.
+
+### Ledger Truth
+
+- [ ] Present-tense evidence claims describe the current tree: superseded
+  hashes (`af68dd17…`, `c41b1853…`) are marked historical, stale counts
+  (72/72, 145/145) are corrected or dated, and the third-audit ledger below
+  records the exact red and green command for each item.
+- [ ] Chronology for this round is corroborated by per-item commits rather
+  than a single squash commit.
+
+Items this audit confirmed but does not reopen here: CI has parsed-but-never
+executed the new workflow steps (it runs only on push to `main` or a pull
+request), and the two-consecutive-full-gates exit item remains open above.
+Both are already captured by the unchecked enforcement items.
+
+## Third-Audit TDD Ledger
+
+Entries are appended here as each item above moves red to green, naming the
+exact command and observed result for both states.
 
 ## Pre-Hardening Evidence
 
