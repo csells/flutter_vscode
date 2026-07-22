@@ -556,6 +556,62 @@ void main() {
     );
   });
 
+  test('rejects Host Contract IDs that are not lower camel case', () {
+    final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
+    final contracts = (overrides['hostContracts']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    contracts['Checkpoint4ExtensionHost'] =
+        contracts.remove('checkpoint4ExtensionHost');
+    final entries = (overrides['entries']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    for (final entry in entries.values) {
+      final override =
+          (entry! as Map<Object?, Object?>).cast<String, Object?>();
+      if (override['hostContract'] == 'checkpoint4ExtensionHost') {
+        override['hostContract'] = 'Checkpoint4ExtensionHost';
+      }
+    }
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
+        overrides: overrides,
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
+            .having(
+              (error) => error.message,
+              'message',
+              contains('must be lower camel case'),
+            ),
+      ),
+    );
+  });
+
+  test('rejects Semantic Overrides with an emptied Host Contract map', () {
+    final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
+    (overrides['hostContracts']! as Map<Object?, Object?>).clear();
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
+        overrides: overrides,
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
+            .having(
+              (error) => error.message,
+              'message',
+              contains('at least one executable Host Contract'),
+            ),
+      ),
+    );
+  });
+
   test('rejects Host Contracts outside the durable artifact schema', () {
     final malformedContracts = <String, Map<String, Object?>>{
       'artifact outside tool/bindings/contracts': {
