@@ -1,6 +1,6 @@
 # First Working Extension Plan
 
-Status: Reopened — third-audit hardening in progress
+Status: Implemented and verified — third audit closed
 Date: 2026-07-22
 
 ## Fresh Reopening Audit
@@ -87,9 +87,11 @@ is reopened until every item below has its own observed red and focused green.
   protocol before fixture build can rewrite it.
 - [x] Lock-enforced Host builds require a root `pubspec.lock` that is present
   and trackable from a fresh checkout.
-- [ ] New red/green evidence below records the exact command and observed result
+- [x] New red/green evidence below records the exact command and observed result
   for each reopened item. The plan may return to `Implemented and verified`
-  only after two consecutive unchanged full gates pass.
+  only after two consecutive unchanged full gates pass. (Closed: the
+  Third-Audit ledger records exact commands per item, and Final Execution
+  Evidence records the two consecutive unchanged full gates.)
 
 The monolithic CLI orchestration module and the public naming-rule exception for
 upstream parity types are maintainability/documentation follow-ups. They do not
@@ -100,7 +102,7 @@ must describe the naming exception honestly.
 
 Status: all items below are closed by the Third-Audit TDD Ledger except
 where an item records an explicitly stated limitation. The two-consecutive
-full-gate exit item above remains open.
+full-gate exit item above is closed by the Final Execution Evidence.
 
 A third adversarial audit compared this tree against the plan's letter and
 spirit, executed the focused suites, and independently re-verified every
@@ -287,10 +289,12 @@ self-attested prose.
    stale tallies (72/72, 119/119, 61/61, 145/145, 43 receipts) in earlier
    ledgers are annotated in place as historical rather than rewritten; the
    current values are the ones recorded in this ledger. The real-host
-   gate ran green on this tree (entry 6); the packaged installed-VSIX
-   gate and the two consecutive unchanged full `test_all.sh` runs were
-   not executed in this round, so the exit item above stays open until
-   they run on the final tree.
+   gate ran green on this tree (entry 6), and the exit item is closed by
+   the Final Execution Evidence: two consecutive unchanged
+   `./scripts/test_all.sh` runs — each including the real Extension Host
+   gate and both installed-VSIX fixtures — passed on the byte-identical
+   tree at 579d635, followed by clean analysis and the publication dry
+   run.
 
 ## Pre-Hardening Evidence
 
@@ -725,11 +729,25 @@ counts live in the Third-Audit ledger).
 ## Final Execution Evidence
 
 The prior completion evidence was invalidated by the root-evidence,
-whitespace-parity, documentation, and asynchronous-delivery reds above. The
-repaired focused suites, real Extension Host, and both installed-VSIX paths are
-green. This section remains intentionally incomplete until analysis,
-publication, and two consecutive unchanged full gates are rerun on the final
-tree.
+whitespace-parity, documentation, and asynchronous-delivery reds above, and
+the tree that recorded it was later found drifted by the third audit. The
+evidence below was executed on the repaired tree at commit 579d635 with a
+clean worktree before, between, and after every run:
+
+- `./scripts/test_all.sh` run 1: exit 0 — full Flutter suites, build_runner
+  smoke check, builder integration checks, deterministic importer checks,
+  example tests, the real Extension Host gate, and both installed-VSIX
+  fixtures, with zero tracked-file mutations.
+- `./scripts/test_all.sh` run 2: exit 0 on the byte-identical tree,
+  immediately after run 1 with no changes between runs.
+- `flutter analyze`: no issues found.
+- `dart pub publish --dry-run`: exit 0 with one pre-existing advisory
+  layout warning (the top-level `docs/` directory name); the archive
+  validates and excludes repository-only hardening sources.
+
+The status line may say `Implemented and verified` only while the tree
+continues to satisfy exactly this evidence; any source change reopens the
+question until the gates rerun.
 
 ## Goal and Stop Rule
 
