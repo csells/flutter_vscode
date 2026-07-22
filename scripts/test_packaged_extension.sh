@@ -22,6 +22,12 @@ mkdir -p "${PACKAGE_COPY}"
 mkdir -p "${WORKSPACE}"
 mkdir -p "${VIEW_FIXTURE_ROOT}"
 mkdir -p "${CACHE_ROOT}"
+# Stated approximation: rsync with .pubignore excludes is a SUPERSET of the
+# archive `dart pub publish` would build. Pub additionally applies nested
+# .gitignore files, its built-in exclusions, and gitignore pattern semantics,
+# so a file pub drops could keep this gate green. CI's `dart pub publish
+# --dry-run` validates the real archive contents; nothing yet executes the
+# CLI from pub's actual file selection.
 rsync -a \
   --exclude=.git/ \
   --exclude-from="${REPO_ROOT}/.pubignore" \
