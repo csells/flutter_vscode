@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const crypto = require('node:crypto');
+const fs = require('node:fs');
 const Module = require('node:module');
 const path = require('node:path');
 const test = require('node:test');
@@ -19,13 +20,23 @@ const extensionKey = `e_${crypto
   .update(extensionId)
   .digest('hex')}`;
 
-test('failed activation cleans up Dart-owned subscriptions', async () => {
-  let contextDisposals = 0;
+test('failed activation rolls back each new registration once', async () => {
+  const bootstrapSource = fs.readFileSync(bootstrapPath, 'utf8');
+  assert.doesNotMatch(
+    bootstrapSource,
+    /FLUTTER_VSCODE_HOST_TEST_FAIL_ACTIVATION|failActivation/,
+  );
+
+  const contextDisposals = new Map();
   let eventDisposals = 0;
-  const disposable = {
-    dispose() {
-      contextDisposals += 1;
-    },
+  let preexistingDisposals = 0;
+  const disposable = (label) => {
+    contextDisposals.set(label, 0);
+    return {
+      dispose() {
+        contextDisposals.set(label, contextDisposals.get(label) + 1);
+      },
+    };
   };
   const fakeVscode = {
     commands: {
@@ -33,12 +44,12 @@ test('failed activation cleans up Dart-owned subscriptions', async () => {
         if (command === 'flutter-vscode.host-test.openEventCount') {
           throw new Error('injected activation failure');
         }
-        return disposable;
+        return disposable(command);
       },
     },
     languages: {
       registerHoverProvider() {
-        return disposable;
+        return disposable('plaintext hover provider');
       },
     },
     workspace: {
@@ -51,7 +62,12 @@ test('failed activation cleans up Dart-owned subscriptions', async () => {
       },
     },
   };
-  const context = {subscriptions: []};
+  const preexisting = {
+    dispose() {
+      preexistingDisposals += 1;
+    },
+  };
+  const context = {subscriptions: [preexisting]};
 
   const originalLoad = Module._load;
   const hadSelf = Object.hasOwn(globalThis, 'self');
@@ -89,12 +105,16 @@ test('failed activation cleans up Dart-owned subscriptions', async () => {
       return true;
     });
     assert.equal(eventDisposals, 1);
-    assert.equal(contextDisposals, 0);
+    assert.deepEqual([...contextDisposals.values()], [1, 1, 1, 1, 1]);
+    assert.equal(preexistingDisposals, 0);
+    assert.deepEqual(context.subscriptions, [preexisting]);
 
     await lifecycle.deactivate();
     await lifecycle.deactivate();
     assert.equal(eventDisposals, 1);
-    assert.equal(contextDisposals, 0);
+    assert.deepEqual([...contextDisposals.values()], [1, 1, 1, 1, 1]);
+    assert.equal(preexistingDisposals, 0);
+    assert.deepEqual(context.subscriptions, [preexisting]);
   } finally {
     Module._load = originalLoad;
     delete require.cache[bootstrapPath];

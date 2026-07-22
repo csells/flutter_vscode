@@ -1,7 +1,10 @@
 'use strict';
 
 const crypto = require('node:crypto');
+const fs = require('node:fs');
 const manifest = require('../package.json');
+const moduleApi = require('node:module');
+const path = require('node:path');
 const vscode = require('vscode');
 
 process.setSourceMapsEnabled?.(true);
@@ -9,6 +12,10 @@ globalThis.self ??= globalThis;
 const namespace = (globalThis.__flutterVscode ??= Object.create(null));
 namespace.hosts ??= Object.create(null);
 namespace.apis ??= Object.create(null);
+namespace.bindingCallbackWrappers ??= Object.create(null);
+namespace.bindingObservers ??= Object.create(null);
+namespace.callbackWrappers ??= Object.create(null);
+namespace.stackMappers ??= Object.create(null);
 const extensionId = `${manifest.publisher}.${manifest.name}`;
 const extensionKey = `e_${crypto
   .createHash('sha256')
@@ -20,6 +27,69 @@ if (extensionKey !== emittedExtensionKey) {
 }
 namespace.apis[extensionKey] = vscode;
 
+const observedBindingIds = new Set();
+namespace.bindingObservers[extensionKey] = (bindingId) => {
+  if (typeof bindingId !== 'string' || bindingId.length === 0) {
+    throw new TypeError('Generated Host Contract binding ID must be a string.');
+  }
+  observedBindingIds.add(bindingId);
+};
+namespace.bindingCallbackWrappers[extensionKey] = (
+  callback,
+  bindingIds,
+) => function (...args) {
+  const callbackResult = Reflect.apply(callback, this, args);
+  for (const bindingId of bindingIds) {
+    namespace.bindingObservers[extensionKey](bindingId);
+  }
+  return callbackResult;
+};
+const evidencePath = process.env.FLUTTER_VSCODE_HOST_EVIDENCE_PATH;
+if (evidencePath) {
+  process.once('exit', () => {
+    fs.writeFileSync(
+      evidencePath,
+      `${JSON.stringify({
+        schemaVersion: 1,
+        contract: "checkpoint4ExtensionHost",
+        boundary: 'vscodeExtensionHost',
+        observedBindingIds: [...observedBindingIds].sort(),
+      }, null, 2)}
+`,
+    );
+  });
+}
+
+const hostBundlePath = path.resolve(__dirname, '../out/extension.dart.js');
+const hostSourceMap = new moduleApi.SourceMap(
+  JSON.parse(fs.readFileSync(`${hostBundlePath}.map`, 'utf8')),
+);
+const mapHostStack = (stack) => stack.replace(
+  /[^\s()]*extension\.dart\.js:(\d+):(\d+)/g,
+  (location, line, column) => {
+    const entry = hostSourceMap.findEntry(
+      Number(line) - 1,
+      Number(column) - 1,
+    );
+    if (entry.originalSource === undefined) {
+      return location;
+    }
+    const source = entry.originalSource.replace(/^(\.\.\/)+/, '');
+    return `${source}:${entry.originalLine + 1}:${entry.originalColumn + 1}`;
+  },
+);
+namespace.stackMappers[extensionKey] = mapHostStack;
+namespace.callbackWrappers[extensionKey] = (callback) => function (...args) {
+  try {
+    return Reflect.apply(callback, this, args);
+  } catch (error) {
+    if (error && typeof error.stack === 'string') {
+      error.stack = mapHostStack(error.stack);
+    }
+    throw error;
+  }
+};
+
 require('../out/extension.dart.js');
 
 const host = namespace.hosts[extensionKey];
@@ -27,9 +97,22 @@ if (!host) {
   throw new Error('Dart host did not register its lifecycle exports.');
 }
 
-const failActivation =
-  process.env.FLUTTER_VSCODE_HOST_TEST_FAIL_ACTIVATION === '1';
-
-exports.activate = (context) =>
-  host.activate(context, vscode, failActivation);
+exports.activate = async (context) => {
+  const firstActivationSubscription = context.subscriptions.length;
+  try {
+    return await host.activate(context, vscode);
+  } catch (error) {
+    const registrations = context.subscriptions.splice(
+      firstActivationSubscription,
+    );
+    for (const registration of registrations.reverse()) {
+      try {
+        await registration.dispose();
+      } catch {
+        // Preserve the activation failure after attempting every rollback.
+      }
+    }
+    throw error;
+  }
+};
 exports.deactivate = () => host.deactivate();

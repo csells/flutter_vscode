@@ -296,6 +296,51 @@ Map<String, Object?> _createExtension() {
   );
 
   test(
+    'build reports malformed Host Dart with a stable source diagnostic',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_host_syntax_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+      final create = await Process.run(
+        'dart',
+        [executable, 'create', 'my_extension'],
+        workingDirectory: workspace.path,
+      );
+      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
+      final project = Directory(p.join(workspace.path, 'my_extension'));
+      File(p.join(project.path, 'host', 'lib', 'extension.dart'))
+          .writeAsStringSync("import 'dart:js_interop'\nvoid main() {}\n");
+
+      final build = await Process.run(
+        'dart',
+        [executable, 'build'],
+        workingDirectory: project.path,
+      );
+
+      expect(build.exitCode, 1, reason: '${build.stdout}\n${build.stderr}');
+      expect(build.stderr, startsWith('INVALID_HOST_DART:'));
+      expect(
+        build.stderr,
+        contains('host/lib/extension.dart:1:'),
+      );
+      expect(build.stderr, contains("Expected to find ';'"));
+      expect(
+        build.stderr,
+        contains('Fix the Dart syntax and rerun flutter_vscode build.'),
+      );
+      expect(build.stderr, isNot(contains('Unhandled exception')));
+      expect(build.stderr, isNot(matches(RegExp(r'^#\d+', multiLine: true))));
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
+
+  test(
     'build scans unreachable Dart files across host and shared packages',
     () async {
       final workspace = await Directory.systemTemp.createTemp(

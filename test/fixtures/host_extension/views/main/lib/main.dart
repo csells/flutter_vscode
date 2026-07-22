@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_vscode/view.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
+import 'package:web/web.dart' as web;
 
 const _readHostValueOperation = ViewOperation<ReadHostValueRequest, String>(
   name: readHostValueOperationName,
@@ -10,6 +11,79 @@ const _readHostValueOperation = ViewOperation<ReadHostValueRequest, String>(
   decodeArguments: decodeReadHostValueRequest,
   encodeResult: encodeReadHostValueResult,
   decodeResult: decodeReadHostValueResult,
+);
+
+const _disallowedOperation = ViewOperation<Object?, Object?>(
+  name: disallowedOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _failingOperation = ViewOperation<Object?, Object?>(
+  name: failingOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _wrongNonceOperation = ViewOperation<Object?, Object?>(
+  name: wrongNonceOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _malformedSchemaOperation = ViewOperation<Object?, Object?>(
+  name: malformedSchemaOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _unsupportedVersionOperation = ViewOperation<Object?, Object?>(
+  name: unsupportedVersionOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _pendingAcrossReloadOperation = ViewOperation<Object?, Object?>(
+  name: pendingAcrossReloadOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _protocolProbePhaseOperation = ViewOperation<Object?, Object?>(
+  name: protocolProbePhaseOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _requestReloadOperation = ViewOperation<Object?, Object?>(
+  name: requestReloadOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+final _confirmRenderObservationOperation =
+    ViewOperation<ConfirmRenderObservationRequest, bool>(
+  name: confirmRenderObservationOperationName,
+  encodeArguments: encodeConfirmRenderObservationRequest,
+  decodeArguments: decodeConfirmRenderObservationRequest,
+  encodeResult: (value) => value,
+  decodeResult: decodeFixtureBool,
 );
 
 void main() => runApp(const _FixtureView());
@@ -53,6 +127,10 @@ class _FixtureViewState extends State<_FixtureView> {
     try {
       final connectedSession = await _bootstrap.connect();
       session = connectedSession;
+      if (_fixtureMode() == protocolProbeMode) {
+        await _runProtocolProbe(connectedSession);
+        return;
+      }
       final value = await _readHostValueOperation.call(
         connectedSession,
         const ReadHostValueRequest('greeting'),
@@ -63,9 +141,10 @@ class _FixtureViewState extends State<_FixtureView> {
 
       final rendered = Completer<void>();
       setState(() => _text = value);
-      WidgetsBinding.instance.addPostFrameCallback((_) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
         try {
-          connectedSession.reportRendered(value);
+          await _confirmHostObservedRender(connectedSession, value);
+          await connectedSession.reportRendered(value);
           rendered.complete();
         } on Object catch (error, stackTrace) {
           rendered.completeError(error, stackTrace);
@@ -89,6 +168,70 @@ class _FixtureViewState extends State<_FixtureView> {
     if (firstError != null) {
       Error.throwWithStackTrace(firstError!, firstStackTrace!);
     }
+  }
+
+  Future<void> _runProtocolProbe(FlutterViewSession session) async {
+    _observeExpectedSessionClose(_wrongNonceOperation.call(session, null));
+    _observeExpectedSessionClose(_malformedSchemaOperation.call(session, null));
+    _observeExpectedSessionClose(
+      _unsupportedVersionOperation.call(session, null),
+    );
+    String? disallowedOperationCode;
+    try {
+      await _disallowedOperation.call(session, null);
+    } on ViewProtocolException catch (error) {
+      disallowedOperationCode = error.code.wireName;
+    }
+    String? structuredErrorCode;
+    String? structuredErrorMessage;
+    try {
+      await _failingOperation.call(session, null);
+    } on ViewProtocolException catch (error) {
+      structuredErrorCode = error.code.wireName;
+      structuredErrorMessage = error.message;
+    }
+    _observeExpectedSessionClose(
+      _pendingAcrossReloadOperation.call(session, null),
+    );
+    final phase = await _protocolProbePhaseOperation.call(session, null);
+    if (phase == 'reload') {
+      _observeExpectedSessionClose(_requestReloadOperation.call(session, null));
+      await session.closed;
+      return;
+    }
+    if (phase != 'complete') {
+      throw StateError('Host Dart returned an unknown protocol probe phase.');
+    }
+    final report = <String, Object?>{
+      'disallowedOperationCode': disallowedOperationCode,
+      'structuredErrorCode': structuredErrorCode,
+      'structuredErrorMessage': structuredErrorMessage,
+    };
+    if (!mounted) {
+      return;
+    }
+    final rendered = Completer<void>();
+    setState(() => _text = 'Protocol probe completed');
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      try {
+        await _confirmHostObservedRender(session, 'Protocol probe completed');
+        await session.reportRendered(report);
+        rendered.complete();
+      } on Object catch (error, stackTrace) {
+        rendered.completeError(error, stackTrace);
+      }
+    });
+    await rendered.future;
+    await session.closed;
+  }
+
+  void _observeExpectedSessionClose(Future<Object?> call) {
+    unawaited(
+      call.then<void>(
+        (_) {},
+        onError: (Object _, StackTrace __) {},
+      ),
+    );
   }
 
   void _observeRun(Future<void> run) {
@@ -119,13 +262,69 @@ class _FixtureViewState extends State<_FixtureView> {
       child: Center(
         child: Directionality(
           textDirection: TextDirection.ltr,
-          child: Text(
-            _text,
-            key: const ValueKey('host-value'),
-            style: const TextStyle(color: Color(0xFFF3F3F3), fontSize: 18),
+          child: SizedBox(
+            width: 400,
+            height: 64,
+            child: HtmlElementView.fromTagName(
+              key: ValueKey('host-value-$_text'),
+              tagName: 'div',
+              onElementCreated: (element) {
+                final rendered = element as web.HTMLElement;
+                (rendered
+                      ..textContent = _text
+                      ..setAttribute(hostRenderedContentAttributeName, _text))
+                    .style
+                  ..color = '#f3f3f3'
+                  ..fontSize = '18px'
+                  ..display = 'flex'
+                  ..alignItems = 'center'
+                  ..justifyContent = 'center'
+                  ..width = '100%'
+                  ..height = '100%';
+              },
+            ),
           ),
         ),
       ),
     );
   }
+}
+
+String _fixtureMode() {
+  final element =
+      web.document.querySelector('meta[name="$fixtureModeMetaName"]');
+  return (element as web.HTMLMetaElement?)?.content.trim() ?? '';
+}
+
+Future<void> _confirmHostObservedRender(
+  FlutterViewSession session,
+  String expectedContent,
+) async {
+  final deadline = DateTime.now().add(const Duration(seconds: 5));
+  String token;
+  do {
+    final element = web.document.querySelector(
+      'meta[name="$hostRenderObservationMetaName"]',
+    );
+    final marker = element as web.HTMLMetaElement?;
+    token = marker?.content.trim() ?? '';
+    final content = marker?.getAttribute('data-rendered-content')?.trim() ?? '';
+    if (token.isNotEmpty && content.isNotEmpty) {
+      if (content != expectedContent) {
+        throw StateError(
+          'Host Dart observed "$content" instead of "$expectedContent".',
+        );
+      }
+      final confirmed = await _confirmRenderObservationOperation.call(
+        session,
+        ConfirmRenderObservationRequest(token: token, content: content),
+      );
+      if (!confirmed) {
+        throw StateError('Host Dart rejected its render observation.');
+      }
+      return;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 20));
+  } while (DateTime.now().isBefore(deadline));
+  throw StateError('Host Dart did not observe a rendered Flutter surface.');
 }

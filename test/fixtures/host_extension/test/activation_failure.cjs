@@ -13,21 +13,32 @@ async function run() {
 
   await assert.rejects(extension.activate(), (error) => {
     assert.match(error.message, /Dart host activation failed intentionally/);
-    assert.match(error.stack, /extension\.dart/);
+    assert.match(error.stack, /host\/lib\/extension\.dart:\d+:\d+/);
+    assert.doesNotMatch(error.stack, /extension\.dart\.js:\d+:\d+/);
     return true;
   });
 
-  assert.equal(
-    await vscode.commands.executeCommand(eventCountCommandId),
-    0,
+  await assert.rejects(
+    vscode.commands.executeCommand(eventCountCommandId),
+    /command .* not found/i,
   );
-  await vscode.workspace.openTextDocument({
+  const document = await vscode.workspace.openTextDocument({
     language: 'plaintext',
     content: 'event after failed activation',
   });
-  assert.equal(
-    await vscode.commands.executeCommand(eventCountCommandId),
-    0,
+  const hovers = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    document.uri,
+    new vscode.Position(0, 1),
+  );
+  assert.deepEqual(
+    hovers,
+    [],
+    'The hover provider registered before activation failure leaked',
+  );
+  await assert.rejects(
+    vscode.commands.executeCommand(eventCountCommandId),
+    /command .* not found/i,
   );
 }
 

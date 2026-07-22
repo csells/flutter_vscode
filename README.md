@@ -10,20 +10,21 @@ is an implementation milestone, not a claim of full API parity.
 
 ## Dart-only author workflow
 
-Install the CLI and create a dedicated Extension Project:
+The Dart-host CLI is currently unreleased. Activate it from a local checkout,
+then create a dedicated Extension Project:
 
 ```sh
-dart pub global activate flutter_vscode
+dart pub global activate --source path /path/to/flutter_vscode
 flutter_vscode create my_extension
 cd my_extension
 flutter_vscode build
 flutter_vscode package
 ```
 
-From a repository checkout, replace the first command with:
+After this Dart-host release is published, the install command will become:
 
 ```sh
-dart pub global activate --source path .
+dart pub global activate flutter_vscode
 ```
 
 `build` generates the VS Code manifest, native interop bindings, CommonJS
@@ -72,7 +73,8 @@ isolated VS Code profile.
 
 - [Documentation Index](docs/index.md)
 - [Architecture](docs/architecture/index.md)
-- [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
+- [Generated Host API](docs/reference/generated-host-api.md)
+- [Legacy VS Code API Mapping](docs/reference/vscode-api-mapping.md)
 - [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
 - [Roadmap](docs/reference/roadmap.md)
 - [PRD](PRD.md)

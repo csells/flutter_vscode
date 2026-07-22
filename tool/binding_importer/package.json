@@ -6,7 +6,8 @@
     "node": ">=22"
   },
   "scripts": {
-    "test": "node --test"
+    "check:baseline-series": "node src/baseline_series_check.cjs --ir-directory ../bindings/ir --overrides-directory ../bindings/overrides --seed 1.129.1",
+    "test": "node --test && npm run check:baseline-series"
   },
   "devDependencies": {
     "typescript": "6.0.0-dev.20260416"

@@ -15,6 +15,8 @@ const hoverReceivedCancellationTokenCommandId =
   'flutter-vscode.host-test.hoverReceivedCancellationToken';
 const openFlutterViewCommandId =
   'flutter-vscode.host-test.openFlutterView';
+const probeFlutterViewProtocolCommandId =
+  'flutter-vscode.host-test.probeFlutterViewProtocol';
 
 async function run() {
   console.log('[host-test] RED/GREEN: activation and Dart command');
@@ -51,7 +53,8 @@ async function run() {
     vscode.commands.executeCommand(failAsyncCommandId),
     (error) => {
       assert.match(error.message, /Dart command failed intentionally/);
-      assert.match(error.stack, /extension\.dart/);
+      assert.match(error.stack, /host\/lib\/extension\.dart:\d+:\d+/);
+      assert.doesNotMatch(error.stack, /extension\.dart\.js:\d+:\d+/);
       return true;
     },
   );
@@ -61,7 +64,8 @@ async function run() {
     vscode.commands.executeCommand(failSyncCommandId),
     (error) => {
       assert.match(error.message, /Dart synchronous failure/);
-      assert.match(error.stack, /extension\.dart/);
+      assert.match(error.stack, /host\/lib\/extension\.dart:\d+:\d+/);
+      assert.doesNotMatch(error.stack, /extension\.dart\.js:\d+:\d+/);
       return true;
     },
   );
@@ -123,6 +127,48 @@ async function run() {
   assert.equal(viewReport.hostPendingRequests, 0);
   assert.equal(viewReport.hostSubscriptions, 0);
   assert.equal(viewReport.hostPendingSends, 0);
+  assert.equal(viewReport.hostReceivingSubscriptions, 0);
+  assert.equal(viewReport.hostObservedRenderCount, 1);
+  assert.equal(
+    viewReport.hostObservedRenderedContent,
+    'hello from Host Dart',
+  );
+
+  console.log('[host-test] RED/GREEN: real-webview protocol failures');
+  const adversityReport = await vscode.commands.executeCommand(
+    probeFlutterViewProtocolCommandId,
+  );
+  assert.equal(
+    adversityReport.disallowedOperationCode,
+    'operation_not_allowed',
+  );
+  assert.equal(adversityReport.structuredErrorCode, 'operation_failed');
+  assert.match(
+    adversityReport.structuredErrorMessage,
+    /failed intentionally/,
+  );
+  assert.equal(adversityReport.wrongNonceFramesInjected, 2);
+  assert.equal(adversityReport.wrongNonceHandlerInvocations, 0);
+  assert.equal(adversityReport.malformedSchemaFramesInjected, 2);
+  assert.equal(adversityReport.malformedSchemaHandlerInvocations, 0);
+  assert.equal(adversityReport.unsupportedVersionFramesInjected, 2);
+  assert.equal(adversityReport.unsupportedVersionHandlerInvocations, 0);
+  assert.equal(adversityReport.readyFramesObserved, 2);
+  assert.equal(adversityReport.reloadCount, 1);
+  assert.equal(adversityReport.pendingRequestsBeforeReload, 1);
+  assert.equal(adversityReport.hostPendingRequestsBeforeShutdown, 2);
+  assert.equal(adversityReport.hostPendingRequestsAtClose, 2);
+  assert.equal(adversityReport.viewPendingRequests, 0);
+  assert.equal(adversityReport.viewSubscriptions, 0);
+  assert.equal(adversityReport.hostPendingRequests, 0);
+  assert.equal(adversityReport.hostSubscriptions, 0);
+  assert.equal(adversityReport.hostPendingSends, 0);
+  assert.equal(adversityReport.hostReceivingSubscriptions, 0);
+  assert.equal(adversityReport.hostObservedRenderCount, 1);
+  assert.equal(
+    adversityReport.hostObservedRenderedContent,
+    'Protocol probe completed',
+  );
 
   console.log('[host-test] RED/GREEN: host behavior after view cleanup');
   assert.equal(

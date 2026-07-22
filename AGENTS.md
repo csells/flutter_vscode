@@ -45,7 +45,8 @@ This file is the root index for AI and contributor documentation.
 Extension authors (not package contributors) use:
 
 - [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
-- [VS Code API Mapping](docs/reference/vscode-api-mapping.md)
+- [Generated Host API](docs/reference/generated-host-api.md)
+- [Legacy VS Code API Mapping](docs/reference/vscode-api-mapping.md)
 - [Consumer AGENTS.md template](docs/templates/consumer-agents.md)
 - Skills in [`skills/`](skills/) — copy into an extension project as `agent-skills/`
   when they are not already present

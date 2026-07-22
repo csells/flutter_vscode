@@ -19,6 +19,11 @@ const _jsPromiseRoundTripCommand =
 const _hoverReceivedCancellationTokenCommand =
     'flutter-vscode.host-test.hoverReceivedCancellationToken';
 const _openFlutterViewCommand = 'flutter-vscode.host-test.openFlutterView';
+const _probeFlutterViewProtocolCommand =
+    'flutter-vscode.host-test.probeFlutterViewProtocol';
+
+@JS('process.env.FLUTTER_VSCODE_HOST_TEST_FAIL_ACTIVATION')
+external JSString? get _activationFailureFlag;
 
 const _readHostValueOperation = ViewOperation<ReadHostValueRequest, String>(
   name: readHostValueOperationName,
@@ -28,6 +33,63 @@ const _readHostValueOperation = ViewOperation<ReadHostValueRequest, String>(
   decodeResult: decodeReadHostValueResult,
 );
 
+const _wrongNonceOperation = ViewOperation<Object?, Object?>(
+  name: wrongNonceOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _malformedSchemaOperation = ViewOperation<Object?, Object?>(
+  name: malformedSchemaOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _unsupportedVersionOperation = ViewOperation<Object?, Object?>(
+  name: unsupportedVersionOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _pendingAcrossReloadOperation = ViewOperation<Object?, Object?>(
+  name: pendingAcrossReloadOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _protocolProbePhaseOperation = ViewOperation<Object?, Object?>(
+  name: protocolProbePhaseOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+const _requestReloadOperation = ViewOperation<Object?, Object?>(
+  name: requestReloadOperationName,
+  encodeArguments: encodeFixtureSnapshot,
+  decodeArguments: decodeFixtureSnapshot,
+  encodeResult: encodeFixtureSnapshot,
+  decodeResult: decodeFixtureSnapshot,
+);
+
+final _confirmRenderObservationOperation =
+    ViewOperation<ConfirmRenderObservationRequest, bool>(
+      name: confirmRenderObservationOperationName,
+      encodeArguments: encodeConfirmRenderObservationRequest,
+      decodeArguments: decodeConfirmRenderObservationRequest,
+      encodeResult: (value) => value,
+      decodeResult: decodeFixtureBool,
+    );
+
 @JSExport()
 class _VSCodeHostExtension {
   var _openEventCount = 0;
@@ -36,11 +98,7 @@ class _VSCodeHostExtension {
   var _hoverDocumentMatchedEvent = false;
   var _hoverReceivedCancellationToken = false;
 
-  JSPromise<JSAny?> activate(
-    JSObject rawContext,
-    JSObject rawVscode,
-    JSBoolean failActivation,
-  ) {
+  JSPromise<JSAny?> activate(JSObject rawContext, JSObject rawVscode) {
     return toHostPromise(
       Future<JSAny?>(() {
         try {
@@ -50,16 +108,16 @@ class _VSCodeHostExtension {
             return Future<JSString>.value('pong from Dart'.toJS).toJS;
           }).toJS;
 
-          final registration = vscode.commands.registerCommand(
+          final registration = vscode.commandApi.registerCommandCallback(
             _pingCommand.toJS,
             ping,
           );
-          context.subscriptions.toDart.add(registration);
+          context.addSubscription(registration);
 
           final jsPromiseRoundTrip = (() {
-            final source = vscode.commands
-                .executeCommand(_jsPromiseSourceCommand.toJS)
-                .toDart;
+            final source = vscode.commandApi.executeCommandFuture(
+              _jsPromiseSourceCommand.toJS,
+            );
             return toHostPromise(
               source.then<JSAny?>((value) {
                 final text = (value! as JSString).toDart;
@@ -67,12 +125,12 @@ class _VSCodeHostExtension {
               }),
             );
           }).toJS;
-          final jsPromiseRoundTripRegistration = vscode.commands
-              .registerCommand(
+          final jsPromiseRoundTripRegistration = vscode.commandApi
+              .registerCommandCallback(
                 _jsPromiseRoundTripCommand.toJS,
                 jsPromiseRoundTrip,
               );
-          context.subscriptions.toDart.add(jsPromiseRoundTripRegistration);
+          context.addSubscription(jsPromiseRoundTripRegistration);
 
           final failAsync = (() {
             return toHostPromise(
@@ -82,24 +140,18 @@ class _VSCodeHostExtension {
               ),
             );
           }).toJS;
-          final failAsyncRegistration = vscode.commands.registerCommand(
-            _failAsyncCommand.toJS,
-            failAsync,
-          );
-          context.subscriptions.toDart.add(failAsyncRegistration);
+          final failAsyncRegistration = vscode.commandApi
+              .registerCommandCallback(_failAsyncCommand.toJS, failAsync);
+          context.addSubscription(failAsyncRegistration);
 
           JSAny? failSyncCallback() {
-            // A native JS Error must cross the synchronous host callback seam.
-            // ignore: only_throw_errors
-            throw JavaScriptError('Dart synchronous failure'.toJS);
+            throw StateError('Dart synchronous failure');
           }
 
           final failSync = failSyncCallback.toJS;
-          final failSyncRegistration = vscode.commands.registerCommand(
-            _failSyncCommand.toJS,
-            failSync,
-          );
-          context.subscriptions.toDart.add(failSyncRegistration);
+          final failSyncRegistration = vscode.commandApi
+              .registerCommandCallback(_failSyncCommand.toJS, failSync);
+          context.addSubscription(failSyncRegistration);
 
           final provideHover =
               (
@@ -112,68 +164,72 @@ class _VSCodeHostExtension {
                       document,
                     );
                     _hoverReceivedCancellationToken =
-                        !token.isCancellationRequested;
-                    final contents = MarkdownString(
-                      'Hover from Dart at ${position.line}:${position.character}'
+                        !token.cancellationRequested;
+                    final contents = createHostMarkdownString(
+                      'Hover from Dart at '
+                              '${position.lineNumber}:'
+                              '${position.characterOffset}'
                           .toJS,
                     );
-                    final range = Range(0, 0, 0, 5);
-                    return Hover(contents, range);
+                    final range = createHostRange(0, 0, 0, 5);
+                    return createHostHover(contents, range);
                   }
                   .toJS;
-          final provider = HoverProvider(provideHover: provideHover);
-          final providerRegistration = vscode.languages.registerHoverProvider(
-            'plaintext'.toJS,
-            provider,
-          );
-          context.subscriptions.toDart.add(providerRegistration);
+          final provider = createHostHoverProvider(provideHover);
+          final providerRegistration = vscode.languageApi
+              .registerHoverProviderForString('plaintext'.toJS, provider);
+          context.addSubscription(providerRegistration);
 
           final onDidOpenDocument = ((TextDocument document) {
             _openEventCount += 1;
             _lastOpenedDocument = document;
           }).toJS;
-          _openEventSubscription = vscode.workspace.onDidOpenTextDocument(
-            onDidOpenDocument,
-          );
+          _openEventSubscription = vscode.workspaceApi
+              .listenOnDidOpenTextDocument(onDidOpenDocument);
 
           final eventCount = (() => _openEventCount.toJS).toJS;
-          final eventCountRegistration = vscode.commands.registerCommand(
-            _eventCountCommand.toJS,
-            eventCount,
-          );
-          context.subscriptions.toDart.add(eventCountRegistration);
+          final eventCountRegistration = vscode.commandApi
+              .registerCommandCallback(_eventCountCommand.toJS, eventCount);
+          context.addSubscription(eventCountRegistration);
 
           final identityResult = (() => _hoverDocumentMatchedEvent.toJS).toJS;
-          final identityRegistration = vscode.commands.registerCommand(
-            _identityCommand.toJS,
-            identityResult,
-          );
-          context.subscriptions.toDart.add(identityRegistration);
+          final identityRegistration = vscode.commandApi
+              .registerCommandCallback(_identityCommand.toJS, identityResult);
+          context.addSubscription(identityRegistration);
 
           final cancellationTokenResult =
               (() => _hoverReceivedCancellationToken.toJS).toJS;
-          final cancellationTokenRegistration = vscode.commands.registerCommand(
-            _hoverReceivedCancellationTokenCommand.toJS,
-            cancellationTokenResult,
-          );
-          context.subscriptions.toDart.add(cancellationTokenRegistration);
+          final cancellationTokenRegistration = vscode.commandApi
+              .registerCommandCallback(
+                _hoverReceivedCancellationTokenCommand.toJS,
+                cancellationTokenResult,
+              );
+          context.addSubscription(cancellationTokenRegistration);
 
           final unsubscribe = _disposeOpenEventSubscription.toJS;
-          final unsubscribeRegistration = vscode.commands.registerCommand(
-            _unsubscribeCommand.toJS,
-            unsubscribe,
-          );
-          context.subscriptions.toDart.add(unsubscribeRegistration);
+          final unsubscribeRegistration = vscode.commandApi
+              .registerCommandCallback(_unsubscribeCommand.toJS, unsubscribe);
+          context.addSubscription(unsubscribeRegistration);
 
           final openFlutterView = (() => toHostPromise(
             _openView(context, vscode),
           )).toJS;
-          final openFlutterViewRegistration = vscode.commands.registerCommand(
-            _openFlutterViewCommand.toJS,
-            openFlutterView,
-          );
-          context.subscriptions.toDart.add(openFlutterViewRegistration);
-          if (failActivation.toDart) {
+          final openFlutterViewRegistration = vscode.commandApi
+              .registerCommandCallback(
+                _openFlutterViewCommand.toJS,
+                openFlutterView,
+              );
+          context.addSubscription(openFlutterViewRegistration);
+          final probeFlutterViewProtocol = (() => toHostPromise(
+            _openView(context, vscode, fixtureMode: protocolProbeMode),
+          )).toJS;
+          final probeFlutterViewProtocolRegistration = vscode.commandApi
+              .registerCommandCallback(
+                _probeFlutterViewProtocolCommand.toJS,
+                probeFlutterViewProtocol,
+              );
+          context.addSubscription(probeFlutterViewProtocolRegistration);
+          if (_activationFailureFlag?.toDart == '1') {
             throw StateError('Dart host activation failed intentionally');
           }
           return null;
@@ -196,19 +252,32 @@ class _VSCodeHostExtension {
   }
 
   void _disposeOpenEventSubscription() {
-    _openEventSubscription?.dispose();
+    _openEventSubscription?.disposeHostResource();
     _openEventSubscription = null;
   }
 
-  Future<JSAny?> _openView(ExtensionContext context, VSCode vscode) async {
+  Future<JSAny?> _openView(
+    ExtensionContext context,
+    VSCode vscode, {
+    String fixtureMode = '',
+  }) async {
+    final protocolProbe = fixtureMode == protocolProbeMode
+        ? _ProtocolProbe()
+        : null;
     final sessionId = _secureToken();
     final bootstrapNonce = _secureToken();
-    final viewRoot = _joinUri(context.extensionUri, const [
+    final renderObservationToken = _secureToken();
+    final expectedRenderedContent = protocolProbe == null
+        ? 'hello from Host Dart'
+        : 'Protocol probe completed';
+    var hostObservedRenderCount = 0;
+    String? hostObservedRenderedContent;
+    final viewRoot = _joinUri(context.extensionRootUri, const [
       'out',
       'views',
       'main',
     ]);
-    final panel = vscode.window.createFlutterViewPanel(
+    final panel = vscode.windowApi.createFlutterViewPanel(
       viewType: 'flutter-vscode.host-test.mainPanel',
       title: 'Flutter View Fixture',
       localResourceRoots: [viewRoot],
@@ -218,9 +287,33 @@ class _VSCodeHostExtension {
     Object? firstError;
     StackTrace? firstStackTrace;
     try {
-      final transport = HostWebviewTransport(panel.webview);
+      final transport = HostWebviewTransport(
+        panel.webviewSurface,
+        protocolProbe?.observeIncoming,
+      );
       resources.transport = transport;
-      final session = HostViewSession.connect(
+      final viewHtml = _viewHtml(
+        webview: panel.webviewSurface,
+        viewRoot: viewRoot,
+        sessionId: sessionId,
+        bootstrapNonce: bootstrapNonce,
+        renderObservationToken: renderObservationToken,
+        expectedRenderedContent: expectedRenderedContent,
+        fixtureMode: fixtureMode,
+        fixtureGeneration: 0,
+      );
+      final reloadedViewHtml = _viewHtml(
+        webview: panel.webviewSurface,
+        viewRoot: viewRoot,
+        sessionId: sessionId,
+        bootstrapNonce: bootstrapNonce,
+        renderObservationToken: renderObservationToken,
+        expectedRenderedContent: expectedRenderedContent,
+        fixtureMode: fixtureMode,
+        fixtureGeneration: 1,
+      );
+      late final HostViewSession session;
+      session = HostViewSession.connect(
         transport: transport,
         sessionId: sessionId,
         bootstrapNonce: bootstrapNonce,
@@ -230,6 +323,63 @@ class _VSCodeHostExtension {
               throw ArgumentError.value(request.key, 'key');
             }
             return 'hello from Host Dart';
+          }),
+          const ViewOperation<Object?, Object?>(
+            name: failingOperationName,
+            encodeArguments: encodeFixtureSnapshot,
+            decodeArguments: decodeFixtureSnapshot,
+            encodeResult: encodeFixtureSnapshot,
+            decodeResult: decodeFixtureSnapshot,
+          ).bind(
+            (_) => throw StateError('Host operation failed intentionally'),
+          ),
+          _wrongNonceOperation.bind((value) {
+            protocolProbe?.wrongNonceHandlerInvocations += 1;
+            return value;
+          }),
+          _malformedSchemaOperation.bind((value) {
+            protocolProbe?.malformedSchemaHandlerInvocations += 1;
+            return value;
+          }),
+          _unsupportedVersionOperation.bind((value) {
+            protocolProbe?.unsupportedVersionHandlerInvocations += 1;
+            return value;
+          }),
+          _pendingAcrossReloadOperation.bind((_) {
+            final result = Completer<Object?>();
+            protocolProbe!.pendingResults.add(result);
+            return result.future;
+          }),
+          _protocolProbePhaseOperation.bind((_) {
+            protocolProbe!.phaseInvocations += 1;
+            return protocolProbe.phaseInvocations == 1 ? 'reload' : 'complete';
+          }),
+          _requestReloadOperation.bind((_) {
+            protocolProbe!
+              ..pendingRequestsBeforeReload = session.pendingRequestCount - 1
+              ..reloadCount += 1;
+            unawaited(
+              Future<void>(() {
+                panel.webviewSurface.htmlText = reloadedViewHtml;
+              }),
+            );
+            return null;
+          }),
+          _confirmRenderObservationOperation.bind((observation) {
+            if (observation.token != renderObservationToken) {
+              throw StateError(
+                'Flutter View did not confirm the Host-owned render token.',
+              );
+            }
+            if (observation.content != expectedRenderedContent) {
+              throw StateError(
+                'Host DOM observer found "${observation.content}" instead of '
+                '"$expectedRenderedContent".',
+              );
+            }
+            hostObservedRenderCount += 1;
+            hostObservedRenderedContent = observation.content;
+            return true;
           }),
         ],
       );
@@ -244,20 +394,46 @@ class _VSCodeHostExtension {
             );
           }).toJS,
         );
-      panel.webview.htmlText = _viewHtml(
-        webview: panel.webview,
-        viewRoot: viewRoot,
-        sessionId: sessionId,
-        bootstrapNonce: bootstrapNonce,
-      );
+      panel.webviewSurface.htmlText = viewHtml;
 
       await _awaitViewMilestone(session.ready, transport);
       final rendered = await _awaitViewMilestone(session.rendered, transport);
+      if (hostObservedRenderedContent != expectedRenderedContent) {
+        throw StateError(
+          'Host did not independently observe the expected rendered content.',
+        );
+      }
+      if (protocolProbe != null) {
+        protocolProbe.hostPendingRequestsBeforeShutdown =
+            session.pendingRequestCount;
+      }
       final viewCloseReport = await _awaitViewMilestone(
         session.shutdown(),
         transport,
       );
-      await _awaitViewMilestone(session.closed, transport);
+      final hostCloseReport = await _awaitViewMilestone(
+        session.closed,
+        transport,
+      );
+      final hostReceivingSubscriptions = transport.receivingSubscriptionCount;
+      if (hostReceivingSubscriptions != 0) {
+        throw StateError(
+          'Host retained its native Flutter View receiver after session close.',
+        );
+      }
+      if (protocolProbe != null) {
+        protocolProbe.hostPendingRequestsAtClose =
+            hostCloseReport.pendingRequestCount;
+        for (final pendingResult in protocolProbe.pendingResults) {
+          if (!pendingResult.isCompleted) {
+            pendingResult.complete(null);
+          }
+        }
+        await Future.wait(
+          protocolProbe.pendingResults.map((pending) => pending.future),
+        );
+        await _awaitNoPendingHostOperations(session);
+      }
       if (viewCloseReport.pendingRequestCount != 0 ||
           viewCloseReport.subscriptionCount != 0) {
         throw StateError(
@@ -270,7 +446,7 @@ class _VSCodeHostExtension {
           resources.pendingSendCount != 0) {
         throw StateError('Host retained Flutter View resources after cleanup.');
       }
-      result = <String, Object?>{
+      final report = <String, Object?>{
         'renderedValue': rendered,
         'closed': true,
         'viewPendingRequests': viewCloseReport.pendingRequestCount,
@@ -278,7 +454,47 @@ class _VSCodeHostExtension {
         'hostPendingRequests': resources.pendingRequestCount,
         'hostSubscriptions': resources.subscriptionCount,
         'hostPendingSends': resources.pendingSendCount,
-      }.jsify();
+        'hostReceivingSubscriptions': hostReceivingSubscriptions,
+        'hostObservedRenderCount': hostObservedRenderCount,
+        'hostObservedRenderedContent': hostObservedRenderedContent,
+      };
+      if (fixtureMode == protocolProbeMode) {
+        if (rendered case <Object?, Object?>{
+          'disallowedOperationCode': final String code,
+          'structuredErrorCode': final String errorCode,
+          'structuredErrorMessage': final String errorMessage,
+        }) {
+          report
+            ..['disallowedOperationCode'] = code
+            ..['structuredErrorCode'] = errorCode
+            ..['structuredErrorMessage'] = errorMessage
+            ..['wrongNonceFramesInjected'] =
+                protocolProbe!.wrongNonceFramesInjected
+            ..['wrongNonceHandlerInvocations'] =
+                protocolProbe.wrongNonceHandlerInvocations
+            ..['malformedSchemaFramesInjected'] =
+                protocolProbe.malformedSchemaFramesInjected
+            ..['malformedSchemaHandlerInvocations'] =
+                protocolProbe.malformedSchemaHandlerInvocations
+            ..['unsupportedVersionFramesInjected'] =
+                protocolProbe.unsupportedVersionFramesInjected
+            ..['unsupportedVersionHandlerInvocations'] =
+                protocolProbe.unsupportedVersionHandlerInvocations
+            ..['readyFramesObserved'] = protocolProbe.readyFramesObserved
+            ..['reloadCount'] = protocolProbe.reloadCount
+            ..['pendingRequestsBeforeReload'] =
+                protocolProbe.pendingRequestsBeforeReload
+            ..['hostPendingRequestsBeforeShutdown'] =
+                protocolProbe.hostPendingRequestsBeforeShutdown
+            ..['hostPendingRequestsAtClose'] =
+                protocolProbe.hostPendingRequestsAtClose;
+        } else {
+          throw StateError(
+            'The Flutter View protocol probe did not return its exact report.',
+          );
+        }
+      }
+      result = report.jsify();
     } on Object catch (error, stackTrace) {
       firstError = error;
       firstStackTrace = stackTrace;
@@ -295,6 +511,59 @@ class _VSCodeHostExtension {
     }
     return result;
   }
+}
+
+final class _ProtocolProbe {
+  int wrongNonceFramesInjected = 0;
+  int wrongNonceHandlerInvocations = 0;
+  int malformedSchemaFramesInjected = 0;
+  int malformedSchemaHandlerInvocations = 0;
+  int unsupportedVersionFramesInjected = 0;
+  int unsupportedVersionHandlerInvocations = 0;
+  int readyFramesObserved = 0;
+  int reloadCount = 0;
+  int pendingRequestsBeforeReload = 0;
+  int hostPendingRequestsBeforeShutdown = 0;
+  int hostPendingRequestsAtClose = 0;
+  int phaseInvocations = 0;
+  final List<Completer<Object?>> pendingResults = [];
+
+  void observeIncoming(Object? value) {
+    if (value case final Map<Object?, Object?> frame
+        when frame['kind'] == 'ready') {
+      readyFramesObserved += 1;
+    }
+    if (value case final Map<Object?, Object?> frame
+        when frame['kind'] == 'call' &&
+            frame['operation'] == wrongNonceOperationName &&
+            frame['nonce'] == 'fixture-invalid-active-nonce') {
+      wrongNonceFramesInjected += 1;
+    }
+    if (value case final Map<Object?, Object?> frame
+        when frame['kind'] == 'call' &&
+            frame['operation'] == malformedSchemaOperationName &&
+            frame['unexpected'] == true) {
+      malformedSchemaFramesInjected += 1;
+    }
+    if (value case final Map<Object?, Object?> frame
+        when frame['kind'] == 'call' &&
+            frame['operation'] == unsupportedVersionOperationName &&
+            frame['version'] == 2) {
+      unsupportedVersionFramesInjected += 1;
+    }
+  }
+}
+
+Future<void> _awaitNoPendingHostOperations(HostViewSession session) async {
+  for (var attempt = 0; attempt < 100; attempt += 1) {
+    if (session.pendingRequestCount == 0) {
+      return;
+    }
+    await Future<void>.delayed(Duration.zero);
+  }
+  throw StateError(
+    'Host operation handlers did not settle after their results completed.',
+  );
 }
 
 Future<T> _awaitViewMilestone<T>(
@@ -353,7 +622,7 @@ final class _ViewResources {
     }
     final currentPanelDisposed = panelDisposed;
     panelDisposed = null;
-    await preserveFirstError(() => currentPanelDisposed?.dispose());
+    await preserveFirstError(() => currentPanelDisposed?.disposeHostResource());
     final currentTransport = transport;
     if (currentTransport != null) {
       await preserveFirstError(
@@ -361,9 +630,7 @@ final class _ViewResources {
       );
     }
     if (!_panelAlreadyDisposed) {
-      // Native JS interop extension-type member tear-offs are disallowed.
-      // ignore: unnecessary_lambdas
-      await preserveFirstError(() => panel.dispose());
+      await preserveFirstError(panel.disposeHostPanel);
     }
     if (firstError != null) {
       Error.throwWithStackTrace(firstError!, firstStackTrace!);
@@ -374,7 +641,7 @@ final class _ViewResources {
 Uri _joinUri(Uri base, List<String> segments) {
   var result = base;
   for (final segment in segments) {
-    result = Uri.joinPath(result, segment.toJS);
+    result = joinHostUriPath(result, segment.toJS);
   }
   return result;
 }
@@ -384,10 +651,14 @@ String _viewHtml({
   required Uri viewRoot,
   required String sessionId,
   required String bootstrapNonce,
+  required String renderObservationToken,
+  required String expectedRenderedContent,
+  required String fixtureMode,
+  required int fixtureGeneration,
 }) {
-  final resourceRoot = webview.asWebviewUri(viewRoot).toDartString();
+  final resourceRoot = webview.asFlutterViewUri(viewRoot).toDartString();
   final bootstrap = webview
-      .asWebviewUri(Uri.joinPath(viewRoot, 'flutter_bootstrap.js'.toJS))
+      .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
       .toDartString();
   final cspSource = webview.contentSecurityPolicySource;
   final cspNonce = _secureToken();
@@ -400,10 +671,88 @@ String _viewHtml({
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="flutter-vscode-session" content="${_html(sessionId)}">
   <meta name="flutter-vscode-bootstrap-nonce" content="${_html(bootstrapNonce)}">
+  <meta name="$fixtureModeMetaName" content="${_html(fixtureMode)}">
+  <meta name="flutter-vscode-fixture-generation" content="$fixtureGeneration">
+  <meta name="$hostRenderObservationMetaName" content="">
+  <meta name="$hostExpectedRenderContentMetaName" content="${_html(expectedRenderedContent)}">
   <base href="${_html(resourceRoot)}/">
   <title>Flutter View Fixture</title>
 </head>
 <body>
+  ${fixtureMode == protocolProbeMode ? '''
+  <script nonce="$cspNonce">
+    (() => {
+      // Fixture-only fault injection: mutate inside the Flutter View before
+      // delegating to VS Code's native postMessage boundary.
+      const acquireNativeVsCodeApi = globalThis.acquireVsCodeApi;
+      globalThis.acquireVsCodeApi = () => {
+        const nativeApi = acquireNativeVsCodeApi();
+        return {
+          postMessage(message) {
+            let outgoing = message;
+            if (message?.kind === 'call') {
+              switch (message.operation) {
+                case '$wrongNonceOperationName':
+                  outgoing = {
+                    ...message,
+                    nonce: 'fixture-invalid-active-nonce',
+                  };
+                  break;
+                case '$malformedSchemaOperationName':
+                  outgoing = {...message, unexpected: true};
+                  break;
+                case '$unsupportedVersionOperationName':
+                  outgoing = {...message, version: 2};
+                  break;
+              }
+            }
+            nativeApi.postMessage(outgoing);
+          },
+          getState() {
+            return nativeApi.getState();
+          },
+          setState(state) {
+            return nativeApi.setState(state);
+          },
+        };
+      };
+    })();
+  </script>
+  ''' : ''}
+  <script nonce="$cspNonce">
+    (() => {
+      const marker = document.querySelector(
+        'meta[name="$hostRenderObservationMetaName"]',
+      );
+      const expected = document.querySelector(
+        'meta[name="$hostExpectedRenderContentMetaName"]',
+      )?.getAttribute('content') ?? '';
+      const observeRenderedContent = () => {
+        const renderedNodes = Array.from(document.querySelectorAll(
+          '[$hostRenderedContentAttributeName]',
+        ));
+        const matchingNode = renderedNodes.find((node) => {
+          const markedContent = node.getAttribute(
+            '$hostRenderedContentAttributeName',
+          );
+          const textContent = node.textContent?.trim() ?? '';
+          const bounds = node.getBoundingClientRect();
+          return markedContent === expected &&
+            textContent === expected &&
+            bounds.width > 0 &&
+            bounds.height > 0;
+        });
+        if (matchingNode === undefined) {
+          requestAnimationFrame(observeRenderedContent);
+          return;
+        }
+        const observedContent = matchingNode.textContent?.trim() ?? '';
+        marker.setAttribute('content', '$renderObservationToken');
+        marker.setAttribute('data-rendered-content', observedContent);
+      };
+      requestAnimationFrame(observeRenderedContent);
+    })();
+  </script>
   <script nonce="$cspNonce" src="${_html(bootstrap)}"></script>
 </body>
 </html>

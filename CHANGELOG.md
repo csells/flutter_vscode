@@ -6,6 +6,13 @@
   semantics.
 - Add an optional typed Flutter View protocol with strict session cleanup.
 - Verify source and installed VSIX extensions in a pinned real Extension Host.
+- Map synchronous and asynchronous Host Dart failures back to exact Dart source
+  frames and roll back partial activation registrations.
+- Enforce fingerprinted VS Code baseline updates and executable binding evidence.
+- Harden scaffolding and packaging with hover-first activation, pre-build
+  analysis, XML validation, and framework/generator/input-bound build receipts.
+- Exercise adversarial Flutter View frames, reload with pending work, measured
+  shutdown counts, and an independent render observation in a real webview.
 
 ## 0.1.0
 

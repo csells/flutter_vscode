@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:math';
 
 /// Stable failures produced by version-1 Host/Flutter View sessions.
@@ -36,7 +37,31 @@ enum ViewProtocolErrorCode {
 /// A structured failure raised at the Host/Flutter View protocol seam.
 final class ViewProtocolException implements Exception {
   /// Creates a protocol failure with a stable [code].
-  const ViewProtocolException(this.code, this.message, {this.details});
+  factory ViewProtocolException(
+    ViewProtocolErrorCode code,
+    String message, {
+    Object? details,
+  }) {
+    if (message.isEmpty) {
+      throw const ViewProtocolException._(
+        ViewProtocolErrorCode.invalidMessage,
+        'A structured protocol error message must not be empty.',
+      );
+    }
+    if (!_isProtocolValue(details)) {
+      throw const ViewProtocolException._(
+        ViewProtocolErrorCode.invalidMessage,
+        'Structured protocol error details must be a protocol-safe snapshot.',
+      );
+    }
+    return ViewProtocolException._(
+      code,
+      message,
+      details: _protocolSnapshot(details),
+    );
+  }
+
+  const ViewProtocolException._(this.code, this.message, {this.details});
 
   /// Machine-readable failure category.
   final ViewProtocolErrorCode code;
@@ -57,7 +82,26 @@ abstract interface class ViewTransport {
   Stream<Object?> get messages;
 
   /// Sends [message] to the other runtime.
-  void send(Object? message);
+  ///
+  /// Completion means the transport finished the strongest delivery handoff
+  /// its native API exposes. The Host adapter includes VS Code's asynchronous
+  /// acceptance result; the Flutter View API is void and can confirm only its
+  /// synchronous handoff. A failure that the transport can observe must
+  /// complete with an error rather than use a separate side channel.
+  Future<void> send(Object? message);
+}
+
+/// Optional receive-side lifecycle for transports with native listeners.
+///
+/// Sessions close and await this receive side before measuring their final
+/// resource counts. The transport must keep [ViewTransport.send] available
+/// until the final `closing` frame has been delivered.
+abstract interface class ViewTransportLifecycle {
+  /// Native receive subscriptions that are still active.
+  int get receivingSubscriptionCount;
+
+  /// Stops native message receipt without disabling final outbound delivery.
+  Future<void> closeReceiving();
 }
 
 /// A connected pair of in-memory transports for deterministic tests.
@@ -128,6 +172,7 @@ final class ViewOperation<Request, Result> {
   ViewOperationBinding bind(
     FutureOr<Result> Function(Request request) handler,
   ) {
+    _requireNonEmptyProtocolIdentifier(_name, 'operation name');
     return ViewOperationBinding._(
       _name,
       (arguments) async {
@@ -143,6 +188,7 @@ final class ViewOperation<Request, Result> {
 
   /// Calls this operation through [session] with typed arguments and result.
   Future<Result> call(FlutterViewSession session, Request arguments) async {
+    _requireNonEmptyProtocolIdentifier(_name, 'operation name');
     final value = await session._call(
       _name,
       arguments: _encodeArguments(arguments),
@@ -200,6 +246,8 @@ final class HostViewSession {
     required String bootstrapNonce,
     required Iterable<ViewOperationBinding> operations,
   }) {
+    _requireNonEmptyProtocolIdentifier(sessionId, 'sessionId');
+    _requireNonEmptyProtocolIdentifier(bootstrapNonce, 'bootstrapNonce');
     final handlers = <String, _HostViewOperation>{};
     for (final operation in operations) {
       if (handlers.containsKey(operation._name)) {
@@ -241,14 +289,17 @@ final class HostViewSession {
   final Completer<ViewCloseReport> _closeReport = Completer<ViewCloseReport>();
   final Completer<ViewCloseReport> _closedLifecycle =
       Completer<ViewCloseReport>();
-  final Set<String> _pendingRequests = {};
+  final Set<String> _responseEligibleRequestIds = {};
   final Set<String> _seenRequestIds = {};
+  var _inFlightOperationCount = 0;
   // The session cancels its owned subscription during every terminal path.
   // ignore: cancel_subscriptions
   StreamSubscription<Object?>? _subscription;
   String? _activeNonce;
   var _generation = 0;
   var _closed = false;
+  Future<void>? _closeOperation;
+  Future<void>? _terminationOperation;
 
   /// Completes after the versioned session/nonce handshake succeeds.
   Future<void> get ready => _ready.future;
@@ -257,7 +308,7 @@ final class HostViewSession {
   Future<Object?> get rendered => _rendered.future;
 
   /// Number of calls whose Host Dart operations have not completed.
-  int get pendingRequestCount => _pendingRequests.length;
+  int get pendingRequestCount => _inFlightOperationCount;
 
   /// Number of protocol transport subscriptions owned by this session.
   int get subscriptionCount => _subscription == null ? 0 : 1;
@@ -266,7 +317,31 @@ final class HostViewSession {
   Future<ViewCloseReport> get closed => _closedLifecycle.future;
 
   void _listen() {
-    _subscription = _transport.messages.listen(_onMessage);
+    _subscription = _transport.messages.listen(
+      _onMessage,
+      onError: _onReceiveError,
+      onDone: _onReceiveDone,
+    );
+  }
+
+  void _onReceiveError(Object error, StackTrace stackTrace) {
+    if (!_closed) {
+      _observeOptionalError(
+        _terminate(
+          terminalError: ViewProtocolException(
+            ViewProtocolErrorCode.sessionClosed,
+            'The Host receive stream failed.',
+            details: '$error',
+          ),
+        ),
+      );
+    }
+  }
+
+  void _onReceiveDone() {
+    if (!_closed) {
+      _observeOptionalError(_terminate());
+    }
   }
 
   void _onMessage(Object? value) {
@@ -281,7 +356,7 @@ final class HostViewSession {
     }
     switch (message['kind']) {
       case 'ready':
-        _acceptReady(message);
+        _observeOptionalError(_acceptReady(message));
       case 'call':
         _observeOptionalError(_acceptCall(message));
       case 'rendered':
@@ -310,21 +385,23 @@ final class HostViewSession {
     _observeOptionalError(_terminate());
   }
 
-  void _acceptReady(Map<String, Object?> message) {
+  Future<void> _acceptReady(Map<String, Object?> message) async {
     if (message['protocol'] != 'flutter-vscode.view' ||
         message['version'] != 1 ||
         message['session'] != _sessionId ||
         message['nonce'] != _bootstrapNonce) {
       return;
     }
-    if (_activeNonce != null) {
+    final previouslyAdvertisedNonce = _activeNonce;
+    if (previouslyAdvertisedNonce != null) {
       _generation += 1;
-      _pendingRequests.clear();
+      _responseEligibleRequestIds.clear();
       _seenRequestIds.clear();
     }
     final activeNonce = _createNonce();
+    _activeNonce = activeNonce;
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'readyAck',
@@ -333,11 +410,13 @@ final class HostViewSession {
         'activeNonce': activeNonce,
       });
     } on Object {
-      _observeOptionalError(_closeAfterDeliveryFailure());
+      if (_activeNonce == activeNonce) {
+        _activeNonce = previouslyAdvertisedNonce;
+      }
+      await _closeAfterDeliveryFailure();
       return;
     }
-    _activeNonce = activeNonce;
-    if (!_ready.isCompleted) {
+    if (!_closed && _activeNonce == activeNonce && !_ready.isCompleted) {
       _ready.complete();
     }
   }
@@ -351,9 +430,9 @@ final class HostViewSession {
     }
     final id = message['id']! as String;
     if (!_seenRequestIds.add(id)) {
-      _sendError(
+      await _sendError(
         id,
-        const ViewProtocolException(
+        ViewProtocolException(
           ViewProtocolErrorCode.duplicateRequest,
           'A request ID may be used only once in a Flutter View session.',
         ),
@@ -362,7 +441,7 @@ final class HostViewSession {
     }
     final operation = _operations[message['operation']];
     if (operation == null) {
-      _sendError(
+      await _sendError(
         id,
         ViewProtocolException(
           ViewProtocolErrorCode.operationNotAllowed,
@@ -372,36 +451,35 @@ final class HostViewSession {
       return;
     }
     final generation = _generation;
-    _pendingRequests.add(id);
-    late final Object? result;
+    _responseEligibleRequestIds.add(id);
+    _inFlightOperationCount += 1;
+    Object? result;
+    ViewProtocolException? operationError;
     try {
-      result = await operation(message['arguments']);
-    } on ViewProtocolException catch (error) {
-      if (!_closed &&
-          generation == _generation &&
-          _pendingRequests.remove(id)) {
-        _sendError(id, error);
-      }
-      return;
-    } on Object catch (error) {
-      if (!_closed &&
-          generation == _generation &&
-          _pendingRequests.remove(id)) {
-        _sendError(
-          id,
-          ViewProtocolException(
-            ViewProtocolErrorCode.operationFailed,
-            'Host Dart operation "${message['operation']}" failed: $error',
-          ),
+      try {
+        result = await operation(message['arguments']);
+      } on ViewProtocolException catch (error) {
+        operationError = error;
+      } on Object catch (error) {
+        operationError = ViewProtocolException(
+          ViewProtocolErrorCode.operationFailed,
+          'Host Dart operation "${message['operation']}" failed: $error',
         );
       }
+    } finally {
+      _inFlightOperationCount -= 1;
+    }
+    if (_closed ||
+        generation != _generation ||
+        !_responseEligibleRequestIds.remove(id)) {
       return;
     }
-    if (_closed || generation != _generation || !_pendingRequests.remove(id)) {
+    if (operationError != null) {
+      await _sendError(id, operationError);
       return;
     }
     if (!_isProtocolValue(result)) {
-      _sendError(
+      await _sendError(
         id,
         ViewProtocolException(
           ViewProtocolErrorCode.operationFailed,
@@ -412,7 +490,7 @@ final class HostViewSession {
       return;
     }
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'result',
@@ -434,9 +512,9 @@ final class HostViewSession {
     }
   }
 
-  void _sendError(String id, ViewProtocolException error) {
+  Future<void> _sendError(String id, ViewProtocolException error) async {
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'error',
@@ -450,62 +528,90 @@ final class HostViewSession {
         },
       });
     } on Object {
-      _observeOptionalError(_closeAfterDeliveryFailure());
+      await _closeAfterDeliveryFailure();
     }
   }
 
   /// Closes this session and releases all pending protocol state.
-  Future<void> close() async {
-    if (_closed) {
-      return;
+  Future<void> close() {
+    final existing = _closeOperation;
+    if (existing != null) {
+      return existing;
     }
+    if (_closed) {
+      return _terminationOperation ?? Future.value();
+    }
+    final completion = Completer<void>();
+    _closeOperation = completion.future;
+    unawaited(
+      _runClose().then(
+        (_) => completion.complete(),
+        onError: completion.completeError,
+      ),
+    );
+    return completion.future;
+  }
+
+  Future<void> _runClose() async {
     final nonce = _activeNonce ?? _bootstrapNonce;
+    Object? cancellationError;
+    StackTrace? cancellationStackTrace;
+    try {
+      await _terminate();
+    } on Object catch (error, stackTrace) {
+      cancellationError = error;
+      cancellationStackTrace = stackTrace;
+    }
+    final report = ViewCloseReport(
+      pendingRequestCount: pendingRequestCount,
+      subscriptionCount:
+          subscriptionCount + _transportReceivingSubscriptionCount(_transport),
+    );
     Object? deliveryError;
     StackTrace? deliveryStackTrace;
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'closing',
         'session': _sessionId,
         'nonce': nonce,
-        'report': const {
-          'pendingRequestCount': 0,
-          'subscriptionCount': 0,
+        'report': {
+          'pendingRequestCount': report.pendingRequestCount,
+          'subscriptionCount': report.subscriptionCount,
         },
       });
     } on Object catch (error, stackTrace) {
       deliveryError = error;
       deliveryStackTrace = stackTrace;
-    } finally {
-      await _terminate();
     }
     if (deliveryError != null) {
       Error.throwWithStackTrace(deliveryError, deliveryStackTrace!);
     }
+    if (cancellationError != null) {
+      Error.throwWithStackTrace(
+        cancellationError,
+        cancellationStackTrace!,
+      );
+    }
   }
 
   /// Requests orderly Flutter View shutdown and returns its final counts.
-  Future<ViewCloseReport> shutdown() {
+  Future<ViewCloseReport> shutdown() async {
     if (_closed) {
-      return Future.value(
-        const ViewCloseReport(
-          pendingRequestCount: 0,
-          subscriptionCount: 0,
-        ),
-      );
+      return _closeReport.future;
     }
     final nonce = _activeNonce;
     if (nonce == null) {
       return Future.error(
-        const ViewProtocolException(
+        ViewProtocolException(
           ViewProtocolErrorCode.sessionClosed,
           'Cannot shut down a Flutter View before it connects.',
         ),
       );
     }
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'shutdown',
@@ -513,23 +619,41 @@ final class HostViewSession {
         'nonce': nonce,
       });
     } on Object catch (error, stackTrace) {
-      return _terminate().then<ViewCloseReport>((_) {
-        Error.throwWithStackTrace(error, stackTrace);
-      });
+      try {
+        await _terminate();
+      } on Object {
+        // Preserve the first failure: shutdown delivery was rejected.
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
     return _closeReport.future;
   }
 
-  Future<void> _terminate() async {
-    if (_closed) {
-      return;
+  Future<void> _terminate({ViewProtocolException? terminalError}) {
+    final existing = _terminationOperation;
+    if (existing != null) {
+      return existing;
     }
+    if (_closed) {
+      return Future.value();
+    }
+    final completion = Completer<void>();
+    _terminationOperation = completion.future;
+    unawaited(
+      _runTerminate(terminalError).then(
+        (_) => completion.complete(),
+        onError: completion.completeError,
+      ),
+    );
+    return completion.future;
+  }
+
+  Future<void> _runTerminate(ViewProtocolException? terminalError) async {
     _closed = true;
     _generation += 1;
-    _pendingRequests.clear();
+    _responseEligibleRequestIds.clear();
     _seenRequestIds.clear();
     final subscription = _subscription;
-    _subscription = null;
     Object? cancellationError;
     StackTrace? cancellationStackTrace;
     try {
@@ -538,36 +662,54 @@ final class HostViewSession {
       cancellationError = error;
       cancellationStackTrace = stackTrace;
     } finally {
+      _subscription = null;
+    }
+    final transportLifecycle = switch (_transport) {
+      final ViewTransportLifecycle lifecycle => lifecycle,
+      _ => null,
+    };
+    try {
+      await transportLifecycle?.closeReceiving();
+    } on Object catch (error, stackTrace) {
+      cancellationError ??= error;
+      cancellationStackTrace ??= stackTrace;
+    } finally {
       if (!_ready.isCompleted) {
         _ready.completeError(
-          const ViewProtocolException(
-            ViewProtocolErrorCode.sessionClosed,
-            'The Host Flutter View session closed before the view was ready.',
-          ),
+          terminalError ??
+              ViewProtocolException(
+                ViewProtocolErrorCode.sessionClosed,
+                'The Host Flutter View session closed before the view was '
+                'ready.',
+              ),
         );
       }
       if (!_rendered.isCompleted) {
         _rendered.completeError(
-          const ViewProtocolException(
-            ViewProtocolErrorCode.sessionClosed,
-            'The Host Flutter View session closed before the view rendered.',
-          ),
+          terminalError ??
+              ViewProtocolException(
+                ViewProtocolErrorCode.sessionClosed,
+                'The Host Flutter View session closed before the view '
+                'rendered.',
+              ),
         );
       }
       if (!_closeReport.isCompleted) {
         _closeReport.completeError(
-          const ViewProtocolException(
-            ViewProtocolErrorCode.sessionClosed,
-            'The Host Flutter View session closed before orderly shutdown '
-            'completed.',
-          ),
+          terminalError ??
+              ViewProtocolException(
+                ViewProtocolErrorCode.sessionClosed,
+                'The Host Flutter View session closed before orderly shutdown '
+                'completed.',
+              ),
         );
       }
       if (!_closedLifecycle.isCompleted) {
         _closedLifecycle.complete(
-          const ViewCloseReport(
-            pendingRequestCount: 0,
-            subscriptionCount: 0,
+          ViewCloseReport(
+            pendingRequestCount: pendingRequestCount,
+            subscriptionCount: subscriptionCount +
+                (transportLifecycle?.receivingSubscriptionCount ?? 0),
           ),
         );
       }
@@ -597,13 +739,15 @@ final class FlutterViewSession {
     required String sessionId,
     required String bootstrapNonce,
   }) async {
+    _requireNonEmptyProtocolIdentifier(sessionId, 'sessionId');
+    _requireNonEmptyProtocolIdentifier(bootstrapNonce, 'bootstrapNonce');
     final session = FlutterViewSession._(
       transport,
       sessionId,
       bootstrapNonce,
     ).._listen();
     try {
-      session._transport.send({
+      await session._transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'ready',
@@ -635,6 +779,8 @@ final class FlutterViewSession {
   String? _activeNonce;
   var _nextRequestId = 0;
   var _closed = false;
+  Future<void>? _closeOperation;
+  Future<void>? _terminationOperation;
 
   /// Number of calls waiting for a Host Dart result.
   int get pendingRequestCount => _pendingRequests.length;
@@ -646,7 +792,31 @@ final class FlutterViewSession {
   Future<ViewCloseReport> get closed => _closedReport.future;
 
   void _listen() {
-    _subscription = _transport.messages.listen(_onMessage);
+    _subscription = _transport.messages.listen(
+      _onMessage,
+      onError: _onReceiveError,
+      onDone: _onReceiveDone,
+    );
+  }
+
+  void _onReceiveError(Object error, StackTrace stackTrace) {
+    if (!_closed) {
+      _observeOptionalError(
+        _terminate(
+          terminalError: ViewProtocolException(
+            ViewProtocolErrorCode.sessionClosed,
+            'The Flutter View receive stream failed.',
+            details: '$error',
+          ),
+        ),
+      );
+    }
+  }
+
+  void _onReceiveDone() {
+    if (!_closed) {
+      _observeOptionalError(_terminate());
+    }
   }
 
   void _onMessage(Object? value) {
@@ -663,7 +833,7 @@ final class FlutterViewSession {
     if (message['session'] != _sessionId) {
       _observeOptionalError(
         _rejectConnection(
-          const ViewProtocolException(
+          ViewProtocolException(
             ViewProtocolErrorCode.sessionMismatch,
             'The protocol frame belongs to another Flutter View session.',
           ),
@@ -676,7 +846,7 @@ final class FlutterViewSession {
     if (message['nonce'] != expectedNonce) {
       _observeOptionalError(
         _rejectConnection(
-          const ViewProtocolException(
+          ViewProtocolException(
             ViewProtocolErrorCode.nonceMismatch,
             'The protocol frame nonce is not active for this session.',
           ),
@@ -684,7 +854,22 @@ final class FlutterViewSession {
       );
       return;
     }
-    switch (message['kind']) {
+    final kind = message['kind'];
+    if (!_connected.isCompleted &&
+        kind != 'readyAck' &&
+        kind != 'shutdown' &&
+        kind != 'closing') {
+      _observeOptionalError(
+        _rejectConnection(
+          _invalidMessage(
+            'Only a ready acknowledgement or terminal frame is valid during '
+            'the Flutter View handshake.',
+          ),
+        ),
+      );
+      return;
+    }
+    switch (kind) {
       case 'readyAck':
         if (message['protocol'] == 'flutter-vscode.view' &&
             message['version'] == 1 &&
@@ -714,10 +899,10 @@ final class FlutterViewSession {
   }
 
   /// Calls one operation explicitly allowlisted by Host Dart.
-  Future<Object?> _call(String operation, {Object? arguments}) {
+  Future<Object?> _call(String operation, {Object? arguments}) async {
     if (_closed) {
       return Future.error(
-        const ViewProtocolException(
+        ViewProtocolException(
           ViewProtocolErrorCode.sessionClosed,
           'The Flutter View session is closed.',
         ),
@@ -732,9 +917,10 @@ final class FlutterViewSession {
     }
     final id = 'request-${++_nextRequestId}';
     final completer = Completer<Object?>();
+    _observeOptionalError(completer.future);
     _pendingRequests[id] = completer;
     try {
-      _transport.send({
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'call',
@@ -746,16 +932,20 @@ final class FlutterViewSession {
       });
     } on Object catch (error, stackTrace) {
       _pendingRequests.remove(id);
-      completer.completeError(error, stackTrace);
-      _observeOptionalError(_terminate());
+      try {
+        await _terminate();
+      } on Object {
+        // Preserve the first failure: call delivery was rejected.
+      }
+      Error.throwWithStackTrace(error, stackTrace);
     }
     return completer.future;
   }
 
   /// Reports the protocol-safe value currently rendered by this Flutter View.
-  void reportRendered(Object? value) {
+  Future<void> reportRendered(Object? value) async {
     if (_closed) {
-      throw const ViewProtocolException(
+      throw ViewProtocolException(
         ViewProtocolErrorCode.sessionClosed,
         'The Flutter View session is closed.',
       );
@@ -765,33 +955,53 @@ final class FlutterViewSession {
         'A rendered value must contain only protocol-safe snapshot data.',
       );
     }
-    _transport.send({
-      'protocol': 'flutter-vscode.view',
-      'version': 1,
-      'kind': 'rendered',
-      'session': _sessionId,
-      'nonce': _activeNonce,
-      'value': value,
-    });
+    try {
+      await _transport.send({
+        'protocol': 'flutter-vscode.view',
+        'version': 1,
+        'kind': 'rendered',
+        'session': _sessionId,
+        'nonce': _activeNonce,
+        'value': value,
+      });
+    } on Object catch (error, stackTrace) {
+      try {
+        await _terminate();
+      } on Object {
+        // Preserve the first failure: render delivery was rejected.
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    }
   }
 
   /// Closes this session and releases all pending protocol state.
-  Future<void> close() async {
-    if (_closed) {
-      return;
+  Future<void> close() => _closeAndReport();
+
+  Future<void> _closeAndReport() {
+    final existing = _closeOperation;
+    if (existing != null) {
+      return existing;
     }
-    await _closeAndReport();
+    if (_closed) {
+      return _terminationOperation ?? Future.value();
+    }
+    final completion = Completer<void>();
+    _closeOperation = completion.future;
+    unawaited(
+      _runCloseAndReport().then(
+        (_) => completion.complete(),
+        onError: completion.completeError,
+      ),
+    );
+    return completion.future;
   }
 
-  Future<void> _closeAndReport() async {
-    if (_closed) {
-      return;
-    }
+  Future<void> _runCloseAndReport() async {
     _closed = true;
     for (final completer in _pendingRequests.values) {
       if (!completer.isCompleted) {
         completer.completeError(
-          const ViewProtocolException(
+          ViewProtocolException(
             ViewProtocolErrorCode.sessionClosed,
             'The Flutter View session closed before the call completed.',
           ),
@@ -800,36 +1010,51 @@ final class FlutterViewSession {
     }
     _pendingRequests.clear();
     final subscription = _subscription;
-    _subscription = null;
     Object? deliveryError;
     StackTrace? deliveryStackTrace;
     Object? cancellationError;
     StackTrace? cancellationStackTrace;
     try {
-      _transport.send({
+      await subscription?.cancel();
+    } on Object catch (error, stackTrace) {
+      cancellationError = error;
+      cancellationStackTrace = stackTrace;
+    } finally {
+      _subscription = null;
+      _failConnectIfPending();
+    }
+    final transportLifecycle = switch (_transport) {
+      final ViewTransportLifecycle lifecycle => lifecycle,
+      _ => null,
+    };
+    try {
+      await transportLifecycle?.closeReceiving();
+    } on Object catch (error, stackTrace) {
+      cancellationError ??= error;
+      cancellationStackTrace ??= stackTrace;
+    }
+    final report = ViewCloseReport(
+      pendingRequestCount: pendingRequestCount,
+      subscriptionCount: subscriptionCount +
+          (transportLifecycle?.receivingSubscriptionCount ?? 0),
+    );
+    try {
+      await _transport.send({
         'protocol': 'flutter-vscode.view',
         'version': 1,
         'kind': 'closing',
         'session': _sessionId,
         'nonce': _activeNonce ?? _bootstrapNonce,
-        'report': const {
-          'pendingRequestCount': 0,
-          'subscriptionCount': 0,
+        'report': {
+          'pendingRequestCount': report.pendingRequestCount,
+          'subscriptionCount': report.subscriptionCount,
         },
       });
     } on Object catch (error, stackTrace) {
       deliveryError = error;
       deliveryStackTrace = stackTrace;
     } finally {
-      try {
-        await subscription?.cancel();
-      } on Object catch (error, stackTrace) {
-        cancellationError = error;
-        cancellationStackTrace = stackTrace;
-      } finally {
-        _failConnectIfPending();
-        _completeClosed();
-      }
+      _completeClosed(report);
     }
     if (deliveryError != null) {
       Error.throwWithStackTrace(deliveryError, deliveryStackTrace!);
@@ -842,24 +1067,40 @@ final class FlutterViewSession {
     }
   }
 
-  Future<void> _terminate() async {
-    if (_closed) {
-      return;
+  Future<void> _terminate({ViewProtocolException? terminalError}) {
+    final existing = _terminationOperation;
+    if (existing != null) {
+      return existing;
     }
+    if (_closed) {
+      return _closeOperation ?? Future.value();
+    }
+    final completion = Completer<void>();
+    _terminationOperation = completion.future;
+    unawaited(
+      _runTerminate(terminalError).then(
+        (_) => completion.complete(),
+        onError: completion.completeError,
+      ),
+    );
+    return completion.future;
+  }
+
+  Future<void> _runTerminate(ViewProtocolException? terminalError) async {
     _closed = true;
     for (final completer in _pendingRequests.values) {
       if (!completer.isCompleted) {
         completer.completeError(
-          const ViewProtocolException(
-            ViewProtocolErrorCode.sessionClosed,
-            'The Flutter View session closed before the call completed.',
-          ),
+          terminalError ??
+              ViewProtocolException(
+                ViewProtocolErrorCode.sessionClosed,
+                'The Flutter View session closed before the call completed.',
+              ),
         );
       }
     }
     _pendingRequests.clear();
     final subscription = _subscription;
-    _subscription = null;
     Object? cancellationError;
     StackTrace? cancellationStackTrace;
     try {
@@ -868,8 +1109,26 @@ final class FlutterViewSession {
       cancellationError = error;
       cancellationStackTrace = stackTrace;
     } finally {
-      _failConnectIfPending();
-      _completeClosed();
+      _subscription = null;
+    }
+    final transportLifecycle = switch (_transport) {
+      final ViewTransportLifecycle lifecycle => lifecycle,
+      _ => null,
+    };
+    try {
+      await transportLifecycle?.closeReceiving();
+    } on Object catch (error, stackTrace) {
+      cancellationError ??= error;
+      cancellationStackTrace ??= stackTrace;
+    } finally {
+      _failConnectIfPending(terminalError);
+      _completeClosed(
+        ViewCloseReport(
+          pendingRequestCount: pendingRequestCount,
+          subscriptionCount: subscriptionCount +
+              (transportLifecycle?.receivingSubscriptionCount ?? 0),
+        ),
+      );
     }
     if (cancellationError != null) {
       Error.throwWithStackTrace(
@@ -879,25 +1138,21 @@ final class FlutterViewSession {
     }
   }
 
-  void _failConnectIfPending() {
+  void _failConnectIfPending([ViewProtocolException? terminalError]) {
     if (!_connected.isCompleted) {
       _connected.completeError(
-        const ViewProtocolException(
-          ViewProtocolErrorCode.sessionClosed,
-          'The Flutter View session closed before the handshake completed.',
-        ),
+        terminalError ??
+            ViewProtocolException(
+              ViewProtocolErrorCode.sessionClosed,
+              'The Flutter View session closed before the handshake completed.',
+            ),
       );
     }
   }
 
-  void _completeClosed() {
+  void _completeClosed(ViewCloseReport report) {
     if (!_closedReport.isCompleted) {
-      _closedReport.complete(
-        const ViewCloseReport(
-          pendingRequestCount: 0,
-          subscriptionCount: 0,
-        ),
-      );
+      _closedReport.complete(report);
     }
   }
 
@@ -918,7 +1173,10 @@ final class _InMemoryViewTransport implements ViewTransport {
   final void Function(Object?) _send;
 
   @override
-  void send(Object? message) => _send(message);
+  Future<void> send(Object? message) {
+    _send(jsonDecode(jsonEncode(message)));
+    return Future.value();
+  }
 }
 
 String _createNonce() {
@@ -943,7 +1201,7 @@ Map<String, Object?> _parseFrame(Object? value) {
     throw _invalidMessage('The protocol version must be an integer.');
   }
   if (version != 1) {
-    throw const ViewProtocolException(
+    throw ViewProtocolException(
       ViewProtocolErrorCode.unsupportedVersion,
       'The peer selected an unsupported Flutter View protocol version.',
     );
@@ -1054,6 +1312,23 @@ Map<String, Object?> _parseFrame(Object? value) {
 
 bool _isNonEmptyString(Object? value) => value is String && value.isNotEmpty;
 
+void _requireNonEmptyProtocolIdentifier(String value, String name) {
+  if (value.isEmpty) {
+    throw ViewProtocolException(
+      ViewProtocolErrorCode.invalidMessage,
+      '$name must be a non-empty protocol identifier.',
+    );
+  }
+}
+
+int _transportReceivingSubscriptionCount(ViewTransport transport) {
+  return switch (transport) {
+    final ViewTransportLifecycle lifecycle =>
+      lifecycle.receivingSubscriptionCount,
+    _ => 0,
+  };
+}
+
 bool _isProtocolValue(Object? value, [Set<Object>? ancestors]) {
   if (value == null || value is String || value is bool) {
     return true;
@@ -1082,6 +1357,19 @@ bool _isProtocolValue(Object? value, [Set<Object>? ancestors]) {
     return valid;
   }
   return false;
+}
+
+Object? _protocolSnapshot(Object? value) {
+  if (value is List<Object?>) {
+    return List<Object?>.unmodifiable(value.map(_protocolSnapshot));
+  }
+  if (value is Map<Object?, Object?>) {
+    return Map<String, Object?>.unmodifiable({
+      for (final entry in value.entries)
+        entry.key! as String: _protocolSnapshot(entry.value),
+    });
+  }
+  return value;
 }
 
 ViewProtocolException _invalidMessage(String message) =>

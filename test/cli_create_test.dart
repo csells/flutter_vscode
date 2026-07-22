@@ -96,6 +96,7 @@ void main() {
     expect(source, contains("'apiTarget': '1.129.1'"));
     expect(source, contains("'name': 'my-extension'"));
     expect(source, contains("'publisher': 'local'"));
+    expect(source, contains("'activationEvents': <String>['onLanguage:json']"));
   });
 
   test('create puts command and hover behavior in Host Dart', () async {
@@ -126,8 +127,68 @@ void main() {
       ),
     ).readAsStringSync();
     expect(source, contains("'my-extension.hello'"));
-    expect(source, contains('registerCommand'));
+    expect(source, contains('registerCommandCallback'));
     expect(source, contains('registerHoverProvider'));
+    expect(source, contains("registerHoverProvider('json'.toJS"));
     expect(source, contains('registerHostExports'));
+    expect(
+      source,
+      isNot(contains('Future<JSAny?>(()')),
+      reason: 'Provider registration must not be deferred past activation.',
+    );
+    expect(
+      source,
+      contains(
+        'activate(\n'
+        '    JSObject rawContext,\n'
+        '    JSObject rawVscode,\n'
+        '  )',
+      ),
+    );
+    expect(source, isNot(contains('failActivation')));
   });
+
+  test(
+    'create emits an analyzable Extension Project before its first build',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_create_analyze_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+
+      final create = await Process.run(
+        'dart',
+        [executable, 'create', 'my_extension'],
+        workingDirectory: workspace.path,
+      );
+      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
+      final project = Directory(p.join(workspace.path, 'my_extension'));
+      final host = Directory(p.join(project.path, 'host'));
+      final get = await Process.run(
+        'dart',
+        const ['pub', 'get'],
+        workingDirectory: host.path,
+      );
+      expect(get.exitCode, 0, reason: '${get.stdout}\n${get.stderr}');
+
+      final analyze = await Process.run(
+        'dart',
+        const ['analyze'],
+        workingDirectory: project.path,
+      );
+
+      expect(
+        analyze.exitCode,
+        0,
+        reason: '${analyze.stdout}\n${analyze.stderr}',
+      );
+      expect(analyze.stdout, contains('No issues found!'));
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
 }

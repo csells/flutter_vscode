@@ -1,0 +1,25 @@
+/.dart_tool/
+/.github/
+/.vscode-test/
+/build/
+/out/
+**/.dart_tool/
+**/.vscode-test/
+**/build/
+**/node_modules/
+
+# Repository-only specifications, fixtures, and maintainer gates.
+/specs/
+/test/
+/scripts/
+/tool/binding_importer/
+/tool/extension_host_test/
+/tool/build_test_support.dart
+/tool/check_dart_generator.dart
+/tool/check_ts_generator.dart
+
+# Instructions for repository agents are not consumer package assets.
+/AGENTS.md
+/CLAUDE.md
+/CONTEXT.md
+/GEMINI.md

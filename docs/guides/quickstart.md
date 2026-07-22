@@ -2,12 +2,15 @@
 
 ## 1. Install the CLI
 
+The Dart-host workflow is currently unreleased. Activate the CLI from its
+repository checkout:
+
 ```sh
-dart pub global activate flutter_vscode
+dart pub global activate --source path /path/to/flutter_vscode
 ```
 
-For local repository development, use
-`dart pub global activate --source path /path/to/flutter_vscode`.
+Once this release is available on pub.dev, use
+`dart pub global activate flutter_vscode` instead.
 
 ## 2. Create an Extension Project
 
@@ -30,7 +33,10 @@ decision.
 Edit `host/lib/extension.dart`. Host code runs when the extension activates,
 even if no Flutter view exists. Keep Flutter, browser-only libraries, `dart:io`,
 and other unsupported platform APIs out of `host/` and `shared/`; `build` checks
-these boundaries.
+these boundaries. The generated facade is present immediately after `create`,
+so `dart pub get && dart analyze` succeeds in `host/` before the first build.
+Use the [Generated Host API](../reference/generated-host-api.md) for supported
+Dart patterns and consult `coverage.json` after building for exact coverage.
 
 ## 4. Build and debug
 
@@ -52,9 +58,8 @@ The command validates framework-managed artifacts and writes the VSIX beneath
 `build/`. Install that file with VS Code's **Extensions: Install from VSIX…**
 command.
 
-The current proof targets VS Code 1.129.1 and a reviewed command/hover slice;
-consult [VS Code API Mapping](../reference/vscode-api-mapping.md) before assuming
-another API is generated.
+The current proof targets VS Code 1.129.1 and a reviewed command/hover slice.
+Do not infer or handwrite bindings for APIs absent from the generated facade.
 
 ## Legacy webview scaffold
 

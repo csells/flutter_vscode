@@ -4,17 +4,23 @@ import 'dart:js_interop';
 import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
 
+/// Fixture hook that observes one native message after protocol parsing.
+typedef IncomingViewMessageObserver = void Function(Object? message);
+
 /// Adapts one native VS Code webview to the shared protocol transport.
-final class HostWebviewTransport implements ViewTransport {
+final class HostWebviewTransport
+    implements ViewTransport, ViewTransportLifecycle {
   /// Starts listening to messages from the supplied VS Code webview.
-  HostWebviewTransport(this._webview) {
+  HostWebviewTransport(this._webview, [this._incomingMessageObserver]) {
     _messageRegistration = _webview.listenOnDidReceiveMessage(
       ((JSAny? message) {
-        if (_closed) {
+        if (_closed || _receivingClosed) {
           return;
         }
         try {
-          _messages.add(message.dartify());
+          final incoming = message.dartify();
+          _messages.add(incoming);
+          _incomingMessageObserver?.call(incoming);
         } on Object {
           // Feed malformed external input through the protocol validator.
           _messages.add(null);
@@ -24,18 +30,24 @@ final class HostWebviewTransport implements ViewTransport {
   }
 
   final Webview _webview;
+  final IncomingViewMessageObserver? _incomingMessageObserver;
   final StreamController<Object?> _messages =
       StreamController<Object?>.broadcast(sync: true);
   final Completer<Never> _failure = Completer<Never>();
   final Set<Future<void>> _pendingSends = {};
   Disposable? _messageRegistration;
+  var _receivingClosed = false;
   var _closed = false;
+  var _closeCompleted = false;
 
   @override
   Stream<Object?> get messages => _messages.stream;
 
   /// Number of native message subscriptions still owned by this adapter.
-  int get subscriptionCount => _messageRegistration == null ? 0 : 1;
+  int get subscriptionCount => receivingSubscriptionCount;
+
+  @override
+  int get receivingSubscriptionCount => _messageRegistration == null ? 0 : 1;
 
   /// Number of native post-message promises that have not settled.
   int get pendingSendCount => _pendingSends.length;
@@ -44,9 +56,9 @@ final class HostWebviewTransport implements ViewTransport {
   Future<Never> get failure => _failure.future;
 
   @override
-  void send(Object? message) {
+  Future<void> send(Object? message) {
     if (_closed) {
-      return;
+      throw StateError('The Host webview transport is closed.');
     }
     late final Future<void> delivery;
     try {
@@ -59,7 +71,7 @@ final class HostWebviewTransport implements ViewTransport {
       });
     } on Object catch (error, stackTrace) {
       _recordFailure(error, stackTrace);
-      return;
+      return Future.error(error, stackTrace);
     }
     _pendingSends.add(delivery);
     unawaited(
@@ -71,6 +83,7 @@ final class HostWebviewTransport implements ViewTransport {
         },
       ),
     );
+    return delivery;
   }
 
   void _recordFailure(Object error, StackTrace stackTrace) {
@@ -94,7 +107,7 @@ final class HostWebviewTransport implements ViewTransport {
 
   /// Removes the native listener and closes the Dart message stream.
   Future<void> close() async {
-    if (_closed) {
+    if (_closeCompleted) {
       return;
     }
     _closed = true;
@@ -110,13 +123,25 @@ final class HostWebviewTransport implements ViewTransport {
       }
     }
 
-    final messageRegistration = _messageRegistration;
-    _messageRegistration = null;
-    await preserveFirstError(() => messageRegistration?.dispose());
+    await preserveFirstError(closeReceiving);
     await preserveFirstError(drain);
-    await preserveFirstError(_messages.close);
     if (firstError != null) {
       Error.throwWithStackTrace(firstError!, firstStackTrace!);
     }
+    _closeCompleted = true;
+  }
+
+  @override
+  Future<void> closeReceiving() async {
+    if (_receivingClosed) {
+      return;
+    }
+    final messageRegistration = _messageRegistration;
+    if (messageRegistration != null) {
+      messageRegistration.disposeHostResource();
+      _messageRegistration = null;
+    }
+    _receivingClosed = true;
+    await _messages.close();
   }
 }

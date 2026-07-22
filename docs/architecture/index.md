@@ -24,12 +24,16 @@ close/reload cleanup.
 ## Binding Pipeline
 
 Maintainer tooling parses pinned official VS Code TypeScript and contribution
-schema inputs, including transitive validator helpers, into a canonical IR.
-The importer projects exact predicates such as ECMAScript string trimming
-instead of inferring behavior from function names. The Dart generator combines
-that IR with reviewed Semantic Overrides to produce parity bindings, an
-idiomatic facade, manifest contributions, and a coverage ledger. Unknown or
-changed semantics fail closed; generation does not use inference.
+schema inputs into a canonical IR. The commands path pins and projects its
+transitive whitespace helper instead of inferring behavior from a function
+name. For the extension-manifest validator, the importer projects the direct
+field and engine predicates used by generated manifests; it integrity-pins the
+remaining function body. The imported `semver.valid` implementation is not yet
+projected, so this milestone makes no mechanical-equivalence claim for it.
+The Dart generator combines the IR with reviewed Semantic Overrides to produce
+parity bindings, an idiomatic facade, manifest contributions, and a coverage
+ledger. New, changed, removed, or incoherently pinned projected semantics fail
+closed; generation does not use inference.
 
 ```text
 pinned VS Code inputs -> canonical IR + Semantic Overrides -> generated host API

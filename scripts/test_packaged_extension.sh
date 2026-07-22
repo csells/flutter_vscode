@@ -4,13 +4,14 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${SCRIPT_DIR}/.."
 IMAGE_NAME="flutter-vscode-host-test:local"
-CACHE_VOLUME="flutter-vscode-host-test-cache"
 TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/flutter-vscode-packaged-cli.XXXXXX")"
+TEMP_ROOT="$(cd "${TEMP_ROOT}" && pwd -P)"
+CACHE_ROOT="${TEMP_ROOT}/vscode-test-cache"
 PUB_CACHE_ROOT="${TEMP_ROOT}/pub-cache"
 PACKAGE_COPY="${TEMP_ROOT}/package"
 WORKSPACE="${TEMP_ROOT}/workspace"
 PROJECT_ROOT="${WORKSPACE}/activated_extension"
-VIEW_FIXTURE_ROOT="${PACKAGE_COPY}/test/fixtures/host_extension"
+VIEW_FIXTURE_ROOT="${TEMP_ROOT}/host-extension-fixture"
 
 cleanup() {
   rm -rf "${TEMP_ROOT}"
@@ -19,14 +20,32 @@ trap cleanup EXIT
 
 mkdir -p "${PACKAGE_COPY}"
 mkdir -p "${WORKSPACE}"
-tar \
-  --exclude=.dart_tool \
-  --exclude=.git \
-  --exclude=build \
-  --exclude=node_modules \
-  --exclude=out \
-  -C "${REPO_ROOT}" \
-  -cf - . | tar -C "${PACKAGE_COPY}" -xf -
+mkdir -p "${VIEW_FIXTURE_ROOT}"
+mkdir -p "${CACHE_ROOT}"
+rsync -a \
+  --exclude=.git/ \
+  --exclude-from="${REPO_ROOT}/.pubignore" \
+  "${REPO_ROOT}/" "${PACKAGE_COPY}/"
+rsync -a \
+  --exclude=.dart_tool/ \
+  --exclude=build/ \
+  --exclude=node_modules/ \
+  --exclude=out/ \
+  "${REPO_ROOT}/test/fixtures/host_extension/" \
+  "${VIEW_FIXTURE_ROOT}/"
+
+test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
+test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"
+test ! -e "${PACKAGE_COPY}/test"
+test ! -e "${PACKAGE_COPY}/specs"
+
+# The repository fixture normally reaches flutter_vscode by walking back to the
+# checkout root. Keep the copied fixture outside the staged package, but bind
+# its dependency to the pristine pub-filtered package under test.
+PUB_CACHE="${PUB_CACHE_ROOT}" dart pub add \
+  --directory="${VIEW_FIXTURE_ROOT}/views/main" \
+  --no-precompile \
+  "override:flutter_vscode@{path: ${PACKAGE_COPY}}"
 
 PUB_CACHE="${PUB_CACHE_ROOT}" dart pub global activate \
   --source path "${PACKAGE_COPY}"
@@ -51,8 +70,6 @@ docker build \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 
-docker volume create "${CACHE_VOLUME}" >/dev/null
-
 run_packaged_project() {
   local project_root="$1"
   local command_result="$2"
@@ -61,7 +78,7 @@ run_packaged_project() {
   docker run --rm --init --shm-size=1g \
     --volume "${REPO_ROOT}:/workspace:ro" \
     --volume "${project_root}:/packaged-project:ro" \
-    --volume "${CACHE_VOLUME}:/vscode-test-cache" \
+    --volume "${CACHE_ROOT}:/vscode-test-cache" \
     --env VSCODE_TEST_CACHE_PATH=/vscode-test-cache \
     --env FLUTTER_VSCODE_PACKAGED_PROJECT=/packaged-project \
     --env FLUTTER_VSCODE_PACKAGED_COMMAND_RESULT="${command_result}" \

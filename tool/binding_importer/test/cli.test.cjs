@@ -78,6 +78,32 @@ test('CLI emits byte-identical canonical IR from verified pinned inputs', (conte
   assert.deepEqual(ir.manifestValidator, {
     inputSha256:
       'e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1',
+    generatedManifestRules: [
+      {path: 'publisher', presence: 'optional', type: 'string'},
+      {path: 'name', presence: 'required', type: 'string'},
+      {path: 'version', presence: 'required', type: 'string'},
+      {path: 'engines', presence: 'required', type: 'object'},
+      {path: 'engines.vscode', presence: 'required', type: 'string'},
+      {
+        path: 'activationEvents',
+        presence: 'optional',
+        type: 'string[]',
+        requiresAny: ['main', 'browser'],
+      },
+      {path: 'main', presence: 'optional', type: 'string'},
+    ],
+    versionPredicate: 'semver.valid',
+    engineVersionSyntax: {
+      source: '^(\\^|>=)?((\\d+)|x)\\.((\\d+)|x)\\.((\\d+)|x)(\\-.*)?$',
+      flags: '',
+    },
+    validatorBodySha256:
+      'a7df6554afff3fa5c5e021f793fc8a4662fc641ade451565a8ff59929cf5a171',
+    projectionLimits: {
+      remainingValidatorBranches:
+        'integrityPinnedByValidatorBodySha256',
+      semverValidImplementation: 'unprojectedExternal',
+    },
   });
   assert.deepEqual(ir.contributionSchemas.commands, {
     inputSha256:
@@ -115,7 +141,7 @@ test('CLI emits byte-identical canonical IR from verified pinned inputs', (conte
       },
     },
   });
-  assert.equal(ir.declarations.length, 2979);
+  assert.equal(ir.declarations.length, 2982);
 });
 
 test('CLI canonicalizes schema keys with ordinal ordering', (context) => {
@@ -334,7 +360,10 @@ export const commandsExtensionPoint = ExtensionsRegistry.registerExtensionPoint(
     path: contributionPath,
     version: '1.129.1',
     commit: validationHelperInput.commit,
-    source: 'https://example.invalid/menusExtensionPoint.ts',
+    source:
+      'https://raw.githubusercontent.com/microsoft/vscode/' +
+      `${validationHelperInput.commit}/src/vs/workbench/services/actions/` +
+      'common/menusExtensionPoint.ts',
     sha256: crypto
       .createHash('sha256')
       .update(contributionSource)

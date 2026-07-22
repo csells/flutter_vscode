@@ -6,8 +6,11 @@ Node or TypeScript layer.
 
 ## Setup
 
+The Dart-host workflow is currently unreleased, so activate it from a local
+checkout:
+
 ```sh
-dart pub global activate flutter_vscode
+dart pub global activate --source path /path/to/flutter_vscode
 flutter_vscode create my_extension
 cd my_extension
 ```
@@ -23,10 +26,12 @@ intent -> check pinned API coverage -> edit author-owned Dart -> build -> test
 ```
 
 An agent should first verify that the requested VS Code symbols exist in the
-generated bindings and `coverage.json`. It must not infer a likely binding,
-handwrite a shadow API, or edit generated interop to make an unsupported symbol
-compile. Expanding the API is a framework contribution: update pinned official
-inputs, IR, reviewed Semantic Overrides, generation, and host tests.
+generated bindings and `coverage.json`. Start with the
+[Generated Host API](../reference/generated-host-api.md). It must not infer a
+likely binding, handwrite a shadow API, or edit generated interop to make an
+unsupported symbol compile. Expanding the API is a framework contribution:
+update pinned official inputs, IR, reviewed Semantic Overrides, generation,
+and host tests.
 
 For a supported feature, the agent edits:
 
@@ -70,4 +75,4 @@ bootstrap, JavaScript bundles, source maps, or VSIX contents.
 
 The original annotation/TypeScript agent workflow remains documented in the
 [legacy API mapping](../reference/vscode-api-mapping.md) for existing v0
-projects.
+projects only.

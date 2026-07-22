@@ -6,6 +6,7 @@ import 'package:archive/archive.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
+import 'package:xml/xml.dart';
 
 import '../tool/binding_generator/generator.dart';
 import '../tool/binding_generator/writer.dart';
@@ -15,7 +16,7 @@ Future<void> main(List<String> arguments) async {
   try {
     switch (arguments) {
       case ['create', final name]:
-        _createProject(name);
+        await _createProject(name);
       case ['build']:
         await _buildProject(Directory.current);
       case ['package']:
@@ -32,6 +33,16 @@ Future<void> main(List<String> arguments) async {
     exitCode = error.exitCode;
   } on VSCodeBindingGenerationException catch (error) {
     stderr.writeln(error);
+    exitCode = 1;
+  } on HostDartSourceException catch (error) {
+    final source = p
+        .relative(error.path, from: Directory.current.path)
+        .split(p.separator)
+        .join('/');
+    stderr.writeln(
+      'INVALID_HOST_DART: $source:${error.line}:${error.column}: '
+      '${error.message} Fix the Dart syntax and rerun flutter_vscode build.',
+    );
     exitCode = 1;
   } on FormatException catch (error) {
     stderr.writeln('INVALID_PROJECT_DATA: Invalid project data: $error');
@@ -50,7 +61,7 @@ Future<void> main(List<String> arguments) async {
   }
 }
 
-void _createProject(String name) {
+Future<void> _createProject(String name) async {
   if (!RegExp(r'^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$').hasMatch(name)) {
     throw const _CliException(
       'Project names must use lowercase_with_underscores.',
@@ -75,7 +86,8 @@ void _createProject(String name) {
       .split('_')
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join(' ');
-  File(p.join(root.path, 'extension.dart')).writeAsStringSync('''
+  final descriptor = File(p.join(root.path, 'extension.dart'))
+    ..writeAsStringSync('''
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
 const extension = <String, Object?>{
   'schemaVersion': 1,
@@ -85,7 +97,7 @@ const extension = <String, Object?>{
   'description': 'A VS Code extension written in Dart.',
   'version': '0.0.1',
   'publisher': 'local',
-  'activationEvents': <String>[],
+  'activationEvents': <String>['onLanguage:json'],
   'commands': <Map<String, Object?>>[
     <String, Object?>{
       'command': '$manifestName.hello',
@@ -121,6 +133,26 @@ environment:
       '',
     ].join('\n'),
   );
+
+  final packageRoot = await _resolvePackageRoot();
+  final project = await readProjectDescriptor(descriptor);
+  final bindingInputs = await _selectBindingInputs(
+    packageRoot: packageRoot,
+    project: project,
+    requireApiTarget: true,
+  );
+  final generated = VSCodeBindingGenerator().generate(
+    inventory: bindingInputs.inventory,
+    overrides: bindingInputs.overrides,
+    project: project,
+  );
+  await writeGeneratedBindings(
+    VSCodeGeneratedBindings({
+      for (final entry in generated.files.entries)
+        if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,
+    }),
+    root,
+  );
 }
 
 String _hostEntrypoint(String projectName, String manifestName) => '''
@@ -136,41 +168,33 @@ class _Extension {
   JSPromise<JSAny?> activate(
     JSObject rawContext,
     JSObject rawVscode,
-    JSBoolean failActivation,
   ) {
-    return toHostPromise(
-      Future<JSAny?>(() {
-        if (failActivation.toDart) {
-          throw StateError('Host activation failed intentionally');
-        }
-        final context = ExtensionContext.fromJS(rawContext);
-        final vscode = VSCode.fromJS(rawVscode);
+    final context = ExtensionContext.fromJS(rawContext);
+    final vscode = VSCode.fromJS(rawVscode);
 
-        final hello = (() => helloMessage.toJS).toJS;
-        context.subscriptions.toDart.add(
-          vscode.commands.registerCommand(_helloCommand.toJS, hello),
-        );
-
-        final provideHover =
-            (
-                  TextDocument document,
-                  Position position,
-                  CancellationToken token,
-                ) {
-                  final contents = MarkdownString(
-                    'Hover from Dart at \${position.line}:\${position.character}'
-                        .toJS,
-                  );
-                  return Hover(contents, Range(0, 0, 0, 5));
-                }
-                .toJS;
-        final provider = HoverProvider(provideHover: provideHover);
-        context.subscriptions.toDart.add(
-          vscode.languages.registerHoverProvider('plaintext'.toJS, provider),
-        );
-        return null;
-      }),
+    final hello = (() => helloMessage.toJS).toJS;
+    context.subscriptions.toDart.add(
+      vscode.commands.registerCommandCallback(_helloCommand.toJS, hello),
     );
+
+    final provideHover =
+        (
+              TextDocument document,
+              Position position,
+              CancellationToken token,
+            ) {
+              final contents = MarkdownString(
+                'Hover from Dart at \${position.line}:\${position.character}'
+                    .toJS,
+              );
+              return Hover(contents, Range(0, 0, 0, 5));
+            }
+            .toJS;
+    final provider = HoverProvider(provideHover: provideHover);
+    context.subscriptions.toDart.add(
+      vscode.languages.registerHoverProvider('json'.toJS, provider),
+    );
+    return Future<JSAny?>.value(null).toJS;
   }
 
   JSPromise<JSAny?> deactivate() => Future<JSAny?>.value(null).toJS;
@@ -321,9 +345,14 @@ Future<void> _buildProject(Directory root) async {
   }
   _viewOutputFiles(root, views);
   await _writeLaunchConfiguration(root);
+  final toolIdentity = await _buildToolIdentity(
+    packageRoot,
+    bindingInputs.apiTarget,
+  );
   await writeBuildReceipt(
     projectRoot: root,
     apiTarget: bindingInputs.apiTarget,
+    toolIdentity: toolIdentity,
     inputPaths: _buildInputPaths(root),
     artifactPaths: _managedArtifactPaths(root),
   );
@@ -829,6 +858,45 @@ Future<Directory> _resolvePackageRoot() async {
   return Directory(p.dirname(p.dirname(library.toFilePath())));
 }
 
+Future<BuildToolIdentity> _buildToolIdentity(
+  Directory packageRoot,
+  String apiTarget,
+) async =>
+    BuildToolIdentity(
+      frameworkSha256: await _packageFilesDigest(
+        packageRoot,
+        const [
+          'bin/flutter_vscode.dart',
+          'lib',
+          'pubspec.yaml',
+          'tool/check_host_imports.dart',
+        ],
+      ),
+      generatorSha256: await _packageFilesDigest(
+        packageRoot,
+        const [
+          'tool/binding_generator',
+        ],
+      ),
+      bindingInputsSha256: await _packageFilesDigest(
+        packageRoot,
+        [
+          'tool/bindings/inputs/vscode/$apiTarget',
+          'tool/bindings/ir/vscode-$apiTarget.json',
+          'tool/bindings/overrides/vscode-$apiTarget.json',
+        ],
+      ),
+    );
+
+Future<String> _packageFilesDigest(
+  Directory packageRoot,
+  List<String> relativePaths,
+) =>
+    digestPackagePaths(
+      packageRoot: packageRoot,
+      relativePaths: relativePaths,
+    );
+
 Future<Map<String, Object?>> _readJson(File file) async {
   return _decodeJsonObject(await file.readAsString(), file.path);
 }
@@ -909,9 +977,12 @@ Future<void> _packageProject(Directory root) async {
   final viewOutputFiles = _viewOutputFiles(root, views);
   final apiTarget = project['apiTarget'];
   final currentApiTarget = apiTarget is String ? apiTarget : '1.129.1';
+  final packageRoot = await _resolvePackageRoot();
+  final toolIdentity = await _buildToolIdentity(packageRoot, currentApiTarget);
   final receiptProblems = await validateBuildReceipt(
     projectRoot: root,
     apiTarget: currentApiTarget,
+    toolIdentity: toolIdentity,
     inputPaths: _buildInputPaths(root),
     artifactPaths: _managedArtifactPaths(root),
   );
@@ -954,8 +1025,8 @@ Future<void> _packageProject(Directory root) async {
   final name = _manifestIdentifierComponent(manifest, 'name');
   final version = _manifestString(manifest, 'version');
   final publisher = _manifestIdentifierComponent(manifest, 'publisher');
-  final displayName = _manifestString(manifest, 'displayName');
-  final description = _manifestString(manifest, 'description');
+  final displayName = _manifestXmlText(manifest, 'displayName');
+  final description = _manifestXmlText(manifest, 'description');
   final buildRoot = p.normalize(p.absolute(p.join(root.path, 'build')));
   final outputPath = p.normalize(p.join(buildRoot, '$name-$version.vsix'));
   if (!p.isWithin(buildRoot, outputPath)) {
@@ -1009,7 +1080,7 @@ Future<void> _packageProject(Directory root) async {
   </Assets>
 </PackageManifest>
 '''
-      .substring(1);
+      .trimLeft();
 
   final contents = <String, List<int>>{
     '[Content_Types].xml': utf8.encode(contentTypes),
@@ -1150,7 +1221,43 @@ void _validateAssembledVsix(
       );
     }
   }
+  for (final path in const ['[Content_Types].xml', 'extension.vsixmanifest']) {
+    late final String source;
+    try {
+      source = utf8.decode(expectedContents[path]!);
+    } on FormatException {
+      throw _CliException(
+        'Assembled VSIX entry $path is not valid UTF-8 XML.',
+        code: 'INVALID_VSIX',
+      );
+    }
+    if (!_containsOnlyXml10Characters(source)) {
+      throw _CliException(
+        'Assembled VSIX entry $path contains a character forbidden by '
+        'XML 1.0.',
+        code: 'INVALID_VSIX',
+      );
+    }
+    try {
+      XmlDocument.parse(source);
+    } on XmlParserException {
+      throw _CliException(
+        'Assembled VSIX entry $path is not valid XML 1.0.',
+        code: 'INVALID_VSIX',
+      );
+    }
+  }
 }
+
+bool _containsOnlyXml10Characters(String source) => source.runes.every(
+      (character) =>
+          character == 0x9 ||
+          character == 0xa ||
+          character == 0xd ||
+          (character >= 0x20 && character <= 0xd7ff) ||
+          (character >= 0xe000 && character <= 0xfffd) ||
+          (character >= 0x10000 && character <= 0x10ffff),
+    );
 
 bool _stringListsEqual(List<String> left, List<String> right) {
   if (left.length != right.length) {
@@ -1185,6 +1292,19 @@ String _manifestString(Map<String, Object?> manifest, String key) {
     throw _CliException(
       'Generated package.json has no $key value.',
       code: 'INVALID_MANAGED_MANIFEST',
+    );
+  }
+  return value;
+}
+
+String _manifestXmlText(Map<String, Object?> manifest, String key) {
+  final value = _manifestString(manifest, key);
+  if (!_containsOnlyXml10Characters(value)) {
+    throw _CliException(
+      'Generated package.json $key contains a character forbidden by XML '
+      '1.0. Remove control characters from extension.dart, run '
+      'flutter_vscode build, and package again.',
+      code: 'INVALID_PROJECT_MANIFEST',
     );
   }
   return value;

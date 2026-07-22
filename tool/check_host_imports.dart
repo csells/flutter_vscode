@@ -60,6 +60,29 @@ List<String> checkHostImports({
   ).check();
 }
 
+/// A syntax diagnostic found before Host Dart dependency checks can run.
+final class HostDartSourceException implements Exception {
+  /// Creates a source diagnostic at an exact location.
+  const HostDartSourceException({
+    required this.path,
+    required this.line,
+    required this.column,
+    required this.message,
+  });
+
+  /// Absolute path to the malformed Dart source.
+  final String path;
+
+  /// One-based source line.
+  final int line;
+
+  /// One-based source column.
+  final int column;
+
+  /// Analyzer problem message.
+  final String message;
+}
+
 /// Formats [violations] as an actionable command-line diagnostic.
 String formatHostImportViolations(List<String> violations) {
   final output = StringBuffer('Host Dart dependency boundary check failed:\n');
@@ -142,7 +165,18 @@ final class _HostImportGuard {
     final parsed = parseFile(
       path: normalizedPath,
       featureSet: FeatureSet.latestLanguageVersion(),
+      throwIfDiagnostics: false,
     );
+    if (parsed.errors.isNotEmpty) {
+      final diagnostic = parsed.errors.first;
+      final location = parsed.lineInfo.getLocation(diagnostic.offset);
+      throw HostDartSourceException(
+        path: normalizedPath,
+        line: location.lineNumber,
+        column: location.columnNumber,
+        message: diagnostic.message,
+      );
+    }
     for (final directive in parsed.unit.directives) {
       if (directive is! UriBasedDirective) {
         continue;

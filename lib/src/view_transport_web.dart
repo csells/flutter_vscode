@@ -55,6 +55,9 @@ final class VSCodeViewBootstrap {
   final _VSCodeWebviewTransport _transport;
   Future<FlutterViewSession>? _connection;
 
+  /// Native browser message listeners still owned by this bootstrap.
+  int get receivingSubscriptionCount => _transport.receivingSubscriptionCount;
+
   /// Connects the Flutter View using Host-provided metadata.
   Future<FlutterViewSession> connect() {
     return _connection ??= FlutterViewSession.connect(
@@ -71,10 +74,11 @@ final class VSCodeViewBootstrap {
   Future<void> close() => _transport.close();
 }
 
-final class _VSCodeWebviewTransport implements ViewTransport {
+final class _VSCodeWebviewTransport
+    implements ViewTransport, ViewTransportLifecycle {
   _VSCodeWebviewTransport(this._api) {
     _messageListener = ((web.MessageEvent event) {
-      if (_closed) {
+      if (_closed || _receivingClosed) {
         return;
       }
       try {
@@ -93,17 +97,24 @@ final class _VSCodeWebviewTransport implements ViewTransport {
   final StreamController<Object?> _messages =
       StreamController<Object?>.broadcast(sync: true);
   late final web.EventListener _messageListener;
+  var _receivingClosed = false;
   var _closed = false;
+
+  @override
+  int get receivingSubscriptionCount => _receivingClosed ? 0 : 1;
 
   @override
   Stream<Object?> get messages => _messages.stream;
 
   @override
-  void send(Object? message) {
+  Future<void> send(Object? message) {
     if (_closed) {
       throw StateError('The VS Code webview transport is closed.');
     }
+    // acquireVsCodeApi().postMessage returns void. This confirms synchronous
+    // handoff only; VS Code exposes no asynchronous acceptance result here.
     _api.postMessage(_jsonParse(jsonEncode(message)));
+    return Future.value();
   }
 
   Future<void> close() async {
@@ -111,6 +122,15 @@ final class _VSCodeWebviewTransport implements ViewTransport {
       return;
     }
     _closed = true;
+    await closeReceiving();
+  }
+
+  @override
+  Future<void> closeReceiving() async {
+    if (_receivingClosed) {
+      return;
+    }
+    _receivingClosed = true;
     web.window.removeEventListener('message', _messageListener);
     await _messages.close();
   }

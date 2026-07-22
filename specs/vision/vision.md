@@ -37,11 +37,12 @@ webview security, or VS Code's JavaScript object model to ship reliable tools.
 
 ## Architecture Direction
 
-All Dart-to-host interactions share one versioned protocol supporting requests,
-responses, events, callbacks, streams, object handles, cancellation, disposal,
-and structured errors. Generated typed APIs and dynamic access are clients of
-the same contract. A generated host runtime adapts that contract to VS Code's
-JavaScript API without becoming a consumer authoring surface.
+Host Dart talks to VS Code through generated `dart:js_interop` bindings so
+native objects keep their identity, prototypes, callbacks, and lifecycles. All
+cross-runtime communication between Host Dart and a Flutter View shares one
+versioned protocol supporting requests, responses, errors, cancellation, and
+disposal. Generated bootstrap and transport code remain framework-owned
+implementation details rather than consumer authoring surfaces.
 
 Rich VS Code values and lifecycles receive explicit Dart models, codecs,
 proxies, and ownership rules. Generator, Dart runtime, transport, generated host

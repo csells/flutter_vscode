@@ -12,6 +12,9 @@ const {
 const {
   extractManifestSchemaProjection,
 } = require('./manifest_schema.cjs');
+const {
+  extractManifestValidatorProjection,
+} = require('./manifest_validator.cjs');
 const {verifyPinnedInputs} = require('./pins.cjs');
 
 function main(arguments_) {
@@ -69,6 +72,10 @@ function main(arguments_) {
         `${manifestValidatorInputs.length}.`,
     );
   }
+  const manifestValidatorInputPath = path.resolve(
+    path.dirname(options.pins),
+    manifestValidatorInputs[0].path,
+  );
   const contributionInputs = pinSet.inputs.filter(
     (input) => input.kind === 'contributionSchemaSource',
   );
@@ -153,6 +160,10 @@ function main(arguments_) {
     },
     manifestValidator: {
       inputSha256: manifestValidatorInputs[0].sha256,
+      ...extractManifestValidatorProjection(
+        fs.readFileSync(manifestValidatorInputPath, 'utf8'),
+        manifestValidatorInputPath,
+      ),
     },
     contributionSchemas,
     module: inventory.module,

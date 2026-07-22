@@ -15,8 +15,12 @@
 
 ## Naming
 
-- Use `VSCode*` for VS Code-specific bindings and `View*` for cross-runtime
-  protocol types.
+- Use `VSCode*` for framework-owned VS Code adapters. Generated Parity Layer
+  declarations preserve the upstream VS Code names (`Uri`, `Disposable`,
+  `Commands`, and so on) so API diffs remain mechanically recognizable.
+- Use `View*` for general cross-runtime protocol types. Role-specific session
+  types may put the role first (`HostViewSession`, `FlutterViewSession`) when
+  that reads more clearly at call sites.
 - Use `*Generator` for generator classes.
 - Use `*Element` naming for analyzer element types where applicable.
 

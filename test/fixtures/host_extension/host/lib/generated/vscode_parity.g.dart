@@ -28,7 +28,9 @@ extension type Commands.fromJS(JSObject _) implements JSObject {
   ]);
 
   /// Executes [command] and returns its host thenable.
-  external Thenable<T> executeCommand<T extends JSAny?>(JSString command);
+  external Thenable<T> executeCommand<T extends JSAny?>(
+    JSString command,
+  );
 }
 
 /// A host thenable represented by a native JavaScript promise contract.
@@ -158,11 +160,13 @@ extension type VoidEvent.fromJS(JSFunction _) implements JSFunction {
 
 /// Native VS Code zero-based document position.
 extension type Position.fromJS(JSObject _) implements JSObject {
-  /// Zero-based line number.
+  /// Projected numeric host property.
+  external int get character;
+
+  /// Projected numeric host property.
   external int get line;
 
-  /// Zero-based character offset.
-  external int get character;
+
 }
 
 /// Native VS Code URI with the reviewed Flutter View operations.
@@ -172,7 +176,10 @@ extension type Position.fromJS(JSObject _) implements JSObject {
 extension type Uri._(JSObject _) implements JSObject {
   /// Joins one path segment onto [base].
   @JS('joinPath')
-  external static Uri joinPath(Uri base, JSString pathSegment);
+  external static Uri joinPath(
+    Uri base,
+    JSString pathSegment,
+  );
 
   /// Serializes this URI using VS Code's URI implementation.
   @JS('toString')

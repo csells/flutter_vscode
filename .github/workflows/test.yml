@@ -15,5 +15,19 @@ jobs:
         with:
           channel: stable
 
+      - name: Analyze
+        run: flutter analyze
+
       - name: Run full test gate
         run: ./scripts/test_all.sh
+
+      - name: Verify publish archive
+        run: dart pub publish --dry-run --ignore-warnings
+
+      - name: Verify generated files and checkout are clean
+        run: |
+          git diff --exit-code
+          if [[ -n "$(git status --porcelain)" ]]; then
+            git status --short
+            exit 1
+          fi

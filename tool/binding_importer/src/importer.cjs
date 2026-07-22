@@ -22,6 +22,7 @@ function importVscodeDeclarations(source, fileName) {
     sourceFile,
     declarations: [],
     declarationsById: new Map(),
+    signatureOrdinals: new Map(),
   };
   let vscodeModuleCount = 0;
   for (const statement of sourceFile.statements) {
@@ -30,6 +31,10 @@ function importVscodeDeclarations(source, fileName) {
       ts.isStringLiteral(statement.name) &&
       statement.name.text === 'vscode'
     ) {
+      validateModifiers(state, statement, 'module:vscode', [
+        ts.SyntaxKind.ExportKeyword,
+        ts.SyntaxKind.DeclareKeyword,
+      ]);
       vscodeModuleCount += 1;
       if (!statement.body) {
         throwUnclassifiedPublicSyntax(
@@ -127,8 +132,20 @@ function visitDeclarationStatement(statement, parentName, parentId, state) {
 }
 
 function visitNamespaceDeclaration(statement, parentName, parentId, state) {
+  if ((statement.flags & ts.NodeFlags.GlobalAugmentation) !== 0) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      statement,
+      parentId,
+      'global augmentation',
+    );
+  }
   const qualifiedName = `${parentName}.${statement.name.text}`;
   const id = `namespace:${qualifiedName}`;
+  validateModifiers(state, statement, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+  ]);
   addDeclaration(state, {
     id,
     kind: 'namespace',
@@ -151,6 +168,17 @@ function visitNamespaceDeclaration(statement, parentName, parentId, state) {
 function visitInterface(node, parentName, parentId, state) {
   const qualifiedName = `${parentName}.${node.name.text}`;
   const id = `interface:${qualifiedName}`;
+  const typeParameters = normalizeTypeParameters(node.typeParameters, state, id);
+  validateHeritageClauseKinds(
+    node.heritageClauses,
+    [ts.SyntaxKind.ExtendsKeyword],
+    state,
+    id,
+  );
+  validateModifiers(state, node, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+  ]);
   addDeclaration(state, {
     id,
     kind: 'interface',
@@ -158,7 +186,7 @@ function visitInterface(node, parentName, parentId, state) {
     qualifiedName,
     parentId,
     deprecated: isDeprecated(node),
-    typeParameters: normalizeTypeParameters(node.typeParameters, state),
+    typeParameters,
     extends: normalizeHeritageClauses(
       node.heritageClauses,
       ts.SyntaxKind.ExtendsKeyword,
@@ -166,12 +194,31 @@ function visitInterface(node, parentName, parentId, state) {
       id,
     ),
   });
-  visitTypeMembers(node.members, qualifiedName, id, state);
+  visitTypeMembers(
+    node.members,
+    qualifiedName,
+    id,
+    state,
+    [typeParameters],
+    'interface',
+  );
 }
 
 function visitClass(node, parentName, parentId, state) {
   const qualifiedName = `${parentName}.${node.name.text}`;
   const id = `class:${qualifiedName}`;
+  const typeParameters = normalizeTypeParameters(node.typeParameters, state, id);
+  validateHeritageClauseKinds(
+    node.heritageClauses,
+    [ts.SyntaxKind.ExtendsKeyword, ts.SyntaxKind.ImplementsKeyword],
+    state,
+    id,
+  );
+  validateModifiers(state, node, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+    ts.SyntaxKind.AbstractKeyword,
+  ]);
   addDeclaration(state, {
     id,
     kind: 'class',
@@ -180,7 +227,7 @@ function visitClass(node, parentName, parentId, state) {
     parentId,
     deprecated: isDeprecated(node),
     abstract: hasModifier(node, ts.SyntaxKind.AbstractKeyword),
-    typeParameters: normalizeTypeParameters(node.typeParameters, state),
+    typeParameters,
     extends: normalizeHeritageClauses(
       node.heritageClauses,
       ts.SyntaxKind.ExtendsKeyword,
@@ -194,12 +241,24 @@ function visitClass(node, parentName, parentId, state) {
       id,
     ),
   });
-  visitTypeMembers(node.members, qualifiedName, id, state);
+  visitTypeMembers(
+    node.members,
+    qualifiedName,
+    id,
+    state,
+    [typeParameters],
+    'class',
+  );
 }
 
 function visitEnum(node, parentName, parentId, state) {
   const qualifiedName = `${parentName}.${node.name.text}`;
   const id = `enum:${qualifiedName}`;
+  validateModifiers(state, node, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+    ts.SyntaxKind.ConstKeyword,
+  ]);
   addDeclaration(state, {
     id,
     kind: 'enum',
@@ -212,6 +271,14 @@ function visitEnum(node, parentName, parentId, state) {
 
   for (const member of node.members) {
     const name = normalizeDeclarationName(member.name, state, id);
+    if (!member.initializer) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        member,
+        id,
+        'implicit enum member',
+      );
+    }
     const memberQualifiedName = `${qualifiedName}.${name}`;
     const record = {
       id: `enumMember:${id}/${encodeIdPart(name)}`,
@@ -221,9 +288,7 @@ function visitEnum(node, parentName, parentId, state) {
       parentId: id,
       deprecated: isDeprecated(member),
     };
-    if (member.initializer) {
-      record.initializer = normalizeExpression(member.initializer, state, id);
-    }
+    record.initializer = normalizeExpression(member.initializer, state, id);
     addDeclaration(state, record);
   }
 }
@@ -231,10 +296,16 @@ function visitEnum(node, parentName, parentId, state) {
 function visitTypeAlias(node, parentName, parentId, state) {
   const qualifiedName = `${parentName}.${node.name.text}`;
   const id = `typeAlias:${qualifiedName}`;
+  const typeParameters = normalizeTypeParameters(node.typeParameters, state, id);
+  validateModifiers(state, node, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+  ]);
   const type = normalizeType(node.type, state, {
     qualifiedName,
     parentId: id,
     role: 'type',
+    typeParameterScopes: [typeParameters],
   });
   addDeclaration(state, {
     id,
@@ -243,13 +314,26 @@ function visitTypeAlias(node, parentName, parentId, state) {
     qualifiedName,
     parentId,
     deprecated: isDeprecated(node),
-    typeParameters: normalizeTypeParameters(node.typeParameters, state),
+    typeParameters,
     type,
   });
 }
 
 function visitVariableStatement(node, parentName, parentId, state) {
-  const constant = (node.declarationList.flags & ts.NodeFlags.Const) !== 0;
+  validateModifiers(state, node, parentId, [
+    ts.SyntaxKind.ExportKeyword,
+    ts.SyntaxKind.DeclareKeyword,
+  ]);
+  if ((node.declarationList.flags & ts.NodeFlags.Using) !== 0) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node.declarationList,
+      parentId,
+      'resource variable declaration',
+    );
+  }
+  const declarationKind = variableDeclarationKind(node.declarationList.flags);
+  const constant = declarationKind === 'const';
   for (const declaration of node.declarationList.declarations) {
     if (!ts.isIdentifier(declaration.name)) {
       throwUnclassifiedPublicSyntax(
@@ -262,6 +346,30 @@ function visitVariableStatement(node, parentName, parentId, state) {
     const name = declaration.name.text;
     const qualifiedName = `${parentName}.${name}`;
     const id = `variable:${qualifiedName}`;
+    if (!declaration.type) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        declaration,
+        id,
+        'missing type annotation',
+      );
+    }
+    if (declaration.exclamationToken) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        declaration.exclamationToken,
+        id,
+        'definite assignment assertion',
+      );
+    }
+    if (declaration.initializer) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        declaration.initializer,
+        id,
+        'variable initializer',
+      );
+    }
     addDeclaration(state, {
       id,
       kind: 'variable',
@@ -270,6 +378,7 @@ function visitVariableStatement(node, parentName, parentId, state) {
       parentId,
       deprecated: isDeprecated(declaration) || isDeprecated(node),
       constant,
+      declarationKind,
       type: normalizeType(declaration.type, state, {
         qualifiedName,
         parentId: id,
@@ -279,10 +388,36 @@ function visitVariableStatement(node, parentName, parentId, state) {
   }
 }
 
-function visitTypeMembers(members, parentName, parentId, state) {
+function variableDeclarationKind(flags) {
+  if ((flags & ts.NodeFlags.Const) !== 0) {
+    return 'const';
+  }
+  if ((flags & ts.NodeFlags.Let) !== 0) {
+    return 'let';
+  }
+  return 'var';
+}
+
+function visitTypeMembers(
+  members,
+  parentName,
+  parentId,
+  state,
+  typeParameterScopes = [],
+  containerKind,
+  inheritedVisibility = 'public',
+) {
   for (const member of members) {
     if (ts.isPropertySignature(member) || ts.isPropertyDeclaration(member)) {
-      addPropertyDeclaration(member, parentName, parentId, state);
+      addPropertyDeclaration(
+        member,
+        parentName,
+        parentId,
+        state,
+        typeParameterScopes,
+        containerKind,
+        inheritedVisibility,
+      );
       continue;
     }
 
@@ -295,6 +430,9 @@ function visitTypeMembers(members, parentName, parentId, state) {
         `${parentName}.${name}`,
         parentId,
         member,
+        typeParameterScopes,
+        containerKind,
+        inheritedVisibility,
       );
       continue;
     }
@@ -307,6 +445,9 @@ function visitTypeMembers(members, parentName, parentId, state) {
         `${parentName}.constructor`,
         parentId,
         member,
+        typeParameterScopes,
+        containerKind,
+        inheritedVisibility,
       );
       continue;
     }
@@ -319,6 +460,9 @@ function visitTypeMembers(members, parentName, parentId, state) {
         `${parentName}.$call`,
         parentId,
         member,
+        typeParameterScopes,
+        containerKind,
+        inheritedVisibility,
       );
       continue;
     }
@@ -331,6 +475,9 @@ function visitTypeMembers(members, parentName, parentId, state) {
         `${parentName}.$index`,
         parentId,
         member,
+        typeParameterScopes,
+        containerKind,
+        inheritedVisibility,
       );
       continue;
     }
@@ -339,7 +486,49 @@ function visitTypeMembers(members, parentName, parentId, state) {
   }
 }
 
-function addPropertyDeclaration(node, parentName, parentId, state) {
+function addPropertyDeclaration(
+  node,
+  parentName,
+  parentId,
+  state,
+  typeParameterScopes = [],
+  containerKind,
+  inheritedVisibility = 'public',
+) {
+  validateModifiers(
+    state,
+    node,
+    parentId,
+    propertyModifierKinds(containerKind),
+  );
+  const visibility = effectiveVisibility(
+    inheritedVisibility,
+    declarationVisibility(node),
+  );
+  if (!node.type) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node,
+      parentId,
+      'missing type annotation',
+    );
+  }
+  if (node.initializer) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node.initializer,
+      parentId,
+      'property initializer',
+    );
+  }
+  if (node.exclamationToken) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node.exclamationToken,
+      parentId,
+      'definite assignment assertion',
+    );
+  }
   const name = normalizeDeclarationName(node.name, state, parentId);
   const qualifiedName = `${parentName}.${name}`;
   const staticMember = hasModifier(node, ts.SyntaxKind.StaticKeyword);
@@ -352,14 +541,17 @@ function addPropertyDeclaration(node, parentName, parentId, state) {
     qualifiedName,
     parentId,
     deprecated: isDeprecated(node),
-    visibility: declarationVisibility(node),
+    visibility,
     optional: node.questionToken !== undefined,
     readonly: hasModifier(node, ts.SyntaxKind.ReadonlyKeyword),
     static: staticMember,
+    abstract: hasModifier(node, ts.SyntaxKind.AbstractKeyword),
     type: normalizeType(node.type, state, {
       qualifiedName,
       parentId: id,
       role: 'type',
+      typeParameterScopes,
+      visibility,
     }),
   });
 }
@@ -371,16 +563,55 @@ function addSignatureDeclaration(
   qualifiedName,
   parentId,
   node,
+  typeParameterScopes = [],
+  containerKind,
+  inheritedVisibility = 'public',
 ) {
+  if (node.asteriskToken) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node.asteriskToken,
+      parentId,
+      'generator declaration',
+    );
+  }
+  if (node.body) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node.body,
+      parentId,
+      'implementation body',
+    );
+  }
+  validateModifiers(
+    state,
+    node,
+    parentId,
+    signatureModifierKinds(kind, containerKind),
+  );
+  const visibility = effectiveVisibility(
+    inheritedVisibility,
+    declarationVisibility(node),
+  );
+  const ordinalKey = `${kind}:${qualifiedName}:` +
+    `${hasModifier(node, ts.SyntaxKind.StaticKeyword)}`;
+  const overloadOrdinal = state.signatureOrdinals.get(ordinalKey) ?? 0;
+  state.signatureOrdinals.set(ordinalKey, overloadOrdinal + 1);
   const preview = normalizeSignature(node, state, {
     qualifiedName,
     parentId,
     recordTypeLiterals: false,
+    allowMissingReturnType: kind === 'constructor',
+    typeParameterScopes,
+    visibility,
   });
   const canonical = {...preview.canonical};
   if (kind === 'method') {
     canonical.static = hasModifier(node, ts.SyntaxKind.StaticKeyword);
     canonical.optional = node.questionToken !== undefined;
+  }
+  if (kind === 'indexSignature') {
+    canonical.readonly = hasModifier(node, ts.SyntaxKind.ReadonlyKeyword);
   }
   const canonicalSignature = JSON.stringify(canonical);
   const signatureHash = sha256(canonicalSignature);
@@ -389,6 +620,9 @@ function addSignatureDeclaration(
     qualifiedName: `${qualifiedName}.$signature@${signatureHash}`,
     parentId: id,
     recordTypeLiterals: true,
+    allowMissingReturnType: kind === 'constructor',
+    typeParameterScopes,
+    visibility,
   });
   addDeclaration(state, {
     id,
@@ -397,7 +631,8 @@ function addSignatureDeclaration(
     qualifiedName,
     parentId,
     deprecated: isDeprecated(node),
-    visibility: declarationVisibility(node),
+    visibility,
+    overloadOrdinal,
     canonicalSignature,
     ...(kind === 'method'
       ? {
@@ -406,6 +641,9 @@ function addSignatureDeclaration(
           abstract: hasModifier(node, ts.SyntaxKind.AbstractKeyword),
         }
       : {}),
+    ...(kind === 'indexSignature'
+      ? {readonly: hasModifier(node, ts.SyntaxKind.ReadonlyKeyword)}
+      : {}),
     typeParameters: normalized.typeParameters,
     parameters: normalized.parameters,
     returnType: normalized.returnType,
@@ -413,83 +651,173 @@ function addSignatureDeclaration(
 }
 
 function normalizeSignature(node, state, context) {
-  const typeParameters = normalizeTypeParameters(node.typeParameters, state);
-  const parameters = node.parameters.map((parameter, index) => ({
-    name: parameter.name.getText(state.sourceFile),
-    optional:
-      parameter.questionToken !== undefined || parameter.initializer !== undefined,
-    rest: parameter.dotDotDotToken !== undefined,
-    type: normalizeType(parameter.type, state, {
-      qualifiedName: `${context.qualifiedName}.$parameter${index}`,
-      parentId: context.parentId,
-      role: 'parameterType',
-      recordTypeLiterals: context.recordTypeLiterals,
-    }),
-  }));
+  const typeParameters = normalizeTypeParameters(
+    node.typeParameters,
+    state,
+    context.parentId,
+    context.typeParameterScopes ?? [],
+  );
+  const typeParameterScopes = [
+    ...(context.typeParameterScopes ?? []),
+    typeParameters,
+  ];
+  const parameters = node.parameters.map((parameter, index) => {
+    if (parameter.name.getText(state.sourceFile) === 'this') {
+      throwUnclassifiedPublicSyntax(
+        state,
+        parameter,
+        context.parentId,
+        'this parameter',
+      );
+    }
+    if ((parameter.modifiers?.length ?? 0) > 0) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        parameter,
+        context.parentId,
+        'parameter property',
+      );
+    }
+    if (!parameter.type) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        parameter,
+        context.parentId,
+        'missing type annotation',
+      );
+    }
+    if (parameter.initializer) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        parameter.initializer,
+        context.parentId,
+        'parameter initializer',
+      );
+    }
+    return {
+      name: parameter.name.getText(state.sourceFile),
+      optional: parameter.questionToken !== undefined,
+      rest: parameter.dotDotDotToken !== undefined,
+      type: normalizeType(parameter.type, state, {
+        qualifiedName: `${context.qualifiedName}.$parameter${index}`,
+        parentId: context.parentId,
+        role: 'parameterType',
+        recordTypeLiterals: context.recordTypeLiterals,
+        typeParameterScopes,
+        visibility: context.visibility,
+      }),
+    };
+  });
+  if (!node.type && !context.allowMissingReturnType) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node,
+      context.parentId,
+      'missing type annotation',
+    );
+  }
   const returnType = normalizeType(node.type, state, {
     qualifiedName: `${context.qualifiedName}.$return`,
     parentId: context.parentId,
     role: 'returnType',
     recordTypeLiterals: context.recordTypeLiterals,
+    typeParameterScopes,
+    visibility: context.visibility,
   });
   return {
     typeParameters,
     parameters,
     returnType,
     canonical: {
-      typeParameters: canonicalTypeParameters(typeParameters),
+      typeParameters: canonicalTypeParameters(
+        typeParameters,
+        typeParameterScopes,
+      ),
       parameters: parameters.map((parameter) => ({
         optional: parameter.optional,
         rest: parameter.rest,
-        type: canonicalSignatureType(parameter.type, typeParameters),
+        type: canonicalSignatureType(parameter.type, typeParameterScopes),
       })),
-      returnType: canonicalSignatureType(returnType, typeParameters),
+      returnType: canonicalSignatureType(returnType, typeParameterScopes),
     },
   };
 }
 
-function normalizeTypeParameters(nodes, state) {
-  return (nodes ?? []).map((node) => {
-    const parameter = {name: node.name.text};
+function normalizeTypeParameters(
+  nodes,
+  state,
+  ownerId,
+  typeParameterScopes = [],
+) {
+  const parameterNodes = nodes ?? [];
+  const parameters = parameterNodes.map((node) => {
+    if ((node.modifiers?.length ?? 0) > 0) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        node,
+        ownerId ?? 'module:vscode',
+        'type parameter modifier',
+      );
+    }
+    return {name: node.name.text};
+  });
+  const scopes = [...typeParameterScopes, parameters];
+  for (const [index, node] of parameterNodes.entries()) {
+    const parameter = parameters[index];
+    const context = {
+      qualifiedName: `${ownerId ?? 'module:vscode'}.$typeParameter${index}`,
+      parentId: ownerId ?? 'module:vscode',
+      recordTypeLiterals: false,
+      typeParameterScopes: scopes,
+    };
     if (node.constraint) {
-      parameter.constraint = normalizeType(node.constraint, state);
+      parameter.constraint = normalizeType(
+        node.constraint,
+        state,
+        childTypeContext(context, 'constraint'),
+      );
     }
     if (node.default) {
-      parameter.default = normalizeType(node.default, state);
+      parameter.default = normalizeType(
+        node.default,
+        state,
+        childTypeContext(context, 'default'),
+      );
     }
-    return parameter;
-  });
+  }
+  return parameters;
 }
 
-function canonicalTypeParameters(typeParameters) {
+function canonicalTypeParameters(typeParameters, typeParameterScopes) {
   return typeParameters.map((parameter) => {
     const canonical = {};
     if (parameter.constraint) {
       canonical.constraint = canonicalSignatureType(
         parameter.constraint,
-        typeParameters,
+        typeParameterScopes,
       );
     }
     if (parameter.default) {
       canonical.default = canonicalSignatureType(
         parameter.default,
-        typeParameters,
+        typeParameterScopes,
       );
     }
     return canonical;
   });
 }
 
-function canonicalSignatureType(type, typeParameters) {
+function canonicalSignatureType(type, typeParameterScopes) {
   if (type === null || typeof type !== 'object') {
     return type;
   }
   if (type.kind === 'reference') {
-    const typeParameterIndex = typeParameters.findIndex(
-      (parameter) => parameter.name === type.name,
+    const reference = canonicalTypeParameterReference(
+      type.name,
+      typeParameterScopes,
     );
-    if (typeParameterIndex >= 0) {
-      return {kind: 'typeParameter', index: typeParameterIndex};
+    if (reference) {
+      return reference;
     }
   }
   if (type.kind === 'function') {
@@ -504,7 +832,7 @@ function canonicalSignatureType(type, typeParameters) {
       elements: type.elements.map((element) => ({
         optional: element.optional,
         rest: element.rest,
-        type: canonicalSignatureType(element.type, typeParameters),
+        type: canonicalSignatureType(element.type, typeParameterScopes),
       })),
     };
   }
@@ -512,14 +840,35 @@ function canonicalSignatureType(type, typeParameters) {
     return {kind: 'typeLiteral', shapeHash: type.shapeHash};
   }
   if (Array.isArray(type)) {
-    return type.map((item) => canonicalSignatureType(item, typeParameters));
+    return type.map((item) =>
+      canonicalSignatureType(item, typeParameterScopes));
   }
   return Object.fromEntries(
     Object.entries(type).map(([key, value]) => [
       key,
-      canonicalSignatureType(value, typeParameters),
+      canonicalSignatureType(value, typeParameterScopes),
     ]),
   );
+}
+
+function canonicalTypeParameterReference(name, typeParameterScopes) {
+  for (
+    let scopeIndex = typeParameterScopes.length - 1;
+    scopeIndex >= 0;
+    scopeIndex -= 1
+  ) {
+    const index = typeParameterScopes[scopeIndex].findIndex(
+      (parameter) => parameter.name === name,
+    );
+    if (index < 0) {
+      continue;
+    }
+    const depth = typeParameterScopes.length - 1 - scopeIndex;
+    return depth === 0
+      ? {kind: 'typeParameter', index}
+      : {kind: 'outerTypeParameter', depth, index};
+  }
+  return undefined;
 }
 
 function normalizeType(type, state, context) {
@@ -557,7 +906,6 @@ function normalizeType(type, state, context) {
     const types = type.types.map((item, index) =>
       normalizeType(item, state, childTypeContext(context, `item${index}`)),
     );
-    types.sort(compareCanonicalValues);
     return {
       kind: ts.isUnionTypeNode(type) ? 'union' : 'intersection',
       types,
@@ -609,6 +957,8 @@ function normalizeType(type, state, context) {
       qualifiedName: context?.qualifiedName ?? '$functionType',
       parentId: context?.parentId ?? 'module:vscode',
       recordTypeLiterals: context?.recordTypeLiterals,
+      typeParameterScopes: context?.typeParameterScopes,
+      visibility: context?.visibility,
     });
     return {
       kind: 'function',
@@ -631,14 +981,19 @@ function normalizeType(type, state, context) {
 
 function normalizeTypeLiteral(node, state, context) {
   const ownerId = context?.parentId ?? 'module:vscode';
-  const shape = canonicalTypeLiteralShape(node, state, ownerId);
+  const shape = canonicalTypeLiteralShape(
+    node,
+    state,
+    ownerId,
+    context?.typeParameterScopes ?? [],
+  );
   const shapeHash = sha256(JSON.stringify(shape));
   if (!context || context.recordTypeLiterals === false) {
-    return {kind: 'typeLiteral', shape};
+    return {kind: 'typeLiteral', shape, shapeHash};
   }
 
-  const qualifiedName = `${context.qualifiedName}.$type`;
-  const id = `typeLiteral:${qualifiedName}@${shapeHash}`;
+  const qualifiedName = `${context.parentId}.$shape@${shapeHash}`;
+  const id = `typeLiteral:${context.parentId}/$shape@${shapeHash}`;
   addDeclaration(state, {
     id,
     kind: 'typeLiteral',
@@ -646,31 +1001,84 @@ function normalizeTypeLiteral(node, state, context) {
     qualifiedName,
     parentId: context.parentId,
     deprecated: false,
+    visibility: context.visibility ?? 'public',
     shapeHash,
   });
-  visitTypeMembers(node.members, qualifiedName, id, state);
+  visitTypeMembers(
+    node.members,
+    qualifiedName,
+    id,
+    state,
+    context.typeParameterScopes ?? [],
+    'typeLiteral',
+    context.visibility ?? 'public',
+  );
   return {kind: 'typeLiteral', id, shapeHash};
 }
 
-function canonicalTypeLiteralShape(node, state, ownerId) {
+function canonicalTypeLiteralShape(
+  node,
+  state,
+  ownerId,
+  typeParameterScopes = [],
+) {
   const members = node.members.map((member) => {
     if (ts.isPropertySignature(member)) {
+      validateModifiers(
+        state,
+        member,
+        ownerId,
+        propertyModifierKinds('typeLiteral'),
+      );
+      if (!member.type) {
+        throwUnclassifiedPublicSyntax(
+          state,
+          member,
+          ownerId,
+          'missing type annotation',
+        );
+      }
+      const type = normalizeType(member.type, state, {
+        parentId: ownerId,
+        recordTypeLiterals: false,
+        typeParameterScopes,
+      });
       return {
         kind: 'property',
         name: normalizeDeclarationName(member.name, state, ownerId),
         optional: member.questionToken !== undefined,
         readonly: hasModifier(member, ts.SyntaxKind.ReadonlyKeyword),
-        type: normalizeType(member.type, state),
+        type: typeParameterScopes.some((scope) => scope.length > 0)
+          ? canonicalSignatureType(type, typeParameterScopes)
+          : type,
       };
     }
     if (ts.isMethodSignature(member)) {
-      return canonicalMemberSignature('method', member, state, ownerId);
+      return canonicalMemberSignature(
+        'method',
+        member,
+        state,
+        ownerId,
+        typeParameterScopes,
+      );
     }
     if (ts.isCallSignatureDeclaration(member)) {
-      return canonicalMemberSignature('callSignature', member, state, ownerId);
+      return canonicalMemberSignature(
+        'callSignature',
+        member,
+        state,
+        ownerId,
+        typeParameterScopes,
+      );
     }
     if (ts.isIndexSignatureDeclaration(member)) {
-      return canonicalMemberSignature('indexSignature', member, state, ownerId);
+      return canonicalMemberSignature(
+        'indexSignature',
+        member,
+        state,
+        ownerId,
+        typeParameterScopes,
+      );
     }
     throwUnclassifiedPublicSyntax(
       state,
@@ -679,19 +1087,39 @@ function canonicalTypeLiteralShape(node, state, ownerId) {
       'type literal member',
     );
   });
-  members.sort(compareCanonicalValues);
   return {members};
 }
 
-function canonicalMemberSignature(kind, node, state, ownerId) {
+function canonicalMemberSignature(
+  kind,
+  node,
+  state,
+  ownerId,
+  typeParameterScopes,
+) {
+  validateModifiers(
+    state,
+    node,
+    ownerId,
+    signatureModifierKinds(kind, 'typeLiteral'),
+  );
   const signature = normalizeSignature(node, state, {
     qualifiedName: '$shape',
     parentId: 'module:vscode',
     recordTypeLiterals: false,
+    typeParameterScopes,
   });
   const result = {kind, signature: signature.canonical};
   if (node.name) {
     result.name = normalizeDeclarationName(node.name, state, ownerId);
+  }
+  if (kind === 'method') {
+    result.optional = node.questionToken !== undefined;
+    result.static = hasModifier(node, ts.SyntaxKind.StaticKeyword);
+    result.abstract = hasModifier(node, ts.SyntaxKind.AbstractKeyword);
+  }
+  if (kind === 'indexSignature') {
+    result.readonly = hasModifier(node, ts.SyntaxKind.ReadonlyKeyword);
   }
   return result;
 }
@@ -736,13 +1164,33 @@ function normalizeHeritageClauses(clauses, token, state, ownerId) {
       typeArguments: (type.typeArguments ?? []).map((argument) =>
         normalizeType(argument, state),
       ),
-    }))
-    .sort(compareCanonicalValues);
+    }));
+}
+
+function validateHeritageClauseKinds(
+  clauses,
+  allowedTokens,
+  state,
+  ownerId,
+) {
+  for (const clause of clauses ?? []) {
+    if (!allowedTokens.includes(clause.token)) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        clause,
+        ownerId,
+        'heritage clause',
+      );
+    }
+  }
 }
 
 function normalizeExpression(node, state, ownerId) {
-  if (ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
+  if (ts.isStringLiteral(node)) {
     return {kind: 'literal', value: node.text};
+  }
+  if (ts.isNumericLiteral(node)) {
+    return {kind: 'literal', value: normalizeNumericLiteral(node, state, ownerId)};
   }
   if (node.kind === ts.SyntaxKind.TrueKeyword) {
     return {kind: 'literal', value: true};
@@ -772,8 +1220,11 @@ function normalizeExpression(node, state, ownerId) {
 }
 
 function normalizeLiteral(node, state, ownerId) {
-  if (ts.isStringLiteral(node) || ts.isNumericLiteral(node)) {
+  if (ts.isStringLiteral(node)) {
     return node.text;
+  }
+  if (ts.isNumericLiteral(node)) {
+    return normalizeNumericLiteral(node, state, ownerId);
   }
   if (node.kind === ts.SyntaxKind.TrueKeyword) {
     return true;
@@ -785,24 +1236,54 @@ function normalizeLiteral(node, state, ownerId) {
     return null;
   }
   if (ts.isPrefixUnaryExpression(node) && ts.isNumericLiteral(node.operand)) {
-    return `${ts.tokenToString(node.operator)}${node.operand.text}`;
+    const value = normalizeNumericLiteral(node.operand, state, ownerId);
+    if (node.operator === ts.SyntaxKind.MinusToken) {
+      return -value;
+    }
+    if (node.operator === ts.SyntaxKind.PlusToken) {
+      return value;
+    }
   }
   throwUnclassifiedPublicSyntax(state, node, ownerId, 'literal type');
 }
 
+function normalizeNumericLiteral(node, state, ownerId) {
+  const value = Number(node.text);
+  if (!Number.isSafeInteger(value)) {
+    throwUnclassifiedPublicSyntax(
+      state,
+      node,
+      ownerId,
+      'unsafe numeric literal',
+    );
+  }
+  return value;
+}
+
 function normalizeDeclarationName(node, state, ownerId) {
-  if (
-    ts.isIdentifier(node) ||
-    ts.isPrivateIdentifier(node) ||
-    ts.isStringLiteral(node) ||
-    ts.isNumericLiteral(node)
-  ) {
+  if (ts.isIdentifier(node) || ts.isPrivateIdentifier(node)) {
+    return node.text;
+  }
+  if (ts.isStringLiteral(node)) {
+    const hasEquivalentUnquotedName =
+      ts.isIdentifierText(node.text, ts.ScriptTarget.Latest) ||
+      isCanonicalNumericPropertyName(node.text);
+    return hasEquivalentUnquotedName
+      ? node.text
+      : JSON.stringify(node.text);
+  }
+  if (ts.isNumericLiteral(node)) {
     return node.text;
   }
   if (ts.isComputedPropertyName(node)) {
     return `[${normalizeExpressionName(node.expression, state, ownerId)}]`;
   }
   throwUnclassifiedPublicSyntax(state, node, ownerId, 'declaration name');
+}
+
+function isCanonicalNumericPropertyName(name) {
+  const value = Number(name);
+  return value >= 0 && String(value) === name;
 }
 
 function normalizeEntityName(node, state, ownerId) {
@@ -834,6 +1315,8 @@ function childTypeContext(context, child) {
     parentId: context.parentId,
     role: child,
     recordTypeLiterals: context.recordTypeLiterals,
+    typeParameterScopes: context.typeParameterScopes,
+    visibility: context.visibility,
   };
 }
 
@@ -880,6 +1363,32 @@ function addDeclaration(state, declaration) {
   declaration.coverage ??= initialCoverage(declaration.visibility);
   const existing = state.declarationsById.get(declaration.id);
   if (existing) {
+    if (existing.kind !== declaration.kind) {
+      throwDeclarationConflict(state, declaration.id, 'kind');
+    }
+    if (existing.kind === 'interface' && declaration.kind === 'interface') {
+      if (!canonicalValuesEqual(
+        existing.typeParameters,
+        declaration.typeParameters,
+      )) {
+        throwDeclarationConflict(state, declaration.id, 'typeParameters');
+      }
+      existing.extends = canonicalUnion(existing.extends, declaration.extends);
+    }
+    const field = firstConflictingField(
+      existing,
+      declaration,
+      duplicateCompatibilityFields(existing.kind),
+    );
+    if (field) {
+      throwDeclarationConflict(state, declaration.id, field);
+    }
+    if (
+      ['class', 'typeAlias', 'enumMember'].includes(existing.kind) ||
+      (existing.kind === 'variable' && existing.declarationKind !== 'var')
+    ) {
+      throwNonMergeableDuplicate(state, declaration.id);
+    }
     existing.deprecated ||= declaration.deprecated;
     existing.occurrenceCount = (existing.occurrenceCount ?? 1) + 1;
     return existing;
@@ -889,9 +1398,86 @@ function addDeclaration(state, declaration) {
   return declaration;
 }
 
+function canonicalUnion(left, right) {
+  return [...new Map(
+    [...left, ...right].map((value) => [JSON.stringify(value), value]),
+  ).values()];
+}
+
+function canonicalValuesEqual(left, right) {
+  return JSON.stringify(left) === JSON.stringify(right);
+}
+
+function firstConflictingField(left, right, fields) {
+  return fields.find((field) => !canonicalValuesEqual(left[field], right[field]));
+}
+
+function duplicateCompatibilityFields(kind) {
+  switch (kind) {
+    case 'namespace':
+    case 'interface':
+      return [];
+    case 'class':
+      return ['abstract', 'typeParameters', 'extends', 'implements'];
+    case 'enum':
+      return ['constant'];
+    case 'enumMember':
+      return ['initializer'];
+    case 'typeAlias':
+      return ['typeParameters', 'type'];
+    case 'variable':
+      return ['declarationKind', 'constant', 'type'];
+    case 'property':
+      return [
+        'visibility',
+        'optional',
+        'readonly',
+        'static',
+        'abstract',
+        'type',
+      ];
+    case 'method':
+      return ['visibility', 'canonicalSignature', 'abstract'];
+    case 'function':
+    case 'constructor':
+    case 'callSignature':
+    case 'indexSignature':
+      return ['visibility', 'canonicalSignature'];
+    case 'typeLiteral':
+      return ['shapeHash'];
+    default:
+      return ['kind'];
+  }
+}
+
+function throwDeclarationConflict(state, id, field) {
+  const error = new Error(
+    `${state.sourceFile.fileName}: conflicting declarations for ${id}: ` +
+      `${field} must match across declarations.`,
+  );
+  error.code = 'CONFLICTING_DECLARATION';
+  throw error;
+}
+
+function throwNonMergeableDuplicate(state, id) {
+  const error = new Error(
+    `${state.sourceFile.fileName}: duplicate declaration ${id} cannot be merged.`,
+  );
+  error.code = 'CONFLICTING_DECLARATION';
+  throw error;
+}
+
 function compareDeclarations(left, right) {
   return compareStrings(left.qualifiedName, right.qualifiedName) ||
+    compareOptionalNumbers(left.overloadOrdinal, right.overloadOrdinal) ||
     compareStrings(left.id, right.id);
+}
+
+function compareOptionalNumbers(left, right) {
+  if (left === undefined || right === undefined) {
+    return 0;
+  }
+  return left - right;
 }
 
 function compareCanonicalValues(left, right) {
@@ -916,11 +1502,69 @@ function sha256(value) {
   return crypto.createHash('sha256').update(value).digest('hex');
 }
 
+function propertyModifierKinds(containerKind) {
+  if (containerKind !== 'class') {
+    return [ts.SyntaxKind.ReadonlyKeyword];
+  }
+  return [
+    ts.SyntaxKind.PublicKeyword,
+    ts.SyntaxKind.PrivateKeyword,
+    ts.SyntaxKind.ProtectedKeyword,
+    ts.SyntaxKind.StaticKeyword,
+    ts.SyntaxKind.ReadonlyKeyword,
+    ts.SyntaxKind.AbstractKeyword,
+  ];
+}
+
+function signatureModifierKinds(kind, containerKind) {
+  switch (kind) {
+    case 'function':
+      return [ts.SyntaxKind.ExportKeyword, ts.SyntaxKind.DeclareKeyword];
+    case 'method':
+      if (containerKind !== 'class') {
+        return [];
+      }
+      return [
+        ts.SyntaxKind.PublicKeyword,
+        ts.SyntaxKind.PrivateKeyword,
+        ts.SyntaxKind.ProtectedKeyword,
+        ts.SyntaxKind.StaticKeyword,
+        ts.SyntaxKind.AbstractKeyword,
+      ];
+    case 'constructor':
+      return [
+        ts.SyntaxKind.PublicKeyword,
+        ts.SyntaxKind.PrivateKeyword,
+        ts.SyntaxKind.ProtectedKeyword,
+      ];
+    case 'indexSignature':
+      return [ts.SyntaxKind.ReadonlyKeyword];
+    default:
+      return [];
+  }
+}
+
+function validateModifiers(state, node, ownerId, allowedKinds) {
+  for (const modifier of node.modifiers ?? []) {
+    if (!allowedKinds.includes(modifier.kind)) {
+      throwUnclassifiedPublicSyntax(
+        state,
+        modifier,
+        ownerId,
+        'modifier',
+      );
+    }
+  }
+}
+
 function hasModifier(node, kind) {
   return node.modifiers?.some((modifier) => modifier.kind === kind) ?? false;
 }
 
 function declarationVisibility(node) {
+  if (node.name && ts.isPrivateIdentifier(node.name)) {
+    return 'private';
+  }
   if (hasModifier(node, ts.SyntaxKind.PrivateKeyword)) {
     return 'private';
   }
@@ -928,6 +1572,13 @@ function declarationVisibility(node) {
     return 'protected';
   }
   return 'public';
+}
+
+function effectiveVisibility(inheritedVisibility, declaredVisibility) {
+  const rank = {public: 0, protected: 1, private: 2};
+  return rank[inheritedVisibility] >= rank[declaredVisibility]
+    ? inheritedVisibility
+    : declaredVisibility;
 }
 
 function initialCoverage(visibility) {

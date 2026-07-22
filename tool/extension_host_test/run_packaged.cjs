@@ -94,10 +94,16 @@ async function main() {
   const extensionsDir = path.join(profileRoot, 'extensions');
   const userDataDir = path.join(profileRoot, 'user-data');
   fs.mkdirSync(extensionsDir, {recursive: true});
-  fs.mkdirSync(userDataDir, {recursive: true});
+  fs.mkdirSync(path.join(userDataDir, 'User'), {recursive: true});
+  fs.writeFileSync(
+    path.join(userDataDir, 'User', 'settings.json'),
+    JSON.stringify({'workbench.startupEditor': 'none'}),
+  );
 
   try {
-    console.log(`[packaged-host-test] resolving pinned VS Code ${vscodeVersion}`);
+    console.log(
+      `[packaged-host-test] resolving fresh VS Code test runtime ${vscodeVersion}`,
+    );
     const vscodeExecutablePath = await downloadAndUnzipVSCode({
       version: vscodeVersion,
       cachePath:
