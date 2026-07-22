@@ -266,7 +266,14 @@ self-attested prose.
    native transport, and repository command passes 279/279 with no skips;
    `node --test tool/extension_host_test/bootstrap_lifecycle.test.cjs
    tool/extension_host_test/host_contract.test.cjs` passes 11/11;
-   `flutter analyze` reports no issues.
+   `flutter analyze` reports no issues. Real-host green —
+   `./scripts/test_host_extension.sh` exits 0 against the regenerated
+   tree: the launcher verified all 44 receipts before launching the
+   pinned VS Code build in Docker, the observed evidence matched the
+   exact 53 mechanically attributed IDs under the new
+   `Event.$call@ca2a1c00…` identity, and the adversarial webview,
+   reload-with-live-work, and independent-render assertions passed with
+   no tracked-file mutations.
 7. **Installed-workflow honesty, stated.** The hover-first installed
    evidence covers the host-only fixture; the view-fixture run activates
    through its contributed command before its hover query. This plan
@@ -279,10 +286,11 @@ self-attested prose.
 8. **Ledger truth.** Superseded hashes (`af68dd17…`, `c41b1853…`) and
    stale tallies (72/72, 119/119, 61/61, 145/145, 43 receipts) in earlier
    ledgers are annotated in place as historical rather than rewritten; the
-   current values are the ones recorded in this ledger. The real-host and
-   packaged VS Code gates and the two consecutive full `test_all.sh` runs
-   were not executed in this round; the exit item above stays open until
-   they run on this tree.
+   current values are the ones recorded in this ledger. The real-host
+   gate ran green on this tree (entry 6); the packaged installed-VSIX
+   gate and the two consecutive unchanged full `test_all.sh` runs were
+   not executed in this round, so the exit item above stays open until
+   they run on the final tree.
 
 ## Pre-Hardening Evidence
 
