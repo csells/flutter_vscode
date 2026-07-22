@@ -1003,6 +1003,7 @@ function normalizeTypeLiteral(node, state, context) {
     deprecated: false,
     visibility: context.visibility ?? 'public',
     shapeHash,
+    shape,
   });
   visitTypeMembers(
     node.members,

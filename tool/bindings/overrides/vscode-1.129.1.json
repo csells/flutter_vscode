@@ -361,12 +361,12 @@
     },
     "typeLiteral:property:interface:vscode.ExtensionContext/$instance/subscriptions/$shape@31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e": {
       "strategy": "disposableStructuralType",
-      "declarationSha256": "9431f6a012738d74d4c4f517af7506d5931513f1664624ffb3a67404b1fcb3c2",
+      "declarationSha256": "b74b5965d707154ea2237875c75b492ae302667666936a220a9b1acb777d3da4",
       "hostContract": "checkpoint4ExtensionHost"
     },
     "typeLiteral:function:vscode.window.createWebviewPanel@94de15f3ecd5ac614c2e7f2e9f6bbd86486c03518babb3d14a8888c0b428a6d1/$shape@daf931678b910da51d566ca28f15b10f0919f8b5e0c942ec47fe0c8c8a874ef3": {
       "strategy": "reviewedExcluded",
-      "declarationSha256": "8eb66357ebf4b421a8de8275f6972c8c9096296cc65b25959181cef0bfd5ea70",
+      "declarationSha256": "4f32396a177fb2697270f3aed214baa61276430fdca52f250625a902f0aae223",
       "reason": "The first Flutter View selects the ViewColumn union branch."
     },
     "variable:vscode.workspace.onDidOpenTextDocument": {

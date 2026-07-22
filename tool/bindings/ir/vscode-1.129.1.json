@@ -250,6 +250,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -300,6 +325,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "131266472fb92782302153a30a3488d406838e21e1e9c05d7e0036a2324c01e0",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "createIfNone",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "literal",
+                  "value": true
+                },
+                {
+                  "kind": "reference",
+                  "name": "AuthenticationGetSessionPresentationOptions",
+                  "typeArguments": []
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -349,6 +398,35 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "7e28371a5fef45a3bdf81fb9178d9f4e0467db620489bb44c93b90586bad14c9",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "forceNewSession",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "literal",
+                  "value": true
+                },
+                {
+                  "kind": "reference",
+                  "name": "AuthenticationGetSessionPresentationOptions",
+                  "typeArguments": []
+                },
+                {
+                  "kind": "reference",
+                  "name": "AuthenticationForceNewSessionOptions",
+                  "typeArguments": []
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -403,6 +481,103 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "971be56a34767aad553672614868295bca84924131b5bbeb6a672c169e987ff1",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "message",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "args",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "reference",
+                  "name": "Array",
+                  "typeArguments": [
+                    {
+                      "kind": "union",
+                      "types": [
+                        {
+                          "kind": "primitive",
+                          "name": "string"
+                        },
+                        {
+                          "kind": "primitive",
+                          "name": "number"
+                        },
+                        {
+                          "kind": "primitive",
+                          "name": "boolean"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "kind": "reference",
+                  "name": "Record",
+                  "typeArguments": [
+                    {
+                      "kind": "primitive",
+                      "name": "string"
+                    },
+                    {
+                      "kind": "union",
+                      "types": [
+                        {
+                          "kind": "primitive",
+                          "name": "string"
+                        },
+                        {
+                          "kind": "primitive",
+                          "name": "number"
+                        },
+                        {
+                          "kind": "primitive",
+                          "name": "boolean"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "kind": "property",
+            "name": "comment",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "primitive",
+                  "name": "string"
+                },
+                {
+                  "kind": "array",
+                  "elementType": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -551,6 +726,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "11b566126ecad8824dad989583c7cb9e85c460a398a691cfea48f757da3081e1",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "log",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "literal",
+              "value": true
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -590,6 +779,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "daf931678b910da51d566ca28f15b10f0919f8b5e0c942ec47fe0c8c8a874ef3",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "viewColumn",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "ViewColumn",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "preserveFocus",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -653,6 +867,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "c378a187fa16299b11cbd5639a9cb74a73b6c19e80cb0a64bab616edcc5f6301",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "webviewOptions",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "WebviewPanelOptions",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "supportsMultipleEditorsPerDocument",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -716,6 +955,34 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "36dfd64786697f6a938a3410dc495f15c1b70e5786c21b9b4ef06c8d316260aa",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "webviewOptions",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "typeLiteral",
+              "shape": {
+                "members": [
+                  {
+                    "kind": "property",
+                    "name": "retainContextWhenHidden",
+                    "optional": true,
+                    "readonly": true,
+                    "type": {
+                      "kind": "primitive",
+                      "name": "boolean"
+                    }
+                  }
+                ]
+              },
+              "shapeHash": "9ad663d5bee64f4a30d8e7742a0874d8d1da602da4dfc86ba8ba35efaa05a2a7"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -756,6 +1023,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "45f2e5802d80613230691c7c2a62f0b2fb2e932dd48c66c6620d9335b3a89c3a",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "canPickMany",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "literal",
+              "value": true
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -795,6 +1076,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "45f2e5802d80613230691c7c2a62f0b2fb2e932dd48c66c6620d9335b3a89c3a",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "canPickMany",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "literal",
+              "value": true
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -834,6 +1129,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "aad806c1057aa382c74f865c932d023c8369142c37c0ef30bed9bddc7f35b56f",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "message",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "increment",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -896,6 +1215,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2371c9aa36355cbfd9c173d0e4e7c9d8d5d69d219cdc466380b5fec50e3d5d7d",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "encoding",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -935,6 +1268,21 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "f68610b7bd2d026ba5db0860385caf0051c181de07e6139f43b7f6cb0b35768d",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "uri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -975,6 +1323,21 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "f68610b7bd2d026ba5db0860385caf0051c181de07e6139f43b7f6cb0b35768d",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "uri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1015,6 +1378,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2371c9aa36355cbfd9c173d0e4e7c9d8d5d69d219cdc466380b5fec50e3d5d7d",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "encoding",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1054,6 +1431,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "7686231a9a81d41a9bc575528db24a01a6d1459cfec8dda1d3928695828bcc62",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "encoding",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1093,6 +1484,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "ca6708905608adfbfeb8bd39eee69966e7fe3e9bd36540210ee9b555fe15ff91",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "language",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "content",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "encoding",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1178,6 +1603,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "7686231a9a81d41a9bc575528db24a01a6d1459cfec8dda1d3928695828bcc62",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "encoding",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1217,6 +1656,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "42121620832582b837b9431208414ad7ed2ef9b375064f950bafd6e9966f9df9",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "isCaseSensitive",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "isReadonly",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "primitive",
+                  "name": "boolean"
+                },
+                {
+                  "kind": "reference",
+                  "name": "MarkdownString",
+                  "typeArguments": []
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1289,6 +1762,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "4de82e947bf50f5ab49ed13b3adf9c481cee9f5240d882e5f5ce54cf4e2585ed",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "uri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "name",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1385,6 +1883,26 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "117556c60225ab6ffc5c51346aa7cc44ef5471cb60e1de6dc90e0d9a0b734dba",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "dispose",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "function",
+              "typeParameters": [],
+              "parameters": [],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              },
+              "canonicalSignature": "{\"typeParameters\":[],\"parameters\":[],\"returnType\":{\"kind\":\"primitive\",\"name\":\"any\"}}"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1430,6 +1948,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "60b7388ad75f04faeeaf87268d639fdcf97db98648cfed868c54ab5c715d6a31",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "document",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "TextDocument",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "range",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Range",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1494,6 +2038,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "4e6f4d8d0296c4a5800e877d600ff4c488e9e8533f6ddca423239ab204669cdb",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1533,6 +2091,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "e7798399f375d39be28be270e247f570e5eac288e8274939f933acf6e59a125b",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "recursive",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "useTrash",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1595,6 +2177,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "4e6f4d8d0296c4a5800e877d600ff4c488e9e8533f6ddca423239ab204669cdb",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1634,6 +2230,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "a0c5e6306f3680859dd25259871f716d945cd0afcdd9450249c2525a84f7ff27",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1673,6 +2283,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "4a6a7d2955b16594cc2c2e00b9cb8f2db31b7d9a3832baa93dc9e804684e12c9",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "recursive",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1712,6 +2336,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "a0c5e6306f3680859dd25259871f716d945cd0afcdd9450249c2525a84f7ff27",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1751,6 +2389,37 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "1b577c4c7797acbd11275065702660771139331cdaa0bb5f9759822ce783c157",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "recursive",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "excludes",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "operator",
+              "operator": "readonly",
+              "type": {
+                "kind": "array",
+                "elementType": {
+                  "kind": "primitive",
+                  "name": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1820,6 +2489,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "9d8b7e6e07a3ffa5900f0e4d3e80b269ea24ad267f93e234c9d9a869d1dba832",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "create",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1882,6 +2575,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1932,6 +2650,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -1982,6 +2725,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "f07c8e413f74c9313584abf24fcda5be4ba1f4694d513ac1e2f039f979dbd6a4",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "start",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "end",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2044,6 +2811,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "e45cee30b1428580ab8b86bb09d427a5e25a46efb5d55f17ae8ffdf4050a7210",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "lineDelta",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "characterDelta",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2106,6 +2897,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "54e82413664cc9f6eaf76daf50f88a944d0a6ebbf48ba74c1abf8a4b314540c1",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "line",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "character",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2168,6 +2983,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "18e0bf1278a346f20aa293fef11a33b1216e54cb0a54ab4377fa95786495cff0",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "start",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Position",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "end",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Position",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2232,6 +3073,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "54cb35a801b936d93bdddd6bd7cd86fac877d5e76546b4cdcd4741fe67777e9d",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "range",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Range",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "placeholder",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2295,6 +3161,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "8063378d77307625d63b5fb2a5812b90932969721e5c41487d888ba929c4d065",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "undoStopBefore",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "undoStopAfter",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2357,6 +3247,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "c8864518d37b779a2ac88fb74207cfafde43d844bce7c84e95b9859c62729e06",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "undoStopBefore",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "undoStopAfter",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "keepWhitespace",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2442,6 +3366,49 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "select",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "focus",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "expand",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "primitive",
+                  "name": "boolean"
+                },
+                {
+                  "kind": "primitive",
+                  "name": "number"
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2536,6 +3503,60 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2147e76fc5ba8af40b96523ca1575207644a0835445bfb63dbd1cd70b4e34a9a",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "scheme",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "authority",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "path",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "query",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "fragment",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2667,6 +3688,60 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "32224a8dbfb933abe770cace0405779bb3cfbbe455681a0ccc66de225239ea85",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "scheme",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "authority",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "path",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "query",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "fragment",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -2798,6 +3873,113 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "8a4097a7b1ef580ecbabc6c584dc0558d67ad5f8371ae08f55bfbc03b2dd09d7",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "key",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "defaultValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "globalValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "workspaceValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "workspaceFolderValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "defaultLanguageValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "globalLanguageValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "workspaceLanguageValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "workspaceFolderLanguageValue",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeParameter",
+              "index": 0
+            }
+          },
+          {
+            "kind": "property",
+            "name": "languageIds",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "array",
+              "elementType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3055,6 +4237,51 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "612ef368bda12c64627e3ce1bbfde16eb0500729e0cd015cfef4286d1d847f0e",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "ignoreIfExists",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "contents",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "reference",
+                  "name": "Uint8Array",
+                  "typeArguments": []
+                },
+                {
+                  "kind": "reference",
+                  "name": "DataTransferFile",
+                  "typeArguments": []
+                }
+              ]
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3151,6 +4378,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "af5a3432af33b096e64797e16b838d1b407df4c3288391b996b7659b0e9183a2",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "recursive",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "ignoreIfNotExists",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3213,6 +4464,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "23df95579c052f7882a6997e2efda28858b15ee62df1c6d1ce2027a158de8a62",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "overwrite",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "ignoreIfExists",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3275,6 +4550,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "8eb473ed1c4e123844ac6efb3e88eb92f17759608f82b0e84e8b80f1fc0f6361",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "reason",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3314,6 +4603,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "d3f4b54c6e2e7ff6e063b8541014c5f9f9f0f543c0c123283e2a980bbf115351",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "inserting",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Range",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "replacing",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Range",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3378,6 +4693,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "751de9b5a756971b6406a9c02acabac7e1034ae517cbb8d7ff0b2b39ed935e22",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "value",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "union",
+              "types": [
+                {
+                  "kind": "primitive",
+                  "name": "string"
+                },
+                {
+                  "kind": "primitive",
+                  "name": "number"
+                }
+              ]
+            }
+          },
+          {
+            "kind": "property",
+            "name": "target",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3450,6 +4799,27 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "b865fdfdc93c1bb09a29677a03753e006821da4b40a0d21375e702f20813b739",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "enabledCommands",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "operator",
+              "operator": "readonly",
+              "type": {
+                "kind": "array",
+                "elementType": {
+                  "kind": "primitive",
+                  "name": "string"
+                }
+              }
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3496,6 +4866,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3546,6 +4941,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3596,6 +5016,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3646,6 +5091,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3696,6 +5166,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3746,6 +5241,42 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "e4e201020ee79e4f0bbaae204ceb888eed2ea6eb9f5c7ab0484ebb52f625791a",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "state",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "TreeItemCheckboxState",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "tooltip",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "accessibilityInformation",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "AccessibilityInformation",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3833,6 +5364,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "26d480daaf83043aa30e74bba486d9f657af7cd76f9d8c0ab5e1697cf4d6342d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": true
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3883,6 +5439,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "457007468c12291d2a796993894889be90c46087a4b19e95423fc73ba94fde85",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "kind",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "CodeActionKind",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "command",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Command",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3947,6 +5529,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2f9da560c77a7b7687ac304f5ac46c89df93851613f3a4dffe2910b00797a491",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -3997,6 +5604,41 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "da1df53f57fe86b69f77addfc1b3db94f828e580225f892ba8cfa2c8887d3e00",
+      "shape": {
+        "members": [
+          {
+            "kind": "method",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "operator",
+                    "operator": "readonly",
+                    "type": {
+                      "kind": "array",
+                      "elementType": {
+                        "kind": "primitive",
+                        "name": "string"
+                      }
+                    }
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "void"
+              }
+            },
+            "name": "setKeysForSync",
+            "optional": false,
+            "static": false,
+            "abstract": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4056,6 +5698,25 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "31f5ad1b22b80cac163fbf14d0444cee2ac230b6bc82f0c3ed62216bcbec740e",
+      "shape": {
+        "members": [
+          {
+            "kind": "method",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "name": "dispose",
+            "optional": false,
+            "static": false,
+            "abstract": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4098,6 +5759,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "9173f1d38682431c292fcee2e6b9dec595416aebfe1fbf8021e665be0505ebcc",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "oldUri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "newUri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4162,6 +5849,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "9173f1d38682431c292fcee2e6b9dec595416aebfe1fbf8021e665be0505ebcc",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "oldUri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "newUri",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4226,6 +5939,60 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2b1cfd0f1814d012355b4da591d64d6af7ca0378b9dfc8ca041437814ee7e6d2",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "autoClosingPairs",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "array",
+              "elementType": {
+                "kind": "typeLiteral",
+                "shape": {
+                  "members": [
+                    {
+                      "kind": "property",
+                      "name": "open",
+                      "optional": false,
+                      "readonly": false,
+                      "type": {
+                        "kind": "primitive",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "kind": "property",
+                      "name": "close",
+                      "optional": false,
+                      "readonly": false,
+                      "type": {
+                        "kind": "primitive",
+                        "name": "string"
+                      }
+                    },
+                    {
+                      "kind": "property",
+                      "name": "notIn",
+                      "optional": true,
+                      "readonly": false,
+                      "type": {
+                        "kind": "array",
+                        "elementType": {
+                          "kind": "primitive",
+                          "name": "string"
+                        }
+                      }
+                    }
+                  ]
+                },
+                "shapeHash": "9bdca8fe887d7b3a61a447e0211a3ec6caafc360a93aa36198afd223bf09c895"
+              }
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4269,6 +6036,74 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "37b27c6a0a367bc2fe5b4e5c04d6d5b4226dfd20592a312300805789efdb4fbe",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "brackets",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "any"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "docComment",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "typeLiteral",
+              "shape": {
+                "members": [
+                  {
+                    "kind": "property",
+                    "name": "scope",
+                    "optional": false,
+                    "readonly": false,
+                    "type": {
+                      "kind": "primitive",
+                      "name": "string"
+                    }
+                  },
+                  {
+                    "kind": "property",
+                    "name": "open",
+                    "optional": false,
+                    "readonly": false,
+                    "type": {
+                      "kind": "primitive",
+                      "name": "string"
+                    }
+                  },
+                  {
+                    "kind": "property",
+                    "name": "lineStart",
+                    "optional": false,
+                    "readonly": false,
+                    "type": {
+                      "kind": "primitive",
+                      "name": "string"
+                    }
+                  },
+                  {
+                    "kind": "property",
+                    "name": "close",
+                    "optional": true,
+                    "readonly": false,
+                    "type": {
+                      "kind": "primitive",
+                      "name": "string"
+                    }
+                  }
+                ]
+              },
+              "shapeHash": "894f69b197da23ce80c383de94855676a604f6971835789d9a301f6a431b30cd"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4332,6 +6167,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4382,6 +6242,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "26d480daaf83043aa30e74bba486d9f657af7cd76f9d8c0ab5e1697cf4d6342d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": true
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4432,6 +6317,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2dd54bcff6bd65027e191c1bf21b7d837327013115a26849849956703264359c",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "startTime",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "endTime",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "number"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4494,6 +6403,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "49f6dc4681822ebd90b11ab26d39bf3cecdfb269860e71bd9cd6bbd2edac6846",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "notebook",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "NotebookDocument",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "selected",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4557,6 +6491,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4607,6 +6566,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4657,6 +6641,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5e7b82ae0dc40177f2a1303547da319f55ba8297a9159bce13980476bed7666d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4707,6 +6716,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "58af5067f84d247ac19ddc8eb5d3b9e666005f16fa56346bcfd301eb73355fc6",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "union",
+                "types": [
+                  {
+                    "kind": "primitive",
+                    "name": "boolean"
+                  },
+                  {
+                    "kind": "primitive",
+                    "name": "undefined"
+                  }
+                ]
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4766,6 +6809,40 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "58af5067f84d247ac19ddc8eb5d3b9e666005f16fa56346bcfd301eb73355fc6",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "union",
+                "types": [
+                  {
+                    "kind": "primitive",
+                    "name": "boolean"
+                  },
+                  {
+                    "kind": "primitive",
+                    "name": "undefined"
+                  }
+                ]
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4825,6 +6902,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "d65a2b28bc039c7ad60800ea80e8e2d105a5669f5af62e6ed62f11407e2f9078",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "editor",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "reference",
+              "name": "NotebookEditor",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "message",
+            "optional": false,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "any"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4888,6 +6990,34 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "b7f134d9a223c7cdddae8f81c5f355599cf420941dfe0240ab2a2335a4b5934c",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "array",
+                "elementType": {
+                  "kind": "primitive",
+                  "name": "string"
+                }
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4941,6 +7071,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2f9da560c77a7b7687ac304f5ac46c89df93851613f3a4dffe2910b00797a491",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -4991,6 +7146,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "c01f8a9023e592c6367e2e5a9c5678b4575bb5cde6f6d74d2b8203a52ad7bfe6",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "viewId",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5030,6 +7199,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "26d480daaf83043aa30e74bba486d9f657af7cd76f9d8c0ab5e1697cf4d6342d",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "any"
+              }
+            },
+            "readonly": true
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5080,6 +7274,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "7e3198fe90bc890fa4735533c28ffcc7c8473d2f6a3a736e771f8b56a5336e39",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "checked",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5119,6 +7327,34 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "b7f134d9a223c7cdddae8f81c5f355599cf420941dfe0240ab2a2335a4b5934c",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "array",
+                "elementType": {
+                  "kind": "primitive",
+                  "name": "string"
+                }
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5172,6 +7408,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2f9da560c77a7b7687ac304f5ac46c89df93851613f3a4dffe2910b00797a491",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5222,6 +7483,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "5f5719d002d904e13a1fbba937e9df69b9d4f5d4a1b1a41785f8af041ac8c0bc",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "escapeChar",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "charsToEscape",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5284,6 +7569,44 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "60c54f78d1e691bcb3c9fa32b4f27c514dd7c13d5cc2aeafd8c50ab64d4e1cc6",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "union",
+                "types": [
+                  {
+                    "kind": "primitive",
+                    "name": "string"
+                  },
+                  {
+                    "kind": "literal",
+                    "value": null
+                  },
+                  {
+                    "kind": "primitive",
+                    "name": "undefined"
+                  }
+                ]
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5347,6 +7670,20 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "9ad663d5bee64f4a30d8e7742a0874d8d1da602da4dfc86ba8ba35efaa05a2a7",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "retainContextWhenHidden",
+            "optional": true,
+            "readonly": true,
+            "type": {
+              "kind": "primitive",
+              "name": "boolean"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5386,6 +7723,43 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "9bdca8fe887d7b3a61a447e0211a3ec6caafc360a93aa36198afd223bf09c895",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "open",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "close",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "notIn",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "array",
+              "elementType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5474,6 +7848,50 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "894f69b197da23ce80c383de94855676a604f6971835789d9a301f6a431b30cd",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "scope",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "open",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "lineStart",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "close",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5582,6 +8000,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "72820762f43126717635cc1e773666e1d7f0918d87a23c0ff6bb8956f999fe7e",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "uri",
+            "optional": true,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "languageId",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5645,6 +8088,32 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "ad8d6860c063824b64e7b7d5c9ba673c2548f3f20666258b3d5fd2eaa2b30e96",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "light",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          },
+          {
+            "kind": "property",
+            "name": "dark",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "reference",
+              "name": "Uri",
+              "typeArguments": []
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5709,6 +8178,30 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "db8317a25c6a24e670758f96b308edb7cee4d38ef329f0970ec73f4958dac843",
+      "shape": {
+        "members": [
+          {
+            "kind": "property",
+            "name": "language",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          },
+          {
+            "kind": "property",
+            "name": "value",
+            "optional": false,
+            "readonly": false,
+            "type": {
+              "kind": "primitive",
+              "name": "string"
+            }
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
@@ -5771,6 +8264,31 @@
       "deprecated": false,
       "visibility": "public",
       "shapeHash": "2f9da560c77a7b7687ac304f5ac46c89df93851613f3a4dffe2910b00797a491",
+      "shape": {
+        "members": [
+          {
+            "kind": "indexSignature",
+            "signature": {
+              "typeParameters": [],
+              "parameters": [
+                {
+                  "optional": false,
+                  "rest": false,
+                  "type": {
+                    "kind": "primitive",
+                    "name": "string"
+                  }
+                }
+              ],
+              "returnType": {
+                "kind": "primitive",
+                "name": "string"
+              }
+            },
+            "readonly": false
+          }
+        ]
+      },
       "coverage": {
         "discovery": "discovered",
         "semantics": "pending",
