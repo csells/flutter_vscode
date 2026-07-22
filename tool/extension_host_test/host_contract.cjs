@@ -17,6 +17,7 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
   canonicalViewProtocol: 'lib/src/view_protocol.dart',
   cli: 'bin/flutter_vscode.dart',
   container: 'tool/extension_host_test/Dockerfile',
+  contractWriter: 'tool/binding_generator/contract.dart',
   ecmascriptWhitespace:
     'tool/binding_generator/ecmascript_whitespace.dart',
   evidenceIntegrityTest: 'test/binding_evidence_test.dart',

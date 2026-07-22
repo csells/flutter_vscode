@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
+import '../tool/binding_generator/contract.dart' as contract_writer;
+
 const canonicalHostContractSourcePaths = <String, String>{
   'activationFailureTest':
       'test/fixtures/host_extension/test/activation_failure.cjs',
@@ -17,6 +19,7 @@ const canonicalHostContractSourcePaths = <String, String>{
   'canonicalViewProtocol': 'lib/src/view_protocol.dart',
   'cli': 'bin/flutter_vscode.dart',
   'container': 'tool/extension_host_test/Dockerfile',
+  'contractWriter': 'tool/binding_generator/contract.dart',
   'ecmascriptWhitespace': 'tool/binding_generator/ecmascript_whitespace.dart',
   'evidenceIntegrityTest': 'test/binding_evidence_test.dart',
   'fixtureHost': 'test/fixtures/host_extension/host/lib/extension.dart',
@@ -61,6 +64,36 @@ const canonicalHostContractSourcePaths = <String, String>{
 };
 
 void main() {
+  test('the durable Host Contract artifact matches mechanical regeneration',
+      () {
+    final regenerated =
+        contract_writer.buildHostContractArtifact(Directory.current);
+    expect(
+      File(
+        'tool/bindings/contracts/checkpoint4-extension-host.json',
+      ).readAsStringSync(),
+      regenerated,
+      reason: 'The artifact is written only by the mechanical regenerator. '
+          'Refresh it with: '
+          'dart tool/binding_generator/generate.dart --contract .',
+    );
+    expect(
+      contract_writer.canonicalHostContractSourcePaths,
+      canonicalHostContractSourcePaths,
+      reason: 'The writer and the evidence suite must attest the same '
+          'receipt closure.',
+    );
+    final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
+    final contract = (overrides['hostContracts']!
+            as Map<Object?, Object?>)['checkpoint4ExtensionHost']!
+        as Map<Object?, Object?>;
+    expect(
+      sha256.convert(utf8.encode(regenerated)).toString(),
+      contract['artifactSha256'],
+      reason: 'The overrides pin must match the regenerated artifact bytes.',
+    );
+  });
+
   test('every emitted binding cites an executable real-host contract', () {
     final overrides = _readJson(
       'tool/bindings/overrides/vscode-1.129.1.json',

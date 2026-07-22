@@ -2057,12 +2057,19 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
       'commandsContributionSchemaSha256':
           'a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33',
     });
+    final pinnedOverrides = _readJson(
+      'tool/bindings/overrides/vscode-1.129.1.json',
+    );
+    final pinnedContracts =
+        (pinnedOverrides['hostContracts']! as Map<Object?, Object?>)
+            .cast<String, Object?>();
     expect(coverage['hostContracts'], {
       'checkpoint4ExtensionHost': {
         'boundary': 'vscodeExtensionHost',
         'artifact': 'tool/bindings/contracts/checkpoint4-extension-host.json',
-        'artifactSha256':
-            'c41b18537d22cc0d2d007a0cf99dd0ffa4fdaab61030f05114872e21f6de52e6',
+        'artifactSha256': ((pinnedContracts['checkpoint4ExtensionHost']!
+                as Map<Object?, Object?>)['artifactSha256']!)
+            .toString(),
       },
     });
     expect(coverage['hostEvidence'], {

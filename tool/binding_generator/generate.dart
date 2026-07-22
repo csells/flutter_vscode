@@ -1,11 +1,22 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'contract.dart';
 import 'generator.dart';
 import 'writer.dart';
 
 Future<void> main(List<String> arguments) async {
   try {
+    if (arguments.isNotEmpty && arguments.first == '--contract') {
+      if (arguments.length != 2) {
+        throw const VSCodeBindingGenerationException(
+          'INVALID_ARGUMENTS',
+          '--contract requires exactly the repository root.',
+        );
+      }
+      writeHostContractArtifact(Directory(arguments[1]));
+      return;
+    }
     final options = _parseArguments(arguments);
     final generated = VSCodeBindingGenerator().generate(
       inventory: await _readJson(options['inventory']!),
