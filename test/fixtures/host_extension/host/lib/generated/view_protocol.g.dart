@@ -854,7 +854,22 @@ final class FlutterViewSession {
       );
       return;
     }
-    switch (message['kind']) {
+    final kind = message['kind'];
+    if (!_connected.isCompleted &&
+        kind != 'readyAck' &&
+        kind != 'shutdown' &&
+        kind != 'closing') {
+      _observeOptionalError(
+        _rejectConnection(
+          _invalidMessage(
+            'Only a ready acknowledgement or terminal frame is valid during '
+            'the Flutter View handshake.',
+          ),
+        ),
+      );
+      return;
+    }
+    switch (kind) {
       case 'readyAck':
         if (message['protocol'] == 'flutter-vscode.view' &&
             message['version'] == 1 &&

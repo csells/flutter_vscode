@@ -24,7 +24,7 @@
     },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "0ec2b78dbcc4bb3fe67c827a05eed96035abbd4885d87bb24f7aac32325bfcdd"
+      "sha256": "bfd532ec85dc1faf7bd04d31808c7dfb2afacf3fbe4a8d3d8be66fc24c9d6df1"
     },
     "bindingWriter": {
       "path": "tool/binding_generator/writer.dart",
@@ -44,11 +44,11 @@
     },
     "canonicalInventory": {
       "path": "tool/bindings/ir/vscode-1.129.1.json",
-      "sha256": "563140e3883c301f1f7235b43d052cb263fb12502b8a11549ea9e7e11c6e7fd1"
+      "sha256": "b75e6e90789b5c5b283b275cf0dd54c2abcf98ed29bb356df8abb81a5fb92a91"
     },
     "canonicalViewProtocol": {
       "path": "lib/src/view_protocol.dart",
-      "sha256": "767db1412a931e460b83d7e4bd5a04305fdf516c8086952a61b54ad131f6169b"
+      "sha256": "a295f7edf2a8e36cae69a58cca4c9cc2ec8e6f20c3f980f147e789dab1e30de2"
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
@@ -58,13 +58,17 @@
       "path": "tool/extension_host_test/Dockerfile",
       "sha256": "03988fdeac1cc471d54ee3fddea5acfc392a5269ef1023cb9c69e676d31f871b"
     },
+    "contractWriter": {
+      "path": "tool/binding_generator/contract.dart",
+      "sha256": "0ba437791a0ccc9b10defd1b4add93373e33141a0dceb0b79cbd6c06479d7557"
+    },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
       "sha256": "4069a7bef774faa2f051cdc27dd8e59f99bf222b87e7ba3333047adfbc501e90"
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "090360a016ba0d8f065a98678ecec7d0fafa5d23afc30dea2c19d69280359ab1"
+      "sha256": "d4d2480970305f21823e5bd2dd53d2872d0f2b7f323f6ab996b86b2153eed22d"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
@@ -128,7 +132,7 @@
     },
     "generatedFacade": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart",
-      "sha256": "324a38772245b3734ca1e0fa4577eca396ca6adfa73369e81231ce5d38c0ae35"
+      "sha256": "09b749d1fb2694b43a07234a0970d8b79d01dbaa6f3ce25c04c9b1d26e81c647"
     },
     "generatedHostExports": {
       "path": "test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
@@ -144,7 +148,7 @@
     },
     "generatedViewProtocol": {
       "path": "test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart",
-      "sha256": "767db1412a931e460b83d7e4bd5a04305fdf516c8086952a61b54ad131f6169b"
+      "sha256": "a295f7edf2a8e36cae69a58cca4c9cc2ec8e6f20c3f980f147e789dab1e30de2"
     },
     "harnessPackage": {
       "path": "tool/extension_host_test/package.json",
@@ -176,11 +180,11 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "53e029851fa46c8053ff37e82588157fee89bd37191aa45879cc065325768251"
+      "sha256": "40de7ba343ca14a3f6264817062534933ee0912c8ead18990edb4cbd5c1d4ab2"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",
-      "sha256": "4bb6d711315b68a46fa852a113bd0e60104a6b38f4254f85fe6da4039ec88740"
+      "sha256": "c08b937f467b7899a09235d76cc6ffb935f6e68a99ec674d6ee9dfa0dd1f57a1"
     },
     "viewLibrary": {
       "path": "lib/view.dart",

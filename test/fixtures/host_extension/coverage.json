@@ -11,7 +11,7 @@
     "checkpoint4ExtensionHost": {
       "boundary": "vscodeExtensionHost",
       "artifact": "tool/bindings/contracts/checkpoint4-extension-host.json",
-      "artifactSha256": "c41b18537d22cc0d2d007a0cf99dd0ffa4fdaab61030f05114872e21f6de52e6"
+      "artifactSha256": "4dabc9d0df5d15f662be1f6d57bd326131b055d455a2536bdbda43175d837c62"
     }
   },
   "hostEvidence": {
@@ -50,7 +50,7 @@
   },
   "entries": [
     {
-      "id": "callSignature:vscode.Event.$call@00d877bcd478273b6bafb74ceed20260eab023f2569cccd28d6f939bd4b030fd",
+      "id": "callSignature:vscode.Event.$call@ca2a1c0079bda6fe4025d2d6485a90eb0e007d05ec6764cf97cc592c7b6fde49",
       "kind": "callSignature",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -2835,7 +2835,7 @@
       }
     },
     {
-      "id": "constructor:vscode.CompletionList.constructor@6ed4325cbccc8b6b473e281936526d9b387b9a2e110df15b23c6caaea73fd779",
+      "id": "constructor:vscode.CompletionList.constructor@b46b683c672b7039e9960b0b81612b169293a3d0296b83fe9dce7baf415938a1",
       "kind": "constructor",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -4514,7 +4514,7 @@
       }
     },
     {
-      "id": "constructor:vscode.TelemetryTrustedValue.constructor@28bff6661bf16400581a846ecfab987ebb21a648fb870fdef02dacdf4b319d1f",
+      "id": "constructor:vscode.TelemetryTrustedValue.constructor@c76e23f432ab7f6818f8360d688ecbabf476aaf90e33ed68ddd8ab08756f32e2",
       "kind": "constructor",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20235,7 +20235,7 @@
       }
     },
     {
-      "id": "method:vscode.CodeActionProvider.provideCodeActions@0ac9d9c2b1e1d950bb64fd649d6775907d86094040b792584112a4a3bb43c1b2",
+      "id": "method:vscode.CodeActionProvider.provideCodeActions@78186d58417d59581e004ef2f13fcc578949b84f6e997c90489382afb877fa0e",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20254,7 +20254,7 @@
       }
     },
     {
-      "id": "method:vscode.CodeActionProvider.resolveCodeAction@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.CodeActionProvider.resolveCodeAction@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20273,7 +20273,7 @@
       }
     },
     {
-      "id": "method:vscode.CodeLensProvider.provideCodeLenses@fe1c4c7fefc9abf937bd22ddfafdbe4d80270d4541708386e6df811a91d85708",
+      "id": "method:vscode.CodeLensProvider.provideCodeLenses@33d057e7a8a77cb910766bc163d61d7dbe64b3ed8abe178834605be1ab2d0c7d",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20292,7 +20292,7 @@
       }
     },
     {
-      "id": "method:vscode.CodeLensProvider.resolveCodeLens@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.CodeLensProvider.resolveCodeLens@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20387,7 +20387,7 @@
       }
     },
     {
-      "id": "method:vscode.CompletionItemProvider.provideCompletionItems@4fdeac256228399c8b4982d4f97514af89f5607341c540309a78395f92aa42b1",
+      "id": "method:vscode.CompletionItemProvider.provideCompletionItems@fdd6704eb7fe94fc38095e248dd70f1097af599678fbe4f9f437d8006946aa08",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20406,7 +20406,7 @@
       }
     },
     {
-      "id": "method:vscode.CompletionItemProvider.resolveCompletionItem@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.CompletionItemProvider.resolveCompletionItem@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20520,7 +20520,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomEditorProvider.backupCustomDocument@9a3204142a7e454aa5fe9b85cb79c7590116f156e30ca1a0614cc430b63d8f80",
+      "id": "method:vscode.CustomEditorProvider.backupCustomDocument@4f0f53b471d9d5f546a6b1d8c1caf5925784ca5dfa49c15f765d9c73c414a08f",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20539,7 +20539,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomEditorProvider.revertCustomDocument@639dd94b18a746b927434567ef216f078ad60b56be31b46db31fb9a6d2ade68b",
+      "id": "method:vscode.CustomEditorProvider.revertCustomDocument@90fc7ca82b6227f4f91b8d44e1647b4f8db8319bae2bfff2c623677d185259b6",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20558,7 +20558,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomEditorProvider.saveCustomDocument@639dd94b18a746b927434567ef216f078ad60b56be31b46db31fb9a6d2ade68b",
+      "id": "method:vscode.CustomEditorProvider.saveCustomDocument@90fc7ca82b6227f4f91b8d44e1647b4f8db8319bae2bfff2c623677d185259b6",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20577,7 +20577,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomEditorProvider.saveCustomDocumentAs@bca7a771060a5f5c6c470374bde5a2dbb0f8e65a4554dc9f561e63803db0d2c1",
+      "id": "method:vscode.CustomEditorProvider.saveCustomDocumentAs@c9b7637bbea5267e06909c0599f4c37ac1a5ecf62b2c52d6c83c6e2e3422d01d",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20596,7 +20596,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomReadonlyEditorProvider.openCustomDocument@e851151515f6abeffc70530c294482dae114cae1d46f3cb7cd8df6e9c10ce5d8",
+      "id": "method:vscode.CustomReadonlyEditorProvider.openCustomDocument@cb8281220ceba1962a91112499641c4d129a799a633fb72d487778a90dbeaf50",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -20615,7 +20615,7 @@
       }
     },
     {
-      "id": "method:vscode.CustomReadonlyEditorProvider.resolveCustomEditor@477f7c07b24368d7259183a40e5226031e4d2c2db60043b5b5571ec187085b0a",
+      "id": "method:vscode.CustomReadonlyEditorProvider.resolveCustomEditor@901de54af988603cb5d3b5e673238450a176d82d42fc00424bee2038d5dfd2a1",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21362,7 +21362,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentDropEditProvider.provideDocumentDropEdits@583c746d3edf9c826b8a15c8c5de0c417cad520395227075e3218105fa894e64",
+      "id": "method:vscode.DocumentDropEditProvider.provideDocumentDropEdits@68879f383ed05f1d05efb5f1aee68aca4c2673bc9236de0c76985902efa559a6",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21381,7 +21381,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentDropEditProvider.resolveDocumentDropEdit@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.DocumentDropEditProvider.resolveDocumentDropEdit@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21495,7 +21495,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentLinkProvider.provideDocumentLinks@fe1c4c7fefc9abf937bd22ddfafdbe4d80270d4541708386e6df811a91d85708",
+      "id": "method:vscode.DocumentLinkProvider.provideDocumentLinks@33d057e7a8a77cb910766bc163d61d7dbe64b3ed8abe178834605be1ab2d0c7d",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21514,7 +21514,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentLinkProvider.resolveDocumentLink@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.DocumentLinkProvider.resolveDocumentLink@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21552,7 +21552,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentPasteEditProvider.provideDocumentPasteEdits@cd7e60815f5e08a7f67f237c76ef16be49146e68d2c400a509517e7e1e34a335",
+      "id": "method:vscode.DocumentPasteEditProvider.provideDocumentPasteEdits@da730bc21b609b834d12e40dd6c83b8c5b603ddb5f7ecdf35d16e6cb33dce19e",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21571,7 +21571,7 @@
       }
     },
     {
-      "id": "method:vscode.DocumentPasteEditProvider.resolveDocumentPasteEdit@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.DocumentPasteEditProvider.resolveDocumentPasteEdit@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21875,7 +21875,7 @@
       }
     },
     {
-      "id": "method:vscode.EventEmitter.fire@01562d38607c9917fbed970dc11aeb86a223521abee97b95129615ee02315d49",
+      "id": "method:vscode.EventEmitter.fire@0a1b44eb697918f6320404fc1f1837f35cc70885ccfa0421d890a072270b0a16",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -21894,7 +21894,7 @@
       }
     },
     {
-      "id": "method:vscode.Extension.activate@f020a0c98f4a329744bb9924557b454c685b5f0627a85074032735aaef8c12a5",
+      "id": "method:vscode.Extension.activate@ee57591bd593dba8f1ad06f5341e499a258b44a3dbea6ae49d411bc98ab013cc",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22622,7 +22622,7 @@
       }
     },
     {
-      "id": "method:vscode.InlayHintsProvider.provideInlayHints@b92792123730c4cb9fecd129251dbced0aaa2a7654a4839e54cf82d05c598300",
+      "id": "method:vscode.InlayHintsProvider.provideInlayHints@fa67eaf639e830f99a8095912adad4473ddca7d9918cfc3a8c572b10814ea962",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22641,7 +22641,7 @@
       }
     },
     {
-      "id": "method:vscode.InlayHintsProvider.resolveInlayHint@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.InlayHintsProvider.resolveInlayHint@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22812,7 +22812,7 @@
       }
     },
     {
-      "id": "method:vscode.LanguageModelChatProvider.provideLanguageModelChatInformation@71aa4b500f325a4e1d46df88b149c9f75070f96253198bb5b09eab7973d294b1",
+      "id": "method:vscode.LanguageModelChatProvider.provideLanguageModelChatInformation@5c480f3358e3a71d135d4134dbea8a3ff89032d779b4f3949796ceda6931f47d",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22831,7 +22831,7 @@
       }
     },
     {
-      "id": "method:vscode.LanguageModelChatProvider.provideLanguageModelChatResponse@1c881118472b28d59e216af5a27531d7fdc4629b0d65c2c25f21e43f3fd80975",
+      "id": "method:vscode.LanguageModelChatProvider.provideLanguageModelChatResponse@60b56c70e015e26be55d6ac378fff076017ba9e8f81fc399024007541443e9b1",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22850,7 +22850,7 @@
       }
     },
     {
-      "id": "method:vscode.LanguageModelChatProvider.provideTokenCount@5fdb0985e84caa1fec20d92a45fc079d9fccd60544e85e5c48cc9e3478ffa36f",
+      "id": "method:vscode.LanguageModelChatProvider.provideTokenCount@343dd5b4522d2a33f507fc9242176483188d406a93937fde56245e2b54b4878b",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -22983,7 +22983,7 @@
       }
     },
     {
-      "id": "method:vscode.LanguageModelTool.invoke@1fe19c4c0d638175d5810d9e1d9388a34eefffd7d6b79cd1a1ff5d8205746db5",
+      "id": "method:vscode.LanguageModelTool.invoke@719d6101ef910e50460602dfea564f6171e44cd6c23a56ca0f8acdbec89892b1",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -23002,7 +23002,7 @@
       }
     },
     {
-      "id": "method:vscode.LanguageModelTool.prepareInvocation@7ec82cf8027c8a8f0ec4094e1fc0c8269a83f1fc30be2faa1d5a9f4e448e98cc",
+      "id": "method:vscode.LanguageModelTool.prepareInvocation@2f83be5c12bbcd0f2bf0aa4595289940b27e166fde358a23ce0e9e34161ee805",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -23230,7 +23230,7 @@
       }
     },
     {
-      "id": "method:vscode.McpServerDefinitionProvider.provideMcpServerDefinitions@28d000579dba164bdd7e49d75ba54179930a9e263d48cee58684df2be8e595ba",
+      "id": "method:vscode.McpServerDefinitionProvider.provideMcpServerDefinitions@b1a0add0d29289130fcbc196a0e70328d937762c208403e1895cf64351ee069a",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -23249,7 +23249,7 @@
       }
     },
     {
-      "id": "method:vscode.McpServerDefinitionProvider.resolveMcpServerDefinition@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.McpServerDefinitionProvider.resolveMcpServerDefinition@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -24294,7 +24294,7 @@
       }
     },
     {
-      "id": "method:vscode.Progress.report@01562d38607c9917fbed970dc11aeb86a223521abee97b95129615ee02315d49",
+      "id": "method:vscode.Progress.report@0a1b44eb697918f6320404fc1f1837f35cc70885ccfa0421d890a072270b0a16",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -25130,7 +25130,7 @@
       }
     },
     {
-      "id": "method:vscode.TaskProvider.provideTasks@28d000579dba164bdd7e49d75ba54179930a9e263d48cee58684df2be8e595ba",
+      "id": "method:vscode.TaskProvider.provideTasks@b1a0add0d29289130fcbc196a0e70328d937762c208403e1895cf64351ee069a",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -25149,7 +25149,7 @@
       }
     },
     {
-      "id": "method:vscode.TaskProvider.resolveTask@3226830eb40d9f99518578b660a9dbeabd56a56918b998fd5b746f5ab2a9f851",
+      "id": "method:vscode.TaskProvider.resolveTask@7debe075755643188030a59f0c176d19b97277a5c3395e4c45ee7f22329a0b8b",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -25377,7 +25377,7 @@
       }
     },
     {
-      "id": "method:vscode.TerminalLinkProvider.handleTerminalLink@9b31f3c3fc15f62f30efe25d50e66a074d63e5151b7f9dcb8f74850700af6b51",
+      "id": "method:vscode.TerminalLinkProvider.handleTerminalLink@1e425856f65afe6a5297c8a3c7e599af0cd7eadfb7cc0c7388996bcabca9100a",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -25396,7 +25396,7 @@
       }
     },
     {
-      "id": "method:vscode.TerminalLinkProvider.provideTerminalLinks@6ac2b8b7b4adcbf5974a8b3b232c9c61063e2ccb8961cf5ed98909053980fcb0",
+      "id": "method:vscode.TerminalLinkProvider.provideTerminalLinks@0ac2682d7caec0837bba8966f9f344e0c98deb6a166cebd2b30105014ed3010e",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26403,7 +26403,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDataProvider.getChildren@94ef76955aa3dc5dc38efc53e2a2fbaf237b6d1bfdb32e6466edce012b6695d0",
+      "id": "method:vscode.TreeDataProvider.getChildren@412bac44023df1098df99fef0f1b04c893cc2ee0ab6a924c70f17a9ea7fff14e",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26422,7 +26422,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDataProvider.getParent@9e340374d88aa17c6378018b60f156000f9c5126c6f9a010ed29018de0a23881",
+      "id": "method:vscode.TreeDataProvider.getParent@8dc48a2f57301c524c756e7dbe53b74f58d436b469f72e6604d8e72d1fcd793f",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26441,7 +26441,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDataProvider.getTreeItem@aac421d5343ad4fe3c7551df83aa7ee91d59daf5d9b7541859df9f0c228c3c80",
+      "id": "method:vscode.TreeDataProvider.getTreeItem@1a04897e8c853796b5d30f793b044396000ab10734eff0a73c814ec330607a15",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26460,7 +26460,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDataProvider.resolveTreeItem@10ff3532baa5e1f5b7485a96369b9cefec3551df31785984059d9b9130ef546f",
+      "id": "method:vscode.TreeDataProvider.resolveTreeItem@fe5cb1e158f27221c9a554c1a1772e856b8be095193c1ba119e4f94dc51a7982",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26479,7 +26479,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDragAndDropController.handleDrag@3bf15802f0bd4f443a8cc18e068a42e2eacefd48348ff78e598ca5a372acfa72",
+      "id": "method:vscode.TreeDragAndDropController.handleDrag@1456261d85511d6b7d3754b8872d57c37bbb45188ecbb32ce40370dae13938bd",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26498,7 +26498,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeDragAndDropController.handleDrop@226e75cd85a274066a7e32120b2e2c600a88936536c494ea046135c96f5ce303",
+      "id": "method:vscode.TreeDragAndDropController.handleDrop@4db4c5196b9e4a661ff3deffacc49315f110635c11d1c9324fc5f01750176d0c",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26517,7 +26517,7 @@
       }
     },
     {
-      "id": "method:vscode.TreeView.reveal@9e4d553ab3733ec587f7fa52a66e0731217e23b598b718fa3375744a13dec451",
+      "id": "method:vscode.TreeView.reveal@989026d458a956e1a220ca299d13dcbddb0e56e2d24391e87105c6726214f17a",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -26870,7 +26870,7 @@
       }
     },
     {
-      "id": "method:vscode.WebviewPanelSerializer.deserializeWebviewPanel@de47d6edc9e65391cc0f432ab478b7ab0951180b2ecbb249620069fb216e5cf2",
+      "id": "method:vscode.WebviewPanelSerializer.deserializeWebviewPanel@f5b2ccc0379f8de5ecf60b09bbc9e1f31689932e5da7b4502e501fca71c1a954",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -27269,7 +27269,7 @@
       }
     },
     {
-      "id": "method:vscode.WorkspaceSymbolProvider.provideWorkspaceSymbols@80421b87d2acd937edc55a5abdf51f64a794b71f1a2b03eb777efd7c4452cef7",
+      "id": "method:vscode.WorkspaceSymbolProvider.provideWorkspaceSymbols@9248929421c66bcf6b3ee679a6388184535694ce8794d8315b0b79263df8059c",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -27288,7 +27288,7 @@
       }
     },
     {
-      "id": "method:vscode.WorkspaceSymbolProvider.resolveWorkspaceSymbol@8b0714326f8298472a75ef96dc6ee6b1e70ee5df1c8d8c669a49daea869b33f8",
+      "id": "method:vscode.WorkspaceSymbolProvider.resolveWorkspaceSymbol@97e762592ca636d62fc3b4a39ed85d50d5fb875deaa2c860aecd25e8d2c16e40",
       "kind": "method",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -51685,7 +51685,7 @@
       }
     },
     {
-      "id": "property:typeLiteral:method:vscode.TreeView.reveal@9e4d553ab3733ec587f7fa52a66e0731217e23b598b718fa3375744a13dec451/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/expand",
+      "id": "property:typeLiteral:method:vscode.TreeView.reveal@989026d458a956e1a220ca299d13dcbddb0e56e2d24391e87105c6726214f17a/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/expand",
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -51704,7 +51704,7 @@
       }
     },
     {
-      "id": "property:typeLiteral:method:vscode.TreeView.reveal@9e4d553ab3733ec587f7fa52a66e0731217e23b598b718fa3375744a13dec451/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/focus",
+      "id": "property:typeLiteral:method:vscode.TreeView.reveal@989026d458a956e1a220ca299d13dcbddb0e56e2d24391e87105c6726214f17a/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/focus",
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -51723,7 +51723,7 @@
       }
     },
     {
-      "id": "property:typeLiteral:method:vscode.TreeView.reveal@9e4d553ab3733ec587f7fa52a66e0731217e23b598b718fa3375744a13dec451/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/select",
+      "id": "property:typeLiteral:method:vscode.TreeView.reveal@989026d458a956e1a220ca299d13dcbddb0e56e2d24391e87105c6726214f17a/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa/$instance/select",
       "kind": "property",
       "visibility": "public",
       "occurrenceCount": 1,
@@ -54195,7 +54195,7 @@
       }
     },
     {
-      "id": "typeLiteral:method:vscode.TreeView.reveal@9e4d553ab3733ec587f7fa52a66e0731217e23b598b718fa3375744a13dec451/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa",
+      "id": "typeLiteral:method:vscode.TreeView.reveal@989026d458a956e1a220ca299d13dcbddb0e56e2d24391e87105c6726214f17a/$shape@2b92a7f07304d19e5215f3d13e377c455005cb6885537f57b246cf57650981fa",
       "kind": "typeLiteral",
       "visibility": "public",
       "occurrenceCount": 1,
