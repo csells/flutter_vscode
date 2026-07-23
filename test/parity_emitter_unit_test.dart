@@ -8,7 +8,7 @@ import '../tool/binding_generator/parity_layer.dart' as parity;
 /// the byte-compare cannot.
 void main() {
   group('Total Mapping Rules on synthetic IRs', () {
-    for (final testCase in _ruleCases) {
+    for (final testCase in [..._ruleCases, ..._extraRuleCases]) {
       test(testCase.name, () {
         final library = parity.emitParityLayer({
           'schemaVersion': 1,
@@ -452,6 +452,48 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       'static const left',
       'static const right',
     ],
+  ),
+];
+
+final List<_RuleCase> _extraRuleCases = <_RuleCase>[
+  _RuleCase(
+    'intersection types implement both operands (cc:intersection)',
+    [
+      _iface('Left'),
+      _iface('Right'),
+      _iface('Holder'),
+      _property('interface:vscode.Holder', 'both', {
+        'kind': 'intersection',
+        'types': [
+          {'kind': 'reference', 'name': 'Left', 'typeArguments': <Object?>[]},
+          {'kind': 'reference', 'name': 'Right', 'typeArguments': <Object?>[]},
+        ],
+      }),
+    ],
+    ['extension type JSIntersection_', 'implements Left, Right, JSObject'],
+  ),
+  _RuleCase(
+    'call-signature interfaces wrap JSFunction (cc:call-signature)',
+    [
+      _iface('Listener'),
+      _decl('callSignature', r'$call', 'interface:vscode.Listener', extra: {
+        'id': r'callSignature:interface:vscode.Listener.$call@0',
+        'parameters': [_param('value', _string)],
+        'returnType': const {'kind': 'primitive', 'name': 'void'},
+        'typeParameters': <Object?>[],
+        'overloadOrdinal': 0,
+        'canonicalSignature': '{}',
+      },),
+    ],
+    ['extension type Listener(JSFunction _self)', 'call('],
+  ),
+  _RuleCase(
+    'mutable properties emit external setters (cc:external-setter)',
+    [
+      _iface('Holder'),
+      _property('interface:vscode.Holder', 'value', _string),
+    ],
+    ['external String get value;', 'external set value(String value);'],
   ),
 ];
 

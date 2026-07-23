@@ -245,6 +245,34 @@ void main() {
     });
   });
 
+  test('C-3 every non-exempt construct class has a tagged live probe', () {
+    final harness = File(
+      'test/fixtures/host_extension/test/run.cjs',
+    ).readAsStringSync();
+    final unitSuite = File(
+      'test/parity_emitter_unit_test.dart',
+    ).readAsStringSync();
+    for (final constructClass in parity.parityConstructClasses) {
+      expect(
+        unitSuite,
+        anyOf(contains("'$constructClass'"), contains('cc:$constructClass')),
+        reason: 'construct class $constructClass needs an emitter unit case',
+      );
+      if (parity.parityLiveExemptions.containsKey(constructClass)) {
+        continue;
+      }
+      expect(
+        harness,
+        contains('cc:$constructClass'),
+        reason: 'construct class $constructClass needs a tagged live probe '
+            'in the real-host smoke',
+      );
+    }
+    for (final exemption in parity.parityLiveExemptions.values) {
+      expect(exemption, isNotEmpty);
+    }
+  });
+
   test('V-4 the live smoke covers every API namespace family', () {
     final namespaces = [
       for (final declaration in (inventory['declarations']! as List<Object?>)

@@ -142,12 +142,31 @@ async function run() {
       `API family not exercised live: ${family}`,
     );
   }
+  // cc:default-constructor cc:call-signature
   assert.equal(paritySmoke.eventEmitterRoundTrip, 'parity-event');
   assert.equal(paritySmoke.cancellationFlipped, true);
+  // cc:declared-constructor (WorkspaceEdit/Position) cc:optional-member
   assert.equal(paritySmoke.workspaceEditApplied, true);
+  // cc:promise-thenable
   assert.equal(paritySmoke.clipboardRoundTrip, 'parity-clip');
   assert.equal(paritySmoke.narrowedPosition, true);
+  // cc:stable-typedef cc:type-literal cc:reserved-name cc:overload-set
   assert.equal(paritySmoke.stableLiteralWith, 9);
+  // cc:numeric-enum asserted above; cc:rest-parameter via l10n;
+  // cc:array via getLanguages; cc:object-literal-factory via providers.
+  // cc:tuple — real directory entries from workspace.fs.readDirectory
+  assert.equal(paritySmoke.tupleEntryIsFile, true);
+  assert.ok(paritySmoke.tupleEntryName.length > 0);
+  // cc:intersection — Memento & setKeysForSync through globalState
+  assert.equal(paritySmoke.intersectionRoundTrip, 'parity-state');
+  // cc:external-setter — QuickPick.value written and read back
+  assert.equal(paritySmoke.setterRoundTrip, 'parity-value');
+  // cc:index-signature — real WorkspaceConfiguration operator []
+  assert.equal(paritySmoke.indexSignatureRead, true);
+  // cc:narrowing cc:mixed-union — a real union value VS Code chose
+  assert.equal(paritySmoke.tabInputNarrowed, true);
+  // cc:function-type — VS Code-invoked callback args + lit$ report
+  assert.equal(paritySmoke.progressResult, 'parity-progress');
   const parityDocument = await vscode.workspace.openTextDocument({
     language: 'json',
     content: '{"parity": true}',

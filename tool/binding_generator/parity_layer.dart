@@ -36,6 +36,46 @@ final class ParityGenerationException implements Exception {
 /// The generated artifacts: the Dart library and the disposition ledger.
 typedef ParityArtifacts = ({String library, String ledger});
 
+/// The canonical Construct Classes: one per Total Mapping Rule. Live
+/// coverage requires a tagged real-host probe per class unless the class
+/// appears in [parityLiveExemptions] with a reason.
+const parityConstructClasses = [
+  'mixed-union',
+  'string-literal-union',
+  'overload-set',
+  'reserved-name',
+  'underscore-name',
+  'numeric-enum',
+  'tuple',
+  'index-signature',
+  'rest-parameter',
+  'promise-thenable',
+  'array',
+  'declared-constructor',
+  'default-constructor',
+  'object-literal-factory',
+  'type-literal',
+  'intersection',
+  'call-signature',
+  'readonly-property',
+  'optional-member',
+  'stable-typedef',
+  'narrowing',
+  'external-setter',
+  'function-type',
+];
+
+/// Construct Classes exempt from live probing, each with its reason.
+const parityLiveExemptions = {
+  'string-literal-union':
+      'zero occurrences in the pinned baseline; rule proven on synthetic IR',
+  'readonly-property':
+      'the rule is the absence of a setter, provable only at compile time',
+  'underscore-name':
+      'the only baseline sites are deprecated internal fields with no '
+          'stable behavior to observe',
+};
+
 const _reservedWords = {
   'assert', 'break', 'case', 'catch', 'class', 'const', 'continue',
   'default', 'do', 'else', 'enum', 'extends', 'false', 'final', 'finally',
