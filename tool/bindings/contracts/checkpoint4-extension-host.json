@@ -180,7 +180,7 @@
     },
     "test": {
       "path": "test/fixtures/host_extension/test/run.cjs",
-      "sha256": "d2a7de21fa248321c17ccdbc4c48e13df410f16670e760431f23d35a14a1f7a1"
+      "sha256": "04af4f6bda3c3c738c3023908d19fe21ca400edd2f59150d589d01ce1fbea2d1"
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",

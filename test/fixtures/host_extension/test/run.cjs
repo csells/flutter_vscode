@@ -70,10 +70,15 @@ async function run() {
     parityDocument.uri,
     new vscode.Position(0, 3),
   );
-  assert.equal(parityHovers.length, 1, 'parity-registered provider missing');
+  // The facade fixture also registers a json hover provider, so both
+  // providers answer; the parity one is identified by its content.
+  assert.equal(parityHovers.length, 2, 'parity-registered provider missing');
   assert.equal(
-    parityHovers[0].contents[0].value,
-    'Hover from the parity layer',
+    parityHovers.filter(
+      (hover) => hover.contents[0].value === 'Hover from the parity layer',
+    ).length,
+    1,
+    'parity hover content missing',
   );
   await vscode.commands.executeCommand(
     'flutter-vscode.host-test.disposeParityProvider',
@@ -85,8 +90,15 @@ async function run() {
   );
   assert.equal(
     afterDispose.length,
-    0,
+    1,
     'parity-registered provider survived disposal',
+  );
+  assert.equal(
+    afterDispose.filter(
+      (hover) => hover.contents[0].value === 'Hover from the parity layer',
+    ).length,
+    0,
+    'disposal removed the wrong provider',
   );
 
   console.log('[host-test] RED/GREEN: Dart async error');
