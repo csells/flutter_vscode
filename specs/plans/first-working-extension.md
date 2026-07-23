@@ -169,10 +169,14 @@ focused green naming the exact command.
 
 - [x] The view-fixture installed run proves the same inactive-start,
   `onLanguage`, single-hover-first flow as the host-only fixture, or this plan
-  states explicitly that only the host-only fixture proves it.
+  states explicitly that only the host-only fixture proves it. (Closed at the
+  time through the stated-limitation branch; superseded by Round-5 item R5-6,
+  which requires the proof itself with no alternative branch.)
 - [x] The staged-package E2E either consumes pub's actual file selection or the
   plan and script state the rsync approximation explicitly as a superset of
-  the true publish archive.
+  the true publish archive. (Closed at the time through the stated-
+  approximation branch; superseded by Round-5 item R5-7, which requires pub's
+  actual file selection with no alternative branch.)
 
 ### Ledger Truth
 
@@ -183,18 +187,22 @@ focused green naming the exact command.
 - [x] Chronology for this round is corroborated by per-item commits rather
   than a single squash commit.
 
-Items this audit confirmed but does not reopen here: CI has parsed-but-never
-executed the new workflow steps (it runs only on push to `main` or a pull
-request), and the two-consecutive-full-gates exit item remains open above.
-Both are already captured by the unchecked enforcement items.
+Items this audit confirmed but did not reopen in its own round: CI had
+parsed-but-never-executed workflow steps at the time, and the full-gate
+exit item was then still unclosed. Both were addressed later — the exit
+item closed under the Final Execution Evidence, and the CI-execution gap
+became Round-5 item R5-3, whose witness is a green run at the closing
+commit.
 
 ## Third-Audit TDD Ledger
 
 Each entry names the exact command and observed result for red and green.
-Unlike earlier rounds, every red and green landed as its own commit on
-`project-hardening` (85d8141 through 689ae8d and the plan commits after
-them), so this chronology is corroborated by history rather than
-self-attested prose.
+Entries 1, 5, and 6 carry their reds and greens as separate commits on
+`project-hardening` (85d8141 through 689ae8d), so their chronology is
+corroborated by history. Entries 2, 3, and 4 used temporary implementation
+mutations whose reds were observed but never committed, so their
+discrimination evidence remains self-attested prose — a style Round 5
+forbids going forward.
 
 1. **Registered type-literal shapes (closes the reopened Dart-consumer
    item).** Red — `flutter test test/binding_generator_test.dart` failed
@@ -699,8 +707,10 @@ full gates.
    private and protected visibility propagates recursively, and syntax the IR
    cannot represent fails closed. The regenerated pinned inventory has 2,982
    declarations: 2,972 public, 10 non-public, 53 emitted, 7 reviewed
-   exclusions, and 2,912 pending. Its SHA-256 is
-   `4f44ac50114df8c455e63d22737fb21ec2dfa6d6c355835b772e335e72e202c5`.
+   exclusions, and 2,912 pending. Its SHA-256 at recording time was
+   `4f44ac50114df8c455e63d22737fb21ec2dfa6d6c355835b772e335e72e202c5`
+   (historical: the inventory was later regenerated to store canonical
+   type-literal shapes; the file on disk is the current authority).
 3. **Exact official provenance.** Pin tests first accepted individually valid
    checksums from the wrong product provenance and later accepted noncanonical
    source URLs. A later producer audit also found that duplicate or missing
@@ -732,11 +742,14 @@ full gates.
    repository-escaping source receipts and launched VS Code before checking
    them. Dart evidence tests also showed that generator helpers, the CLI,
    lockfiles, project parsing, and the integrity verifier itself were outside
-   the receipt closure. Green — the launcher verifies 43 exact regular-file
-   receipts before launch and again before accepting evidence. The 12,478-byte
-   contract artifact has SHA-256
-   `c41b18537d22cc0d2d007a0cf99dd0ffa4fdaab61030f05114872e21f6de52e6`;
-   artifact, override, and generated coverage agree.
+   the receipt closure. Green — the launcher verified 43 exact regular-file
+   receipts before launch and again before accepting evidence (historical:
+   the closure later grew to 44 when the contract writer joined it). The
+   12,478-byte contract artifact at recording time had SHA-256
+   `c41b18537d22cc0d2d007a0cf99dd0ffa4fdaab61030f05114872e21f6de52e6`
+   (historical: superseded by the mechanically regenerated artifact; the
+   Third-Audit ledger and the artifact file are the current authority);
+   artifact, override, and generated coverage agreed at recording time.
 7. **Fresh runtime and dependency state.** Repository-gate reds found reusable
    VS Code cache markers and an ignored root `.dart_tool/package_config.json`
    trusted by standalone fixture builds. Green — each gate uses a new
