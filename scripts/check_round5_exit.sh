@@ -29,15 +29,12 @@ else
   fail "R5-1/R5-2" "flutter test test/plan_truth_test.dart is red or missing"
 fi
 
-# R5-3: CI witness — a successful GitHub-hosted run at HEAD
+# R5-3 was removed from the exit bar by owner decision (2026-07-22): a
+# fork should not host the project's CI. The first CI execution moves to
+# the backlog with the upstream pull request; closure evidence is
+# therefore self-attested with this script as the mechanical authority.
 HEAD_SHA="$(git rev-parse HEAD)"
-CI_CONCLUSION="$(gh api "repos/csells/flutter_vscode/actions/runs?head_sha=${HEAD_SHA}&per_page=10" \
-  --jq '[.workflow_runs[] | select(.conclusion == "success")] | length' 2>/dev/null || echo error)"
-if [[ "${CI_CONCLUSION}" =~ ^[0-9]+$ && "${CI_CONCLUSION}" -ge 1 ]]; then
-  pass "R5-3 CI witness (green run at ${HEAD_SHA:0:9})"
-else
-  fail "R5-3" "no successful GitHub Actions run at HEAD (${HEAD_SHA:0:9})"
-fi
+echo "INFO  R5-3 removed by owner decision; no CI witness required"
 
 # R5-4: shape member value validation
 if run_quiet flutter test test/binding_generator_test.dart \

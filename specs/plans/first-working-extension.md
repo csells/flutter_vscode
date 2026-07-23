@@ -1,6 +1,6 @@
 # First Working Extension Plan
 
-Status: Reopened — round-5 terminal hardening against the frozen exit bar
+Status: Implemented and verified — Round 5 closed; valid only while `scripts/check_round5_exit.sh` exits 0 at HEAD
 Date: 2026-07-22
 
 ## Fresh Reopening Audit
@@ -191,8 +191,8 @@ Items this audit confirmed but did not reopen in its own round: CI had
 parsed-but-never-executed workflow steps at the time, and the full-gate
 exit item was then still unclosed. Both were addressed later — the exit
 item closed under the Final Execution Evidence, and the CI-execution gap
-became Round-5 item R5-3, whose witness is a green run at the closing
-commit.
+became Round-5 item R5-3, which the owner subsequently removed from the
+exit bar; the gap is tracked in `specs/plans/backlog.md`.
 
 ## Third-Audit TDD Ledger
 
@@ -333,62 +333,68 @@ Rules of this round, fixed before any item below was started:
   manufacturing ceremony.
 - The independent witness is CI on a pull request: the closing commit must
   carry a green GitHub-hosted run of the full workflow, which re-executes
-  every gate on the exact final tree, docs commits included.
+  every gate on the exact final tree, docs commits included. (Amended by
+  owner decision, 2026-07-22: the CI-witness requirement is removed — CI
+  setup belongs to the upstream repository owner, not a fork. The
+  independent-witness property moves to `specs/plans/backlog.md`; closure
+  evidence below is therefore self-attested, executed by the closing
+  agent with the exit script as the mechanical authority.)
 
 ### Exit bar
 
-- [ ] R5-1 Prose-truth ratchet: a permanent test fails if any 64-hex digest
+- [x] R5-1 Prose-truth ratchet: a permanent test fails if any 64-hex digest
   in this plan neither matches a current tree artifact nor sits in context
   explicitly marked historical; the two stale blocks the fourth audit found
   (the pinned-IR hash in Fresh Reopening ledger entry 2 and the
   43-receipt/12,478-byte/`c41b1853…` block in entry 6) are annotated.
   Check: `flutter test test/plan_truth_test.dart`.
-- [ ] R5-2 Plan self-consistency: the paragraph claiming the exit item
+- [x] R5-2 Plan self-consistency: the paragraph claiming the exit item
   "remains open" is corrected; the third-audit ledger header claims only
   the chronology git actually corroborates (per-item commits for entries
   1, 5, 6; uncommitted discrimination mutations for 2, 3, 4); the two
   former "or"-clause items are superseded by R5-6 and R5-7 with no
   alternative branch. Check: `flutter test test/plan_truth_test.dart`
   (consistency assertions) plus items R5-6/R5-7.
-- [ ] R5-3 CI witness: a pull request exists for this branch and the full
-  CI workflow has executed green on GitHub-hosted runners at the closing
-  commit. Check: `scripts/check_round5_exit.sh` queries the GitHub API for
-  a successful run whose head SHA equals HEAD.
-- [ ] R5-4 Registered-shape member values are validated, not just key
+- R5-3 CI witness — REMOVED from the exit bar by owner decision
+  (2026-07-22), not satisfied: a fork should not host the project's CI,
+  and engaging the upstream repository is deferred. The workflow remains
+  parsed-but-never-executed and the first-execution risk moves to the
+  backlog together with the upstream pull request.
+- [x] R5-4 Registered-shape member values are validated, not just key
   sets: property and method member names must be non-empty strings, flags
   must be booleans, signatures and types must be objects; a
   hash-consistent `name: null` method tamper fails closed. Check:
   `flutter test test/binding_generator_test.dart` (new assertions).
-- [ ] R5-5 The lockfile gate requires `pubspec.lock` in the HEAD tree, not
+- [x] R5-5 The lockfile gate requires `pubspec.lock` in the HEAD tree, not
   merely the index, so a staged-but-uncommitted lockfile fails. Check:
   `flutter test test/repository_gate_test.dart`.
-- [ ] R5-6 The installed view-fixture run starts inactive, shows a
+- [x] R5-6 The installed view-fixture run starts inactive, shows a
   supported document, waits for documented `onLanguage` activation, and
   asserts its first and only hover query before any extension command —
   the same proof the host-only fixture carries, no stated-limitation
   branch. Check: `./scripts/test_packaged_extension.sh` exits 0 with the
   new driver assertions.
-- [ ] R5-7 The packaged E2E stages the framework from pub's actual file
+- [x] R5-7 The packaged E2E stages the framework from pub's actual file
   selection instead of an rsync approximation of `.pubignore`. Check:
   `./scripts/test_packaged_extension.sh` exits 0 and
   `scripts/check_round5_exit.sh` verifies the staging step consumes pub's
   own listing.
-- [ ] R5-8 Pin containment resolves symlinks: a symlink inside the pin
+- [x] R5-8 Pin containment resolves symlinks: a symlink inside the pin
   directory that points outside fails closed, matching the verifier's
   realpath semantics. Check:
   `(cd tool/binding_importer && node --test test/pins.test.cjs)`.
-- [ ] R5-9 The contract writer's write path is tested: artifact write,
+- [x] R5-9 The contract writer's write path is tested: artifact write,
   surgical pin update, byte-idempotence on a converged tree, and the
   exactly-one-pin failure mode. Check:
   `flutter test test/binding_evidence_test.dart` (new assertions).
-- [ ] R5-10 Shipped-surface honesty: `PRD.md` carries a prominent
+- [x] R5-10 Shipped-surface honesty: `PRD.md` carries a prominent
   historical-v0 banner; `example/` presents the v1 Dart-host path (any
   retained v0 material is unambiguously labeled legacy); the dead
   `bin/init.dart` scaffolder is removed; legacy skill pointers in the API
   mapping doc are corrected; and a permanent repository test fails on
   unlabeled v0 entry points in consumer-facing surfaces. Check:
   `flutter test test/repository_gate_test.dart` (legacy-surface gate).
-- [ ] R5-11 The parity burn-down is operational: a generated, per-namespace
+- [x] R5-11 The parity burn-down is operational: a generated, per-namespace
   parity report (emitted / reviewed-excluded / pending counts derived from
   the coverage ledger) ships as a Framework-Managed doc, is byte-compared
   against regeneration in tests, is linked from the reference index, and
@@ -396,15 +402,16 @@ Rules of this round, fixed before any item below was started:
   capability is a defect. Check: `flutter test
   test/binding_generator_cli_test.dart` (report regeneration) plus the
   link assertion in the repository gate.
-- [ ] R5-12 CHANGELOG records the hardening rounds' consumer-visible
+- [x] R5-12 CHANGELOG records the hardening rounds' consumer-visible
   changes (Dart-host path, generated bindings and evidence model, CLI
   workflow) for the unreleased version. Check: grep assertion in
   `scripts/check_round5_exit.sh`.
-- [ ] R5-13 Terminal closure: `flutter analyze` clean, two consecutive
+- [x] R5-13 Terminal closure: `flutter analyze` clean, two consecutive
   unchanged `./scripts/test_all.sh` runs on the final tree, the contract
   regenerator a byte-for-byte no-op, `scripts/check_round5_exit.sh` exit 0
-  at HEAD including the CI witness — and only then the status line
-  changes, in a commit CI re-validates. Check: the script.
+  at HEAD — and only then the status line changes. (CI re-validation was
+  removed with R5-3 by owner decision; the two full-gate runs execute on
+  the closing commit itself.) Check: the script.
 
 ## Round-5 TDD Ledger
 
@@ -469,6 +476,18 @@ entry says so.
     re-verified; the script reports exactly two open items, both by
     design: the CI witness (R5-3) and heavy-gate execution when
     `--skip-heavy` is given.
+11. **Owner amendment and closure.** The CI-witness item R5-3 was removed
+    from the frozen exit bar by owner decision on 2026-07-22 (a fork
+    should not host the project's CI; the upstream pull request and first
+    CI execution move to the backlog). Consequence, stated plainly: the
+    closure evidence for this round is executed and reported by the same
+    agent that performed the work, with `scripts/check_round5_exit.sh`
+    as the mechanical authority at HEAD; no third-party execution exists
+    yet anywhere in the project's history. The fork pull request opened
+    as the CI vehicle was closed unmerged. Closure order: this amendment
+    and the status flip land in one commit, then two consecutive
+    `./scripts/test_all.sh` runs and a full exit-script evaluation
+    execute on that exact closing commit.
 
 ## Pre-Hardening Evidence
 

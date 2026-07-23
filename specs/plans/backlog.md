@@ -24,3 +24,15 @@ their own machine checks; nothing in this file blocks a round's closure.
   consistent shape document is accepted (bounded: child cross-checks still
   bind content).
 - No real extension exists outside the repository fixtures.
+
+## From the Round-5 owner amendment (2026-07-22)
+
+- CI has never executed in the project's history. The hardened workflow
+  is parsed-but-unexecuted YAML; its first run is an obvious failure
+  surface (Flutter setup, Docker-in-runner, VS Code download). The
+  correct home is the upstream repository: open the pull request from
+  `csells:project-hardening` to `SlowGen/flutter_vscode` (whose Actions
+  are already enabled) when the owner chooses to engage upstream, and
+  restore an independent-witness requirement at that point. Until then,
+  every gate execution ever recorded was self-attested by the agent or
+  owner running it.
