@@ -245,6 +245,27 @@ void main() {
     });
   });
 
+  test('V-4 the live smoke covers every API namespace family', () {
+    final namespaces = [
+      for (final declaration in (inventory['declarations']! as List<Object?>)
+          .cast<Map<Object?, Object?>>())
+        if (declaration['kind'] == 'namespace')
+          declaration['name']! as String,
+    ];
+    expect(namespaces, isNotEmpty);
+    final harness = File(
+      'test/fixtures/host_extension/test/run.cjs',
+    ).readAsStringSync();
+    for (final namespace in namespaces) {
+      expect(
+        harness,
+        contains("'$namespace'"),
+        reason: 'the real-host smoke must exercise a representative of '
+            'the $namespace family',
+      );
+    }
+  });
+
   test('P-5 unmapped constructs fail generation with an actionable error',
       () {
     final synthetic = <String, Object?>{

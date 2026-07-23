@@ -129,6 +129,25 @@ async function run() {
   assert.equal(paritySmoke.uriToString, 'file:///parity/smoke.json');
   assert.ok(paritySmoke.commandCount > 10, 'getCommands round-trip empty');
   assert.equal(paritySmoke.eventSubscribed, true);
+  const families = paritySmoke.families;
+  assert.ok(families, 'per-family live report missing');
+  for (const family of [
+    'authentication', 'chat', 'commands', 'comments', 'debug', 'env',
+    'extensions', 'l10n', 'languages', 'lm', 'notebooks', 'scm', 'tasks',
+    'tests', 'window', 'workspace',
+  ]) {
+    assert.equal(
+      families[family],
+      true,
+      `API family not exercised live: ${family}`,
+    );
+  }
+  assert.equal(paritySmoke.eventEmitterRoundTrip, 'parity-event');
+  assert.equal(paritySmoke.cancellationFlipped, true);
+  assert.equal(paritySmoke.workspaceEditApplied, true);
+  assert.equal(paritySmoke.clipboardRoundTrip, 'parity-clip');
+  assert.equal(paritySmoke.narrowedPosition, true);
+  assert.equal(paritySmoke.stableLiteralWith, 9);
   const parityDocument = await vscode.workspace.openTextDocument({
     language: 'json',
     content: '{"parity": true}',
