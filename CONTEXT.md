@@ -70,11 +70,26 @@ Parity Layer, Idiomatic Facade, host interop, and coverage ledger.
 _Avoid_: Translation model, inference step
 
 **Total Mapping Rule**:
-A judgment-free, deterministic rule that maps one class of TypeScript
-construct to Dart interop code for every occurrence in the API Parity
-Baseline; a construct with no Total Mapping Rule fails generation rather
-than being approximated.
+A judgment-free, deterministic rule that maps one Construct Class to Dart
+interop code for every occurrence in the API Parity Baseline; a construct
+with no Total Mapping Rule fails generation rather than being
+approximated.
 _Avoid_: Heuristic, best-effort mapping, special case
+
+**Construct Class**:
+One category of TypeScript construct that a Total Mapping Rule consumes,
+such as tuples, intersection types, index signatures, overload sets, rest
+parameters, string-literal unions, call signatures, or anonymous object
+shapes. Live coverage is measured on two axes: every API family and every
+Construct Class must have an executed representative in a real Extension
+Host.
+_Avoid_: Rule family, shape, edge case
+
+**API Family**:
+One VS Code namespace (such as `window`, `workspace`, or `languages`)
+together with the capabilities it groups; the unit of family-level live
+coverage.
+_Avoid_: Module, area, category
 
 **Precision Helper**:
 A generated Dart member that restores type precision over an erased interop
