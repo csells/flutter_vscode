@@ -72,7 +72,7 @@
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "42d3eef881ef61c63144e71ea3ac64c0215656dfc3c8dfb85f5407f5e429d01b"
+      "sha256": "65037868128c14a1f579ddbf604e8f9568b5135b6080380b5aea37b633878133"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",

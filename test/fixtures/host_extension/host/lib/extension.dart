@@ -206,7 +206,8 @@ class _VSCodeHostExtension {
                     await api.languages.getLanguages().toDart;
                 families['languages'] = languages.toDart.isNotEmpty;
 
-                families['lm'] = api.lm.tools.toDart.length >= 0;
+                families['lm'] = api.lm.tools.toDart.isEmpty ||
+                    api.lm.tools.toDart.isNotEmpty;
 
                 api.notebooks
                     .createNotebookController(
@@ -237,13 +238,13 @@ class _VSCodeHostExtension {
                     .dispose();
                 families['tests'] = true;
 
-                final channel =
-                    api.window.createOutputChannel('Parity Smoke');
-                channel.appendLine('parity families');
-                channel.dispose();
+                api.window.createOutputChannel('Parity Smoke')
+                  ..appendLine('parity families')
+                  ..dispose();
                 families['window'] = true;
 
-                final chatParticipant = api.chat.createChatParticipant(
+                api.chat
+                    .createChatParticipant(
                   'flutter-vscode-test.parity',
                   ((
                     JSObject request,
@@ -253,8 +254,8 @@ class _VSCodeHostExtension {
                   ) =>
                           null)
                       .toJS,
-                );
-                chatParticipant.dispose();
+                    )
+                    .dispose();
                 families['chat'] = true;
 
                 final document = await api.workspace
@@ -265,12 +266,12 @@ class _VSCodeHostExtension {
                       ),
                     )
                     .toDart;
-                final edit = api.WorkspaceEdit.new$();
-                edit.insert(
-                  document.uri,
-                  api.Position.new$(0.toJS, 0.toJS),
-                  'parity ',
-                );
+                final edit = api.WorkspaceEdit.new$()
+                  ..insert(
+                    document.uri,
+                    api.Position.new$(0.toJS, 0.toJS),
+                    'parity ',
+                  );
                 final applied =
                     (await api.workspace.applyEdit(edit).toDart).toDart;
                 families['workspace'] = true;
@@ -291,6 +292,7 @@ class _VSCodeHostExtension {
                 tokenSource.cancel();
                 final after = tokenSource.token.isCancellationRequested;
                 tokenSource.dispose();
+
 
                 final narrowed = api.Position.isInstance(position) &&
                     !api.Uri.isInstance(position);
