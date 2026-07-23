@@ -172,7 +172,8 @@ void writeHostContractArtifact(Directory repositoryRoot) {
   final root = repositoryRoot.path;
   final artifact = buildHostContractArtifact(repositoryRoot);
   File('$root/tool/bindings/contracts/checkpoint4-extension-host.json')
-      .writeAsStringSync(artifact);
+    ..parent.createSync(recursive: true)
+    ..writeAsStringSync(artifact);
 
   final overridesFile = File('$root/tool/bindings/overrides/vscode-1.129.1.json');
   final overridesText = overridesFile.readAsStringSync();

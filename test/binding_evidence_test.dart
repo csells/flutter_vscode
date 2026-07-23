@@ -94,6 +94,108 @@ void main() {
     );
   });
 
+  test('the contract writer regenerates a copied tree byte-identically', () {
+    final temporary = Directory.systemTemp.createTempSync(
+      'flutter_vscode_contract_writer_',
+    );
+    addTearDown(() => temporary.deleteSync(recursive: true));
+    const overridesPath = 'tool/bindings/overrides/vscode-1.129.1.json';
+    const artifactPath = 'tool/bindings/contracts/checkpoint4-extension-host.json';
+    for (final relative in [
+      ...contract_writer.canonicalHostContractSourcePaths.values,
+      overridesPath,
+    ]) {
+      final destination = File('${temporary.path}/$relative');
+      destination.parent.createSync(recursive: true);
+      File(relative).copySync(destination.path);
+    }
+
+    contract_writer.writeHostContractArtifact(temporary);
+
+    final written = File('${temporary.path}/$artifactPath');
+    expect(written.existsSync(), isTrue);
+    expect(
+      written.readAsStringSync(),
+      contract_writer.buildHostContractArtifact(temporary),
+      reason: 'the written artifact must equal mechanical regeneration',
+    );
+    final writtenOverrides =
+        File('${temporary.path}/$overridesPath').readAsStringSync();
+    expect(
+      writtenOverrides,
+      contains(sha256.convert(written.readAsBytesSync()).toString()),
+      reason: 'the overrides pin must carry the written artifact digest',
+    );
+    expect(
+      writtenOverrides.replaceFirst(
+        RegExp('"artifactSha256": "[0-9a-f]{64}"'),
+        '"artifactSha256": "PIN"',
+      ),
+      File(overridesPath).readAsStringSync().replaceFirst(
+            RegExp('"artifactSha256": "[0-9a-f]{64}"'),
+            '"artifactSha256": "PIN"',
+          ),
+      reason: 'the surgical pin update must change nothing else',
+    );
+
+    final artifactBytes = written.readAsBytesSync();
+    contract_writer.writeHostContractArtifact(temporary);
+    expect(
+      written.readAsBytesSync(),
+      artifactBytes,
+      reason: 'a second write on a converged copy must be byte-identical',
+    );
+    expect(
+      File('${temporary.path}/$overridesPath').readAsStringSync(),
+      writtenOverrides,
+      reason: 'a second write must not move the overrides pin',
+    );
+  });
+
+  test('the contract writer refuses ambiguous overrides pins', () {
+    final temporary = Directory.systemTemp.createTempSync(
+      'flutter_vscode_contract_writer_pins_',
+    );
+    addTearDown(() => temporary.deleteSync(recursive: true));
+    const overridesPath = 'tool/bindings/overrides/vscode-1.129.1.json';
+    for (final relative in [
+      ...contract_writer.canonicalHostContractSourcePaths.values,
+      overridesPath,
+    ]) {
+      final destination = File('${temporary.path}/$relative');
+      destination.parent.createSync(recursive: true);
+      File(relative).copySync(destination.path);
+    }
+    final overridesFile = File('${temporary.path}/$overridesPath');
+    final original = overridesFile.readAsStringSync();
+    final decoded =
+        (jsonDecode(original) as Map<Object?, Object?>).cast<String, Object?>();
+    final contracts = (decoded['hostContracts']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    contracts['secondExtensionHost'] =
+        jsonDecode(jsonEncode(contracts['checkpoint4ExtensionHost']));
+    overridesFile.writeAsStringSync(
+      '${const JsonEncoder.withIndent('  ').convert(decoded)}\n',
+    );
+    expect(
+      () => contract_writer.writeHostContractArtifact(temporary),
+      throwsStateError,
+      reason: 'more than one pin-shaped value must refuse the surgical edit',
+    );
+
+    overridesFile.writeAsStringSync(
+      original.replaceFirst(
+        RegExp('"artifactSha256": "[0-9a-f]{64}"'),
+        '"artifactSha256": "not-a-digest"',
+      ),
+    );
+    expect(
+      () => contract_writer.writeHostContractArtifact(temporary),
+      throwsStateError,
+      reason: 'zero pin-shaped values must refuse the surgical edit',
+    );
+  });
+
   test('every emitted binding cites an executable real-host contract', () {
     final overrides = _readJson(
       'tool/bindings/overrides/vscode-1.129.1.json',

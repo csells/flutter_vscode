@@ -24,7 +24,7 @@
     },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "bfd532ec85dc1faf7bd04d31808c7dfb2afacf3fbe4a8d3d8be66fc24c9d6df1"
+      "sha256": "2210011aa511efcdb33dd351c06ae3fc8b1a50a5b5bb95f401a8460a58252416"
     },
     "bindingWriter": {
       "path": "tool/binding_generator/writer.dart",
@@ -60,7 +60,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "0ba437791a0ccc9b10defd1b4add93373e33141a0dceb0b79cbd6c06479d7557"
+      "sha256": "308af0c87a58928898eff11cbee55a6ef1dfb22829b03d9a4bab4e1f96d77308"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -68,7 +68,7 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "d4d2480970305f21823e5bd2dd53d2872d0f2b7f323f6ab996b86b2153eed22d"
+      "sha256": "aa3d8933429560b79cd35529dc76992a93a0ce2ea5d1f6cde844d458b695ba15"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
