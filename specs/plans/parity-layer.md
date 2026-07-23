@@ -92,3 +92,20 @@ Status update: all exit-bar items closed; see the ledger.
    round-trip, an Event subscription, and a hover provider created
    entirely from literal factories, registered, exercised, and disposed
    against live VS Code.
+4. **Real-host execution proof.** Red — `./scripts/test_host_extension.sh`
+   exited 1 with `command 'flutter-vscode.host-test.paritySmoke' not
+   found` (the committed red; full log captured). Greens required three
+   honest harness corrections, each observed in the live gate: the
+   rollback expectation grew from six to eight registrations, the hover
+   assertions had to distinguish the parity provider from the facade's
+   own json provider by content (the parity provider itself worked on
+   first contact), and the smoke's document open had to run after the
+   event-unsubscribe accounting. Final green — the gate exits 0 with all
+   twelve sections passing: the parity layer's version read, negative
+   enum values, `Position.new$` plus `translate`, `Uri.file` and
+   `toString$`, an awaited `getCommands` JSPromise round-trip, an Event
+   subscription and disposal, and a hover provider constructed from
+   `lit$` object-literal factories serving real hovers on live VS Code
+   documents and disposing on command. `flutter_vscode build` now emits
+   the layer into every Extension Project as
+   `vscode_parity_layer.g.dart`, and the receipt closure covers it.
