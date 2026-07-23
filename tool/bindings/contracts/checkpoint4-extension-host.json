@@ -72,7 +72,7 @@
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "635af43e950ce5fc04a5047d21a6990c33933b87bdf6e4a480e136ec1acf185b"
+      "sha256": "948ed0715d05e29cd8e04f3d45995dedc424125a6757915ee3265e2e19130050"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -84,11 +84,11 @@
     },
     "fixtureManifest": {
       "path": "test/fixtures/host_extension/package.json",
-      "sha256": "426c80823badc6ac7daf10a2dcce57c323e7b7e0d79076a6bb481e863fb3d6c5"
+      "sha256": "5d1a64dcba46ec18e5d89c3af6c6f5c9d9e29801acfcd2610123e2028530091d"
     },
     "fixtureProject": {
       "path": "test/fixtures/host_extension/extension.json",
-      "sha256": "ee6af14eee9b01017e825d9ffab3dc72d6165ce92ac743cb5aee5bd6f8bbe0ad"
+      "sha256": "2786079b102808640adaa3425c3fe969a65ffe5ac9c5fb9651179b5fc08f47fe"
     },
     "fixtureSharedContract": {
       "path": "test/fixtures/host_extension/shared/lib/fixture_view_contract.dart",

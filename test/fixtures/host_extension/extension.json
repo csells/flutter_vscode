@@ -6,7 +6,7 @@
   "description": "Internal fixture for the Dart Extension Host walking skeleton.",
   "version": "0.0.0",
   "publisher": "flutter-vscode-test",
-  "activationEvents": ["onLanguage:plaintext"],
+  "activationEvents": ["onLanguage:json"],
   "commands": [
     {
       "command": "flutter-vscode.host-test.ping",

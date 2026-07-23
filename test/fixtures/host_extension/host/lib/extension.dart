@@ -179,6 +179,12 @@ class _VSCodeHostExtension {
           final providerRegistration = vscode.languageApi
               .registerHoverProviderForString('plaintext'.toJS, provider);
           context.addSubscription(providerRegistration);
+          // The packaged driver activates through a JSON document because a
+          // fresh harness window may already hold an untitled plaintext
+          // editor, which would activate onLanguage:plaintext at startup.
+          final jsonProviderRegistration = vscode.languageApi
+              .registerHoverProviderForString('json'.toJS, provider);
+          context.addSubscription(jsonProviderRegistration);
 
           final onDidOpenDocument = ((TextDocument document) {
             _openEventCount += 1;

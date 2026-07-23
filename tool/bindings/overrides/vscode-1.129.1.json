@@ -8,7 +8,7 @@
     "checkpoint4ExtensionHost": {
       "boundary": "vscodeExtensionHost",
       "artifact": "tool/bindings/contracts/checkpoint4-extension-host.json",
-      "artifactSha256": "d6b09fdb1fdb5a0c56c6bcac9dc27878a3708d8b916ae8fbef34c563643e220c"
+      "artifactSha256": "305d2f75697a9bc40f96693ffb10a19fe1e9bbbce61b3eed1ae1c06f02d95749"
     }
   },
   "targets": [

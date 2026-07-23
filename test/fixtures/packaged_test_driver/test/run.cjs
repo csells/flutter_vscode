@@ -47,7 +47,7 @@ async function run() {
     false,
     'The extension activated before its first language document opened',
   );
-  const activationLanguage = viewCommandId ? 'plaintext' : 'json';
+  const activationLanguage = 'json';
   assert.ok(
     extension.packageJSON.activationEvents.includes(
       `onLanguage:${activationLanguage}`,

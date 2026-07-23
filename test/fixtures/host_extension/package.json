@@ -9,7 +9,7 @@
   },
   "main": "./out/bootstrap.cjs",
   "activationEvents": [
-    "onLanguage:plaintext"
+    "onLanguage:json"
   ],
   "contributes": {
     "commands": [
