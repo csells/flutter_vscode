@@ -1648,6 +1648,25 @@ Map<String, Object?> _registeredTypeLiteralShape(
         '$path.shape.members[$index] has an unsupported member schema.',
       );
     }
+    final kind = member['kind']! as String;
+    final name = member['name'];
+    final namedMember = kind == 'property' || kind == 'method';
+    final validValues = (!namedMember || (name is String && name.isNotEmpty)) &&
+        (!actualKeys.contains('optional') || member['optional'] is bool) &&
+        (!actualKeys.contains('readonly') || member['readonly'] is bool) &&
+        (!actualKeys.contains('static') || member['static'] is bool) &&
+        (!actualKeys.contains('abstract') || member['abstract'] is bool) &&
+        (!actualKeys.contains('signature') ||
+            member['signature'] is Map<Object?, Object?>) &&
+        (!actualKeys.contains('type') ||
+            member['type'] is Map<Object?, Object?> ||
+            member['type'] is List<Object?>);
+    if (!validValues) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_GENERATOR_INPUT',
+        '$path.shape.members[$index] has an unsupported member schema.',
+      );
+    }
   }
   return shape.cast<String, Object?>();
 }
