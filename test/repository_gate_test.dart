@@ -71,7 +71,13 @@ void main() {
 
     expect(
       packagedGate,
-      contains(r'--exclude-from="${REPO_ROOT}/.pubignore"'),
+      contains('dart tool/pub_archive_list.dart'),
+      reason: "staging must consume pub's actual archive file selection",
+    );
+    expect(
+      packagedGate,
+      isNot(contains('rsync')),
+      reason: 'no rsync approximation of the publish archive may remain',
     );
     expect(
       packagedGate,

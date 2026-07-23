@@ -84,11 +84,11 @@
     },
     "fixtureManifest": {
       "path": "test/fixtures/host_extension/package.json",
-      "sha256": "bfd851e726a381b18ed9db487cb8225e2d47c5d11c7d868329d9fbcd049ad99d"
+      "sha256": "426c80823badc6ac7daf10a2dcce57c323e7b7e0d79076a6bb481e863fb3d6c5"
     },
     "fixtureProject": {
       "path": "test/fixtures/host_extension/extension.json",
-      "sha256": "7ba9ea5a962cd270d3572fff70375d9226b3f1713d70f19e101caabdebd5fbb8"
+      "sha256": "ee6af14eee9b01017e825d9ffab3dc72d6165ce92ac743cb5aee5bd6f8bbe0ad"
     },
     "fixtureSharedContract": {
       "path": "test/fixtures/host_extension/shared/lib/fixture_view_contract.dart",

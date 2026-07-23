@@ -268,10 +268,13 @@ forbids going forward.
    tool/binding_generator/generate.dart` (walking slice),
    `scripts/build_host_fixture.sh` (CLI-owned fixture protocol), and the
    new `dart tool/binding_generator/generate.dart --contract .`
-   regenerator converge the tree: the 12,646-byte artifact has SHA-256
-   `4dabc9d0df5d15f662be1f6d57bd326131b055d455a2536bdbda43175d837c62`,
-   the overrides pin and generated coverage carry the same value, and all
-   44 receipts — the contract writer now receipts itself — match tree
+   regenerator converge the tree: at recording time the 12,646-byte
+   artifact had SHA-256
+   `4dabc9d0df5d15f662be1f6d57bd326131b055d455a2536bdbda43175d837c62`
+   (historical: the artifact regenerates whenever receipted sources
+   change; the file and its pins are the current authority), the
+   overrides pin and generated coverage carried the same value, and all
+   44 receipts — the contract writer now receipts itself — matched tree
    bytes. The combined generator, generator CLI, evidence, protocol,
    native transport, and repository command passes 279/279 with no skips;
    `node --test tool/extension_host_test/bootstrap_lifecycle.test.cjs

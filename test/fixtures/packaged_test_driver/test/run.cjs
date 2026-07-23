@@ -42,64 +42,41 @@ async function run() {
     true,
     `Expected ${extension.extensionPath} to be installed inside ${extensionsDir}`,
   );
-  if (!viewCommandId) {
-    assert.equal(
-      extension.isActive,
-      false,
-      'The scaffold activated before its first language document opened',
-    );
-    assert.ok(
-      extension.packageJSON.activationEvents.includes('onLanguage:json'),
-      'The installed extension does not declare its language activation event',
-    );
-  } else {
-    const result = await vscode.commands.executeCommand(commandId);
-    assert.equal(result, commandResult);
-    assert.equal(
-      extension.isActive,
-      true,
-      'Invoking the contributed command did not activate the target',
-    );
-  }
+  assert.equal(
+    extension.isActive,
+    false,
+    'The extension activated before its first language document opened',
+  );
+  const activationLanguage = viewCommandId ? 'plaintext' : 'json';
+  assert.ok(
+    extension.packageJSON.activationEvents.includes(
+      `onLanguage:${activationLanguage}`,
+    ),
+    'The installed extension does not declare its language activation event',
+  );
 
   console.log('[packaged-host-test] checking hover-first auto-activation');
   const document = await vscode.workspace.openTextDocument({
-    language: viewCommandId ? 'plaintext' : 'json',
+    language: activationLanguage,
     content: 'hover target',
   });
   const position = new vscode.Position(0, 2);
-  let hovers;
-  if (!viewCommandId) {
-    assert.equal(
-      extension.isActive,
-      false,
-      'The target activated before its supported document was shown',
-    );
-    await vscode.window.showTextDocument(document);
-    await waitFor(
-      () => extension.isActive,
-      'Opening a supported document did not auto-activate the target',
-    );
-    hovers = await vscode.commands.executeCommand(
-      'vscode.executeHoverProvider',
-      document.uri,
-      position,
-    );
-  } else {
-    hovers = await vscode.commands.executeCommand(
-      'vscode.executeHoverProvider',
-      document.uri,
-      position,
-    );
-  }
+  assert.equal(
+    extension.isActive,
+    false,
+    'The target activated before its supported document was shown',
+  );
+  await vscode.window.showTextDocument(document);
+  await waitFor(
+    () => extension.isActive,
+    'Opening a supported document did not auto-activate the target',
+  );
+  const hovers = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    document.uri,
+    position,
+  );
 
-  if (!viewCommandId) {
-    assert.equal(
-      extension.isActive,
-      true,
-      'Opening a supported document did not auto-activate the target',
-    );
-  }
   assert.equal(hovers.length, 1);
   assert.ok(hovers[0] instanceof vscode.Hover);
   assert.equal(hovers[0].contents.length, 1);
@@ -107,10 +84,8 @@ async function run() {
   assert.equal(hovers[0].contents[0].value, 'Hover from Dart at 0:2');
   assert.deepEqual(hovers[0].range, new vscode.Range(0, 0, 0, 5));
 
-  if (!viewCommandId) {
-    const result = await vscode.commands.executeCommand(commandId);
-    assert.equal(result, commandResult);
-  }
+  const result = await vscode.commands.executeCommand(commandId);
+  assert.equal(result, commandResult);
 
   if (viewCommandId) {
     console.log('[packaged-host-test] checking packaged Flutter View v1');

@@ -22,23 +22,26 @@ mkdir -p "${PACKAGE_COPY}"
 mkdir -p "${WORKSPACE}"
 mkdir -p "${VIEW_FIXTURE_ROOT}"
 mkdir -p "${CACHE_ROOT}"
-# Stated approximation: rsync with .pubignore excludes is a SUPERSET of the
-# archive `dart pub publish` would build. Pub additionally applies nested
-# .gitignore files, its built-in exclusions, and gitignore pattern semantics,
-# so a file pub drops could keep this gate green. CI's `dart pub publish
-# --dry-run` validates the real archive contents; nothing yet executes the
-# CLI from pub's actual file selection.
-rsync -a \
-  --exclude=.git/ \
-  --exclude-from="${REPO_ROOT}/.pubignore" \
-  "${REPO_ROOT}/" "${PACKAGE_COPY}/"
-rsync -a \
-  --exclude=.dart_tool/ \
-  --exclude=build/ \
-  --exclude=node_modules/ \
-  --exclude=out/ \
-  "${REPO_ROOT}/test/fixtures/host_extension/" \
-  "${VIEW_FIXTURE_ROOT}/"
+# Stage the framework from pub's actual archive selection: the file list
+# comes from `dart pub publish --dry-run` itself, so the installed E2E
+# exercises exactly what a published package would contain.
+PACKAGE_LIST="${TEMP_ROOT}/pub-archive-files.txt"
+(cd "${REPO_ROOT}" && dart tool/pub_archive_list.dart) > "${PACKAGE_LIST}"
+grep -qx "pubspec.yaml" "${PACKAGE_LIST}"
+grep -qx "bin/flutter_vscode.dart" "${PACKAGE_LIST}"
+while IFS= read -r archived_file; do
+  mkdir -p "${PACKAGE_COPY}/$(dirname "${archived_file}")"
+  cp "${REPO_ROOT}/${archived_file}" "${PACKAGE_COPY}/${archived_file}"
+done < "${PACKAGE_LIST}"
+(
+  cd "${REPO_ROOT}/test/fixtures/host_extension"
+  tar cf - \
+    --exclude=.dart_tool \
+    --exclude=build \
+    --exclude=node_modules \
+    --exclude=out \
+    .
+) | (cd "${VIEW_FIXTURE_ROOT}" && tar xf -)
 
 test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
 test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"

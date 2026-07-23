@@ -8,7 +8,9 @@
     "vscode": "1.129.1"
   },
   "main": "./out/bootstrap.cjs",
-  "activationEvents": [],
+  "activationEvents": [
+    "onLanguage:plaintext"
+  ],
   "contributes": {
     "commands": [
       {
