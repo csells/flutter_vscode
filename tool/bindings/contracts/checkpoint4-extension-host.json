@@ -144,7 +144,7 @@
     },
     "generatedParityLayer": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity_layer.g.dart",
-      "sha256": "05af46627c2b098521a26cebc8b2a794740b0626cf664dcfa77510231d14264e"
+      "sha256": "18c042a3349f722e4d140a2ab1b9506f4c518047c3dfb0c73f47e79ca0744e7f"
     },
     "generatedRuntime": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",

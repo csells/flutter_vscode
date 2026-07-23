@@ -114,6 +114,98 @@ typedef TreeItemCheckboxState = int;
 typedef TreeItemCollapsibleState = int;
 typedef UIKind = int;
 typedef ViewColumn = int;
+typedef NotebookCellOutputConstructor$1 = JSAnon_90b1eaa702e4;
+typedef AuthenticationGetSession$1 = JSAnon_af97be86c0c7;
+typedef AuthenticationGetSession$2 = JSAnon_cdd103013c05;
+typedef L10nT$1 = JSAnon_190a3fc62b24;
+typedef WindowCreateOutputChannel$1 = JSAnon_0937a16a6355;
+typedef WindowCreateWebviewPanel$1 = JSAnon_fc85cbbeff88;
+typedef WindowRegisterCustomEditorProvider$1 = JSAnon_544a305acd79;
+typedef WindowRegisterWebviewViewProvider$1 = JSAnon_202de06b6fac;
+typedef WindowShowQuickPick$1 = JSAnon_997f9ce7b5db;
+typedef WindowShowQuickPick$2 = JSAnon_997f9ce7b5db;
+typedef WindowWithProgress$1 = JSAnon_879fda8037df;
+typedef WorkspaceDecode$1 = JSAnon_bce51fc74910;
+typedef WorkspaceDecode$2 = JSAnon_5f13b3458117;
+typedef WorkspaceEncode$1 = JSAnon_5f13b3458117;
+typedef WorkspaceEncode$2 = JSAnon_bce51fc74910;
+typedef WorkspaceOpenTextDocument$1 = JSAnon_d8666bad7f07;
+typedef WorkspaceOpenTextDocument$2 = JSAnon_46c65550b867;
+typedef WorkspaceOpenTextDocument$3 = JSAnon_d8666bad7f07;
+typedef WorkspaceRegisterFileSystemProvider$1 = JSAnon_3b8881df895e;
+typedef WorkspaceUpdateWorkspaceFolders$1 = JSAnon_ca4121a2aaf6;
+typedef DisposableFrom$1 = JSAnon_0a93578cd4a3;
+typedef DocumentColorProviderProvideColorPresentations$1 = JSAnon_e0c29a989921;
+typedef FileSystemCopy$1 = JSAnon_b2623fd46fde;
+typedef FileSystemDelete$1 = JSAnon_576b1a88ebc3;
+typedef FileSystemRename$1 = JSAnon_b2623fd46fde;
+typedef FileSystemProviderCopy$1 = JSAnon_f4ceea3f5f6f;
+typedef FileSystemProviderDelete$1 = JSAnon_4ae6d0aa1bdf;
+typedef FileSystemProviderRename$1 = JSAnon_f4ceea3f5f6f;
+typedef FileSystemProviderWatch$1 = JSAnon_ce282821cb2a;
+typedef FileSystemProviderWriteFile$1 = JSAnon_95947812f514;
+typedef NotebookEditUpdateCellMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookEditUpdateNotebookMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookRangeWith$1 = JSAnon_d702e8e12ae8;
+typedef PositionTranslate$1 = JSAnon_5687bad38499;
+typedef PositionWith$1 = JSAnon_91ec0d04130c;
+typedef RangeWith$1 = JSAnon_471b06108965;
+typedef RenameProviderPrepareRename$1 = JSAnon_834452ade499;
+typedef TextEditorEdit$1 = JSAnon_c32f2c0618c1;
+typedef TextEditorInsertSnippet$1 = JSAnon_d6158a9f7600;
+typedef TreeViewReveal$1 = JSAnon_49025246bc6f;
+typedef UriFrom$1 = JSAnon_5503263f5517;
+typedef UriWith$1 = JSAnon_67772e4ecc2b;
+typedef WorkspaceConfigurationInspect$1 = JSAnon_406956b7ed59;
+typedef WorkspaceEditCreateFile$1 = JSAnon_05617a7b4547;
+typedef WorkspaceEditDeleteFile$1 = JSAnon_6f600fe6d695;
+typedef WorkspaceEditRenameFile$1 = JSAnon_ed2698223f98;
+typedef CodeActionDisabled$1 = JSAnon_4caec6211e15;
+typedef CompletionItemRange$1 = JSAnon_f7c793236eba;
+typedef DiagnosticCode$1 = JSAnon_588b120e4aae;
+typedef MarkdownStringIsTrusted$1 = JSAnon_8ecf0c868e89;
+typedef NotebookCellDataMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookCellOutputMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookDataMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookEditNewCellMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookEditNewNotebookMetadata$1 = JSAnon_90b1eaa702e4;
+typedef TreeItemCheckboxState$1 = JSAnon_ef7f0ac74d5c;
+typedef ChatResultMetadata$1 = JSAnon_cd1da709a211;
+typedef CodeActionProviderMetadataDocumentation$1 = JSAnon_f698f56281f5;
+typedef DebugAdapterExecutableOptionsEnv$1 = JSAnon_c77c8585355a;
+typedef ExtensionContextGlobalState$1 = JSAnon_185648dab94d;
+typedef ExtensionContextSubscriptions$1 = JSAnon_ffa2e03c40a2;
+typedef FileRenameEventFiles$1 = JSAnon_7c30c4713d83;
+typedef FileWillRenameEventFiles$1 = JSAnon_7c30c4713d83;
+typedef LanguageConfigurationCharacterPairSupport$1 = JSAnon_3800d8dfe13a;
+typedef LanguageConfigurationElectricCharacterSupport$1 = JSAnon_7e699a4ba0b6;
+typedef LanguageModelChatRequestOptionsModelOptions$1 = JSAnon_90b1eaa702e4;
+typedef NotebookCellMetadata$1 = JSAnon_cd1da709a211;
+typedef NotebookCellExecutionSummaryTiming$1 = JSAnon_2ef6a897fc39;
+typedef NotebookControllerOnDidChangeSelectedNotebooks$1 = JSAnon_a6a068851ba0;
+typedef NotebookDocumentMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookDocumentCellChangeMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookDocumentChangeEventMetadata$1 = JSAnon_90b1eaa702e4;
+typedef NotebookDocumentContentOptionsTransientCellMetadata$1 = JSAnon_8493e550322c;
+typedef NotebookDocumentContentOptionsTransientDocumentMetadata$1 = JSAnon_8493e550322c;
+typedef NotebookRendererMessagingOnDidReceiveMessage$1 = JSAnon_68b4d8c85bba;
+typedef OpenDialogOptionsFilters$1 = JSAnon_04cd047eb59c;
+typedef ProcessExecutionOptionsEnv$1 = JSAnon_c77c8585355a;
+typedef ProgressOptionsLocation$1 = JSAnon_d424d3df46f9;
+typedef ProvideLanguageModelChatResponseOptionsModelOptions$1 = JSAnon_cd1da709a211;
+typedef QuickInputButtonToggle$1 = JSAnon_dc1f16364c4a;
+typedef SaveDialogOptionsFilters$1 = JSAnon_04cd047eb59c;
+typedef ShellExecutionOptionsEnv$1 = JSAnon_c77c8585355a;
+typedef ShellQuotingOptionsEscape$1 = JSAnon_1507e616ac62;
+typedef TerminalOptionsEnv$1 = JSAnon_5cec6a3f14bb;
+typedef WindowRegisterWebviewViewProviderWebviewOptions$1 = JSAnon_337f2402bc9d;
+typedef LanguageConfigurationCharacterPairSupportAutoClosingPairs$1 = JSAnon_393d84ef6035;
+typedef LanguageConfigurationElectricCharacterSupportDocComment$1 = JSAnon_e6d00e2e01a5;
+typedef ConfigurationScope$1 = JSAnon_61f1b291a4f5;
+typedef IconPath$1 = JSAnon_a5a3481054d2;
+typedef MarkedString$1 = JSAnon_a905fa8af122;
+typedef L10nBundle$1 = JSAnon_c77c8585355a;
+
 extension type JSTuple_171b5687ecdc(JSArray<JSAny?> _self) implements JSObject {
   JSString get $1 => _self[0] as JSString;
   JSNumber get $2 => _self[1] as JSNumber;
@@ -4238,6 +4330,21 @@ extension type BranchCoverage(JSObject _self) implements JSObject {
 }
 
 extension type BranchCoverageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  BranchCoverage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of BranchCoverage');
+    }
+    return BranchCoverage(value! as JSObject);
+  }
   BranchCoverage new$(JSAny executed, [JSObject? location, JSString? label]) {
     final args$ = <JSAny?>[executed, location, label];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as BranchCoverage;
@@ -4253,6 +4360,21 @@ extension type Breakpoint(JSObject _self) implements JSObject {
 }
 
 extension type BreakpointCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Breakpoint cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Breakpoint');
+    }
+    return Breakpoint(value! as JSObject);
+  }
   Breakpoint new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as Breakpoint;
@@ -4266,6 +4388,21 @@ extension type CallHierarchyIncomingCall(JSObject _self) implements JSObject {
 }
 
 extension type CallHierarchyIncomingCallCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CallHierarchyIncomingCall cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CallHierarchyIncomingCall');
+    }
+    return CallHierarchyIncomingCall(value! as JSObject);
+  }
   CallHierarchyIncomingCall new$(CallHierarchyItem item, JSArray<Range> fromRanges) {
     final args$ = <JSAny?>[item, fromRanges];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as CallHierarchyIncomingCall;
@@ -4290,6 +4427,21 @@ extension type CallHierarchyItem(JSObject _self) implements JSObject {
 }
 
 extension type CallHierarchyItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CallHierarchyItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CallHierarchyItem');
+    }
+    return CallHierarchyItem(value! as JSObject);
+  }
   CallHierarchyItem new$(JSNumber kind, JSString name, JSString detail, Uri uri, Range range, Range selectionRange) {
     final args$ = <JSAny?>[kind, name, detail, uri, range, selectionRange];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 6))) as CallHierarchyItem;
@@ -4304,6 +4456,21 @@ extension type CallHierarchyOutgoingCall(JSObject _self) implements JSObject {
 }
 
 extension type CallHierarchyOutgoingCallCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CallHierarchyOutgoingCall cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CallHierarchyOutgoingCall');
+    }
+    return CallHierarchyOutgoingCall(value! as JSObject);
+  }
   CallHierarchyOutgoingCall new$(CallHierarchyItem item, JSArray<Range> fromRanges) {
     final args$ = <JSAny?>[item, fromRanges];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as CallHierarchyOutgoingCall;
@@ -4314,6 +4481,21 @@ extension type CancellationError(JSObject _self) implements JSObject {
 }
 
 extension type CancellationErrorCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CancellationError cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CancellationError');
+    }
+    return CancellationError(value! as JSObject);
+  }
   CancellationError new$() {
     final args$ = <JSAny?>[];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as CancellationError;
@@ -4328,6 +4510,21 @@ extension type CancellationTokenSource(JSObject _self) implements JSObject {
 }
 
 extension type CancellationTokenSourceCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CancellationTokenSource cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CancellationTokenSource');
+    }
+    return CancellationTokenSource(value! as JSObject);
+  }
   CancellationTokenSource new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as CancellationTokenSource;
@@ -4342,6 +4539,21 @@ extension type ChatRequestTurn(JSObject _self) implements JSObject {
 }
 
 extension type ChatRequestTurnCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatRequestTurn cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatRequestTurn');
+    }
+    return ChatRequestTurn(value! as JSObject);
+  }
   ChatRequestTurn new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as ChatRequestTurn;
@@ -4355,6 +4567,21 @@ extension type ChatResponseAnchorPart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseAnchorPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseAnchorPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseAnchorPart');
+    }
+    return ChatResponseAnchorPart(value! as JSObject);
+  }
   ChatResponseAnchorPart new$(JSObject value, [JSString? title]) {
     final args$ = <JSAny?>[value, title];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseAnchorPart;
@@ -4367,6 +4594,21 @@ extension type ChatResponseCommandButtonPart(JSObject _self) implements JSObject
 }
 
 extension type ChatResponseCommandButtonPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseCommandButtonPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseCommandButtonPart');
+    }
+    return ChatResponseCommandButtonPart(value! as JSObject);
+  }
   ChatResponseCommandButtonPart new$(Command value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseCommandButtonPart;
@@ -4381,6 +4623,21 @@ extension type ChatResponseFileTreePart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseFileTreePartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseFileTreePart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseFileTreePart');
+    }
+    return ChatResponseFileTreePart(value! as JSObject);
+  }
   ChatResponseFileTreePart new$(JSArray<ChatResponseFileTree> value, Uri baseUri) {
     final args$ = <JSAny?>[value, baseUri];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as ChatResponseFileTreePart;
@@ -4393,6 +4650,21 @@ extension type ChatResponseMarkdownPart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseMarkdownPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseMarkdownPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseMarkdownPart');
+    }
+    return ChatResponseMarkdownPart(value! as JSObject);
+  }
   ChatResponseMarkdownPart new$(JSAny value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseMarkdownPart;
@@ -4405,6 +4677,21 @@ extension type ChatResponseProgressPart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseProgressPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseProgressPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseProgressPart');
+    }
+    return ChatResponseProgressPart(value! as JSObject);
+  }
   ChatResponseProgressPart new$(JSString value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseProgressPart;
@@ -4419,6 +4706,21 @@ extension type ChatResponseReferencePart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseReferencePartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseReferencePart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseReferencePart');
+    }
+    return ChatResponseReferencePart(value! as JSObject);
+  }
   ChatResponseReferencePart new$(JSObject value, [JSObject? iconPath]) {
     final args$ = <JSAny?>[value, iconPath];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseReferencePart;
@@ -4433,6 +4735,21 @@ extension type ChatResponseTurn(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseTurnCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ChatResponseTurn cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ChatResponseTurn');
+    }
+    return ChatResponseTurn(value! as JSObject);
+  }
   ChatResponseTurn new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as ChatResponseTurn;
@@ -4456,6 +4773,21 @@ extension type CodeAction(JSObject _self) implements JSObject {
 }
 
 extension type CodeActionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CodeAction cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CodeAction');
+    }
+    return CodeAction(value! as JSObject);
+  }
   CodeAction new$(JSString title, [CodeActionKind? kind]) {
     final args$ = <JSAny?>[title, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as CodeAction;
@@ -4470,6 +4802,21 @@ extension type CodeActionKind(JSObject _self) implements JSObject {
 }
 
 extension type CodeActionKindCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CodeActionKind cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CodeActionKind');
+    }
+    return CodeActionKind(value! as JSObject);
+  }
   CodeActionKind new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as CodeActionKind;
@@ -4495,6 +4842,21 @@ extension type CodeLens(JSObject _self) implements JSObject {
 }
 
 extension type CodeLensCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CodeLens cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CodeLens');
+    }
+    return CodeLens(value! as JSObject);
+  }
   CodeLens new$(Range range, [Command? command]) {
     final args$ = <JSAny?>[range, command];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as CodeLens;
@@ -4509,6 +4871,21 @@ extension type Color(JSObject _self) implements JSObject {
 }
 
 extension type ColorCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Color cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Color');
+    }
+    return Color(value! as JSObject);
+  }
   Color new$(JSNumber red, JSNumber green, JSNumber blue, JSNumber alpha) {
     final args$ = <JSAny?>[red, green, blue, alpha];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 4))) as Color;
@@ -4523,6 +4900,21 @@ extension type ColorInformation(JSObject _self) implements JSObject {
 }
 
 extension type ColorInformationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ColorInformation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ColorInformation');
+    }
+    return ColorInformation(value! as JSObject);
+  }
   ColorInformation new$(Range range, Color color) {
     final args$ = <JSAny?>[range, color];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as ColorInformation;
@@ -4539,6 +4931,21 @@ extension type ColorPresentation(JSObject _self) implements JSObject {
 }
 
 extension type ColorPresentationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ColorPresentation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ColorPresentation');
+    }
+    return ColorPresentation(value! as JSObject);
+  }
   ColorPresentation new$(JSString label) {
     final args$ = <JSAny?>[label];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ColorPresentation;
@@ -4579,6 +4986,21 @@ extension type CompletionItem(JSObject _self) implements JSObject {
 }
 
 extension type CompletionItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CompletionItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CompletionItem');
+    }
+    return CompletionItem(value! as JSObject);
+  }
   CompletionItem new$(JSAny label, [JSNumber? kind]) {
     final args$ = <JSAny?>[label, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as CompletionItem;
@@ -4593,6 +5015,21 @@ extension type CompletionList<T extends JSAny?>(JSObject _self) implements JSObj
 }
 
 extension type CompletionListCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CompletionList<T> cast<T extends JSAny?>(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CompletionList');
+    }
+    return CompletionList<T>(value! as JSObject);
+  }
   CompletionList<T> new$<T extends JSAny?>([JSArray<T>? items, JSBoolean? isIncomplete]) {
     final args$ = <JSAny?>[items, isIncomplete];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as CompletionList<T>;
@@ -4603,6 +5040,21 @@ extension type CustomExecution(JSObject _self) implements JSObject {
 }
 
 extension type CustomExecutionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  CustomExecution cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of CustomExecution');
+    }
+    return CustomExecution(value! as JSObject);
+  }
   CustomExecution new$(JSFunction callback) {
     final args$ = <JSAny?>[callback];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as CustomExecution;
@@ -4616,6 +5068,21 @@ extension type DataTransfer(JSObject _self) implements JSObject {
 }
 
 extension type DataTransferCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DataTransfer cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DataTransfer');
+    }
+    return DataTransfer(value! as JSObject);
+  }
   DataTransfer new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as DataTransfer;
@@ -4628,6 +5095,21 @@ extension type DataTransferItem(JSObject _self) implements JSObject {
 }
 
 extension type DataTransferItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DataTransferItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DataTransferItem');
+    }
+    return DataTransferItem(value! as JSObject);
+  }
   DataTransferItem new$(JSAny? value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DataTransferItem;
@@ -4641,6 +5123,21 @@ extension type DebugAdapterExecutable(JSObject _self) implements JSObject {
 }
 
 extension type DebugAdapterExecutableCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugAdapterExecutable cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugAdapterExecutable');
+    }
+    return DebugAdapterExecutable(value! as JSObject);
+  }
   DebugAdapterExecutable new$(JSString command, [JSArray<JSString>? args, DebugAdapterExecutableOptions? options]) {
     final args$ = <JSAny?>[command, args, options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DebugAdapterExecutable;
@@ -4651,6 +5148,21 @@ extension type DebugAdapterInlineImplementation(JSObject _self) implements JSObj
 }
 
 extension type DebugAdapterInlineImplementationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugAdapterInlineImplementation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugAdapterInlineImplementation');
+    }
+    return DebugAdapterInlineImplementation(value! as JSObject);
+  }
   DebugAdapterInlineImplementation new$(DebugAdapter implementation) {
     final args$ = <JSAny?>[implementation];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DebugAdapterInlineImplementation;
@@ -4662,6 +5174,21 @@ extension type DebugAdapterNamedPipeServer(JSObject _self) implements JSObject {
 }
 
 extension type DebugAdapterNamedPipeServerCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugAdapterNamedPipeServer cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugAdapterNamedPipeServer');
+    }
+    return DebugAdapterNamedPipeServer(value! as JSObject);
+  }
   DebugAdapterNamedPipeServer new$(JSString path) {
     final args$ = <JSAny?>[path];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DebugAdapterNamedPipeServer;
@@ -4674,6 +5201,21 @@ extension type DebugAdapterServer(JSObject _self) implements JSObject {
 }
 
 extension type DebugAdapterServerCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugAdapterServer cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugAdapterServer');
+    }
+    return DebugAdapterServer(value! as JSObject);
+  }
   DebugAdapterServer new$(JSNumber port, [JSString? host]) {
     final args$ = <JSAny?>[port, host];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DebugAdapterServer;
@@ -4687,6 +5229,21 @@ extension type DebugStackFrame(JSObject _self) implements JSObject {
 }
 
 extension type DebugStackFrameCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugStackFrame cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugStackFrame');
+    }
+    return DebugStackFrame(value! as JSObject);
+  }
   DebugStackFrame new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as DebugStackFrame;
@@ -4698,6 +5255,21 @@ extension type DebugThread(JSObject _self) implements JSObject {
 }
 
 extension type DebugThreadCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DebugThread cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DebugThread');
+    }
+    return DebugThread(value! as JSObject);
+  }
   DebugThread new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as DebugThread;
@@ -4713,6 +5285,21 @@ extension type DeclarationCoverage(JSObject _self) implements JSObject {
 }
 
 extension type DeclarationCoverageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DeclarationCoverage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DeclarationCoverage');
+    }
+    return DeclarationCoverage(value! as JSObject);
+  }
   DeclarationCoverage new$(JSString name, JSAny executed, JSObject location) {
     final args$ = <JSAny?>[name, executed, location];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as DeclarationCoverage;
@@ -4737,6 +5324,21 @@ extension type Diagnostic(JSObject _self) implements JSObject {
 }
 
 extension type DiagnosticCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Diagnostic cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Diagnostic');
+    }
+    return Diagnostic(value! as JSObject);
+  }
   Diagnostic new$(Range range, JSString message, [JSNumber? severity]) {
     final args$ = <JSAny?>[range, message, severity];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as Diagnostic;
@@ -4751,6 +5353,21 @@ extension type DiagnosticRelatedInformation(JSObject _self) implements JSObject 
 }
 
 extension type DiagnosticRelatedInformationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DiagnosticRelatedInformation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DiagnosticRelatedInformation');
+    }
+    return DiagnosticRelatedInformation(value! as JSObject);
+  }
   DiagnosticRelatedInformation new$(Location location, JSString message) {
     final args$ = <JSAny?>[location, message];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as DiagnosticRelatedInformation;
@@ -4762,6 +5379,21 @@ extension type Disposable(JSObject _self) implements JSObject {
 }
 
 extension type DisposableCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Disposable cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Disposable');
+    }
+    return Disposable(value! as JSObject);
+  }
   Disposable new$(JSFunction callOnDispose) {
     final args$ = <JSAny?>[callOnDispose];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as Disposable;
@@ -4786,6 +5418,21 @@ extension type DocumentDropEdit(JSObject _self) implements JSObject {
 }
 
 extension type DocumentDropEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentDropEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentDropEdit');
+    }
+    return DocumentDropEdit(value! as JSObject);
+  }
   DocumentDropEdit new$(JSAny insertText, [JSString? title, DocumentDropOrPasteEditKind? kind]) {
     final args$ = <JSAny?>[insertText, title, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DocumentDropEdit;
@@ -4803,6 +5450,21 @@ extension type DocumentDropOrPasteEditKind(JSObject _self) implements JSObject {
 }
 
 extension type DocumentDropOrPasteEditKindCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentDropOrPasteEditKind cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentDropOrPasteEditKind');
+    }
+    return DocumentDropOrPasteEditKind(value! as JSObject);
+  }
   DocumentDropOrPasteEditKind new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as DocumentDropOrPasteEditKind;
@@ -4819,6 +5481,21 @@ extension type DocumentHighlight(JSObject _self) implements JSObject {
 }
 
 extension type DocumentHighlightCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentHighlight cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentHighlight');
+    }
+    return DocumentHighlight(value! as JSObject);
+  }
   DocumentHighlight new$(Range range, [JSNumber? kind]) {
     final args$ = <JSAny?>[range, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DocumentHighlight;
@@ -4835,6 +5512,21 @@ extension type DocumentLink(JSObject _self) implements JSObject {
 }
 
 extension type DocumentLinkCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentLink cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentLink');
+    }
+    return DocumentLink(value! as JSObject);
+  }
   DocumentLink new$(Range range, [Uri? target]) {
     final args$ = <JSAny?>[range, target];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DocumentLink;
@@ -4855,6 +5547,21 @@ extension type DocumentPasteEdit(JSObject _self) implements JSObject {
 }
 
 extension type DocumentPasteEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentPasteEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentPasteEdit');
+    }
+    return DocumentPasteEdit(value! as JSObject);
+  }
   DocumentPasteEdit new$(JSAny insertText, JSString title, DocumentDropOrPasteEditKind kind) {
     final args$ = <JSAny?>[insertText, title, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as DocumentPasteEdit;
@@ -4879,6 +5586,21 @@ extension type DocumentSymbol(JSObject _self) implements JSObject {
 }
 
 extension type DocumentSymbolCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  DocumentSymbol cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of DocumentSymbol');
+    }
+    return DocumentSymbol(value! as JSObject);
+  }
   DocumentSymbol new$(JSString name, JSString detail, JSNumber kind, Range range, Range selectionRange) {
     final args$ = <JSAny?>[name, detail, kind, range, selectionRange];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 5))) as DocumentSymbol;
@@ -4891,6 +5613,21 @@ extension type EvaluatableExpression(JSObject _self) implements JSObject {
 }
 
 extension type EvaluatableExpressionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  EvaluatableExpression cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of EvaluatableExpression');
+    }
+    return EvaluatableExpression(value! as JSObject);
+  }
   EvaluatableExpression new$(Range range, [JSString? expression]) {
     final args$ = <JSAny?>[range, expression];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as EvaluatableExpression;
@@ -4905,6 +5642,21 @@ extension type EventEmitter<T extends JSAny?>(JSObject _self) implements JSObjec
 }
 
 extension type EventEmitterCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  EventEmitter<T> cast<T extends JSAny?>(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of EventEmitter');
+    }
+    return EventEmitter<T>(value! as JSObject);
+  }
   EventEmitter<T> new$<T extends JSAny?>() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as EventEmitter<T>;
@@ -4923,6 +5675,21 @@ extension type FileCoverage(JSObject _self) implements JSObject {
 }
 
 extension type FileCoverageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  FileCoverage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of FileCoverage');
+    }
+    return FileCoverage(value! as JSObject);
+  }
   FileCoverage new$(Uri uri, TestCoverageCount statementCoverage, [TestCoverageCount? branchCoverage, TestCoverageCount? declarationCoverage, JSArray<TestItem>? includesTests]) {
     final args$ = <JSAny?>[uri, statementCoverage, branchCoverage, declarationCoverage, includesTests];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as FileCoverage;
@@ -4942,6 +5709,21 @@ extension type FileDecoration(JSObject _self) implements JSObject {
 }
 
 extension type FileDecorationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  FileDecoration cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of FileDecoration');
+    }
+    return FileDecoration(value! as JSObject);
+  }
   FileDecoration new$([JSString? badge, JSString? tooltip, ThemeColor? color]) {
     final args$ = <JSAny?>[badge, tooltip, color];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as FileDecoration;
@@ -4953,6 +5735,21 @@ extension type FileSystemError(JSObject _self) implements JSObject {
 }
 
 extension type FileSystemErrorCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  FileSystemError cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of FileSystemError');
+    }
+    return FileSystemError(value! as JSObject);
+  }
   external FileSystemError FileExists([JSAny? messageOrUri]);
   external FileSystemError FileIsADirectory([JSAny? messageOrUri]);
   external FileSystemError FileNotADirectory([JSAny? messageOrUri]);
@@ -4975,6 +5772,21 @@ extension type FoldingRange(JSObject _self) implements JSObject {
 }
 
 extension type FoldingRangeCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  FoldingRange cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of FoldingRange');
+    }
+    return FoldingRange(value! as JSObject);
+  }
   FoldingRange new$(JSNumber start, JSNumber end, [JSNumber? kind]) {
     final args$ = <JSAny?>[start, end, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as FoldingRange;
@@ -4986,6 +5798,21 @@ extension type FunctionBreakpoint(JSObject _self) implements Breakpoint, JSObjec
 }
 
 extension type FunctionBreakpointCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  FunctionBreakpoint cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of FunctionBreakpoint');
+    }
+    return FunctionBreakpoint(value! as JSObject);
+  }
   FunctionBreakpoint new$(JSString functionName, [JSBoolean? enabled, JSString? condition, JSString? hitCondition, JSString? logMessage]) {
     final args$ = <JSAny?>[functionName, enabled, condition, hitCondition, logMessage];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as FunctionBreakpoint;
@@ -5000,6 +5827,21 @@ extension type Hover(JSObject _self) implements JSObject {
 }
 
 extension type HoverCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Hover cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Hover');
+    }
+    return Hover(value! as JSObject);
+  }
   Hover new$(JSAny contents, [Range? range]) {
     final args$ = <JSAny?>[contents, range];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as Hover;
@@ -5024,6 +5866,21 @@ extension type InlayHint(JSObject _self) implements JSObject {
 }
 
 extension type InlayHintCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlayHint cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlayHint');
+    }
+    return InlayHint(value! as JSObject);
+  }
   InlayHint new$(Position position, JSAny label, [JSNumber? kind]) {
     final args$ = <JSAny?>[position, label, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as InlayHint;
@@ -5042,6 +5899,21 @@ extension type InlayHintLabelPart(JSObject _self) implements JSObject {
 }
 
 extension type InlayHintLabelPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlayHintLabelPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlayHintLabelPart');
+    }
+    return InlayHintLabelPart(value! as JSObject);
+  }
   InlayHintLabelPart new$(JSString value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlayHintLabelPart;
@@ -5060,6 +5932,21 @@ extension type InlineCompletionItem(JSObject _self) implements JSObject {
 }
 
 extension type InlineCompletionItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlineCompletionItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlineCompletionItem');
+    }
+    return InlineCompletionItem(value! as JSObject);
+  }
   InlineCompletionItem new$(JSAny insertText, [Range? range, Command? command]) {
     final args$ = <JSAny?>[insertText, range, command];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlineCompletionItem;
@@ -5072,6 +5959,21 @@ extension type InlineCompletionList(JSObject _self) implements JSObject {
 }
 
 extension type InlineCompletionListCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlineCompletionList cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlineCompletionList');
+    }
+    return InlineCompletionList(value! as JSObject);
+  }
   InlineCompletionList new$(JSArray<InlineCompletionItem> items) {
     final args$ = <JSAny?>[items];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlineCompletionList;
@@ -5084,6 +5986,21 @@ extension type InlineValueEvaluatableExpression(JSObject _self) implements JSObj
 }
 
 extension type InlineValueEvaluatableExpressionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlineValueEvaluatableExpression cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlineValueEvaluatableExpression');
+    }
+    return InlineValueEvaluatableExpression(value! as JSObject);
+  }
   InlineValueEvaluatableExpression new$(Range range, [JSString? expression]) {
     final args$ = <JSAny?>[range, expression];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlineValueEvaluatableExpression;
@@ -5096,6 +6013,21 @@ extension type InlineValueText(JSObject _self) implements JSObject {
 }
 
 extension type InlineValueTextCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlineValueText cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlineValueText');
+    }
+    return InlineValueText(value! as JSObject);
+  }
   InlineValueText new$(Range range, JSString text) {
     final args$ = <JSAny?>[range, text];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as InlineValueText;
@@ -5109,6 +6041,21 @@ extension type InlineValueVariableLookup(JSObject _self) implements JSObject {
 }
 
 extension type InlineValueVariableLookupCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  InlineValueVariableLookup cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of InlineValueVariableLookup');
+    }
+    return InlineValueVariableLookup(value! as JSObject);
+  }
   InlineValueVariableLookup new$(Range range, [JSString? variableName, JSBoolean? caseSensitiveLookup]) {
     final args$ = <JSAny?>[range, variableName, caseSensitiveLookup];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlineValueVariableLookup;
@@ -5125,6 +6072,21 @@ extension type LanguageModelChatMessage(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelChatMessageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelChatMessage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelChatMessage');
+    }
+    return LanguageModelChatMessage(value! as JSObject);
+  }
   external LanguageModelChatMessage Assistant(JSAny content, [String? name]);
   external LanguageModelChatMessage User(JSAny content, [String? name]);
   LanguageModelChatMessage new$(JSNumber role, JSAny content, [JSString? name]) {
@@ -5141,6 +6103,21 @@ extension type LanguageModelDataPart(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelDataPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelDataPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelDataPart');
+    }
+    return LanguageModelDataPart(value! as JSObject);
+  }
   LanguageModelDataPart new$(JSUint8Array data, JSString mimeType) {
     final args$ = <JSAny?>[data, mimeType];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as LanguageModelDataPart;
@@ -5155,6 +6132,21 @@ extension type LanguageModelError(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelErrorCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelError cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelError');
+    }
+    return LanguageModelError(value! as JSObject);
+  }
   LanguageModelError new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as LanguageModelError;
@@ -5169,6 +6161,21 @@ extension type LanguageModelPromptTsxPart(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelPromptTsxPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelPromptTsxPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelPromptTsxPart');
+    }
+    return LanguageModelPromptTsxPart(value! as JSObject);
+  }
   LanguageModelPromptTsxPart new$(JSAny? value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as LanguageModelPromptTsxPart;
@@ -5181,6 +6188,21 @@ extension type LanguageModelTextPart(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelTextPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelTextPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelTextPart');
+    }
+    return LanguageModelTextPart(value! as JSObject);
+  }
   LanguageModelTextPart new$(JSString value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as LanguageModelTextPart;
@@ -5197,6 +6219,21 @@ extension type LanguageModelToolCallPart(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelToolCallPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelToolCallPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelToolCallPart');
+    }
+    return LanguageModelToolCallPart(value! as JSObject);
+  }
   LanguageModelToolCallPart new$(JSString callId, JSString name, JSObject input) {
     final args$ = <JSAny?>[callId, name, input];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as LanguageModelToolCallPart;
@@ -5209,6 +6246,21 @@ extension type LanguageModelToolResult(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelToolResultCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelToolResult cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelToolResult');
+    }
+    return LanguageModelToolResult(value! as JSObject);
+  }
   LanguageModelToolResult new$(JSArray<JSAny> content) {
     final args$ = <JSAny?>[content];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as LanguageModelToolResult;
@@ -5223,6 +6275,21 @@ extension type LanguageModelToolResultPart(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelToolResultPartCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LanguageModelToolResultPart cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LanguageModelToolResultPart');
+    }
+    return LanguageModelToolResultPart(value! as JSObject);
+  }
   LanguageModelToolResultPart new$(JSString callId, JSArray<JSAny> content) {
     final args$ = <JSAny?>[callId, content];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as LanguageModelToolResultPart;
@@ -5235,6 +6302,21 @@ extension type LinkedEditingRanges(JSObject _self) implements JSObject {
 }
 
 extension type LinkedEditingRangesCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  LinkedEditingRanges cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of LinkedEditingRanges');
+    }
+    return LinkedEditingRanges(value! as JSObject);
+  }
   LinkedEditingRanges new$(JSArray<Range> ranges, [JSObject? wordPattern]) {
     final args$ = <JSAny?>[ranges, wordPattern];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as LinkedEditingRanges;
@@ -5249,6 +6331,21 @@ extension type Location(JSObject _self) implements JSObject {
 }
 
 extension type LocationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Location cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Location');
+    }
+    return Location(value! as JSObject);
+  }
   Location new$(Uri uri, JSObject rangeOrPosition) {
     final args$ = <JSAny?>[uri, rangeOrPosition];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as Location;
@@ -5272,6 +6369,21 @@ extension type MarkdownString(JSObject _self) implements JSObject {
 }
 
 extension type MarkdownStringCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  MarkdownString cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of MarkdownString');
+    }
+    return MarkdownString(value! as JSObject);
+  }
   MarkdownString new$([JSString? value, JSBoolean? supportThemeIcons]) {
     final args$ = <JSAny?>[value, supportThemeIcons];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as MarkdownString;
@@ -5289,6 +6401,21 @@ extension type McpHttpServerDefinition(JSObject _self) implements JSObject {
 }
 
 extension type McpHttpServerDefinitionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  McpHttpServerDefinition cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of McpHttpServerDefinition');
+    }
+    return McpHttpServerDefinition(value! as JSObject);
+  }
   McpHttpServerDefinition new$(JSString label, Uri uri, [JSObject? headers, JSString? version]) {
     final args$ = <JSAny?>[label, uri, headers, version];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as McpHttpServerDefinition;
@@ -5310,6 +6437,21 @@ extension type McpStdioServerDefinition(JSObject _self) implements JSObject {
 }
 
 extension type McpStdioServerDefinitionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  McpStdioServerDefinition cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of McpStdioServerDefinition');
+    }
+    return McpStdioServerDefinition(value! as JSObject);
+  }
   McpStdioServerDefinition new$(JSString label, JSString command, [JSArray<JSString>? args, JSObject? env, JSString? version]) {
     final args$ = <JSAny?>[label, command, args, env, version];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as McpStdioServerDefinition;
@@ -5332,6 +6474,21 @@ extension type NotebookCellData(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellDataCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookCellData cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookCellData');
+    }
+    return NotebookCellData(value! as JSObject);
+  }
   NotebookCellData new$(JSNumber kind, JSString value, JSString languageId) {
     final args$ = <JSAny?>[kind, value, languageId];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as NotebookCellData;
@@ -5346,6 +6503,21 @@ extension type NotebookCellOutput(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellOutputCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookCellOutput cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookCellOutput');
+    }
+    return NotebookCellOutput(value! as JSObject);
+  }
   NotebookCellOutput new$(JSArray<NotebookCellOutputItem> items, [JSAnon_90b1eaa702e4? metadata]) {
     final args$ = <JSAny?>[items, metadata];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as NotebookCellOutput;
@@ -5360,6 +6532,21 @@ extension type NotebookCellOutputItem(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellOutputItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookCellOutputItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookCellOutputItem');
+    }
+    return NotebookCellOutputItem(value! as JSObject);
+  }
   NotebookCellOutputItem new$(JSUint8Array data, JSString mime) {
     final args$ = <JSAny?>[data, mime];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as NotebookCellOutputItem;
@@ -5387,6 +6574,21 @@ extension type NotebookCellStatusBarItem(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellStatusBarItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookCellStatusBarItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookCellStatusBarItem');
+    }
+    return NotebookCellStatusBarItem(value! as JSObject);
+  }
   NotebookCellStatusBarItem new$(JSString text, JSNumber alignment) {
     final args$ = <JSAny?>[text, alignment];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as NotebookCellStatusBarItem;
@@ -5401,6 +6603,21 @@ extension type NotebookData(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDataCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookData cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookData');
+    }
+    return NotebookData(value! as JSObject);
+  }
   NotebookData new$(JSArray<NotebookCellData> cells) {
     final args$ = <JSAny?>[cells];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as NotebookData;
@@ -5419,6 +6636,21 @@ extension type NotebookEdit(JSObject _self) implements JSObject {
 }
 
 extension type NotebookEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookEdit');
+    }
+    return NotebookEdit(value! as JSObject);
+  }
   NotebookEdit new$(NotebookRange range, JSArray<NotebookCellData> newCells) {
     final args$ = <JSAny?>[range, newCells];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as NotebookEdit;
@@ -5439,6 +6671,21 @@ extension type NotebookRange(JSObject _self) implements JSObject {
 }
 
 extension type NotebookRangeCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  NotebookRange cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of NotebookRange');
+    }
+    return NotebookRange(value! as JSObject);
+  }
   NotebookRange new$(JSNumber start, JSNumber end) {
     final args$ = <JSAny?>[start, end];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as NotebookRange;
@@ -5453,6 +6700,21 @@ extension type ParameterInformation(JSObject _self) implements JSObject {
 }
 
 extension type ParameterInformationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ParameterInformation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ParameterInformation');
+    }
+    return ParameterInformation(value! as JSObject);
+  }
   ParameterInformation new$(JSAny label, [JSAny? documentation]) {
     final args$ = <JSAny?>[label, documentation];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ParameterInformation;
@@ -5478,6 +6740,21 @@ extension type Position(JSObject _self) implements JSObject {
 }
 
 extension type PositionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Position cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Position');
+    }
+    return Position(value! as JSObject);
+  }
   Position new$(JSNumber line, JSNumber character) {
     final args$ = <JSAny?>[line, character];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as Position;
@@ -5494,6 +6771,21 @@ extension type ProcessExecution(JSObject _self) implements JSObject {
 }
 
 extension type ProcessExecutionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ProcessExecution cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ProcessExecution');
+    }
+    return ProcessExecution(value! as JSObject);
+  }
   ProcessExecution new$(JSString process, [ProcessExecutionOptions? options]) {
     final args$ = <JSAny?>[process, options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ProcessExecution;
@@ -5508,6 +6800,21 @@ extension type QuickInputButtons(JSObject _self) implements JSObject {
 }
 
 extension type QuickInputButtonsCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  QuickInputButtons cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of QuickInputButtons');
+    }
+    return QuickInputButtons(value! as JSObject);
+  }
   QuickInputButtons new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as QuickInputButtons;
@@ -5532,6 +6839,21 @@ extension type Range(JSObject _self) implements JSObject {
 }
 
 extension type RangeCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Range cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Range');
+    }
+    return Range(value! as JSObject);
+  }
   Range new$(Position start, Position end) {
     final args$ = <JSAny?>[start, end];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as Range;
@@ -5552,6 +6874,21 @@ extension type RelativePattern(JSObject _self) implements JSObject {
 }
 
 extension type RelativePatternCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  RelativePattern cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of RelativePattern');
+    }
+    return RelativePattern(value! as JSObject);
+  }
   RelativePattern new$(JSAny base, JSString pattern) {
     final args$ = <JSAny?>[base, pattern];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as RelativePattern;
@@ -5565,6 +6902,21 @@ extension type Selection(JSObject _self) implements Range, JSObject {
 }
 
 extension type SelectionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Selection cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Selection');
+    }
+    return Selection(value! as JSObject);
+  }
   Selection new$(Position anchor, Position active) {
     final args$ = <JSAny?>[anchor, active];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as Selection;
@@ -5583,6 +6935,21 @@ extension type SelectionRange(JSObject _self) implements JSObject {
 }
 
 extension type SelectionRangeCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SelectionRange cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SelectionRange');
+    }
+    return SelectionRange(value! as JSObject);
+  }
   SelectionRange new$(Range range, [SelectionRange? parent]) {
     final args$ = <JSAny?>[range, parent];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SelectionRange;
@@ -5595,6 +6962,21 @@ extension type SemanticTokens(JSObject _self) implements JSObject {
 }
 
 extension type SemanticTokensCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SemanticTokens cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SemanticTokens');
+    }
+    return SemanticTokens(value! as JSObject);
+  }
   SemanticTokens new$(JSUint32Array data, [JSString? resultId]) {
     final args$ = <JSAny?>[data, resultId];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SemanticTokens;
@@ -5609,6 +6991,21 @@ extension type SemanticTokensBuilder(JSObject _self) implements JSObject {
 }
 
 extension type SemanticTokensBuilderCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SemanticTokensBuilder cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SemanticTokensBuilder');
+    }
+    return SemanticTokensBuilder(value! as JSObject);
+  }
   SemanticTokensBuilder new$([SemanticTokensLegend? legend]) {
     final args$ = <JSAny?>[legend];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as SemanticTokensBuilder;
@@ -5622,6 +7019,21 @@ extension type SemanticTokensEdit(JSObject _self) implements JSObject {
 }
 
 extension type SemanticTokensEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SemanticTokensEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SemanticTokensEdit');
+    }
+    return SemanticTokensEdit(value! as JSObject);
+  }
   SemanticTokensEdit new$(JSNumber start, JSNumber deleteCount, [JSUint32Array? data]) {
     final args$ = <JSAny?>[start, deleteCount, data];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as SemanticTokensEdit;
@@ -5634,6 +7046,21 @@ extension type SemanticTokensEdits(JSObject _self) implements JSObject {
 }
 
 extension type SemanticTokensEditsCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SemanticTokensEdits cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SemanticTokensEdits');
+    }
+    return SemanticTokensEdits(value! as JSObject);
+  }
   SemanticTokensEdits new$(JSArray<SemanticTokensEdit> edits, [JSString? resultId]) {
     final args$ = <JSAny?>[edits, resultId];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SemanticTokensEdits;
@@ -5646,6 +7073,21 @@ extension type SemanticTokensLegend(JSObject _self) implements JSObject {
 }
 
 extension type SemanticTokensLegendCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SemanticTokensLegend cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SemanticTokensLegend');
+    }
+    return SemanticTokensLegend(value! as JSObject);
+  }
   SemanticTokensLegend new$(JSArray<JSString> tokenTypes, [JSArray<JSString>? tokenModifiers]) {
     final args$ = <JSAny?>[tokenTypes, tokenModifiers];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SemanticTokensLegend;
@@ -5664,6 +7106,21 @@ extension type ShellExecution(JSObject _self) implements JSObject {
 }
 
 extension type ShellExecutionCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ShellExecution cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ShellExecution');
+    }
+    return ShellExecution(value! as JSObject);
+  }
   ShellExecution new$(JSString commandLine, [ShellExecutionOptions? options]) {
     final args$ = <JSAny?>[commandLine, options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ShellExecution;
@@ -5684,6 +7141,21 @@ extension type SignatureHelp(JSObject _self) implements JSObject {
 }
 
 extension type SignatureHelpCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SignatureHelp cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SignatureHelp');
+    }
+    return SignatureHelp(value! as JSObject);
+  }
   SignatureHelp new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as SignatureHelp;
@@ -5701,6 +7173,21 @@ extension type SignatureInformation(JSObject _self) implements JSObject {
 }
 
 extension type SignatureInformationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SignatureInformation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SignatureInformation');
+    }
+    return SignatureInformation(value! as JSObject);
+  }
   SignatureInformation new$(JSString label, [JSAny? documentation]) {
     final args$ = <JSAny?>[label, documentation];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SignatureInformation;
@@ -5718,6 +7205,21 @@ extension type SnippetString(JSObject _self) implements JSObject {
 }
 
 extension type SnippetStringCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SnippetString cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SnippetString');
+    }
+    return SnippetString(value! as JSObject);
+  }
   SnippetString new$([JSString? value]) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as SnippetString;
@@ -5734,6 +7236,21 @@ extension type SnippetTextEdit(JSObject _self) implements JSObject {
 }
 
 extension type SnippetTextEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SnippetTextEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SnippetTextEdit');
+    }
+    return SnippetTextEdit(value! as JSObject);
+  }
   SnippetTextEdit new$(Range range, SnippetString snippet) {
     final args$ = <JSAny?>[range, snippet];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as SnippetTextEdit;
@@ -5747,6 +7264,21 @@ extension type SourceBreakpoint(JSObject _self) implements Breakpoint, JSObject 
 }
 
 extension type SourceBreakpointCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SourceBreakpoint cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SourceBreakpoint');
+    }
+    return SourceBreakpoint(value! as JSObject);
+  }
   SourceBreakpoint new$(Location location, [JSBoolean? enabled, JSString? condition, JSString? hitCondition, JSString? logMessage]) {
     final args$ = <JSAny?>[location, enabled, condition, hitCondition, logMessage];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as SourceBreakpoint;
@@ -5763,6 +7295,21 @@ extension type StatementCoverage(JSObject _self) implements JSObject {
 }
 
 extension type StatementCoverageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  StatementCoverage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of StatementCoverage');
+    }
+    return StatementCoverage(value! as JSObject);
+  }
   StatementCoverage new$(JSAny executed, JSObject location, [JSArray<BranchCoverage>? branches]) {
     final args$ = <JSAny?>[executed, location, branches];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as StatementCoverage;
@@ -5783,6 +7330,21 @@ extension type SymbolInformation(JSObject _self) implements JSObject {
 }
 
 extension type SymbolInformationCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  SymbolInformation cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of SymbolInformation');
+    }
+    return SymbolInformation(value! as JSObject);
+  }
   SymbolInformation new$(JSString name, JSNumber kind, JSString containerName, Location location) {
     final args$ = <JSAny?>[name, kind, containerName, location];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 4))) as SymbolInformation;
@@ -5799,6 +7361,21 @@ extension type TabInputCustom(JSObject _self) implements JSObject {
 }
 
 extension type TabInputCustomCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputCustom cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputCustom');
+    }
+    return TabInputCustom(value! as JSObject);
+  }
   TabInputCustom new$(Uri uri, JSString viewType) {
     final args$ = <JSAny?>[uri, viewType];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TabInputCustom;
@@ -5811,6 +7388,21 @@ extension type TabInputNotebook(JSObject _self) implements JSObject {
 }
 
 extension type TabInputNotebookCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputNotebook cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputNotebook');
+    }
+    return TabInputNotebook(value! as JSObject);
+  }
   TabInputNotebook new$(Uri uri, JSString notebookType) {
     final args$ = <JSAny?>[uri, notebookType];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TabInputNotebook;
@@ -5824,6 +7416,21 @@ extension type TabInputNotebookDiff(JSObject _self) implements JSObject {
 }
 
 extension type TabInputNotebookDiffCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputNotebookDiff cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputNotebookDiff');
+    }
+    return TabInputNotebookDiff(value! as JSObject);
+  }
   TabInputNotebookDiff new$(Uri original, Uri modified, JSString notebookType) {
     final args$ = <JSAny?>[original, modified, notebookType];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as TabInputNotebookDiff;
@@ -5834,6 +7441,21 @@ extension type TabInputTerminal(JSObject _self) implements JSObject {
 }
 
 extension type TabInputTerminalCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputTerminal cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputTerminal');
+    }
+    return TabInputTerminal(value! as JSObject);
+  }
   TabInputTerminal new$() {
     final args$ = <JSAny?>[];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as TabInputTerminal;
@@ -5845,6 +7467,21 @@ extension type TabInputText(JSObject _self) implements JSObject {
 }
 
 extension type TabInputTextCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputText cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputText');
+    }
+    return TabInputText(value! as JSObject);
+  }
   TabInputText new$(Uri uri) {
     final args$ = <JSAny?>[uri];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TabInputText;
@@ -5857,6 +7494,21 @@ extension type TabInputTextDiff(JSObject _self) implements JSObject {
 }
 
 extension type TabInputTextDiffCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputTextDiff cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputTextDiff');
+    }
+    return TabInputTextDiff(value! as JSObject);
+  }
   TabInputTextDiff new$(Uri original, Uri modified) {
     final args$ = <JSAny?>[original, modified];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TabInputTextDiff;
@@ -5868,6 +7520,21 @@ extension type TabInputWebview(JSObject _self) implements JSObject {
 }
 
 extension type TabInputWebviewCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TabInputWebview cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TabInputWebview');
+    }
+    return TabInputWebview(value! as JSObject);
+  }
   TabInputWebview new$(JSString viewType) {
     final args$ = <JSAny?>[viewType];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TabInputWebview;
@@ -5899,6 +7566,21 @@ extension type Task(JSObject _self) implements JSObject {
 }
 
 extension type TaskCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Task cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Task');
+    }
+    return Task(value! as JSObject);
+  }
   Task new$(TaskDefinition taskDefinition, JSAny scope, JSString name, JSString source, [JSObject? execution, JSAny? problemMatchers]) {
     final args$ = <JSAny?>[taskDefinition, scope, name, source, execution, problemMatchers];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 4))) as Task;
@@ -5915,6 +7597,21 @@ extension type TaskGroup(JSObject _self) implements JSObject {
 }
 
 extension type TaskGroupCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TaskGroup cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TaskGroup');
+    }
+    return TaskGroup(value! as JSObject);
+  }
   TaskGroup new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as TaskGroup;
@@ -5933,6 +7630,21 @@ extension type TelemetryTrustedValue<T extends JSAny?>(JSObject _self) implement
 }
 
 extension type TelemetryTrustedValueCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TelemetryTrustedValue<T> cast<T extends JSAny?>(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TelemetryTrustedValue');
+    }
+    return TelemetryTrustedValue<T>(value! as JSObject);
+  }
   TelemetryTrustedValue<T> new$<T extends JSAny?>(T value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TelemetryTrustedValue<T>;
@@ -5949,6 +7661,21 @@ extension type TerminalLink(JSObject _self) implements JSObject {
 }
 
 extension type TerminalLinkCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TerminalLink cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TerminalLink');
+    }
+    return TerminalLink(value! as JSObject);
+  }
   TerminalLink new$(JSNumber startIndex, JSNumber length, [JSString? tooltip]) {
     final args$ = <JSAny?>[startIndex, length, tooltip];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TerminalLink;
@@ -5961,6 +7688,21 @@ extension type TerminalProfile(JSObject _self) implements JSObject {
 }
 
 extension type TerminalProfileCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TerminalProfile cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TerminalProfile');
+    }
+    return TerminalProfile(value! as JSObject);
+  }
   TerminalProfile new$(JSObject options) {
     final args$ = <JSAny?>[options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TerminalProfile;
@@ -5975,6 +7717,21 @@ extension type TestCoverageCount(JSObject _self) implements JSObject {
 }
 
 extension type TestCoverageCountCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TestCoverageCount cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TestCoverageCount');
+    }
+    return TestCoverageCount(value! as JSObject);
+  }
   TestCoverageCount new$(JSNumber covered, JSNumber total) {
     final args$ = <JSAny?>[covered, total];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TestCoverageCount;
@@ -5997,6 +7754,21 @@ extension type TestMessage(JSObject _self) implements JSObject {
 }
 
 extension type TestMessageCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TestMessage cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TestMessage');
+    }
+    return TestMessage(value! as JSObject);
+  }
   TestMessage new$(JSAny message) {
     final args$ = <JSAny?>[message];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TestMessage;
@@ -6014,6 +7786,21 @@ extension type TestMessageStackFrame(JSObject _self) implements JSObject {
 }
 
 extension type TestMessageStackFrameCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TestMessageStackFrame cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TestMessageStackFrame');
+    }
+    return TestMessageStackFrame(value! as JSObject);
+  }
   TestMessageStackFrame new$(JSString label, [Uri? uri, Position? position]) {
     final args$ = <JSAny?>[label, uri, position];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TestMessageStackFrame;
@@ -6029,6 +7816,21 @@ extension type TestRunRequest(JSObject _self) implements JSObject {
 }
 
 extension type TestRunRequestCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TestRunRequest cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TestRunRequest');
+    }
+    return TestRunRequest(value! as JSObject);
+  }
   TestRunRequest new$([JSArray<TestItem>? include, JSArray<TestItem>? exclude, TestRunProfile? profile, JSBoolean? continuous, JSBoolean? preserveFocus]) {
     final args$ = <JSAny?>[include, exclude, profile, continuous, preserveFocus];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 0))) as TestRunRequest;
@@ -6040,6 +7842,21 @@ extension type TestTag(JSObject _self) implements JSObject {
 }
 
 extension type TestTagCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TestTag cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TestTag');
+    }
+    return TestTag(value! as JSObject);
+  }
   TestTag new$(JSString id) {
     final args$ = <JSAny?>[id];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TestTag;
@@ -6056,6 +7873,21 @@ extension type TextEdit(JSObject _self) implements JSObject {
 }
 
 extension type TextEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TextEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TextEdit');
+    }
+    return TextEdit(value! as JSObject);
+  }
   TextEdit new$(Range range, JSString newText) {
     final args$ = <JSAny?>[range, newText];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as TextEdit;
@@ -6071,6 +7903,21 @@ extension type ThemeColor(JSObject _self) implements JSObject {
 }
 
 extension type ThemeColorCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ThemeColor cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ThemeColor');
+    }
+    return ThemeColor(value! as JSObject);
+  }
   ThemeColor new$(JSString id) {
     final args$ = <JSAny?>[id];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ThemeColor;
@@ -6083,6 +7930,21 @@ extension type ThemeIcon(JSObject _self) implements JSObject {
 }
 
 extension type ThemeIconCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  ThemeIcon cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of ThemeIcon');
+    }
+    return ThemeIcon(value! as JSObject);
+  }
   external ThemeIcon get File;
   external ThemeIcon get Folder;
   ThemeIcon new$(JSString id, [ThemeColor? color]) {
@@ -6117,6 +7979,21 @@ extension type TreeItem(JSObject _self) implements JSObject {
 }
 
 extension type TreeItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TreeItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TreeItem');
+    }
+    return TreeItem(value! as JSObject);
+  }
   TreeItem new$(JSAny label, [JSNumber? collapsibleState]) {
     final args$ = <JSAny?>[label, collapsibleState];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TreeItem;
@@ -6145,6 +8022,21 @@ extension type TypeHierarchyItem(JSObject _self) implements JSObject {
 }
 
 extension type TypeHierarchyItemCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  TypeHierarchyItem cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of TypeHierarchyItem');
+    }
+    return TypeHierarchyItem(value! as JSObject);
+  }
   TypeHierarchyItem new$(JSNumber kind, JSString name, JSString detail, Uri uri, Range range, Range selectionRange) {
     final args$ = <JSAny?>[kind, name, detail, uri, range, selectionRange];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 6))) as TypeHierarchyItem;
@@ -6166,6 +8058,21 @@ extension type Uri(JSObject _self) implements JSObject {
 }
 
 extension type UriCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  Uri cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of Uri');
+    }
+    return Uri(value! as JSObject);
+  }
   Uri new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as Uri;
@@ -6199,6 +8106,21 @@ extension type WorkspaceEdit(JSObject _self) implements JSObject {
 }
 
 extension type WorkspaceEditCtor(JSFunction _self) implements JSObject {
+  bool isInstance(JSAny? value) {
+    if (value == null) return false;
+    final prototype = _self.getProperty('prototype'.toJS);
+    if (prototype is! JSObject) return false;
+    return (prototype.callMethod(
+      'isPrototypeOf'.toJS,
+      value,
+    )! as JSBoolean).toDart;
+  }
+  WorkspaceEdit cast(JSAny? value) {
+    if (!isInstance(value)) {
+      throw ArgumentError('value is not an instance of WorkspaceEdit');
+    }
+    return WorkspaceEdit(value! as JSObject);
+  }
   WorkspaceEdit new$() =>
       _self.callAsConstructorVarArgs<JSObject>(const [])
           as WorkspaceEdit;

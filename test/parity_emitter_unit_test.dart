@@ -431,7 +431,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [
       'bool isInstance(JSAny? value)',
       'Uri cast(JSAny? value)',
-      'instanceOf',
+      'isPrototypeOf',
     ],
   ),
   // V-2: string-literal unions become zero-cost typed wrappers.

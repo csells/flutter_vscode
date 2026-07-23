@@ -75,6 +75,7 @@ final class _Emitter {
   final childrenByParent = <String, List<Map<String, Object?>>>{};
   final topLevelByName = <String, Map<String, Object?>>{};
   final tupleTypes = <String, String>{};
+  final literalWrappers = <String, String>{};
   final anonTypes = <String, String>{};
   var _eraseScopeReferences = false;
   final intersectionTypes = <String, String>{};
@@ -149,6 +150,25 @@ final class _Emitter {
       }
     }
 
+    final stableTypedefs = StringBuffer();
+    final typedefCounters = <String, int>{};
+    for (final declaration in declarations) {
+      if (declaration['kind'] != 'typeLiteral' || !_isEmitted(declaration)) {
+        continue;
+      }
+      final base = _stableLiteralBase(declaration);
+      final ordinal = typedefCounters.update(
+        base,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
+      final target = _hashName('JSAnon', declaration['shapeHash']);
+      stableTypedefs.writeln('typedef $base\$$ordinal = $target;');
+    }
+    if (stableTypedefs.isNotEmpty) {
+      stableTypedefs.writeln();
+    }
+
     _emitRoot(root);
 
     final library = StringBuffer()
@@ -166,7 +186,9 @@ final class _Emitter {
       ..writeln("import 'dart:js_interop_unsafe';")
       ..writeln()
       ..write(typedefs)
+      ..write(stableTypedefs)
       ..write(_sortedValues(tupleTypes))
+      ..write(_sortedValues(literalWrappers))
       ..write(_sortedValues(intersectionTypes))
       ..write(anonTypes)
       ..write(enums)
@@ -261,6 +283,31 @@ final class _Emitter {
 
   String _namespaceTypeName(String name) =>
       '${name[0].toUpperCase()}${name.substring(1)}Ns';
+
+  /// A readable, deterministic alias base from the literal's named
+  /// ancestor chain (e.g. class Position, member `with` ->
+  /// `PositionWith`); occurrence ordinals disambiguate siblings.
+  String _stableLiteralBase(Map<String, Object?> declaration) {
+    final segments = <String>[];
+    var cursor = byId[declaration['parentId']];
+    while (cursor != null) {
+      final name = cursor['name'];
+      if (name is String && cursor['kind'] != 'typeLiteral') {
+        final clean = name.replaceAll(RegExp('[^A-Za-z0-9]'), '');
+        if (clean.isNotEmpty) {
+          segments.add(
+            clean[0].toUpperCase() + clean.substring(1),
+          );
+        }
+      }
+      cursor = byId[cursor['parentId']];
+    }
+    final base = segments.reversed.join();
+    if (base.isEmpty || RegExp('^[0-9]').hasMatch(base)) {
+      return 'Anon$base';
+    }
+    return base;
+  }
 
   String _hashName(String prefix, Object? shape) {
     final digest = sha256.convert(utf8.encode(jsonEncode(shape))).toString();
@@ -588,6 +635,15 @@ final class _Emitter {
     if (rest.isEmpty) {
       return 'JSAny?';
     }
+    final allStringLiterals = rest.length > 1 &&
+        rest.every(
+          (member) =>
+              member['kind'] == 'literal' && member['value'] is String,
+        );
+    if (allStringLiterals && !generic) {
+      final name = _registerLiteralWrapper(rest);
+      return nullable ? '$name?' : name;
+    }
     String base;
     if (rest.length == 1) {
       base = _mapType(
@@ -701,6 +757,34 @@ final class _Emitter {
       type == 'void' ? 'JSAny?' : type;
 
   // ------------------------------------------------------------ registries
+
+  /// Zero-cost typed wrapper for a union of string literals: the value
+  /// IS the string; one generated constant per literal.
+  String _registerLiteralWrapper(List<Map<String, Object?>> members) {
+    final values = [for (final member in members) member['value']! as String]
+      ..sort();
+    final name = _hashName('JSLit', values);
+    literalWrappers.putIfAbsent(name, () {
+      final buffer = StringBuffer()
+        ..writeln('extension type const $name(String value) {');
+      for (var index = 0; index < values.length; index += 1) {
+        final literal = values[index];
+        final identifier =
+            RegExp(r'^[A-Za-z_$][A-Za-z0-9_$]*$').hasMatch(literal) &&
+                    _dartName(literal) == literal
+                ? literal
+                : 'value\$${index + 1}';
+        buffer.writeln(
+          "  static const $identifier = $name('$literal');",
+        );
+      }
+      buffer
+        ..writeln('}')
+        ..writeln();
+      return buffer.toString();
+    });
+    return name;
+  }
 
   String _registerTuple(
     Map<String, Object?> type, {
@@ -1013,19 +1097,37 @@ final class _Emitter {
       ..writeln(
         'extension type ${name}Ctor(JSFunction _self) implements JSObject {',
       );
+    final ownerClause = _typeParameterClause(declaration);
+    final ownerParameters =
+        (declaration['typeParameters'] as List<Object?>?) ?? const [];
+    final instantiated = ownerParameters.isEmpty
+        ? name
+        : '$name<${ownerParameters.map(
+            (parameter) =>
+                (parameter! as Map<Object?, Object?>)['name']! as String,
+          ).join(', ')}>';
+    out
+      ..writeln('  bool isInstance(JSAny? value) {')
+      ..writeln('    if (value == null) return false;')
+      ..writeln("    final prototype = _self.getProperty('prototype'.toJS);")
+      ..writeln('    if (prototype is! JSObject) return false;')
+      ..writeln('    return (prototype.callMethod(')
+      ..writeln("      'isPrototypeOf'.toJS,")
+      ..writeln('      value,')
+      ..writeln('    )! as JSBoolean).toDart;')
+      ..writeln('  }')
+      ..writeln('  $instantiated cast$ownerClause(JSAny? value) {')
+      ..writeln('    if (!isInstance(value)) {')
+      ..writeln(
+        "      throw ArgumentError('value is not an instance of $name');",
+      )
+      ..writeln('    }')
+      ..writeln('    return $instantiated(value! as JSObject);')
+      ..writeln('  }');
     final hasConstructor = children.any(
       (child) => child['kind'] == 'constructor' && _isEmitted(child),
     );
     if (!hasConstructor) {
-      final ownerClause = _typeParameterClause(declaration);
-      final parameters =
-          (declaration['typeParameters'] as List<Object?>?) ?? const [];
-      final instantiated = parameters.isEmpty
-          ? name
-          : '$name<${parameters.map(
-              (parameter) =>
-                  (parameter! as Map<Object?, Object?>)['name']! as String,
-            ).join(', ')}>';
       out
         ..writeln('  $instantiated new\$$ownerClause() =>')
         ..writeln('      _self.callAsConstructorVarArgs<JSObject>(const [])')
