@@ -20,7 +20,12 @@ the test fixture into the framework and ship a `FlutterViewHost`-style
 API: one call takes a view name and operation bindings, and owns panel
 creation, resource roots, session identifiers, CSP-correct HTML, and
 disposal. Coverage Treemap's `host_webview_transport.dart` +
-`_viewHtml` are the reference implementation to delete.
+`_viewHtml` are the reference implementation to delete. The view side
+gets a matching `runFlutterView(app)` boot helper that disables the
+web URL strategy before `runApp` (discovered shipping Coverage
+Treemap: `MaterialApp`'s history integration throws a cross-origin
+`SecurityError` in webviews and the engine never renders a frame) and
+connects the session.
 Check: the extension and the host fixture both consume the framework
 module; the copies are gone.
 

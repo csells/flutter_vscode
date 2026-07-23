@@ -1,6 +1,6 @@
 # Coverage Treemap Extension Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the shared suite and scripts/test_coverage_extension.sh are green at HEAD
 Date: 2026-07-23
 
 The first shipped example extension, per the owner's direction: a test
@@ -53,7 +53,7 @@ Extension Author would:
   the shared codec has round-trip tests.
 - [x] T-5 `flutter_vscode package` writes an installable
   `coverage-treemap-<version>.vsix`. Check: package green.
-- [ ] T-6 Real-host proof: a scripted gate installs the packaged VSIX
+- [x] T-6 Real-host proof: a scripted gate installs the packaged VSIX
   into the pinned Extension Host against a workspace with a real
   `lcov.info` and executes a smoke command returning parsed-coverage
   evidence. Check: the script exits 0 with assertions on the returned
@@ -67,18 +67,18 @@ Extension Author would:
 Added by owner direction after the original bar froze; the original
 items above are unchanged.
 
-- [ ] T-8 Coverage runs from inside VS Code: the status-bar item is
+- [x] T-8 Coverage runs from inside VS Code: the status-bar item is
   clickable and a `Coverage: Run Tests with Coverage` command runs
   `flutter test --coverage` in a VS Code terminal, so the watcher picks
   up fresh numbers with no external CLI session. The README explains
   that the Dart extension's Testing-UI coverage feeds VS Code's native
   Test Coverage API and never writes `coverage/lcov.info`. Check: gate
   and README.
-- [ ] T-9 Ecosystem showcase: the view integrates a well-known pub.dev
+- [x] T-9 Ecosystem showcase: the view integrates a well-known pub.dev
   package (`fl_chart`) rendering a coverage summary alongside the
   treemap, demonstrating Flutter-ecosystem code reuse inside VS Code.
   Check: build green with the dependency; view analyze-clean.
-- [ ] T-10 The blank-panel defect observed on desktop VS Code (macOS,
+- [x] T-10 The blank-panel defect observed on desktop VS Code (macOS,
   current release) is root-caused via the T-6 gate: if the view boots
   in the pinned host, the defect is a newer-VS Code regression to
   diagnose against the webview console; either way the root cause and
@@ -113,3 +113,22 @@ Tallies are recording-time values. Entries appended as items close.
    the squarified-treemap Flutter View connected over the typed
    snapshot operation. `flutter_vscode package` writes
    `coverage-treemap-0.0.1.vsix`. Repo `flutter analyze` clean.
+5. **Red T-6/T-10** (commit 18c8538 landed the gate; first runs): the
+   real-host gate installed the VSIX into pinned VS Code 1.129.1,
+   passed the parsed-snapshot assertions, and failed `viewSmoke` after
+   120s — reproducing the blank panel seen on desktop macOS VS Code.
+   Rerunning with `--enable-logging` captured the webview console:
+   Flutter's engine booted, then died with `SecurityError: Failed to
+   execute 'replaceState' on 'History'` — the default web URL strategy
+   (exercised by `MaterialApp`'s history integration) writes a
+   `vscode-resource` base URL into a `vscode-webview://`-origin
+   document. The bare-widget fixture view never touches history, which
+   is why five prior gates missed it.
+6. **Green T-6/T-8/T-9/T-10**: `setUrlStrategy(null)` before `runApp`
+   (plus `flutter_web_plugins`) fixes the boot; the gate passes all
+   assertions including the live view-protocol snapshot round-trip in
+   a real webview. T-8's clickable status bar runs
+   `flutter test --coverage` in a VS Code terminal; T-9 ships
+   `fl_chart` 1.2.0 charts over the same snapshot. The README's view
+   walkthrough now mandates the URL-strategy line and the D-1 item
+   grew a view-side `runFlutterView` boot helper.

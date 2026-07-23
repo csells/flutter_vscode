@@ -7,7 +7,7 @@ IMAGE_NAME="flutter-vscode-host-test:local"
 EXTENSION_ROOT="${REPO_ROOT}/extensions/coverage_treemap"
 TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/flutter-vscode-coverage-ext.XXXXXX")"
 TEMP_ROOT="$(cd "${TEMP_ROOT}" && pwd -P)"
-CACHE_ROOT="${TEMP_ROOT}/vscode-test-cache"
+CACHE_ROOT="${FLUTTER_VSCODE_TEST_CACHE:-${TEMP_ROOT}/vscode-test-cache}"
 WORKSPACE="${TEMP_ROOT}/workspace"
 
 cleanup() {

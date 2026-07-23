@@ -200,13 +200,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
 ```
 
 ```dart
 // views/main_panel/lib/main.dart
 import 'package:flutter/widgets.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 
 void main() {
+  setUrlStrategy(null);
   runApp(
     const Directionality(
       textDirection: TextDirection.ltr,
@@ -215,6 +219,13 @@ void main() {
   );
 }
 ```
+
+The `setUrlStrategy(null)` line matters: a VS Code webview's document
+origin is `vscode-webview://`, so Flutter's default URL strategy —
+which `MaterialApp`'s navigation history integration exercises —
+throws a `SecurityError` during engine startup and the view renders
+nothing. Disabling it is required for any view that uses `MaterialApp`
+or a `Router`.
 
 ```html
 <!-- views/main_panel/web/index.html -->

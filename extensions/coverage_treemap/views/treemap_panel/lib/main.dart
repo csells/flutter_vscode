@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vscode/view.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:treemap_panel/summary_charts.dart';
 import 'package:treemap_panel/treemap.dart';
 
@@ -20,7 +21,15 @@ const snapshotOperation = ViewOperation<void, CoverageSnapshot>(
 );
 
 /// Runs the coverage treemap view.
-void main() => runApp(const TreemapApp());
+///
+/// The URL strategy must be disabled inside a VS Code webview: the
+/// document's real origin is `vscode-webview://`, so any history
+/// update against the `vscode-resource` base URI throws a
+/// `SecurityError` during engine startup and no frame ever renders.
+void main() {
+  setUrlStrategy(null);
+  runApp(const TreemapApp());
+}
 
 /// Dark-themed root widget for the coverage treemap panel.
 class TreemapApp extends StatelessWidget {
