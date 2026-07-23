@@ -4,13 +4,20 @@
 <!-- Regenerate: dart tool/binding_generator/generate.dart
      --parity . -->
 
-Per the project vision, a missing Dart path for a public
-VS Code capability is a defect, not an accepted state: every
-`pending` row below is unimplemented public surface that the
-framework still owes an executable, host-verified binding.
-This report is generated from the coverage ledger, which is
-itself regenerated and byte-compared by the repository gates,
-so these numbers cannot drift from machine state.
+Typed parity is total by construction (ADR 0012): the
+complete Parity Layer at
+`package:flutter_vscode/vscode_parity.dart` maps every public
+declaration of the pinned API via Total Mapping Rules, with
+its own totality ledger gated by the parity suite. A
+capability the generator cannot map is a defect that fails
+the build (the vision rule, mechanized).
+
+The table below is the behavioral-verification burn-down: a
+`pending` row is public surface whose typed binding exists
+but has not yet carried real-Extension-Host evidence through
+the walking-slice facade and capability fixtures. Generated
+from the coverage ledger, regenerated and byte-compared by
+the repository gates.
 
 Pinned inventory: 2982 declarations discovered; 53 emitted and host-verified; 17 excluded (reviewed or non-public); 2912 pending.
 
@@ -36,7 +43,8 @@ Pinned inventory: 2982 declarations discovered; 53 emitted and host-verified; 17
 | `vscode.window` | 2 | 1 | 0 | 94 |
 | `vscode.workspace` | 2 | 0 | 0 | 73 |
 
-New bindings enter through reviewed Semantic Overrides and
-must carry executable real-host evidence before an entry
-may leave `pending`; unclassified public symbols block
-releases (ADR 0008).
+Behavioral evidence enters through the walking-slice facade
+and capability fixtures; a `pending` entry leaves that state
+only with executable real-host evidence. A new baseline
+construct with no Total Mapping Rule blocks the release
+(ADR 0008 as evolved by ADR 0012).

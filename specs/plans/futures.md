@@ -29,6 +29,14 @@ sequence or schedule. Rough dependency order below.
 - Documentation from executable behavior; support policy last, from
   measurements.
 
+- Parity precision helpers deferred from ADR 0012's original text:
+  per-member union narrowing and typed string-literal wrappers (runtime
+  narrowing exists via SDK `instanceOf` against module-rooted class
+  objects); alias-cycle guard and emitter unit tests; a typed rest-param
+  surface (rest params erase to `List<JSAny?>`).
+- The generated parity ledger and layer add ~530 KB to the pub archive;
+  revisit placement if package size matters.
+
 ## Engineering debt (from the audits)
 
 - The CLI (`bin/flutter_vscode.dart`) and the generator

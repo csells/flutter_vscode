@@ -1,6 +1,6 @@
 # Parity Layer Plan
 
-Status: In progress
+Status: Implemented and verified — sixth-audit hardening applied; valid only while the parity suite and gates are green at HEAD
 Date: 2026-07-22
 
 Per the updated vision and ADR 0012, the entire pinned stable API surface
@@ -57,7 +57,7 @@ Status update: all exit-bar items closed; see the ledger.
    no generated library, ledger, or export existed.
 2. **Green**: `tool/binding_generator/parity_layer.dart` implements the
    Total Mapping Rules from the research decision table; the emitted
-   6,016-line library covers the full pinned surface. Reality corrected
+   6,018-line library covers the full pinned surface. Reality corrected
    three rules mid-implementation, all mechanically: VS Code's own rest
    parameters are named `args` (helper locals are now collision-proof by
    construction), registered anonymous types and tuples hoisted to the
@@ -73,3 +73,22 @@ Status update: all exit-bar items closed; see the ledger.
    structural rule, and the synthetic totality error. The SDK floor rose
    to 3.6 for extension types and `JSArray` operators; the evidence
    chain regenerated for the receipted pubspec change.
+3. **Sixth-audit hardening** (red committed before the fixes). The audit
+   and its execution probe confirmed the layer works against a module
+   object and found the recurring proof-weaker-than-sentence pattern
+   plus three substantive holes. Red — nine new structural tests, three
+   failing honestly: mixed-category unions emitted a spurious `JSAny?`
+   (the research rule says `JSAny`), six ctor-less classes
+   (EventEmitter, WorkspaceEdit, CancellationTokenSource, DataTransfer,
+   SignatureHelp, LanguageModelError) were silently unconstructable, and
+   the blessed object-literal creation rule was unimplemented. Green —
+   mixed unions erase to `JSAny`; every ctor-less class gets a default
+   `new$`; interfaces and registered type literals with plain-identifier
+   members gain `lit$` object-literal factories (method members typed
+   `JSFunction`, making provider interfaces implementable); the suite
+   passes 23/23 with the output still analyze-clean. A real-Extension-
+   Host parity smoke joins the host gate: version, negative enums,
+   construction, `toString$`/`with$` renames, an awaited promise
+   round-trip, an Event subscription, and a hover provider created
+   entirely from literal factories, registered, exercised, and disposed
+   against live VS Code.

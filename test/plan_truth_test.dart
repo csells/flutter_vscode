@@ -96,6 +96,35 @@ void main() {
     );
   });
 
+  test('active plans do not claim completion over unchecked items', () {
+    final planFiles = Directory('specs/plans')
+        .listSync()
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.md'));
+    for (final file in planFiles) {
+      final text = file.readAsStringSync();
+      final status = text
+          .split('\n')
+          .firstWhere((line) => line.startsWith('Status:'), orElse: () => '');
+      if (status.contains('Implemented and verified')) {
+        expect(
+          text,
+          isNot(contains('- [ ]')),
+          reason: '${file.path} claims completion with unchecked items',
+        );
+      }
+      if (text.contains('- [x]') && status.contains('In progress')) {
+        final unchecked = '- [ ]'.allMatches(text).isNotEmpty;
+        expect(
+          unchecked,
+          isTrue,
+          reason: '${file.path} says In progress but every item is checked '
+              '— update the status line',
+        );
+      }
+    }
+  });
+
   test('a completion status requires a fully checked plan', () {
     final status = planLines
         .firstWhere((line) => line.startsWith('Status:'), orElse: () => '');

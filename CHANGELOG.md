@@ -27,6 +27,13 @@
   mapping) as historical and remove the dead `bin/init.dart` scaffolder.
 - Run analysis, the full gate, the publish dry run, and a cleanliness
   check in CI on pull requests.
+- Ship the complete typed Parity Layer
+  (`package:flutter_vscode/vscode_parity.dart`): a mechanically
+  generated typed mapping of the entire pinned VS Code API (2,982
+  declarations) produced only by Total Mapping Rules, rooted in the
+  activation module object, with object-literal factories, module-rooted
+  constructors, typed tuples, and a totality ledger; `build` emits it
+  into every Extension Project and the real-host gate exercises it.
 
 ## 0.1.0
 
