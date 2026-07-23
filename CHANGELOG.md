@@ -13,6 +13,20 @@
   analysis, XML validation, and framework/generator/input-bound build receipts.
 - Exercise adversarial Flutter View frames, reload with pending work, measured
   shutdown counts, and an independent render observation in a real webview.
+- Store canonical type-literal shapes in the pinned IR and recompute every
+  registered shape hash on the Dart side, closing lossless-IR and
+  opaque-hash gaps.
+- Regenerate the durable Host Contract evidence artifact mechanically
+  (`generate.dart --contract`); hand-edited evidence is no longer a
+  supported workflow, and pin-manifest inputs must resolve inside their
+  manifest directory.
+- Publish a generated VS Code API parity burn-down
+  (`docs/reference/parity.md`) treating missing Dart paths for public
+  capabilities as defects.
+- Label all legacy v0 webview/TypeScript surfaces (PRD, example, API
+  mapping) as historical and remove the dead `bin/init.dart` scaffolder.
+- Run analysis, the full gate, the publish dry run, and a cleanliness
+  check in CI on pull requests.
 
 ## 0.1.0
 
