@@ -1,82 +1,97 @@
 # Backlog
 
-Discoveries made during a frozen hardening round land here instead of
-growing that round's exit bar. Items graduate into a future plan with
-their own machine checks; nothing in this file blocks a round's closure.
+Discoveries made during a frozen round land here instead of growing that
+round's exit bar. Items graduate into an active plan with their own
+machine checks; nothing in this file blocks a round's closure.
 
-## From the fourth audit (out of Round 5 scope by design)
+## Now: the complete typed Parity Layer (active)
 
-- Protocol v1 has no cancellation frame and only session-level disposal;
-  host-to-view requests do not exist. First From-Proof milestone.
-- Dynamic `call/get/set/construct/subscribe` access (the vision's second
-  integration speed) does not exist yet.
-- CLI lacks `test`, `upgrade`, and `doctor`; debugging has a generated
-  launch configuration but no exercised F5/breakpoint path.
-- The only Extension Host proof platform is Linux-in-Docker; macOS and
-  Windows are unprobed, and every gate re-downloads VS Code.
-- The walking slice's per-symbol economics are unproven at the scale of
-  the 2,912 pending declarations.
-- The ECMAScript whitespace predicate exists in two implementations held
-  together by mirrored tests.
-- The host-side view transport lives in the test fixture rather than as a
-  framework module.
-- A registered-shape hash is key-order sensitive, so a reordered-but-
-  consistent shape document is accepted (bounded: child cross-checks still
-  bind content).
-- No real extension exists outside the repository fixtures.
+Per the updated vision and ADR 0012, the entire pinned stable API surface
+is emitted as one mechanically generated, typed Dart layer produced only
+by Total Mapping Rules — zero judgment calls, hard generation errors for
+anything unmapped. Strategy and per-construct rules:
+`specs/research/js-to-dart-mapping.md`. Exit bar (each item machine
+checked, red-green):
 
-## From the Round-5 owner amendment (2026-07-22)
+- [ ] P-1 A parity emitter (`generate.dart --parity-layer .`) consumes the
+  pinned IR and emits `lib/src/generated/vscode_parity_layer.g.dart`,
+  exported as `package:flutter_vscode/vscode_parity.dart`. The module
+  object an extension receives at activation is the only root: no new
+  globals, constructors and statics reach JS through the module wrapper.
+  Check: emitter tests + byte-compare regeneration test.
+- [ ] P-2 Totality accounting: every public declaration in the IR is
+  either emitted or recorded in a generated erasure ledger naming its
+  rule (the only permitted erasure classes are symbol-keyed members and
+  the documented `undefined`/`null` conflation); non-public declarations
+  are excluded mechanically. A declaration in neither set fails the test.
+  Check: `flutter test test/parity_layer_test.dart` (totality assertions).
+- [ ] P-3 The generated layer analyzes cleanly (`dart analyze` over the
+  generated library is part of the suite) and regenerates
+  byte-identically.
+- [ ] P-4 Per-construct rules hold, asserted structurally on the real
+  output: LUB union erasure at external boundaries, overload expansion
+  with deterministic `$n` suffixes bound via `@JS`, string-literal and
+  numeric-enum typedefs with module-rooted value accessors, type-literal
+  extension types with object-literal constructors, `[]`/`[]=` index
+  signatures, typed tuple accessors over `JSArray`, implements-both
+  intersections (6 sites), `JSPromise<T>` for Thenable/Promise,
+  reserved-word `$` mangling, readonly-as-getter, `T?` optionality.
+- [ ] P-5 Unmapped constructs fail generation with an actionable error
+  naming the declaration and missing rule (proven with a synthetic IR
+  fragment).
 
-- Upstream contribution: when the owner decides to engage upstream, open
-  a pull request from `csells:project-hardening` to
-  `SlowGen/flutter_vscode`. How that contribution is validated is
-  entirely SlowGen's choice. This project's deliverable is a branch
-  whose gates pass locally (`scripts/test_all.sh`,
-  `scripts/check_round5_exit.sh`).
+Behavioral verification of parity members in a real Extension Host is
+NOT part of this bar (ADR 0012 moves it to the burn-down below).
 
-## Roadmap (relocated from the archived first-extension plan)
+## Future (explicitly deferred)
 
-The archived plan's "From the Proof to the Vision" dependency order,
-preserved as the sequencing narrative for future milestone plans:
+- **Idiomatic Facade** over the Parity Layer: Dart-first ergonomics,
+  Semantic Overrides, reviewed design — built up incrementally after the
+  Parity Layer ships.
+- **Behavioral verification burn-down**: real-host evidence for parity
+  members, grouped by capability fixture (trees/filesystems,
+  terminals/tasks, language features, testing, SCM, notebooks,
+  authentication, debugging, webviews).
+- Runtime semantics for the View protocol: cancellation, host-to-view
+  requests, events/streams, handles, backpressure (protocol v1 today has
+  none of these; disposal is session-level only).
+- Product workflow: `doctor`, `test`, `upgrade`; generated-file ownership
+  and repair; v0 migration after real usage (the legacy
+  `generate_vscode_extension` executable still ships with a legacy
+  notice until then).
+- Hardening: two extensions in one host, failure injection, protocol
+  abuse, breakpoint/source-map behavior, startup/memory,
+  Windows/macOS/Linux, remote-host harness.
+- Platform reach: Web Extension Host before 1.0 (ADR 0009).
+- Documentation from executable behavior; support policy last, from
+  measurements.
 
-1. Runtime semantics: events, cancellation, progress, streams, callback
-   retention, ownership scopes, structured errors, session cleanup.
-2. API factory: emit the entire pinned stable API and contribution
-   surface as the complete typed Parity Layer via Total Mapping Rules
-   (see specs/research/js-to-dart-mapping.md); then the Idiomatic
-   Facade above it. (Dynamic access was deleted from the vision by
-   owner decision, 2026-07-22.)
-3. Capability fixtures: trees/filesystems, terminals/tasks, language
-   features, testing, SCM, notebooks, authentication, debugging,
-   webviews — Extension Host tests grouped by semantic pattern.
-4. Product workflow: doctor, test, upgrade; generated-file ownership and
-   repair; actionable diagnostics; v0 migration after real usage.
-5. Hardening: two extensions in one host, failure injection, protocol
-   abuse, breakpoint/source-map behavior, startup/memory,
-   Windows/macOS/Linux, remote-host harness.
-6. Platform reach: Web Extension Host before 1.0 (ADR 0009).
-7. Documentation from executable behavior.
-8. Support policy last, from measurements: version windows, upgrade
-   guarantees, proposed-API experiments, performance budgets.
+## Engineering debt (from the audits)
 
-Still deferred from that plan: past-version support windows, v0.1
-migration guarantees, remote/browser/multi-OS gates, Marketplace
-publishing automation, full API classification, production
-performance/security budgets.
-
-## From the fifth audit (2026-07-22)
-
-- The CLI (`bin/flutter_vscode.dart`, ~1,365 lines) and the generator
-  (`tool/binding_generator/generator.dart`, ~5,973 lines) remain
-  monoliths; the plan named their decomposition a maintainability
-  follow-up.
+- The CLI (`bin/flutter_vscode.dart`) and the generator
+  (`tool/binding_generator/generator.dart`) remain monoliths; named as a
+  maintainability follow-up.
 - Webview CSP content is not gate-asserted: only `Webview.cspSource`
-  usage is proven, so a silently weakened policy would pass.
+  usage is proven.
 - `scripts/check_round5_exit.sh` cannot itself verify the two
   consecutive `test_all.sh` runs its R5-13 item names; those remain
   procedural evidence.
 - The R5-7 static check verifies absence of rsync rather than positively
   parsing the staging pipeline.
-- The legacy `generate_vscode_extension` executable still ships to
-  consumers; it now prints a legacy notice, and removal awaits the v0
-  migration milestone (roadmap step 4).
+- The ECMAScript whitespace predicate exists in two implementations held
+  together by mirrored tests.
+- The host-side view transport lives in the test fixture rather than as
+  a framework module.
+- A registered-shape hash is key-order sensitive (bounded: child
+  cross-checks still bind content).
+- The only Extension Host proof platform is Linux-in-Docker; every gate
+  re-downloads VS Code.
+- No real extension exists outside the repository fixtures.
+
+## Upstream contribution (owner's call)
+
+When the owner decides to engage upstream, open a pull request from
+`csells:project-hardening` to `SlowGen/flutter_vscode`. How that
+contribution is validated is entirely SlowGen's choice; this project's
+deliverable is a branch whose gates pass locally
+(`scripts/test_all.sh`, `scripts/check_round5_exit.sh`).
