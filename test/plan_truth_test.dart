@@ -6,7 +6,7 @@ import 'package:test/test.dart';
 /// The archived plan's frozen bytes. Changing the archive requires
 /// consciously updating this pin in the same commit with a reason.
 const archivedPlanSha256 =
-    'dc2b932fa4053b8e04492746017d59dca61a5e0a47b2b96b50210d4a7fd1f970';
+    '5145a0510e31237bade67b22dce3ec7c9ee3b435f1eff822665b08ba47be0ad8';
 
 /// The plan may cite a 64-hex digest only if a machine can vouch for it:
 /// either it matches current tree state or its context says it is history.

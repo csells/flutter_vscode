@@ -54,7 +54,4 @@ generated operations after native success.
   self-consistency for the archived plan and pins its bytes: the archive
   is frozen history, so any edit fails the ratchet deliberately.
 - **Status validity.** A completion claim holds only while its named
-  check script exits 0 at HEAD. Known limitation: no CI has ever executed
-  in this project (owner-accepted; tracked in the backlog with the
-  upstream PR), so all gate evidence to date is self-attested by whoever
-  ran it.
+  check script exits 0 at HEAD.

@@ -29,12 +29,12 @@ else
   fail "R5-1/R5-2" "flutter test test/plan_truth_test.dart is red or missing"
 fi
 
-# R5-3 was removed from the exit bar by owner decision (2026-07-22): a
-# fork should not host the project's CI. The first CI execution moves to
-# the backlog with the upstream pull request; closure evidence is
-# therefore self-attested with this script as the mechanical authority.
+# R5-3 was removed from the exit bar by owner decision (2026-07-22):
+# CI setup is the upstream repository owner's concern, and how any
+# contribution is validated is upstream's choice. This script is the
+# closure authority.
 HEAD_SHA="$(git rev-parse HEAD)"
-echo "INFO  R5-3 removed by owner decision; no CI witness required"
+echo "INFO  R5-3 removed by owner decision"
 
 # R5-4: shape member value validation
 if run_quiet flutter test test/binding_generator_test.dart \

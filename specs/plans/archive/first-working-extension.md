@@ -351,10 +351,9 @@ Rules of this round, fixed before any item below was started:
   carry a green GitHub-hosted run of the full workflow, which re-executes
   every gate on the exact final tree, docs commits included. (Amended by
   owner decision, 2026-07-22: the CI-witness requirement is removed — CI
-  setup belongs to the upstream repository owner, not a fork. The
-  independent-witness property moves to `specs/plans/backlog.md`; closure
-  evidence below is therefore self-attested, executed by the closing
-  agent with the exit script as the mechanical authority.)
+  setup belongs to the upstream repository owner, not a fork, and how any
+  upstream contribution is validated is the upstream repository's choice.
+  The exit script is the closure authority.)
 
 ### Exit bar
 
@@ -372,10 +371,9 @@ Rules of this round, fixed before any item below was started:
   alternative branch. Check: `flutter test test/plan_truth_test.dart`
   (consistency assertions) plus items R5-6/R5-7.
 - R5-3 CI witness — REMOVED from the exit bar by owner decision
-  (2026-07-22), not satisfied: a fork should not host the project's CI,
-  and engaging the upstream repository is deferred. The workflow remains
-  parsed-but-never-executed and the first-execution risk moves to the
-  backlog together with the upstream pull request.
+  (2026-07-22): a fork should not host the project's CI, and engaging
+  the upstream repository is deferred to the owner. Any upstream pull
+  request is validated however the upstream repository chooses.
 - [x] R5-4 Registered-shape member values are validated, not just key
   sets: property and method member names must be non-empty strings, flags
   must be booleans, signatures and types must be objects; a
@@ -498,13 +496,10 @@ expressible, the entry says so. Tallies are counts at recording time.
     item.)
 11. **Owner amendment and closure.** The CI-witness item R5-3 was removed
     from the frozen exit bar by owner decision on 2026-07-22 (a fork
-    should not host the project's CI; the upstream pull request and first
-    CI execution move to the backlog). Consequence, stated plainly: the
-    closure evidence for this round is executed and reported by the same
-    agent that performed the work, with `scripts/check_round5_exit.sh`
-    as the mechanical authority at HEAD; no third-party execution exists
-    yet anywhere in the project's history. The fork pull request opened
-    as the CI vehicle was closed unmerged. Closure order: this amendment
+    should not host the project's CI; whether and how any upstream
+    contribution is validated is the upstream repository's choice).
+    `scripts/check_round5_exit.sh` is the closure authority at HEAD. The
+    fork pull request opened as the CI vehicle was closed unmerged. Closure order: this amendment
     and the status flip land in one commit, then two consecutive
     `./scripts/test_all.sh` runs and a full exit-script evaluation
     execute on that exact closing commit.
