@@ -168,6 +168,20 @@ void main() {
     );
   });
 
+  test('parity report is linked from the reference index', () {
+    expect(
+      File('docs/reference/index.md').readAsStringSync(),
+      contains('parity.md'),
+      reason: 'the generated parity burn-down must be discoverable',
+    );
+    expect(
+      File('docs/reference/parity.md').readAsStringSync(),
+      contains('defect'),
+      reason: "the report must state the vision's missing-path-is-a-defect "
+          'rule',
+    );
+  });
+
   test('legacy v0 surfaces are labeled or gone', () {
     expect(
       File('bin/init.dart').existsSync(),

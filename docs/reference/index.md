@@ -9,6 +9,8 @@ Reference material for APIs, conventions, and generated outputs.
 - [Dart to VS Code Message Contract](message-contract.md) — legacy v0 bridge
 - [Generated Host API](generated-host-api.md) — current Dart Extension Host
   facade and coverage workflow
+- [VS Code API Parity](parity.md) — generated burn-down of emitted,
+  excluded, and pending public API surface
 - [VS Code API Mapping](vscode-api-mapping.md) — legacy v0 annotation mapping
 - Annotation and generation conventions (see [Code Generation Rules](../agent-guidelines/code-generation.md))
 - Package and build conventions (see [Package Conventions](../agent-guidelines/package-conventions.md))

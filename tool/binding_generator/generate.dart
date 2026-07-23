@@ -3,10 +3,26 @@ import 'dart:io';
 
 import 'contract.dart';
 import 'generator.dart';
+import 'parity_report.dart';
 import 'writer.dart';
 
 Future<void> main(List<String> arguments) async {
   try {
+    if (arguments.isNotEmpty && arguments.first == '--parity') {
+      if (arguments.length != 2) {
+        throw const VSCodeBindingGenerationException(
+          'INVALID_ARGUMENTS',
+          '--parity requires exactly the repository root.',
+        );
+      }
+      final root = arguments[1];
+      final coverage = await _readJson(
+        '$root/test/fixtures/host_extension/coverage.json',
+      );
+      await File('$root/docs/reference/parity.md')
+          .writeAsString(buildParityReport(coverage));
+      return;
+    }
     if (arguments.isNotEmpty && arguments.first == '--contract') {
       if (arguments.length != 2) {
         throw const VSCodeBindingGenerationException(
