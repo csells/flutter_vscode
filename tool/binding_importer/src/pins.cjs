@@ -111,8 +111,21 @@ function verifyPinnedInputs(manifestPath) {
     }
   }
 
-  for (const input of manifest.inputs) {
+  const realDirectory = fs.realpathSync(directory);
+  for (const [index, input] of manifest.inputs.entries()) {
     const inputPath = path.resolve(directory, input.path);
+    const realInputPath = fs.realpathSync(inputPath);
+    const relativeRealPath = path.relative(realDirectory, realInputPath);
+    if (
+      relativeRealPath === '' ||
+      path.isAbsolute(relativeRealPath) ||
+      relativeRealPath === '..' ||
+      relativeRealPath.startsWith(`..${path.sep}`)
+    ) {
+      invalidMetadata(
+        `inputs[${index}].path must stay inside the pin manifest directory`,
+      );
+    }
     const actual = crypto
       .createHash('sha256')
       .update(fs.readFileSync(inputPath))
