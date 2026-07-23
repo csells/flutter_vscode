@@ -4,7 +4,22 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import '../tool/binding_generator/parity_report.dart' as parity;
+
 void main() {
+  test('checked-in parity report matches mechanical regeneration', () {
+    final coverage = (jsonDecode(
+      File('test/fixtures/host_extension/coverage.json').readAsStringSync(),
+    ) as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    expect(
+      File('docs/reference/parity.md').readAsStringSync(),
+      parity.buildParityReport(coverage),
+      reason: 'The parity report is a Framework-Managed doc. Refresh it '
+          'with: dart tool/binding_generator/generate.dart --parity .',
+    );
+  });
+
   test('CLI regenerates the walking slice byte-for-byte', () async {
     final temporary = await Directory.systemTemp.createTemp(
       'flutter_vscode_binding_cli_',
