@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "b185007537c518db6c7505045ba383dc90db00a52ba7712c98364e13b5c995e2"
+      "sha256": "31f64a00698c44b1f68c7a28782c925784abf54593a07c47cbec6ba7ee99aecf"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -60,7 +60,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "308af0c87a58928898eff11cbee55a6ef1dfb22829b03d9a4bab4e1f96d77308"
+      "sha256": "77653dececc311e3d0e7d98ef61dded6cd974aef6cccc6742881cb6f0841ac92"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -68,11 +68,11 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "aa3d8933429560b79cd35529dc76992a93a0ce2ea5d1f6cde844d458b695ba15"
+      "sha256": "e4ec7d48856ee509e31dbe14c4b9836d7136091b1cd0ec3d1acd29dfef8eb787"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "948ed0715d05e29cd8e04f3d45995dedc424125a6757915ee3265e2e19130050"
+      "sha256": "92f4171cbfad1d1fe70e31c191c6fbc651484684d924536d02c066818eb31dcc"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -142,6 +142,10 @@
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart",
       "sha256": "5f98c060e2bfeec73b7f9301edd7647187bdc3ca60e29ed438cd08f3cfa33845"
     },
+    "generatedParityLayer": {
+      "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity_layer.g.dart",
+      "sha256": "05af46627c2b098521a26cebc8b2a794740b0626cf664dcfa77510231d14264e"
+    },
     "generatedRuntime": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
       "sha256": "baf4b7b9ba58773b58efa80a06f8efb6ffff2f6799c8d1cc00beed86c6173411"
@@ -180,7 +184,7 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "40de7ba343ca14a3f6264817062534933ee0912c8ead18990edb4cbd5c1d4ab2"
+      "sha256": "e5d530c49927259ec63584a8b3430bb7da7eab282dab523ff5027690d632ad80"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",

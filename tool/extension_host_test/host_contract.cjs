@@ -49,6 +49,9 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
     'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
   generatedParity:
     'test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart',
+  generatedParityLayer:
+    'test/fixtures/host_extension/host/lib/generated/' +
+    'vscode_parity_layer.g.dart',
   generatedRuntime:
     'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
   generatedViewProtocol:

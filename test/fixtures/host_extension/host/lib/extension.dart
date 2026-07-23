@@ -4,6 +4,8 @@ import 'dart:math';
 
 import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/vscode_parity_layer.g.dart'
+    as parity;
 import 'package:flutter_vscode_host_fixture/host_webview_transport.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
 
@@ -18,6 +20,9 @@ const _jsPromiseRoundTripCommand =
     'flutter-vscode.host-test.jsPromiseRoundTrip';
 const _hoverReceivedCancellationTokenCommand =
     'flutter-vscode.host-test.hoverReceivedCancellationToken';
+const _paritySmokeCommand = 'flutter-vscode.host-test.paritySmoke';
+const _disposeParityProviderCommand =
+    'flutter-vscode.host-test.disposeParityProvider';
 const _openFlutterViewCommand = 'flutter-vscode.host-test.openFlutterView';
 const _probeFlutterViewProtocolCommand =
     'flutter-vscode.host-test.probeFlutterViewProtocol';
@@ -131,6 +136,62 @@ class _VSCodeHostExtension {
                 jsPromiseRoundTrip,
               );
           context.addSubscription(jsPromiseRoundTripRegistration);
+
+          parity.Disposable? parityHoverRegistration;
+          final paritySmoke = (() {
+            final api = parity.VscodeApi(rawVscode);
+            final position = api.Position.new$(3.toJS, 7.toJS);
+            final translated = position.translate(1);
+            final uri = api.Uri.file('/parity/smoke.json');
+            api.workspace.onDidChangeConfiguration
+                .call(((JSObject event) {}).toJS)
+                .dispose();
+            final provider = parity.HoverProvider.lit$(
+              provideHover: ((
+                JSObject document,
+                JSObject hoverPosition,
+                JSObject token,
+              ) {
+                final markdown = api.MarkdownString.new$(
+                  'Hover from the parity layer'.toJS,
+                );
+                return api.Hover.new$(markdown);
+              }).toJS,
+            );
+            final selector = parity.DocumentFilter.lit$(
+              language: 'json'.toJS,
+            );
+            parityHoverRegistration =
+                api.languages.registerHoverProvider(selector, provider);
+            return toHostPromise(
+              api.commands.getCommands(true).toDart.then((commands) {
+                return <String, Object?>{
+                  'version': api.version,
+                  'viewColumnActive': api.ViewColumn.Active,
+                  'fileTypeFile': api.FileType.File,
+                  'translatedLine': translated.line,
+                  'uriFsPath': uri.fsPath,
+                  'uriToString': uri.toString$(),
+                  'commandCount': commands.toDart.length,
+                  'eventSubscribed': true,
+                }.jsify();
+              }),
+            );
+          }).toJS;
+          final paritySmokeRegistration = vscode.commandApi
+              .registerCommandCallback(_paritySmokeCommand.toJS, paritySmoke);
+          context.addSubscription(paritySmokeRegistration);
+          final disposeParityProvider = (() {
+            parityHoverRegistration?.dispose();
+            parityHoverRegistration = null;
+            return null;
+          }).toJS;
+          final disposeParityProviderRegistration =
+              vscode.commandApi.registerCommandCallback(
+            _disposeParityProviderCommand.toJS,
+            disposeParityProvider,
+          );
+          context.addSubscription(disposeParityProviderRegistration);
 
           final failAsync = (() {
             return toHostPromise(

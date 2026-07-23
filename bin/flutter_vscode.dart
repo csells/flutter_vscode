@@ -9,6 +9,7 @@ import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
 import '../tool/binding_generator/generator.dart';
+import '../tool/binding_generator/parity_layer.dart';
 import '../tool/binding_generator/writer.dart';
 import '../tool/check_host_imports.dart';
 
@@ -251,6 +252,9 @@ Future<void> _buildProject(Directory root) async {
     await generatedRoot.delete(recursive: true);
   }
   await writeGeneratedBindings(generated, root);
+  final parityArtifacts = emitParityLayer(bindingInputs.inventory);
+  await File(p.join(generatedRoot.path, 'vscode_parity_layer.g.dart'))
+      .writeAsString(parityArtifacts.library);
   if (views.isNotEmpty) {
     final protocolSource = File(
       p.join(packageRoot.path, 'lib', 'src', 'view_protocol.dart'),
