@@ -784,7 +784,12 @@ List<String> _checkHostAndSharedImports({
         continue;
       }
       final relative = p.relative(entity.path, from: sourceRoot.path);
-      if (p.split(relative).contains('.dart_tool')) {
+      final segments = p.split(relative);
+      if (segments.contains('.dart_tool')) {
+        continue;
+      }
+      // Package test directories never execute inside the Extension Host.
+      if (segments.first == 'test') {
         continue;
       }
       sources.add(entity);

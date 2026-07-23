@@ -1,0 +1,13 @@
+name: treemap_panel
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  coverage_treemap_shared:
+    path: ../../shared
+  flutter:
+    sdk: flutter
+  flutter_vscode:
+    path: ../../../..

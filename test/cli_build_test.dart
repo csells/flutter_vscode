@@ -259,6 +259,44 @@ Map<String, Object?> _createExtension() {
   );
 
   test(
+    'build ignores package test directories in the boundary check',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_shared_tests_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+      final create = await Process.run(
+        'dart',
+        [executable, 'create', 'my_extension'],
+        workingDirectory: workspace.path,
+      );
+      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
+      final project = Directory(p.join(workspace.path, 'my_extension'));
+      final sharedTests = Directory(p.join(project.path, 'shared', 'test'))
+        ..createSync(recursive: true);
+      // Author tests for shared code depend on packages (like test) that
+      // never run inside the Extension Host and must not fail the build.
+      File(p.join(sharedTests.path, 'shared_test.dart')).writeAsStringSync(
+        "import 'package:test/test.dart';\nvoid main() {}\n",
+      );
+
+      final build = await Process.run(
+        'dart',
+        [executable, 'build'],
+        workingDirectory: project.path,
+      );
+
+      expect(build.exitCode, 0, reason: '${build.stdout}\n${build.stderr}');
+    },
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
+
+  test(
     'build reports Host Dart dependency violations',
     () async {
       final workspace = await Directory.systemTemp.createTemp(

@@ -31,37 +31,62 @@ Extension Author would:
 
 ## Exit bar
 
-- [ ] T-1 The `extensions/` area exists with the guardrails recorded in
+- [x] T-1 The `extensions/` area exists with the guardrails recorded in
   `extensions/README.md`, and the pub archive excludes `extensions/`.
   Check: repository gate suite.
-- [ ] T-2 A pure-Dart lcov parser in the extension's shared package,
+- [x] T-2 A pure-Dart lcov parser in the extension's shared package,
   red-green: `SF`/`DA`/`LF`/`LH` records, per-file line hit maps,
   per-file and per-directory aggregation, and actionable
   `FormatException`s on malformed input. Check: `dart test` in
   `extensions/coverage_treemap/shared`.
-- [ ] T-3 Host behavior compiled by `flutter_vscode build`: reads
+- [x] T-3 Host behavior compiled by `flutter_vscode build`: reads
   `coverage/lcov.info` from the first workspace folder via
   `workspace.fs`, decorates covered and uncovered lines in the active
   editor, shows a status-bar coverage percentage, refreshes from a
   `FileSystemWatcher` on the coverage file, and contributes commands
   (show treemap, refresh, toggle line highlights). Check: build green.
-- [ ] T-4 The treemap Flutter View: a squarified treemap of
+- [x] T-4 The treemap Flutter View: a squarified treemap of
   per-directory and per-file coverage, connected over the versioned
   view protocol with a typed coverage-snapshot operation and a refresh
   action (protocol v1 has no host-to-view push; that gap is already
   recorded in futures). Check: build green including the view;
   the shared codec has round-trip tests.
-- [ ] T-5 `flutter_vscode package` writes an installable
+- [x] T-5 `flutter_vscode package` writes an installable
   `coverage-treemap-<version>.vsix`. Check: package green.
 - [ ] T-6 Real-host proof: a scripted gate installs the packaged VSIX
   into the pinned Extension Host against a workspace with a real
   `lcov.info` and executes a smoke command returning parsed-coverage
   evidence. Check: the script exits 0 with assertions on the returned
   snapshot.
-- [ ] T-7 Docs: `extensions/README.md` describes the area and each
+- [x] T-7 Docs: `extensions/README.md` describes the area and each
   extension's build/run/debug story; the root README points at the
   shipped examples. Check: repository gate suite.
 
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **Red T-2** (commit 7b0d10c): `extensions/` scaffolded through the
+   CLI, pub archive exclusion added, and the shared lcov suite landed
+   failing — `parseLcov` did not exist.
+2. **Green T-2**: the parser plus the view-contract snapshot codec pass
+   13/13 (`dart test` in the shared package): per-file hit maps, LF/LH
+   derivation, directory-tree rollups, ignored record kinds, actionable
+   `FormatException`s with line numbers, and strict snapshot
+   encode/decode round-trips.
+3. **Red T-3** (build failures, in order): the descriptor parser
+   rejects adjacent-string concatenation (single literal only); the
+   host boundary checker scanned `shared/test/` and failed on
+   `package:test` — an author-blocking framework gap. The framework fix
+   landed red-green in `test/cli_build_test.dart` ("build ignores
+   package test directories in the boundary check"): package `test/`
+   directories are skipped because they never execute in the Extension
+   Host.
+4. **Green T-3/T-4/T-5**: `flutter_vscode build` compiles the full
+   extension — decorations built via `ThemableDecorationRenderOptions`
+   wrapped into `DecorationRenderOptions` (the `lit$` factory does not
+   include inherited members; recorded as developer-experience D-2),
+   status bar via `createStatusBarItem$2`, watcher, four commands, and
+   the squarified-treemap Flutter View connected over the typed
+   snapshot operation. `flutter_vscode package` writes
+   `coverage-treemap-0.0.1.vsix`. Repo `flutter analyze` clean.

@@ -23,9 +23,12 @@ sequence or schedule. Rough dependency order below.
   live-coverage round).
 - Runtime semantics for the View protocol: cancellation, host-to-view
   requests, events/streams, handles, backpressure (protocol v1 today has
-  none of these; disposal is session-level only).
-- Product workflow: `doctor`, `test`, `upgrade`; generated-file ownership
-  and repair; v0 migration after real usage (the legacy
+  none of these; disposal is session-level only). Graduated to
+  [developer-experience.md](developer-experience.md) D-4.
+- Product workflow: `doctor` and `test` graduated to
+  [developer-experience.md](developer-experience.md) D-7; `upgrade`
+  depends on multi-baseline support (D-8). Generated-file ownership and
+  repair, plus v0 migration after real usage, remain here (the legacy
   `generate_vscode_extension` executable still ships with a legacy
   notice until then).
 - Hardening: two extensions in one host, failure injection, protocol
@@ -57,12 +60,16 @@ sequence or schedule. Rough dependency order below.
 - The ECMAScript whitespace predicate exists in two implementations held
   together by mirrored tests.
 - The host-side view transport lives in the test fixture rather than as
-  a framework module.
+  a framework module — and the first shipped extension had to carry its
+  own copy. Graduated to
+  [developer-experience.md](developer-experience.md) D-1.
 - A registered-shape hash is key-order sensitive (bounded: child
   cross-checks still bind content).
 - The only Extension Host proof platform is Linux-in-Docker; every gate
   re-downloads VS Code.
-- No real extension exists outside the repository fixtures.
+- The only real extension so far ships in-repo under `extensions/`
+  (Coverage Treemap); a framework-external extension still does not
+  exist.
 
 ## Upstream contribution (owner's call)
 

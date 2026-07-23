@@ -295,6 +295,14 @@ Dart-only case. For the view side, run
 the browser console, network, and element inspectors for the Flutter web
 runtime inside the panel.
 
+## Shipped example extensions
+
+Complete, working extensions built with this workflow live in
+[`extensions/`](extensions/README.md) — starting with
+**Coverage Treemap**, which paints `lcov.info` line coverage into the
+editor and renders an interactive coverage treemap in a Flutter View.
+They double as reference implementations for the patterns above.
+
 ## Legacy v0 webview workflow
 
 The original `generate_vscode_extension` command, annotation generator, and
