@@ -48,6 +48,47 @@ async function run() {
     jsPromiseSource.dispose();
   }
 
+  console.log('[host-test] RED/GREEN: parity layer against the live host');
+  const paritySmoke = await vscode.commands.executeCommand(
+    'flutter-vscode.host-test.paritySmoke',
+  );
+  assert.ok(paritySmoke, 'parity smoke command returned nothing');
+  assert.equal(paritySmoke.version, vscode.version);
+  assert.equal(paritySmoke.viewColumnActive, -1);
+  assert.equal(paritySmoke.fileTypeFile, 1);
+  assert.equal(paritySmoke.translatedLine, 4);
+  assert.equal(paritySmoke.uriFsPath, '/parity/smoke.json');
+  assert.equal(paritySmoke.uriToString, 'file:///parity/smoke.json');
+  assert.ok(paritySmoke.commandCount > 10, 'getCommands round-trip empty');
+  assert.equal(paritySmoke.eventSubscribed, true);
+  const parityDocument = await vscode.workspace.openTextDocument({
+    language: 'json',
+    content: '{"parity": true}',
+  });
+  const parityHovers = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    parityDocument.uri,
+    new vscode.Position(0, 3),
+  );
+  assert.equal(parityHovers.length, 1, 'parity-registered provider missing');
+  assert.equal(
+    parityHovers[0].contents[0].value,
+    'Hover from the parity layer',
+  );
+  await vscode.commands.executeCommand(
+    'flutter-vscode.host-test.disposeParityProvider',
+  );
+  const afterDispose = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    parityDocument.uri,
+    new vscode.Position(0, 3),
+  );
+  assert.equal(
+    afterDispose.length,
+    0,
+    'parity-registered provider survived disposal',
+  );
+
   console.log('[host-test] RED/GREEN: Dart async error');
   await assert.rejects(
     vscode.commands.executeCommand(failAsyncCommandId),

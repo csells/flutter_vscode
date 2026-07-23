@@ -47,7 +47,7 @@ typedef DiagnosticSeverity = int;
 typedef DiagnosticTag = int;
 typedef DocumentHighlightKind = int;
 typedef DocumentPasteTriggerKind = int;
-typedef DocumentSelector = JSAny?;
+typedef DocumentSelector = JSAny;
 
 typedef EndOfLine = int;
 typedef EnvironmentVariableMutatorType = int;
@@ -59,7 +59,7 @@ typedef FileCoverageDetail = JSObject;
 typedef FilePermission = int;
 typedef FileType = int;
 typedef FoldingRangeKind = int;
-typedef GlobPattern = JSAny?;
+typedef GlobPattern = JSAny;
 
 typedef IconPath = JSObject;
 
@@ -77,7 +77,7 @@ typedef LanguageModelResponsePart = JSObject;
 
 typedef LanguageStatusSeverity = int;
 typedef LogLevel = int;
-typedef MarkedString = JSAny?;
+typedef MarkedString = JSAny;
 
 typedef McpServerDefinition = JSObject;
 
@@ -187,49 +187,58 @@ extension type JSAnon_90b1eaa702e4(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_af97be86c0c7(JSObject _self) implements JSObject {
-  external JSAny? get createIfNone;
-  external set createIfNone(JSAny? value);
+  external factory JSAnon_af97be86c0c7.lit$({JSAny? createIfNone});
+  external JSAny get createIfNone;
+  external set createIfNone(JSAny value);
 }
 
 extension type JSAnon_cdd103013c05(JSObject _self) implements JSObject {
-  external JSAny? get forceNewSession;
-  external set forceNewSession(JSAny? value);
+  external factory JSAnon_cdd103013c05.lit$({JSAny? forceNewSession});
+  external JSAny get forceNewSession;
+  external set forceNewSession(JSAny value);
 }
 
 extension type JSAnon_190a3fc62b24(JSObject _self) implements JSObject {
+  external factory JSAnon_190a3fc62b24.lit$({JSObject? args, JSAny? comment, JSString? message});
   external JSObject? get args;
   external set args(JSObject? value);
-  external JSAny? get comment;
-  external set comment(JSAny? value);
+  external JSAny get comment;
+  external set comment(JSAny value);
   external String get message;
   external set message(String value);
 }
 
 extension type JSAnon_0937a16a6355(JSObject _self) implements JSObject {
+  external factory JSAnon_0937a16a6355.lit$({JSBoolean? log});
   external bool get log;
   external set log(bool value);
 }
 
 extension type JSAnon_fc85cbbeff88(JSObject _self) implements JSObject {
+  external factory JSAnon_fc85cbbeff88.lit$({JSBoolean? preserveFocus, JSNumber? viewColumn});
   external bool? get preserveFocus;
   external int get viewColumn;
 }
 
 extension type JSAnon_544a305acd79(JSObject _self) implements JSObject {
+  external factory JSAnon_544a305acd79.lit$({JSBoolean? supportsMultipleEditorsPerDocument, WebviewPanelOptions? webviewOptions});
   external bool? get supportsMultipleEditorsPerDocument;
   external WebviewPanelOptions? get webviewOptions;
 }
 
 extension type JSAnon_202de06b6fac(JSObject _self) implements JSObject {
+  external factory JSAnon_202de06b6fac.lit$({JSAnon_337f2402bc9d? webviewOptions});
   external JSAnon_337f2402bc9d? get webviewOptions;
 }
 
 extension type JSAnon_997f9ce7b5db(JSObject _self) implements JSObject {
+  external factory JSAnon_997f9ce7b5db.lit$({JSBoolean? canPickMany});
   external bool get canPickMany;
   external set canPickMany(bool value);
 }
 
 extension type JSAnon_879fda8037df(JSObject _self) implements JSObject {
+  external factory JSAnon_879fda8037df.lit$({JSNumber? increment, JSString? message});
   external num? get increment;
   external set increment(num? value);
   external String? get message;
@@ -237,18 +246,22 @@ extension type JSAnon_879fda8037df(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_bce51fc74910(JSObject _self) implements JSObject {
+  external factory JSAnon_bce51fc74910.lit$({JSString? encoding});
   external String get encoding;
 }
 
 extension type JSAnon_5f13b3458117(JSObject _self) implements JSObject {
+  external factory JSAnon_5f13b3458117.lit$({Uri? uri});
   external Uri get uri;
 }
 
 extension type JSAnon_d8666bad7f07(JSObject _self) implements JSObject {
+  external factory JSAnon_d8666bad7f07.lit$({JSString? encoding});
   external String? get encoding;
 }
 
 extension type JSAnon_46c65550b867(JSObject _self) implements JSObject {
+  external factory JSAnon_46c65550b867.lit$({JSString? content, JSString? encoding, JSString? language});
   external String? get content;
   external set content(String? value);
   external String? get encoding;
@@ -257,31 +270,37 @@ extension type JSAnon_46c65550b867(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_3b8881df895e(JSObject _self) implements JSObject {
+  external factory JSAnon_3b8881df895e.lit$({JSBoolean? isCaseSensitive, JSAny? isReadonly});
   external bool? get isCaseSensitive;
   external JSAny? get isReadonly;
 }
 
 extension type JSAnon_ca4121a2aaf6(JSObject _self) implements JSObject {
+  external factory JSAnon_ca4121a2aaf6.lit$({JSString? name, Uri? uri});
   external String? get name;
   external Uri get uri;
 }
 
 extension type JSAnon_0a93578cd4a3(JSObject _self) implements JSObject {
+  external factory JSAnon_0a93578cd4a3.lit$({JSFunction? dispose});
   external JSFunction get dispose;
   external set dispose(JSFunction value);
 }
 
 extension type JSAnon_e0c29a989921(JSObject _self) implements JSObject {
+  external factory JSAnon_e0c29a989921.lit$({TextDocument? document, Range? range});
   external TextDocument get document;
   external Range get range;
 }
 
 extension type JSAnon_b2623fd46fde(JSObject _self) implements JSObject {
+  external factory JSAnon_b2623fd46fde.lit$({JSBoolean? overwrite});
   external bool? get overwrite;
   external set overwrite(bool? value);
 }
 
 extension type JSAnon_576b1a88ebc3(JSObject _self) implements JSObject {
+  external factory JSAnon_576b1a88ebc3.lit$({JSBoolean? recursive, JSBoolean? useTrash});
   external bool? get recursive;
   external set recursive(bool? value);
   external bool? get useTrash;
@@ -289,24 +308,29 @@ extension type JSAnon_576b1a88ebc3(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_f4ceea3f5f6f(JSObject _self) implements JSObject {
+  external factory JSAnon_f4ceea3f5f6f.lit$({JSBoolean? overwrite});
   external bool get overwrite;
 }
 
 extension type JSAnon_4ae6d0aa1bdf(JSObject _self) implements JSObject {
+  external factory JSAnon_4ae6d0aa1bdf.lit$({JSBoolean? recursive});
   external bool get recursive;
 }
 
 extension type JSAnon_ce282821cb2a(JSObject _self) implements JSObject {
+  external factory JSAnon_ce282821cb2a.lit$({JSArray<JSString>? excludes, JSBoolean? recursive});
   external JSArray<JSString> get excludes;
   external bool get recursive;
 }
 
 extension type JSAnon_95947812f514(JSObject _self) implements JSObject {
+  external factory JSAnon_95947812f514.lit$({JSBoolean? create, JSBoolean? overwrite});
   external bool get create;
   external bool get overwrite;
 }
 
 extension type JSAnon_d702e8e12ae8(JSObject _self) implements JSObject {
+  external factory JSAnon_d702e8e12ae8.lit$({JSNumber? end, JSNumber? start});
   external num? get end;
   external set end(num? value);
   external num? get start;
@@ -314,6 +338,7 @@ extension type JSAnon_d702e8e12ae8(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_5687bad38499(JSObject _self) implements JSObject {
+  external factory JSAnon_5687bad38499.lit$({JSNumber? characterDelta, JSNumber? lineDelta});
   external num? get characterDelta;
   external set characterDelta(num? value);
   external num? get lineDelta;
@@ -321,6 +346,7 @@ extension type JSAnon_5687bad38499(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_91ec0d04130c(JSObject _self) implements JSObject {
+  external factory JSAnon_91ec0d04130c.lit$({JSNumber? character, JSNumber? line});
   external num? get character;
   external set character(num? value);
   external num? get line;
@@ -328,6 +354,7 @@ extension type JSAnon_91ec0d04130c(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_471b06108965(JSObject _self) implements JSObject {
+  external factory JSAnon_471b06108965.lit$({Position? end, Position? start});
   external Position? get end;
   external set end(Position? value);
   external Position? get start;
@@ -335,6 +362,7 @@ extension type JSAnon_471b06108965(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_834452ade499(JSObject _self) implements JSObject {
+  external factory JSAnon_834452ade499.lit$({JSString? placeholder, Range? range});
   external String get placeholder;
   external set placeholder(String value);
   external Range get range;
@@ -342,23 +370,27 @@ extension type JSAnon_834452ade499(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_c32f2c0618c1(JSObject _self) implements JSObject {
+  external factory JSAnon_c32f2c0618c1.lit$({JSBoolean? undoStopAfter, JSBoolean? undoStopBefore});
   external bool get undoStopAfter;
   external bool get undoStopBefore;
 }
 
 extension type JSAnon_d6158a9f7600(JSObject _self) implements JSObject {
+  external factory JSAnon_d6158a9f7600.lit$({JSBoolean? keepWhitespace, JSBoolean? undoStopAfter, JSBoolean? undoStopBefore});
   external bool? get keepWhitespace;
   external bool get undoStopAfter;
   external bool get undoStopBefore;
 }
 
 extension type JSAnon_49025246bc6f(JSObject _self) implements JSObject {
+  external factory JSAnon_49025246bc6f.lit$({JSAny? expand, JSBoolean? focus, JSBoolean? select});
   external JSAny? get expand;
   external bool? get focus;
   external bool? get select;
 }
 
 extension type JSAnon_5503263f5517(JSObject _self) implements JSObject {
+  external factory JSAnon_5503263f5517.lit$({JSString? authority, JSString? fragment, JSString? path, JSString? query, JSString? scheme});
   external String? get authority;
   external String? get fragment;
   external String? get path;
@@ -367,6 +399,7 @@ extension type JSAnon_5503263f5517(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_67772e4ecc2b(JSObject _self) implements JSObject {
+  external factory JSAnon_67772e4ecc2b.lit$({JSString? authority, JSString? fragment, JSString? path, JSString? query, JSString? scheme});
   external String? get authority;
   external set authority(String? value);
   external String? get fragment;
@@ -380,6 +413,7 @@ extension type JSAnon_67772e4ecc2b(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_406956b7ed59(JSObject _self) implements JSObject {
+  external factory JSAnon_406956b7ed59.lit$({JSAny? defaultLanguageValue, JSAny? defaultValue, JSAny? globalLanguageValue, JSAny? globalValue, JSString? key, JSArray<JSString>? languageIds, JSAny? workspaceFolderLanguageValue, JSAny? workspaceFolderValue, JSAny? workspaceLanguageValue, JSAny? workspaceValue});
   external JSAny? get defaultLanguageValue;
   external set defaultLanguageValue(JSAny? value);
   external JSAny? get defaultValue;
@@ -403,26 +437,31 @@ extension type JSAnon_406956b7ed59(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_05617a7b4547(JSObject _self) implements JSObject {
+  external factory JSAnon_05617a7b4547.lit$({JSObject? contents, JSBoolean? ignoreIfExists, JSBoolean? overwrite});
   external JSObject? get contents;
   external bool? get ignoreIfExists;
   external bool? get overwrite;
 }
 
 extension type JSAnon_6f600fe6d695(JSObject _self) implements JSObject {
+  external factory JSAnon_6f600fe6d695.lit$({JSBoolean? ignoreIfNotExists, JSBoolean? recursive});
   external bool? get ignoreIfNotExists;
   external bool? get recursive;
 }
 
 extension type JSAnon_ed2698223f98(JSObject _self) implements JSObject {
+  external factory JSAnon_ed2698223f98.lit$({JSBoolean? ignoreIfExists, JSBoolean? overwrite});
   external bool? get ignoreIfExists;
   external bool? get overwrite;
 }
 
 extension type JSAnon_4caec6211e15(JSObject _self) implements JSObject {
+  external factory JSAnon_4caec6211e15.lit$({JSString? reason});
   external String get reason;
 }
 
 extension type JSAnon_f7c793236eba(JSObject _self) implements JSObject {
+  external factory JSAnon_f7c793236eba.lit$({Range? inserting, Range? replacing});
   external Range get inserting;
   external set inserting(Range value);
   external Range get replacing;
@@ -430,17 +469,20 @@ extension type JSAnon_f7c793236eba(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_588b120e4aae(JSObject _self) implements JSObject {
+  external factory JSAnon_588b120e4aae.lit$({Uri? target, JSAny? value});
   external Uri get target;
   external set target(Uri value);
-  external JSAny? get value;
-  external set value(JSAny? value);
+  external JSAny get value;
+  external set value(JSAny value);
 }
 
 extension type JSAnon_8ecf0c868e89(JSObject _self) implements JSObject {
+  external factory JSAnon_8ecf0c868e89.lit$({JSArray<JSString>? enabledCommands});
   external JSArray<JSString> get enabledCommands;
 }
 
 extension type JSAnon_ef7f0ac74d5c(JSObject _self) implements JSObject {
+  external factory JSAnon_ef7f0ac74d5c.lit$({AccessibilityInformation? accessibilityInformation, JSNumber? state, JSString? tooltip});
   external AccessibilityInformation? get accessibilityInformation;
   external int get state;
   external String? get tooltip;
@@ -451,6 +493,7 @@ extension type JSAnon_cd1da709a211(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_f698f56281f5(JSObject _self) implements JSObject {
+  external factory JSAnon_f698f56281f5.lit$({Command? command, CodeActionKind? kind});
   external Command get command;
   external CodeActionKind get kind;
 }
@@ -461,24 +504,29 @@ extension type JSAnon_c77c8585355a(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_185648dab94d(JSObject _self) implements JSObject {
+  external factory JSAnon_185648dab94d.lit$({JSFunction? setKeysForSync});
   external void setKeysForSync(JSArray<JSString> keys);
 }
 
 extension type JSAnon_ffa2e03c40a2(JSObject _self) implements JSObject {
+  external factory JSAnon_ffa2e03c40a2.lit$({JSFunction? dispose});
   external JSAny? dispose();
 }
 
 extension type JSAnon_7c30c4713d83(JSObject _self) implements JSObject {
+  external factory JSAnon_7c30c4713d83.lit$({Uri? newUri, Uri? oldUri});
   external Uri get newUri;
   external Uri get oldUri;
 }
 
 extension type JSAnon_3800d8dfe13a(JSObject _self) implements JSObject {
+  external factory JSAnon_3800d8dfe13a.lit$({JSArray<JSAnon_393d84ef6035>? autoClosingPairs});
   external JSArray<JSAnon_393d84ef6035> get autoClosingPairs;
   external set autoClosingPairs(JSArray<JSAnon_393d84ef6035> value);
 }
 
 extension type JSAnon_7e699a4ba0b6(JSObject _self) implements JSObject {
+  external factory JSAnon_7e699a4ba0b6.lit$({JSAny? brackets, JSAnon_e6d00e2e01a5? docComment});
   external JSAny? get brackets;
   external set brackets(JSAny? value);
   external JSAnon_e6d00e2e01a5? get docComment;
@@ -486,11 +534,13 @@ extension type JSAnon_7e699a4ba0b6(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_2ef6a897fc39(JSObject _self) implements JSObject {
+  external factory JSAnon_2ef6a897fc39.lit$({JSNumber? endTime, JSNumber? startTime});
   external num get endTime;
   external num get startTime;
 }
 
 extension type JSAnon_a6a068851ba0(JSObject _self) implements JSObject {
+  external factory JSAnon_a6a068851ba0.lit$({NotebookDocument? notebook, JSBoolean? selected});
   external NotebookDocument get notebook;
   external bool get selected;
 }
@@ -501,6 +551,7 @@ extension type JSAnon_8493e550322c(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_68b4d8c85bba(JSObject _self) implements JSObject {
+  external factory JSAnon_68b4d8c85bba.lit$({NotebookEditor? editor, JSAny? message});
   external NotebookEditor get editor;
   external JSAny? get message;
 }
@@ -511,16 +562,19 @@ extension type JSAnon_04cd047eb59c(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_d424d3df46f9(JSObject _self) implements JSObject {
+  external factory JSAnon_d424d3df46f9.lit$({JSString? viewId});
   external String get viewId;
   external set viewId(String value);
 }
 
 extension type JSAnon_dc1f16364c4a(JSObject _self) implements JSObject {
+  external factory JSAnon_dc1f16364c4a.lit$({JSBoolean? checked});
   external bool get checked;
   external set checked(bool value);
 }
 
 extension type JSAnon_1507e616ac62(JSObject _self) implements JSObject {
+  external factory JSAnon_1507e616ac62.lit$({JSString? charsToEscape, JSString? escapeChar});
   external String get charsToEscape;
   external set charsToEscape(String value);
   external String get escapeChar;
@@ -533,10 +587,12 @@ extension type JSAnon_5cec6a3f14bb(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_337f2402bc9d(JSObject _self) implements JSObject {
+  external factory JSAnon_337f2402bc9d.lit$({JSBoolean? retainContextWhenHidden});
   external bool? get retainContextWhenHidden;
 }
 
 extension type JSAnon_393d84ef6035(JSObject _self) implements JSObject {
+  external factory JSAnon_393d84ef6035.lit$({JSString? close, JSArray<JSString>? notIn, JSString? open});
   external String get close;
   external set close(String value);
   external JSArray<JSString>? get notIn;
@@ -546,6 +602,7 @@ extension type JSAnon_393d84ef6035(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_e6d00e2e01a5(JSObject _self) implements JSObject {
+  external factory JSAnon_e6d00e2e01a5.lit$({JSString? close, JSString? lineStart, JSString? open, JSString? scope});
   external String? get close;
   external set close(String? value);
   external String get lineStart;
@@ -557,6 +614,7 @@ extension type JSAnon_e6d00e2e01a5(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_61f1b291a4f5(JSObject _self) implements JSObject {
+  external factory JSAnon_61f1b291a4f5.lit$({JSString? languageId, Uri? uri});
   external String get languageId;
   external set languageId(String value);
   external Uri? get uri;
@@ -564,6 +622,7 @@ extension type JSAnon_61f1b291a4f5(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_a5a3481054d2(JSObject _self) implements JSObject {
+  external factory JSAnon_a5a3481054d2.lit$({Uri? dark, Uri? light});
   external Uri get dark;
   external set dark(Uri value);
   external Uri get light;
@@ -571,6 +630,7 @@ extension type JSAnon_a5a3481054d2(JSObject _self) implements JSObject {
 }
 
 extension type JSAnon_a905fa8af122(JSObject _self) implements JSObject {
+  external factory JSAnon_a905fa8af122.lit$({JSString? language, JSString? value});
   external String get language;
   external set language(String value);
   external String get value;
@@ -1054,7 +1114,7 @@ extension type DebugNs(JSObject _self) implements JSObject {
   external Disposable registerDebugAdapterTrackerFactory(String debugType, DebugAdapterTrackerFactory factory);
   external Disposable registerDebugConfigurationProvider(String debugType, DebugConfigurationProvider provider, [int? triggerKind]);
   external void removeBreakpoints(JSArray<Breakpoint> breakpoints);
-  external JSPromise<JSBoolean> startDebugging(WorkspaceFolder? folder, JSAny? nameOrConfiguration, [JSObject? parentSessionOrOptions]);
+  external JSPromise<JSBoolean> startDebugging(WorkspaceFolder? folder, JSAny nameOrConfiguration, [JSObject? parentSessionOrOptions]);
   external JSPromise<JSAny?> stopDebugging([DebugSession? session]);
 }
 
@@ -1103,55 +1163,55 @@ extension type L10nNs(JSObject _self) implements JSObject {
 
 extension type LanguagesNs(JSObject _self) implements JSObject {
   external DiagnosticCollection createDiagnosticCollection([String? name]);
-  external LanguageStatusItem createLanguageStatusItem(String id, JSAny? selector);
+  external LanguageStatusItem createLanguageStatusItem(String id, JSAny selector);
   external JSArray<Diagnostic> getDiagnostics(Uri resource);
   @JS('getDiagnostics')
   external JSArray<JSTuple_36b05bc0bf39> getDiagnostics$2();
   external JSPromise<JSArray<JSString>> getLanguages();
-  external num match(JSAny? selector, TextDocument document);
+  external num match(JSAny selector, TextDocument document);
   external Event<DiagnosticChangeEvent> get onDidChangeDiagnostics;
-  external Disposable registerCallHierarchyProvider(JSAny? selector, CallHierarchyProvider provider);
-  external Disposable registerCodeActionsProvider(JSAny? selector, CodeActionProvider<JSAny?> provider, [CodeActionProviderMetadata? metadata]);
-  external Disposable registerCodeLensProvider(JSAny? selector, CodeLensProvider<JSAny?> provider);
-  external Disposable registerColorProvider(JSAny? selector, DocumentColorProvider provider);
-  Disposable registerCompletionItemProvider(JSAny? selector, CompletionItemProvider<JSAny?> provider, [List<JSAny?> triggerCharacters = const []]) {
+  external Disposable registerCallHierarchyProvider(JSAny selector, CallHierarchyProvider provider);
+  external Disposable registerCodeActionsProvider(JSAny selector, CodeActionProvider<JSAny?> provider, [CodeActionProviderMetadata? metadata]);
+  external Disposable registerCodeLensProvider(JSAny selector, CodeLensProvider<JSAny?> provider);
+  external Disposable registerColorProvider(JSAny selector, DocumentColorProvider provider);
+  Disposable registerCompletionItemProvider(JSAny selector, CompletionItemProvider<JSAny?> provider, [List<JSAny?> triggerCharacters = const []]) {
     final args$ = <JSAny?>[selector, provider, ...triggerCharacters];
     return _self.callMethodVarArgs<Disposable>('registerCompletionItemProvider'.toJS, args$.sublist(0, args$.length));
   }
-  external Disposable registerDeclarationProvider(JSAny? selector, DeclarationProvider provider);
-  external Disposable registerDefinitionProvider(JSAny? selector, DefinitionProvider provider);
-  external Disposable registerDocumentDropEditProvider(JSAny? selector, DocumentDropEditProvider<JSAny?> provider, [DocumentDropEditProviderMetadata? metadata]);
-  external Disposable registerDocumentFormattingEditProvider(JSAny? selector, DocumentFormattingEditProvider provider);
-  external Disposable registerDocumentHighlightProvider(JSAny? selector, DocumentHighlightProvider provider);
-  external Disposable registerDocumentLinkProvider(JSAny? selector, DocumentLinkProvider<JSAny?> provider);
-  external Disposable registerDocumentPasteEditProvider(JSAny? selector, DocumentPasteEditProvider<JSAny?> provider, DocumentPasteProviderMetadata metadata);
-  external Disposable registerDocumentRangeFormattingEditProvider(JSAny? selector, DocumentRangeFormattingEditProvider provider);
-  external Disposable registerDocumentRangeSemanticTokensProvider(JSAny? selector, DocumentRangeSemanticTokensProvider provider, SemanticTokensLegend legend);
-  external Disposable registerDocumentSemanticTokensProvider(JSAny? selector, DocumentSemanticTokensProvider provider, SemanticTokensLegend legend);
-  external Disposable registerDocumentSymbolProvider(JSAny? selector, DocumentSymbolProvider provider, [DocumentSymbolProviderMetadata? metaData]);
-  external Disposable registerEvaluatableExpressionProvider(JSAny? selector, EvaluatableExpressionProvider provider);
-  external Disposable registerFoldingRangeProvider(JSAny? selector, FoldingRangeProvider provider);
-  external Disposable registerHoverProvider(JSAny? selector, HoverProvider provider);
-  external Disposable registerImplementationProvider(JSAny? selector, ImplementationProvider provider);
-  external Disposable registerInlayHintsProvider(JSAny? selector, InlayHintsProvider<JSAny?> provider);
-  external Disposable registerInlineCompletionItemProvider(JSAny? selector, InlineCompletionItemProvider provider);
-  external Disposable registerInlineValuesProvider(JSAny? selector, InlineValuesProvider provider);
-  external Disposable registerLinkedEditingRangeProvider(JSAny? selector, LinkedEditingRangeProvider provider);
-  Disposable registerOnTypeFormattingEditProvider(JSAny? selector, OnTypeFormattingEditProvider provider, JSString firstTriggerCharacter, [List<JSAny?> moreTriggerCharacter = const []]) {
+  external Disposable registerDeclarationProvider(JSAny selector, DeclarationProvider provider);
+  external Disposable registerDefinitionProvider(JSAny selector, DefinitionProvider provider);
+  external Disposable registerDocumentDropEditProvider(JSAny selector, DocumentDropEditProvider<JSAny?> provider, [DocumentDropEditProviderMetadata? metadata]);
+  external Disposable registerDocumentFormattingEditProvider(JSAny selector, DocumentFormattingEditProvider provider);
+  external Disposable registerDocumentHighlightProvider(JSAny selector, DocumentHighlightProvider provider);
+  external Disposable registerDocumentLinkProvider(JSAny selector, DocumentLinkProvider<JSAny?> provider);
+  external Disposable registerDocumentPasteEditProvider(JSAny selector, DocumentPasteEditProvider<JSAny?> provider, DocumentPasteProviderMetadata metadata);
+  external Disposable registerDocumentRangeFormattingEditProvider(JSAny selector, DocumentRangeFormattingEditProvider provider);
+  external Disposable registerDocumentRangeSemanticTokensProvider(JSAny selector, DocumentRangeSemanticTokensProvider provider, SemanticTokensLegend legend);
+  external Disposable registerDocumentSemanticTokensProvider(JSAny selector, DocumentSemanticTokensProvider provider, SemanticTokensLegend legend);
+  external Disposable registerDocumentSymbolProvider(JSAny selector, DocumentSymbolProvider provider, [DocumentSymbolProviderMetadata? metaData]);
+  external Disposable registerEvaluatableExpressionProvider(JSAny selector, EvaluatableExpressionProvider provider);
+  external Disposable registerFoldingRangeProvider(JSAny selector, FoldingRangeProvider provider);
+  external Disposable registerHoverProvider(JSAny selector, HoverProvider provider);
+  external Disposable registerImplementationProvider(JSAny selector, ImplementationProvider provider);
+  external Disposable registerInlayHintsProvider(JSAny selector, InlayHintsProvider<JSAny?> provider);
+  external Disposable registerInlineCompletionItemProvider(JSAny selector, InlineCompletionItemProvider provider);
+  external Disposable registerInlineValuesProvider(JSAny selector, InlineValuesProvider provider);
+  external Disposable registerLinkedEditingRangeProvider(JSAny selector, LinkedEditingRangeProvider provider);
+  Disposable registerOnTypeFormattingEditProvider(JSAny selector, OnTypeFormattingEditProvider provider, JSString firstTriggerCharacter, [List<JSAny?> moreTriggerCharacter = const []]) {
     final args$ = <JSAny?>[selector, provider, firstTriggerCharacter, ...moreTriggerCharacter];
     return _self.callMethodVarArgs<Disposable>('registerOnTypeFormattingEditProvider'.toJS, args$.sublist(0, args$.length));
   }
-  external Disposable registerReferenceProvider(JSAny? selector, ReferenceProvider provider);
-  external Disposable registerRenameProvider(JSAny? selector, RenameProvider provider);
-  external Disposable registerSelectionRangeProvider(JSAny? selector, SelectionRangeProvider provider);
-  Disposable registerSignatureHelpProvider(JSAny? selector, SignatureHelpProvider provider, [List<JSAny?> triggerCharacters = const []]) {
+  external Disposable registerReferenceProvider(JSAny selector, ReferenceProvider provider);
+  external Disposable registerRenameProvider(JSAny selector, RenameProvider provider);
+  external Disposable registerSelectionRangeProvider(JSAny selector, SelectionRangeProvider provider);
+  Disposable registerSignatureHelpProvider(JSAny selector, SignatureHelpProvider provider, [List<JSAny?> triggerCharacters = const []]) {
     final args$ = <JSAny?>[selector, provider, ...triggerCharacters];
     return _self.callMethodVarArgs<Disposable>('registerSignatureHelpProvider'.toJS, args$.sublist(0, args$.length));
   }
   @JS('registerSignatureHelpProvider')
-  external Disposable registerSignatureHelpProvider$2(JSAny? selector, SignatureHelpProvider provider, SignatureHelpProviderMetadata metadata);
-  external Disposable registerTypeDefinitionProvider(JSAny? selector, TypeDefinitionProvider provider);
-  external Disposable registerTypeHierarchyProvider(JSAny? selector, TypeHierarchyProvider provider);
+  external Disposable registerSignatureHelpProvider$2(JSAny selector, SignatureHelpProvider provider, SignatureHelpProviderMetadata metadata);
+  external Disposable registerTypeDefinitionProvider(JSAny selector, TypeDefinitionProvider provider);
+  external Disposable registerTypeHierarchyProvider(JSAny selector, TypeHierarchyProvider provider);
   external Disposable registerWorkspaceSymbolProvider(WorkspaceSymbolProvider<JSAny?> provider);
   external Disposable setLanguageConfiguration(String language, LanguageConfiguration configuration);
   external JSPromise<TextDocument> setTextDocumentLanguage(TextDocument document, String languageId);
@@ -1215,7 +1275,7 @@ extension type WindowNs(JSObject _self) implements JSObject {
   external Terminal createTerminal$3(ExtensionTerminalOptions options);
   external TextEditorDecorationType createTextEditorDecorationType(DecorationRenderOptions options);
   external TreeView<T> createTreeView<T extends JSAny?>(String viewId, TreeViewOptions<T> options);
-  external WebviewPanel createWebviewPanel(String viewType, String title, JSAny? showOptions, [JSIntersection_9b95285c216c? options]);
+  external WebviewPanel createWebviewPanel(String viewType, String title, JSAny showOptions, [JSIntersection_9b95285c216c? options]);
   external Event<ColorTheme> get onDidChangeActiveColorTheme;
   external Event<NotebookEditor?> get onDidChangeActiveNotebookEditor;
   external Event<Terminal?> get onDidChangeActiveTerminal;
@@ -1325,8 +1385,8 @@ extension type WindowNs(JSObject _self) implements JSObject {
 
 extension type WorkspaceNs(JSObject _self) implements JSObject {
   external JSPromise<JSBoolean> applyEdit(WorkspaceEdit edit, [WorkspaceEditMetadata? metadata]);
-  external String asRelativePath(JSAny? pathOrUri, [bool? includeWorkspaceFolder]);
-  external FileSystemWatcher createFileSystemWatcher(JSAny? globPattern, [bool? ignoreCreateEvents, bool? ignoreChangeEvents, bool? ignoreDeleteEvents]);
+  external String asRelativePath(JSAny pathOrUri, [bool? includeWorkspaceFolder]);
+  external FileSystemWatcher createFileSystemWatcher(JSAny globPattern, [bool? ignoreCreateEvents, bool? ignoreChangeEvents, bool? ignoreDeleteEvents]);
   external JSPromise<JSString> decode(JSUint8Array content);
   @JS('decode')
   external JSPromise<JSString> decode$2(JSUint8Array content, JSAnon_bce51fc74910 options);
@@ -1337,7 +1397,7 @@ extension type WorkspaceNs(JSObject _self) implements JSObject {
   external JSPromise<JSUint8Array> encode$2(String content, JSAnon_bce51fc74910 options);
   @JS('encode')
   external JSPromise<JSUint8Array> encode$3(String content, JSAnon_5f13b3458117 options);
-  external JSPromise<JSArray<Uri>> findFiles(JSAny? include, [JSAny? exclude, num? maxResults, CancellationToken? token]);
+  external JSPromise<JSArray<Uri>> findFiles(JSAny include, [JSAny? exclude, num? maxResults, CancellationToken? token]);
   external FileSystem get fs;
   external WorkspaceConfiguration getConfiguration([String? section, JSAny? scope]);
   external WorkspaceFolder? getWorkspaceFolder(Uri uri);
@@ -1389,11 +1449,13 @@ extension type WorkspaceNs(JSObject _self) implements JSObject {
 }
 
 extension type AccessibilityInformation(JSObject _self) implements JSObject {
+  external factory AccessibilityInformation.lit$({JSString? label, JSString? role});
   external String get label;
   external String? get role;
 }
 
 extension type AuthenticationGetSessionOptions(JSObject _self) implements JSObject {
+  external factory AuthenticationGetSessionOptions.lit$({AuthenticationSessionAccountInformation? account, JSBoolean? clearSessionPreference, JSAny? createIfNone, JSAny? forceNewSession, JSBoolean? silent});
   external AuthenticationSessionAccountInformation? get account;
   external set account(AuthenticationSessionAccountInformation? value);
   external bool? get clearSessionPreference;
@@ -1407,11 +1469,13 @@ extension type AuthenticationGetSessionOptions(JSObject _self) implements JSObje
 }
 
 extension type AuthenticationGetSessionPresentationOptions(JSObject _self) implements JSObject {
+  external factory AuthenticationGetSessionPresentationOptions.lit$({JSString? detail});
   external String? get detail;
   external set detail(String? value);
 }
 
 extension type AuthenticationProvider(JSObject _self) implements JSObject {
+  external factory AuthenticationProvider.lit$({JSFunction? createSession, JSFunction? getSessions, Event<AuthenticationProviderAuthenticationSessionsChangeEvent>? onDidChangeSessions, JSFunction? removeSession});
   external JSPromise<AuthenticationSession> createSession(JSArray<JSString> scopes, AuthenticationProviderSessionOptions options);
   external JSPromise<JSArray<AuthenticationSession>> getSessions(JSArray<JSString>? scopes, AuthenticationProviderSessionOptions options);
   external Event<AuthenticationProviderAuthenticationSessionsChangeEvent> get onDidChangeSessions;
@@ -1419,26 +1483,31 @@ extension type AuthenticationProvider(JSObject _self) implements JSObject {
 }
 
 extension type AuthenticationProviderAuthenticationSessionsChangeEvent(JSObject _self) implements JSObject {
+  external factory AuthenticationProviderAuthenticationSessionsChangeEvent.lit$({JSArray<AuthenticationSession>? added, JSArray<AuthenticationSession>? changed, JSArray<AuthenticationSession>? removed});
   external JSArray<AuthenticationSession>? get added;
   external JSArray<AuthenticationSession>? get changed;
   external JSArray<AuthenticationSession>? get removed;
 }
 
 extension type AuthenticationProviderInformation(JSObject _self) implements JSObject {
+  external factory AuthenticationProviderInformation.lit$({JSString? id, JSString? label});
   external String get id;
   external String get label;
 }
 
 extension type AuthenticationProviderOptions(JSObject _self) implements JSObject {
+  external factory AuthenticationProviderOptions.lit$({JSBoolean? supportsMultipleAccounts});
   external bool? get supportsMultipleAccounts;
 }
 
 extension type AuthenticationProviderSessionOptions(JSObject _self) implements JSObject {
+  external factory AuthenticationProviderSessionOptions.lit$({AuthenticationSessionAccountInformation? account});
   external AuthenticationSessionAccountInformation? get account;
   external set account(AuthenticationSessionAccountInformation? value);
 }
 
 extension type AuthenticationSession(JSObject _self) implements JSObject {
+  external factory AuthenticationSession.lit$({JSString? accessToken, AuthenticationSessionAccountInformation? account, JSString? id, JSString? idToken, JSArray<JSString>? scopes});
   external String get accessToken;
   external AuthenticationSessionAccountInformation get account;
   external String get id;
@@ -1447,20 +1516,24 @@ extension type AuthenticationSession(JSObject _self) implements JSObject {
 }
 
 extension type AuthenticationSessionAccountInformation(JSObject _self) implements JSObject {
+  external factory AuthenticationSessionAccountInformation.lit$({JSString? id, JSString? label});
   external String get id;
   external String get label;
 }
 
 extension type AuthenticationSessionsChangeEvent(JSObject _self) implements JSObject {
+  external factory AuthenticationSessionsChangeEvent.lit$({AuthenticationProviderInformation? provider});
   external AuthenticationProviderInformation get provider;
 }
 
 extension type AuthenticationWwwAuthenticateRequest(JSObject _self) implements JSObject {
+  external factory AuthenticationWwwAuthenticateRequest.lit$({JSArray<JSString>? fallbackScopes, JSString? wwwAuthenticate});
   external JSArray<JSString>? get fallbackScopes;
   external String get wwwAuthenticate;
 }
 
 extension type AutoClosingPair(JSObject _self) implements JSObject {
+  external factory AutoClosingPair.lit$({JSString? close, JSArray<JSNumber>? notIn, JSString? open});
   external String get close;
   external set close(String value);
   external JSArray<JSNumber>? get notIn;
@@ -1470,28 +1543,33 @@ extension type AutoClosingPair(JSObject _self) implements JSObject {
 }
 
 extension type BreakpointsChangeEvent(JSObject _self) implements JSObject {
+  external factory BreakpointsChangeEvent.lit$({JSArray<Breakpoint>? added, JSArray<Breakpoint>? changed, JSArray<Breakpoint>? removed});
   external JSArray<Breakpoint> get added;
   external JSArray<Breakpoint> get changed;
   external JSArray<Breakpoint> get removed;
 }
 
 extension type CallHierarchyProvider(JSObject _self) implements JSObject {
+  external factory CallHierarchyProvider.lit$({JSFunction? prepareCallHierarchy, JSFunction? provideCallHierarchyIncomingCalls, JSFunction? provideCallHierarchyOutgoingCalls});
   external JSAny? prepareCallHierarchy(TextDocument document, Position position, CancellationToken token);
   external JSAny? provideCallHierarchyIncomingCalls(CallHierarchyItem item, CancellationToken token);
   external JSAny? provideCallHierarchyOutgoingCalls(CallHierarchyItem item, CancellationToken token);
 }
 
 extension type CancellationToken(JSObject _self) implements JSObject {
+  external factory CancellationToken.lit$({JSBoolean? isCancellationRequested, Event<JSAny?>? onCancellationRequested});
   external bool get isCancellationRequested;
   external set isCancellationRequested(bool value);
   external Event<JSAny?> get onCancellationRequested;
 }
 
 extension type ChatContext(JSObject _self) implements JSObject {
+  external factory ChatContext.lit$({JSArray<JSObject>? history});
   external JSArray<JSObject> get history;
 }
 
 extension type ChatErrorDetails(JSObject _self) implements JSObject {
+  external factory ChatErrorDetails.lit$({JSString? message, JSBoolean? responseIsFiltered});
   external String get message;
   external set message(String value);
   external bool? get responseIsFiltered;
@@ -1499,6 +1577,7 @@ extension type ChatErrorDetails(JSObject _self) implements JSObject {
 }
 
 extension type ChatFollowup(JSObject _self) implements JSObject {
+  external factory ChatFollowup.lit$({JSString? command, JSString? label, JSString? participant, JSString? prompt});
   external String? get command;
   external set command(String? value);
   external String? get label;
@@ -1510,15 +1589,18 @@ extension type ChatFollowup(JSObject _self) implements JSObject {
 }
 
 extension type ChatFollowupProvider(JSObject _self) implements JSObject {
+  external factory ChatFollowupProvider.lit$({JSFunction? provideFollowups});
   external JSAny? provideFollowups(ChatResult result, ChatContext context, CancellationToken token);
 }
 
 extension type ChatLanguageModelToolReference(JSObject _self) implements JSObject {
+  external factory ChatLanguageModelToolReference.lit$({JSString? name, JSTuple_9b5999d5c048? range});
   external String get name;
   external JSTuple_9b5999d5c048? get range;
 }
 
 extension type ChatParticipant(JSObject _self) implements JSObject {
+  external factory ChatParticipant.lit$({JSFunction? dispose, ChatFollowupProvider? followupProvider, JSObject? iconPath, JSString? id, Event<ChatResultFeedback>? onDidReceiveFeedback, JSFunction? requestHandler});
   external void dispose();
   external ChatFollowupProvider? get followupProvider;
   external set followupProvider(ChatFollowupProvider? value);
@@ -1531,13 +1613,15 @@ extension type ChatParticipant(JSObject _self) implements JSObject {
 }
 
 extension type ChatPromptReference(JSObject _self) implements JSObject {
+  external factory ChatPromptReference.lit$({JSString? id, JSString? modelDescription, JSTuple_9b5999d5c048? range, JSAny? value});
   external String get id;
   external String? get modelDescription;
   external JSTuple_9b5999d5c048? get range;
-  external JSAny? get value;
+  external JSAny get value;
 }
 
 extension type ChatRequest(JSObject _self) implements JSObject {
+  external factory ChatRequest.lit$({JSString? command, LanguageModelChat? model, JSString? prompt, JSArray<ChatPromptReference>? references, JSAny? toolInvocationToken, JSArray<ChatLanguageModelToolReference>? toolReferences});
   external String? get command;
   external LanguageModelChat get model;
   external String get prompt;
@@ -1547,6 +1631,7 @@ extension type ChatRequest(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseFileTree(JSObject _self) implements JSObject {
+  external factory ChatResponseFileTree.lit$({JSArray<ChatResponseFileTree>? children, JSString? name});
   external JSArray<ChatResponseFileTree>? get children;
   external set children(JSArray<ChatResponseFileTree>? value);
   external String get name;
@@ -1554,48 +1639,56 @@ extension type ChatResponseFileTree(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseStream(JSObject _self) implements JSObject {
+  external factory ChatResponseStream.lit$({JSFunction? anchor, JSFunction? button, JSFunction? filetree, JSFunction? markdown, JSFunction? progress, JSFunction? push, JSFunction? reference});
   external void anchor(JSObject value, [String? title]);
   external void button(Command command);
   external void filetree(JSArray<ChatResponseFileTree> value, Uri baseUri);
-  external void markdown(JSAny? value);
+  external void markdown(JSAny value);
   external void progress(String value);
   external void push(JSObject part);
   external void reference(JSObject value, [JSObject? iconPath]);
 }
 
 extension type ChatResult(JSObject _self) implements JSObject {
+  external factory ChatResult.lit$({ChatErrorDetails? errorDetails, JSAnon_cd1da709a211? metadata});
   external ChatErrorDetails? get errorDetails;
   external set errorDetails(ChatErrorDetails? value);
   external JSAnon_cd1da709a211? get metadata;
 }
 
 extension type ChatResultFeedback(JSObject _self) implements JSObject {
+  external factory ChatResultFeedback.lit$({JSNumber? kind, ChatResult? result});
   external int get kind;
   external ChatResult get result;
 }
 
 extension type Clipboard(JSObject _self) implements JSObject {
+  external factory Clipboard.lit$({JSFunction? readText, JSFunction? writeText});
   external JSPromise<JSString> readText();
   external JSPromise<JSAny?> writeText(String value);
 }
 
 extension type CodeActionContext(JSObject _self) implements JSObject {
+  external factory CodeActionContext.lit$({JSArray<Diagnostic>? diagnostics, CodeActionKind? only, JSNumber? triggerKind});
   external JSArray<Diagnostic> get diagnostics;
   external CodeActionKind? get only;
   external int get triggerKind;
 }
 
 extension type CodeActionProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory CodeActionProvider.lit$({JSFunction? provideCodeActions, JSFunction? resolveCodeAction});
   external JSAny? provideCodeActions(TextDocument document, JSObject range, CodeActionContext context, CancellationToken token);
   external JSAny? resolveCodeAction(T codeAction, CancellationToken token);
 }
 
 extension type CodeActionProviderMetadata(JSObject _self) implements JSObject {
+  external factory CodeActionProviderMetadata.lit$({JSArray<JSAnon_f698f56281f5>? documentation, JSArray<CodeActionKind>? providedCodeActionKinds});
   external JSArray<JSAnon_f698f56281f5>? get documentation;
   external JSArray<CodeActionKind>? get providedCodeActionKinds;
 }
 
 extension type CodeLensProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory CodeLensProvider.lit$({Event<JSAny?>? onDidChangeCodeLenses, JSFunction? provideCodeLenses, JSFunction? resolveCodeLens});
   external Event<JSAny?>? get onDidChangeCodeLenses;
   external set onDidChangeCodeLenses(Event<JSAny?>? value);
   external JSAny? provideCodeLenses(TextDocument document, CancellationToken token);
@@ -1603,10 +1696,12 @@ extension type CodeLensProvider<T extends JSAny?>(JSObject _self) implements JSO
 }
 
 extension type ColorTheme(JSObject _self) implements JSObject {
+  external factory ColorTheme.lit$({JSNumber? kind});
   external int get kind;
 }
 
 extension type Command(JSObject _self) implements JSObject {
+  external factory Command.lit$({JSArray<JSAny?>? arguments, JSString? command, JSString? title, JSString? tooltip});
   external JSArray<JSAny?>? get arguments;
   external set arguments(JSArray<JSAny?>? value);
   external String get command;
@@ -1618,10 +1713,11 @@ extension type Command(JSObject _self) implements JSObject {
 }
 
 extension type Comment(JSObject _self) implements JSObject {
+  external factory Comment.lit$({CommentAuthorInformation? author, JSAny? body, JSString? contextValue, JSString? label, JSNumber? mode, JSArray<CommentReaction>? reactions, JSObject? timestamp});
   external CommentAuthorInformation get author;
   external set author(CommentAuthorInformation value);
-  external JSAny? get body;
-  external set body(JSAny? value);
+  external JSAny get body;
+  external set body(JSAny value);
   external String? get contextValue;
   external set contextValue(String? value);
   external String? get label;
@@ -1635,6 +1731,7 @@ extension type Comment(JSObject _self) implements JSObject {
 }
 
 extension type CommentAuthorInformation(JSObject _self) implements JSObject {
+  external factory CommentAuthorInformation.lit$({Uri? iconPath, JSString? name});
   external Uri? get iconPath;
   external set iconPath(Uri? value);
   external String get name;
@@ -1642,6 +1739,7 @@ extension type CommentAuthorInformation(JSObject _self) implements JSObject {
 }
 
 extension type CommentController(JSObject _self) implements JSObject {
+  external factory CommentController.lit$({CommentingRangeProvider? commentingRangeProvider, JSFunction? createCommentThread, JSFunction? dispose, JSString? id, JSString? label, CommentOptions? options, JSFunction? reactionHandler});
   external CommentingRangeProvider? get commentingRangeProvider;
   external set commentingRangeProvider(CommentingRangeProvider? value);
   external CommentThread createCommentThread(Uri uri, Range range, JSArray<Comment> comments);
@@ -1655,6 +1753,7 @@ extension type CommentController(JSObject _self) implements JSObject {
 }
 
 extension type CommentOptions(JSObject _self) implements JSObject {
+  external factory CommentOptions.lit$({JSString? placeHolder, JSString? prompt});
   external String? get placeHolder;
   external set placeHolder(String? value);
   external String? get prompt;
@@ -1662,13 +1761,15 @@ extension type CommentOptions(JSObject _self) implements JSObject {
 }
 
 extension type CommentReaction(JSObject _self) implements JSObject {
+  external factory CommentReaction.lit$({JSBoolean? authorHasReacted, JSNumber? count, JSAny? iconPath, JSString? label});
   external bool get authorHasReacted;
   external num get count;
-  external JSAny? get iconPath;
+  external JSAny get iconPath;
   external String get label;
 }
 
 extension type CommentReply(JSObject _self) implements JSObject {
+  external factory CommentReply.lit$({JSString? text, CommentThread? thread});
   external String get text;
   external set text(String value);
   external CommentThread get thread;
@@ -1676,6 +1777,7 @@ extension type CommentReply(JSObject _self) implements JSObject {
 }
 
 extension type CommentRule(JSObject _self) implements JSObject {
+  external factory CommentRule.lit$({JSTuple_58c6c79a4e36? blockComment, JSAny? lineComment});
   external JSTuple_58c6c79a4e36? get blockComment;
   external set blockComment(JSTuple_58c6c79a4e36? value);
   external JSAny? get lineComment;
@@ -1683,8 +1785,9 @@ extension type CommentRule(JSObject _self) implements JSObject {
 }
 
 extension type CommentThread(JSObject _self) implements JSObject {
-  external JSAny? get canReply;
-  external set canReply(JSAny? value);
+  external factory CommentThread.lit$({JSAny? canReply, JSNumber? collapsibleState, JSArray<Comment>? comments, JSString? contextValue, JSFunction? dispose, JSString? label, Range? range, JSNumber? state, Uri? uri});
+  external JSAny get canReply;
+  external set canReply(JSAny value);
   external int get collapsibleState;
   external set collapsibleState(int value);
   external JSArray<Comment> get comments;
@@ -1702,10 +1805,12 @@ extension type CommentThread(JSObject _self) implements JSObject {
 }
 
 extension type CommentingRangeProvider(JSObject _self) implements JSObject {
+  external factory CommentingRangeProvider.lit$({JSFunction? provideCommentingRanges});
   external JSAny? provideCommentingRanges(TextDocument document, CancellationToken token);
 }
 
 extension type CommentingRanges(JSObject _self) implements JSObject {
+  external factory CommentingRanges.lit$({JSBoolean? enableFileComments, JSArray<Range>? ranges});
   external bool get enableFileComments;
   external set enableFileComments(bool value);
   external JSArray<Range>? get ranges;
@@ -1713,11 +1818,13 @@ extension type CommentingRanges(JSObject _self) implements JSObject {
 }
 
 extension type CompletionContext(JSObject _self) implements JSObject {
+  external factory CompletionContext.lit$({JSString? triggerCharacter, JSNumber? triggerKind});
   external String? get triggerCharacter;
   external int get triggerKind;
 }
 
 extension type CompletionItemLabel(JSObject _self) implements JSObject {
+  external factory CompletionItemLabel.lit$({JSString? description, JSString? detail, JSString? label});
   external String? get description;
   external set description(String? value);
   external String? get detail;
@@ -1727,45 +1834,54 @@ extension type CompletionItemLabel(JSObject _self) implements JSObject {
 }
 
 extension type CompletionItemProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory CompletionItemProvider.lit$({JSFunction? provideCompletionItems, JSFunction? resolveCompletionItem});
   external JSAny? provideCompletionItems(TextDocument document, Position position, CancellationToken token, CompletionContext context);
   external JSAny? resolveCompletionItem(T item, CancellationToken token);
 }
 
 extension type ConfigurationChangeEvent(JSObject _self) implements JSObject {
+  external factory ConfigurationChangeEvent.lit$({JSFunction? affectsConfiguration});
   external bool affectsConfiguration(String section, [JSObject? scope]);
 }
 
 extension type CustomDocument(JSObject _self) implements JSObject {
+  external factory CustomDocument.lit$({JSFunction? dispose, Uri? uri});
   external void dispose();
   external Uri get uri;
 }
 
 extension type CustomDocumentBackup(JSObject _self) implements JSObject {
+  external factory CustomDocumentBackup.lit$({JSFunction? delete, JSString? id});
   external void delete();
   external String get id;
 }
 
 extension type CustomDocumentBackupContext(JSObject _self) implements JSObject {
+  external factory CustomDocumentBackupContext.lit$({Uri? destination});
   external Uri get destination;
 }
 
 extension type CustomDocumentContentChangeEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory CustomDocumentContentChangeEvent.lit$({T? document});
   external T get document;
 }
 
 extension type CustomDocumentEditEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory CustomDocumentEditEvent.lit$({T? document, JSString? label, JSFunction? redo, JSFunction? undo});
   external T get document;
   external String? get label;
-  external JSAny? redo();
-  external JSAny? undo();
+  external JSAny redo();
+  external JSAny undo();
 }
 
 extension type CustomDocumentOpenContext(JSObject _self) implements JSObject {
+  external factory CustomDocumentOpenContext.lit$({JSString? backupId, JSUint8Array? untitledDocumentData});
   external String? get backupId;
   external JSUint8Array? get untitledDocumentData;
 }
 
 extension type CustomEditorProvider<T extends JSAny?>(JSObject _self) implements CustomReadonlyEditorProvider<T>, JSObject {
+  external factory CustomEditorProvider.lit$({JSFunction? backupCustomDocument, JSObject? onDidChangeCustomDocument, JSFunction? revertCustomDocument, JSFunction? saveCustomDocument, JSFunction? saveCustomDocumentAs});
   external JSPromise<CustomDocumentBackup> backupCustomDocument(T document, CustomDocumentBackupContext context, CancellationToken cancellation);
   external JSObject get onDidChangeCustomDocument;
   external JSPromise<JSAny?> revertCustomDocument(T document, CancellationToken cancellation);
@@ -1774,30 +1890,36 @@ extension type CustomEditorProvider<T extends JSAny?>(JSObject _self) implements
 }
 
 extension type CustomReadonlyEditorProvider<T extends JSAny?>(JSObject _self) implements JSObject {
-  external JSAny? openCustomDocument(Uri uri, CustomDocumentOpenContext openContext, CancellationToken token);
-  external JSAny? resolveCustomEditor(T document, WebviewPanel webviewPanel, CancellationToken token);
+  external factory CustomReadonlyEditorProvider.lit$({JSFunction? openCustomDocument, JSFunction? resolveCustomEditor});
+  external JSAny openCustomDocument(Uri uri, CustomDocumentOpenContext openContext, CancellationToken token);
+  external JSAny resolveCustomEditor(T document, WebviewPanel webviewPanel, CancellationToken token);
 }
 
 extension type CustomTextEditorProvider(JSObject _self) implements JSObject {
-  external JSAny? resolveCustomTextEditor(TextDocument document, WebviewPanel webviewPanel, CancellationToken token);
+  external factory CustomTextEditorProvider.lit$({JSFunction? resolveCustomTextEditor});
+  external JSAny resolveCustomTextEditor(TextDocument document, WebviewPanel webviewPanel, CancellationToken token);
 }
 
 extension type DataTransferFile(JSObject _self) implements JSObject {
+  external factory DataTransferFile.lit$({JSFunction? data, JSString? name, Uri? uri});
   external JSPromise<JSUint8Array> data();
   external String get name;
   external Uri? get uri;
 }
 
 extension type DebugAdapter(JSObject _self) implements Disposable, JSObject {
+  external factory DebugAdapter.lit$({JSFunction? handleMessage, Event<DebugProtocolMessage>? onDidSendMessage});
   external void handleMessage(DebugProtocolMessage message);
   external Event<DebugProtocolMessage> get onDidSendMessage;
 }
 
 extension type DebugAdapterDescriptorFactory(JSObject _self) implements JSObject {
+  external factory DebugAdapterDescriptorFactory.lit$({JSFunction? createDebugAdapterDescriptor});
   external JSAny? createDebugAdapterDescriptor(DebugSession session, DebugAdapterExecutable? executable);
 }
 
 extension type DebugAdapterExecutableOptions(JSObject _self) implements JSObject {
+  external factory DebugAdapterExecutableOptions.lit$({JSString? cwd, JSAnon_c77c8585355a? env});
   external String? get cwd;
   external set cwd(String? value);
   external JSAnon_c77c8585355a? get env;
@@ -1805,6 +1927,7 @@ extension type DebugAdapterExecutableOptions(JSObject _self) implements JSObject
 }
 
 extension type DebugAdapterTracker(JSObject _self) implements JSObject {
+  external factory DebugAdapterTracker.lit$({JSFunction? onDidSendMessage, JSFunction? onError, JSFunction? onExit, JSFunction? onWillReceiveMessage, JSFunction? onWillStartSession, JSFunction? onWillStopSession});
   external void onDidSendMessage(JSAny? message);
   external void onError(JSObject error);
   external void onExit(num? code, String? signal);
@@ -1814,10 +1937,12 @@ extension type DebugAdapterTracker(JSObject _self) implements JSObject {
 }
 
 extension type DebugAdapterTrackerFactory(JSObject _self) implements JSObject {
+  external factory DebugAdapterTrackerFactory.lit$({JSFunction? createDebugAdapterTracker});
   external JSAny? createDebugAdapterTracker(DebugSession session);
 }
 
 extension type DebugConfiguration(JSObject _self) implements JSObject {
+  external factory DebugConfiguration.lit$({JSString? name, JSString? request, JSString? type});
   external JSAny? operator [](String key);
   external void operator []=(String key, JSAny? value);
   external String get name;
@@ -1829,12 +1954,14 @@ extension type DebugConfiguration(JSObject _self) implements JSObject {
 }
 
 extension type DebugConfigurationProvider(JSObject _self) implements JSObject {
+  external factory DebugConfigurationProvider.lit$({JSFunction? provideDebugConfigurations, JSFunction? resolveDebugConfiguration, JSFunction? resolveDebugConfigurationWithSubstitutedVariables});
   external JSAny? provideDebugConfigurations(WorkspaceFolder? folder, [CancellationToken? token]);
   external JSAny? resolveDebugConfiguration(WorkspaceFolder? folder, DebugConfiguration debugConfiguration, [CancellationToken? token]);
   external JSAny? resolveDebugConfigurationWithSubstitutedVariables(WorkspaceFolder? folder, DebugConfiguration debugConfiguration, [CancellationToken? token]);
 }
 
 extension type DebugConsole(JSObject _self) implements JSObject {
+  external factory DebugConsole.lit$({JSFunction? append, JSFunction? appendLine});
   external void append(String value);
   external void appendLine(String value);
 }
@@ -1849,6 +1976,7 @@ extension type DebugProtocolSource(JSObject _self) implements JSObject {
 }
 
 extension type DebugSession(JSObject _self) implements JSObject {
+  external factory DebugSession.lit$({DebugConfiguration? configuration, JSFunction? customRequest, JSFunction? getDebugProtocolBreakpoint, JSString? id, JSString? name, DebugSession? parentSession, JSString? type, WorkspaceFolder? workspaceFolder});
   external DebugConfiguration get configuration;
   external JSPromise<JSAny?> customRequest(String command, [JSAny? args]);
   external JSPromise<DebugProtocolBreakpoint?> getDebugProtocolBreakpoint(Breakpoint breakpoint);
@@ -1861,12 +1989,14 @@ extension type DebugSession(JSObject _self) implements JSObject {
 }
 
 extension type DebugSessionCustomEvent(JSObject _self) implements JSObject {
+  external factory DebugSessionCustomEvent.lit$({JSAny? body, JSString? event, DebugSession? session});
   external JSAny? get body;
   external String get event;
   external DebugSession get session;
 }
 
 extension type DebugSessionOptions(JSObject _self) implements JSObject {
+  external factory DebugSessionOptions.lit$({JSBoolean? compact, JSNumber? consoleMode, JSBoolean? lifecycleManagedByParent, JSBoolean? noDebug, DebugSession? parentSession, JSBoolean? suppressDebugStatusbar, JSBoolean? suppressDebugToolbar, JSBoolean? suppressDebugView, JSBoolean? suppressSaveBeforeStart, TestRun? testRun});
   external bool? get compact;
   external set compact(bool? value);
   external int? get consoleMode;
@@ -1890,10 +2020,12 @@ extension type DebugSessionOptions(JSObject _self) implements JSObject {
 }
 
 extension type DeclarationProvider(JSObject _self) implements JSObject {
+  external factory DeclarationProvider.lit$({JSFunction? provideDeclaration});
   external JSAny? provideDeclaration(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type DecorationInstanceRenderOptions(JSObject _self) implements ThemableDecorationInstanceRenderOptions, JSObject {
+  external factory DecorationInstanceRenderOptions.lit$({ThemableDecorationInstanceRenderOptions? dark, ThemableDecorationInstanceRenderOptions? light});
   external ThemableDecorationInstanceRenderOptions? get dark;
   external set dark(ThemableDecorationInstanceRenderOptions? value);
   external ThemableDecorationInstanceRenderOptions? get light;
@@ -1901,6 +2033,7 @@ extension type DecorationInstanceRenderOptions(JSObject _self) implements Themab
 }
 
 extension type DecorationOptions(JSObject _self) implements JSObject {
+  external factory DecorationOptions.lit$({JSAny? hoverMessage, Range? range, DecorationInstanceRenderOptions? renderOptions});
   external JSAny? get hoverMessage;
   external set hoverMessage(JSAny? value);
   external Range get range;
@@ -1910,6 +2043,7 @@ extension type DecorationOptions(JSObject _self) implements JSObject {
 }
 
 extension type DecorationRenderOptions(JSObject _self) implements ThemableDecorationRenderOptions, JSObject {
+  external factory DecorationRenderOptions.lit$({ThemableDecorationRenderOptions? dark, JSBoolean? isWholeLine, ThemableDecorationRenderOptions? light, JSNumber? overviewRulerLane, JSNumber? rangeBehavior});
   external ThemableDecorationRenderOptions? get dark;
   external set dark(ThemableDecorationRenderOptions? value);
   external bool? get isWholeLine;
@@ -1923,14 +2057,17 @@ extension type DecorationRenderOptions(JSObject _self) implements ThemableDecora
 }
 
 extension type DefinitionProvider(JSObject _self) implements JSObject {
+  external factory DefinitionProvider.lit$({JSFunction? provideDefinition});
   external JSAny? provideDefinition(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type DiagnosticChangeEvent(JSObject _self) implements JSObject {
+  external factory DiagnosticChangeEvent.lit$({JSArray<Uri>? uris});
   external JSArray<Uri> get uris;
 }
 
 extension type DiagnosticCollection(JSObject _self) implements JSObject {
+  external factory DiagnosticCollection.lit$({JSFunction? clear, JSFunction? delete, JSFunction? dispose, JSFunction? forEach, JSFunction? get, JSFunction? has, JSString? name, JSFunction? set});
   external void clear();
   external void delete(Uri uri);
   external void dispose();
@@ -1944,21 +2081,25 @@ extension type DiagnosticCollection(JSObject _self) implements JSObject {
 }
 
 extension type DocumentColorProvider(JSObject _self) implements JSObject {
+  external factory DocumentColorProvider.lit$({JSFunction? provideColorPresentations, JSFunction? provideDocumentColors});
   external JSAny? provideColorPresentations(Color color, JSAnon_e0c29a989921 context, CancellationToken token);
   external JSAny? provideDocumentColors(TextDocument document, CancellationToken token);
 }
 
 extension type DocumentDropEditProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory DocumentDropEditProvider.lit$({JSFunction? provideDocumentDropEdits, JSFunction? resolveDocumentDropEdit});
   external JSAny? provideDocumentDropEdits(TextDocument document, Position position, DataTransfer dataTransfer, CancellationToken token);
   external JSAny? resolveDocumentDropEdit(T edit, CancellationToken token);
 }
 
 extension type DocumentDropEditProviderMetadata(JSObject _self) implements JSObject {
+  external factory DocumentDropEditProviderMetadata.lit$({JSArray<JSString>? dropMimeTypes, JSArray<DocumentDropOrPasteEditKind>? providedDropEditKinds});
   external JSArray<JSString> get dropMimeTypes;
   external JSArray<DocumentDropOrPasteEditKind>? get providedDropEditKinds;
 }
 
 extension type DocumentFilter(JSObject _self) implements JSObject {
+  external factory DocumentFilter.lit$({JSString? language, JSString? notebookType, JSAny? pattern, JSString? scheme});
   external String? get language;
   external String? get notebookType;
   external JSAny? get pattern;
@@ -1966,47 +2107,56 @@ extension type DocumentFilter(JSObject _self) implements JSObject {
 }
 
 extension type DocumentFormattingEditProvider(JSObject _self) implements JSObject {
+  external factory DocumentFormattingEditProvider.lit$({JSFunction? provideDocumentFormattingEdits});
   external JSAny? provideDocumentFormattingEdits(TextDocument document, FormattingOptions options, CancellationToken token);
 }
 
 extension type DocumentHighlightProvider(JSObject _self) implements JSObject {
+  external factory DocumentHighlightProvider.lit$({JSFunction? provideDocumentHighlights});
   external JSAny? provideDocumentHighlights(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type DocumentLinkProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory DocumentLinkProvider.lit$({JSFunction? provideDocumentLinks, JSFunction? resolveDocumentLink});
   external JSAny? provideDocumentLinks(TextDocument document, CancellationToken token);
   external JSAny? resolveDocumentLink(T link, CancellationToken token);
 }
 
 extension type DocumentPasteEditContext(JSObject _self) implements JSObject {
+  external factory DocumentPasteEditContext.lit$({DocumentDropOrPasteEditKind? only, JSNumber? triggerKind});
   external DocumentDropOrPasteEditKind? get only;
   external int get triggerKind;
 }
 
 extension type DocumentPasteEditProvider<T extends JSAny?>(JSObject _self) implements JSObject {
-  external JSAny? prepareDocumentPaste(TextDocument document, JSArray<Range> ranges, DataTransfer dataTransfer, CancellationToken token);
+  external factory DocumentPasteEditProvider.lit$({JSFunction? prepareDocumentPaste, JSFunction? provideDocumentPasteEdits, JSFunction? resolveDocumentPasteEdit});
+  external JSAny prepareDocumentPaste(TextDocument document, JSArray<Range> ranges, DataTransfer dataTransfer, CancellationToken token);
   external JSAny? provideDocumentPasteEdits(TextDocument document, JSArray<Range> ranges, DataTransfer dataTransfer, DocumentPasteEditContext context, CancellationToken token);
   external JSAny? resolveDocumentPasteEdit(T pasteEdit, CancellationToken token);
 }
 
 extension type DocumentPasteProviderMetadata(JSObject _self) implements JSObject {
+  external factory DocumentPasteProviderMetadata.lit$({JSArray<JSString>? copyMimeTypes, JSArray<JSString>? pasteMimeTypes, JSArray<DocumentDropOrPasteEditKind>? providedPasteEditKinds});
   external JSArray<JSString>? get copyMimeTypes;
   external JSArray<JSString>? get pasteMimeTypes;
   external JSArray<DocumentDropOrPasteEditKind> get providedPasteEditKinds;
 }
 
 extension type DocumentRangeFormattingEditProvider(JSObject _self) implements JSObject {
+  external factory DocumentRangeFormattingEditProvider.lit$({JSFunction? provideDocumentRangeFormattingEdits, JSFunction? provideDocumentRangesFormattingEdits});
   external JSAny? provideDocumentRangeFormattingEdits(TextDocument document, Range range, FormattingOptions options, CancellationToken token);
   external JSAny? provideDocumentRangesFormattingEdits(TextDocument document, JSArray<Range> ranges, FormattingOptions options, CancellationToken token);
 }
 
 extension type DocumentRangeSemanticTokensProvider(JSObject _self) implements JSObject {
+  external factory DocumentRangeSemanticTokensProvider.lit$({Event<JSAny?>? onDidChangeSemanticTokens, JSFunction? provideDocumentRangeSemanticTokens});
   external Event<JSAny?>? get onDidChangeSemanticTokens;
   external set onDidChangeSemanticTokens(Event<JSAny?>? value);
   external JSAny? provideDocumentRangeSemanticTokens(TextDocument document, Range range, CancellationToken token);
 }
 
 extension type DocumentSemanticTokensProvider(JSObject _self) implements JSObject {
+  external factory DocumentSemanticTokensProvider.lit$({Event<JSAny?>? onDidChangeSemanticTokens, JSFunction? provideDocumentSemanticTokens, JSFunction? provideDocumentSemanticTokensEdits});
   external Event<JSAny?>? get onDidChangeSemanticTokens;
   external set onDidChangeSemanticTokens(Event<JSAny?>? value);
   external JSAny? provideDocumentSemanticTokens(TextDocument document, CancellationToken token);
@@ -2014,15 +2164,18 @@ extension type DocumentSemanticTokensProvider(JSObject _self) implements JSObjec
 }
 
 extension type DocumentSymbolProvider(JSObject _self) implements JSObject {
+  external factory DocumentSymbolProvider.lit$({JSFunction? provideDocumentSymbols});
   external JSAny? provideDocumentSymbols(TextDocument document, CancellationToken token);
 }
 
 extension type DocumentSymbolProviderMetadata(JSObject _self) implements JSObject {
+  external factory DocumentSymbolProviderMetadata.lit$({JSString? label});
   external String? get label;
   external set label(String? value);
 }
 
 extension type EnterAction(JSObject _self) implements JSObject {
+  external factory EnterAction.lit$({JSString? appendText, JSNumber? indentAction, JSNumber? removeText});
   external String? get appendText;
   external set appendText(String? value);
   external int get indentAction;
@@ -2032,6 +2185,7 @@ extension type EnterAction(JSObject _self) implements JSObject {
 }
 
 extension type EnvironmentVariableCollection(JSObject _self) implements JSObject {
+  external factory EnvironmentVariableCollection.lit$({JSFunction? append, JSFunction? clear, JSFunction? delete, JSAny? description, JSFunction? forEach, JSFunction? get, JSBoolean? persistent, JSFunction? prepend, JSFunction? replace});
   external void append(String variable, String value, [EnvironmentVariableMutatorOptions? options]);
   external void clear();
   external void delete(String variable);
@@ -2046,12 +2200,14 @@ extension type EnvironmentVariableCollection(JSObject _self) implements JSObject
 }
 
 extension type EnvironmentVariableMutator(JSObject _self) implements JSObject {
+  external factory EnvironmentVariableMutator.lit$({EnvironmentVariableMutatorOptions? options, JSNumber? type, JSString? value});
   external EnvironmentVariableMutatorOptions get options;
   external int get type;
   external String get value;
 }
 
 extension type EnvironmentVariableMutatorOptions(JSObject _self) implements JSObject {
+  external factory EnvironmentVariableMutatorOptions.lit$({JSBoolean? applyAtProcessCreation, JSBoolean? applyAtShellIntegration});
   external bool? get applyAtProcessCreation;
   external set applyAtProcessCreation(bool? value);
   external bool? get applyAtShellIntegration;
@@ -2059,11 +2215,13 @@ extension type EnvironmentVariableMutatorOptions(JSObject _self) implements JSOb
 }
 
 extension type EnvironmentVariableScope(JSObject _self) implements JSObject {
+  external factory EnvironmentVariableScope.lit$({WorkspaceFolder? workspaceFolder});
   external WorkspaceFolder? get workspaceFolder;
   external set workspaceFolder(WorkspaceFolder? value);
 }
 
 extension type EvaluatableExpressionProvider(JSObject _self) implements JSObject {
+  external factory EvaluatableExpressionProvider.lit$({JSFunction? provideEvaluatableExpression});
   external JSAny? provideEvaluatableExpression(TextDocument document, Position position, CancellationToken token);
 }
 
@@ -2076,6 +2234,7 @@ extension type Event<T extends JSAny?>(JSFunction _self) implements JSObject {
 }
 
 extension type Extension<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory Extension.lit$({JSFunction? activate, T? exports, JSNumber? extensionKind, JSString? extensionPath, Uri? extensionUri, JSString? id, JSBoolean? isActive, JSAny? packageJSON});
   external JSPromise<T> activate();
   external T get exports;
   external int get extensionKind;
@@ -2088,6 +2247,7 @@ extension type Extension<T extends JSAny?>(JSObject _self) implements JSObject {
 }
 
 extension type ExtensionContext(JSObject _self) implements JSObject {
+  external factory ExtensionContext.lit$({JSFunction? asAbsolutePath, GlobalEnvironmentVariableCollection? environmentVariableCollection, Extension<JSAny?>? extension, JSNumber? extensionMode, JSString? extensionPath, Uri? extensionUri, JSIntersection_c8c004dd0b99? globalState, JSString? globalStoragePath, Uri? globalStorageUri, LanguageModelAccessInformation? languageModelAccessInformation, JSString? logPath, Uri? logUri, SecretStorage? secrets, JSString? storagePath, Uri? storageUri, JSArray<JSAnon_ffa2e03c40a2>? subscriptions, Memento? workspaceState});
   external String asAbsolutePath(String relativePath);
   external GlobalEnvironmentVariableCollection get environmentVariableCollection;
   external Extension<JSAny?> get extension;
@@ -2108,6 +2268,7 @@ extension type ExtensionContext(JSObject _self) implements JSObject {
 }
 
 extension type ExtensionTerminalOptions(JSObject _self) implements JSObject {
+  external factory ExtensionTerminalOptions.lit$({ThemeColor? color, JSObject? iconPath, JSBoolean? isTransient, JSAny? location, JSString? name, Pseudoterminal? pty, JSString? shellIntegrationNonce});
   external ThemeColor? get color;
   external set color(ThemeColor? value);
   external JSObject? get iconPath;
@@ -2125,29 +2286,35 @@ extension type ExtensionTerminalOptions(JSObject _self) implements JSObject {
 }
 
 extension type FileChangeEvent(JSObject _self) implements JSObject {
+  external factory FileChangeEvent.lit$({JSNumber? type, Uri? uri});
   external int get type;
   external Uri get uri;
 }
 
 extension type FileCreateEvent(JSObject _self) implements JSObject {
+  external factory FileCreateEvent.lit$({JSArray<Uri>? files});
   external JSArray<Uri> get files;
 }
 
 extension type FileDecorationProvider(JSObject _self) implements JSObject {
+  external factory FileDecorationProvider.lit$({Event<JSObject?>? onDidChangeFileDecorations, JSFunction? provideFileDecoration});
   external Event<JSObject?>? get onDidChangeFileDecorations;
   external set onDidChangeFileDecorations(Event<JSObject?>? value);
   external JSAny? provideFileDecoration(Uri uri, CancellationToken token);
 }
 
 extension type FileDeleteEvent(JSObject _self) implements JSObject {
+  external factory FileDeleteEvent.lit$({JSArray<Uri>? files});
   external JSArray<Uri> get files;
 }
 
 extension type FileRenameEvent(JSObject _self) implements JSObject {
+  external factory FileRenameEvent.lit$({JSArray<JSAnon_7c30c4713d83>? files});
   external JSArray<JSAnon_7c30c4713d83> get files;
 }
 
 extension type FileStat(JSObject _self) implements JSObject {
+  external factory FileStat.lit$({JSNumber? ctime, JSNumber? mtime, JSNumber? permissions, JSNumber? size, JSNumber? type});
   external num get ctime;
   external set ctime(num value);
   external num get mtime;
@@ -2161,6 +2328,7 @@ extension type FileStat(JSObject _self) implements JSObject {
 }
 
 extension type FileSystem(JSObject _self) implements JSObject {
+  external factory FileSystem.lit$({JSFunction? copy, JSFunction? createDirectory, JSFunction? delete, JSFunction? isWritableFileSystem, JSFunction? readDirectory, JSFunction? readFile, JSFunction? rename, JSFunction? stat, JSFunction? writeFile});
   external JSPromise<JSAny?> copy(Uri source, Uri target, [JSAnon_b2623fd46fde? options]);
   external JSPromise<JSAny?> createDirectory(Uri uri);
   external JSPromise<JSAny?> delete(Uri uri, [JSAnon_576b1a88ebc3? options]);
@@ -2173,19 +2341,21 @@ extension type FileSystem(JSObject _self) implements JSObject {
 }
 
 extension type FileSystemProvider(JSObject _self) implements JSObject {
-  external JSAny? copy(Uri source, Uri destination, JSAnon_f4ceea3f5f6f options);
-  external JSAny? createDirectory(Uri uri);
-  external JSAny? delete(Uri uri, JSAnon_4ae6d0aa1bdf options);
+  external factory FileSystemProvider.lit$({JSFunction? copy, JSFunction? createDirectory, JSFunction? delete, Event<JSArray<FileChangeEvent>>? onDidChangeFile, JSFunction? readDirectory, JSFunction? readFile, JSFunction? rename, JSFunction? stat, JSFunction? watch, JSFunction? writeFile});
+  external JSAny copy(Uri source, Uri destination, JSAnon_f4ceea3f5f6f options);
+  external JSAny createDirectory(Uri uri);
+  external JSAny delete(Uri uri, JSAnon_4ae6d0aa1bdf options);
   external Event<JSArray<FileChangeEvent>> get onDidChangeFile;
   external JSObject readDirectory(Uri uri);
   external JSObject readFile(Uri uri);
-  external JSAny? rename(Uri oldUri, Uri newUri, JSAnon_f4ceea3f5f6f options);
+  external JSAny rename(Uri oldUri, Uri newUri, JSAnon_f4ceea3f5f6f options);
   external JSObject stat(Uri uri);
   external Disposable watch(Uri uri, JSAnon_ce282821cb2a options);
-  external JSAny? writeFile(Uri uri, JSUint8Array content, JSAnon_95947812f514 options);
+  external JSAny writeFile(Uri uri, JSUint8Array content, JSAnon_95947812f514 options);
 }
 
 extension type FileSystemWatcher(JSObject _self) implements Disposable, JSObject {
+  external factory FileSystemWatcher.lit$({JSBoolean? ignoreChangeEvents, JSBoolean? ignoreCreateEvents, JSBoolean? ignoreDeleteEvents, Event<Uri>? onDidChange, Event<Uri>? onDidCreate, Event<Uri>? onDidDelete});
   external bool get ignoreChangeEvents;
   external bool get ignoreCreateEvents;
   external bool get ignoreDeleteEvents;
@@ -2195,6 +2365,7 @@ extension type FileSystemWatcher(JSObject _self) implements Disposable, JSObject
 }
 
 extension type FileWillCreateEvent(JSObject _self) implements JSObject {
+  external factory FileWillCreateEvent.lit$({JSArray<Uri>? files, CancellationToken? token, JSFunction? waitUntil});
   external JSArray<Uri> get files;
   external CancellationToken get token;
   external void waitUntil(JSPromise<WorkspaceEdit> thenable);
@@ -2203,6 +2374,7 @@ extension type FileWillCreateEvent(JSObject _self) implements JSObject {
 }
 
 extension type FileWillDeleteEvent(JSObject _self) implements JSObject {
+  external factory FileWillDeleteEvent.lit$({JSArray<Uri>? files, CancellationToken? token, JSFunction? waitUntil});
   external JSArray<Uri> get files;
   external CancellationToken get token;
   external void waitUntil(JSPromise<WorkspaceEdit> thenable);
@@ -2211,6 +2383,7 @@ extension type FileWillDeleteEvent(JSObject _self) implements JSObject {
 }
 
 extension type FileWillRenameEvent(JSObject _self) implements JSObject {
+  external factory FileWillRenameEvent.lit$({JSArray<JSAnon_7c30c4713d83>? files, CancellationToken? token, JSFunction? waitUntil});
   external JSArray<JSAnon_7c30c4713d83> get files;
   external CancellationToken get token;
   external void waitUntil(JSPromise<WorkspaceEdit> thenable);
@@ -2222,12 +2395,14 @@ extension type FoldingContext(JSObject _self) implements JSObject {
 }
 
 extension type FoldingRangeProvider(JSObject _self) implements JSObject {
+  external factory FoldingRangeProvider.lit$({Event<JSAny?>? onDidChangeFoldingRanges, JSFunction? provideFoldingRanges});
   external Event<JSAny?>? get onDidChangeFoldingRanges;
   external set onDidChangeFoldingRanges(Event<JSAny?>? value);
   external JSAny? provideFoldingRanges(TextDocument document, FoldingContext context, CancellationToken token);
 }
 
 extension type FormattingOptions(JSObject _self) implements JSObject {
+  external factory FormattingOptions.lit$({JSBoolean? insertSpaces, JSNumber? tabSize});
   external JSAny? operator [](String key);
   external void operator []=(String key, JSAny? value);
   external bool get insertSpaces;
@@ -2237,18 +2412,22 @@ extension type FormattingOptions(JSObject _self) implements JSObject {
 }
 
 extension type GlobalEnvironmentVariableCollection(JSObject _self) implements EnvironmentVariableCollection, JSObject {
+  external factory GlobalEnvironmentVariableCollection.lit$({JSFunction? getScoped});
   external EnvironmentVariableCollection getScoped(EnvironmentVariableScope scope);
 }
 
 extension type HoverProvider(JSObject _self) implements JSObject {
+  external factory HoverProvider.lit$({JSFunction? provideHover});
   external JSAny? provideHover(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type ImplementationProvider(JSObject _self) implements JSObject {
+  external factory ImplementationProvider.lit$({JSFunction? provideImplementation});
   external JSAny? provideImplementation(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type IndentationRule(JSObject _self) implements JSObject {
+  external factory IndentationRule.lit$({JSObject? decreaseIndentPattern, JSObject? increaseIndentPattern, JSObject? indentNextLinePattern, JSObject? unIndentedLinePattern});
   external JSObject get decreaseIndentPattern;
   external set decreaseIndentPattern(JSObject value);
   external JSObject get increaseIndentPattern;
@@ -2260,6 +2439,7 @@ extension type IndentationRule(JSObject _self) implements JSObject {
 }
 
 extension type InlayHintsProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory InlayHintsProvider.lit$({Event<JSAny?>? onDidChangeInlayHints, JSFunction? provideInlayHints, JSFunction? resolveInlayHint});
   external Event<JSAny?>? get onDidChangeInlayHints;
   external set onDidChangeInlayHints(Event<JSAny?>? value);
   external JSAny? provideInlayHints(TextDocument document, Range range, CancellationToken token);
@@ -2267,26 +2447,31 @@ extension type InlayHintsProvider<T extends JSAny?>(JSObject _self) implements J
 }
 
 extension type InlineCompletionContext(JSObject _self) implements JSObject {
+  external factory InlineCompletionContext.lit$({SelectedCompletionInfo? selectedCompletionInfo, JSNumber? triggerKind});
   external SelectedCompletionInfo? get selectedCompletionInfo;
   external int get triggerKind;
 }
 
 extension type InlineCompletionItemProvider(JSObject _self) implements JSObject {
+  external factory InlineCompletionItemProvider.lit$({JSFunction? provideInlineCompletionItems});
   external JSAny? provideInlineCompletionItems(TextDocument document, Position position, InlineCompletionContext context, CancellationToken token);
 }
 
 extension type InlineValueContext(JSObject _self) implements JSObject {
+  external factory InlineValueContext.lit$({JSNumber? frameId, Range? stoppedLocation});
   external num get frameId;
   external Range get stoppedLocation;
 }
 
 extension type InlineValuesProvider(JSObject _self) implements JSObject {
+  external factory InlineValuesProvider.lit$({Event<JSAny?>? onDidChangeInlineValues, JSFunction? provideInlineValues});
   external Event<JSAny?>? get onDidChangeInlineValues;
   external set onDidChangeInlineValues(Event<JSAny?>? value);
   external JSAny? provideInlineValues(TextDocument document, Range viewPort, InlineValueContext context, CancellationToken token);
 }
 
 extension type InputBox(JSObject _self) implements QuickInput, JSObject {
+  external factory InputBox.lit$({JSArray<QuickInputButton>? buttons, Event<JSAny?>? onDidAccept, Event<JSString>? onDidChangeValue, Event<QuickInputButton>? onDidTriggerButton, JSBoolean? password, JSString? placeholder, JSString? prompt, JSAny? validationMessage, JSString? value, JSTuple_9b5999d5c048? valueSelection});
   external JSArray<QuickInputButton> get buttons;
   external set buttons(JSArray<QuickInputButton> value);
   external Event<JSAny?> get onDidAccept;
@@ -2307,6 +2492,7 @@ extension type InputBox(JSObject _self) implements QuickInput, JSObject {
 }
 
 extension type InputBoxOptions(JSObject _self) implements JSObject {
+  external factory InputBoxOptions.lit$({JSBoolean? ignoreFocusOut, JSBoolean? password, JSString? placeHolder, JSString? prompt, JSString? title, JSFunction? validateInput, JSString? value, JSTuple_9b5999d5c048? valueSelection});
   external bool? get ignoreFocusOut;
   external set ignoreFocusOut(bool? value);
   external bool? get password;
@@ -2325,11 +2511,13 @@ extension type InputBoxOptions(JSObject _self) implements JSObject {
 }
 
 extension type InputBoxValidationMessage(JSObject _self) implements JSObject {
+  external factory InputBoxValidationMessage.lit$({JSString? message, JSNumber? severity});
   external String get message;
   external int get severity;
 }
 
 extension type LanguageConfiguration(JSObject _self) implements JSObject {
+  external factory LanguageConfiguration.lit$({JSArray<AutoClosingPair>? autoClosingPairs, JSArray<JSTuple_58c6c79a4e36>? brackets, CommentRule? comments, IndentationRule? indentationRules, JSArray<OnEnterRule>? onEnterRules, JSObject? wordPattern});
   @JS('__characterPairSupport')
   external JSAnon_3800d8dfe13a? get $__characterPairSupport;
   @JS('__characterPairSupport')
@@ -2353,12 +2541,14 @@ extension type LanguageConfiguration(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelAccessInformation(JSObject _self) implements JSObject {
+  external factory LanguageModelAccessInformation.lit$({JSFunction? canSendRequest, Event<JSAny?>? onDidChange});
   external bool? canSendRequest(LanguageModelChat chat);
   external Event<JSAny?> get onDidChange;
 }
 
 extension type LanguageModelChat(JSObject _self) implements JSObject {
-  external JSPromise<JSNumber> countTokens(JSAny? text, [CancellationToken? token]);
+  external factory LanguageModelChat.lit$({JSFunction? countTokens, JSString? family, JSString? id, JSNumber? maxInputTokens, JSString? name, JSFunction? sendRequest, JSString? vendor, JSString? version});
+  external JSPromise<JSNumber> countTokens(JSAny text, [CancellationToken? token]);
   external String get family;
   external String get id;
   external num get maxInputTokens;
@@ -2369,11 +2559,13 @@ extension type LanguageModelChat(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelChatCapabilities(JSObject _self) implements JSObject {
+  external factory LanguageModelChatCapabilities.lit$({JSBoolean? imageInput, JSAny? toolCalling});
   external bool? get imageInput;
   external JSAny? get toolCalling;
 }
 
 extension type LanguageModelChatInformation(JSObject _self) implements JSObject {
+  external factory LanguageModelChatInformation.lit$({LanguageModelChatCapabilities? capabilities, JSString? detail, JSString? family, JSString? id, JSNumber? maxInputTokens, JSNumber? maxOutputTokens, JSString? name, JSString? tooltip, JSString? version});
   external LanguageModelChatCapabilities get capabilities;
   external String? get detail;
   external String get family;
@@ -2386,19 +2578,22 @@ extension type LanguageModelChatInformation(JSObject _self) implements JSObject 
 }
 
 extension type LanguageModelChatProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory LanguageModelChatProvider.lit$({Event<JSAny?>? onDidChangeLanguageModelChatInformation, JSFunction? provideLanguageModelChatInformation, JSFunction? provideLanguageModelChatResponse, JSFunction? provideTokenCount});
   external Event<JSAny?>? get onDidChangeLanguageModelChatInformation;
   external JSAny? provideLanguageModelChatInformation(PrepareLanguageModelChatModelOptions options, CancellationToken token);
   external JSPromise<JSAny?> provideLanguageModelChatResponse(T model, JSArray<LanguageModelChatRequestMessage> messages, ProvideLanguageModelChatResponseOptions options, Progress<JSObject> progress, CancellationToken token);
-  external JSPromise<JSNumber> provideTokenCount(T model, JSAny? text, CancellationToken token);
+  external JSPromise<JSNumber> provideTokenCount(T model, JSAny text, CancellationToken token);
 }
 
 extension type LanguageModelChatRequestMessage(JSObject _self) implements JSObject {
-  external JSArray<JSAny?> get content;
+  external factory LanguageModelChatRequestMessage.lit$({JSArray<JSAny>? content, JSString? name, JSNumber? role});
+  external JSArray<JSAny> get content;
   external String? get name;
   external int get role;
 }
 
 extension type LanguageModelChatRequestOptions(JSObject _self) implements JSObject {
+  external factory LanguageModelChatRequestOptions.lit$({JSString? justification, JSAnon_90b1eaa702e4? modelOptions, JSNumber? toolMode, JSArray<LanguageModelChatTool>? tools});
   external String? get justification;
   external set justification(String? value);
   external JSAnon_90b1eaa702e4? get modelOptions;
@@ -2410,6 +2605,7 @@ extension type LanguageModelChatRequestOptions(JSObject _self) implements JSObje
 }
 
 extension type LanguageModelChatResponse(JSObject _self) implements JSObject {
+  external factory LanguageModelChatResponse.lit$({JSObject? stream, JSObject? text});
   external JSObject get stream;
   external set stream(JSObject value);
   external JSObject get text;
@@ -2417,6 +2613,7 @@ extension type LanguageModelChatResponse(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelChatSelector(JSObject _self) implements JSObject {
+  external factory LanguageModelChatSelector.lit$({JSString? family, JSString? id, JSString? vendor, JSString? version});
   external String? get family;
   external set family(String? value);
   external String? get id;
@@ -2428,6 +2625,7 @@ extension type LanguageModelChatSelector(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelChatTool(JSObject _self) implements JSObject {
+  external factory LanguageModelChatTool.lit$({JSString? description, JSObject? inputSchema, JSString? name});
   external String get description;
   external set description(String value);
   external JSObject? get inputSchema;
@@ -2437,18 +2635,21 @@ extension type LanguageModelChatTool(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelTool<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory LanguageModelTool.lit$({JSFunction? invoke, JSFunction? prepareInvocation});
   external JSAny? invoke(LanguageModelToolInvocationOptions<T> options, CancellationToken token);
   external JSAny? prepareInvocation(LanguageModelToolInvocationPrepareOptions<T> options, CancellationToken token);
 }
 
 extension type LanguageModelToolConfirmationMessages(JSObject _self) implements JSObject {
-  external JSAny? get message;
-  external set message(JSAny? value);
+  external factory LanguageModelToolConfirmationMessages.lit$({JSAny? message, JSString? title});
+  external JSAny get message;
+  external set message(JSAny value);
   external String get title;
   external set title(String value);
 }
 
 extension type LanguageModelToolInformation(JSObject _self) implements JSObject {
+  external factory LanguageModelToolInformation.lit$({JSString? description, JSObject? inputSchema, JSString? name, JSArray<JSString>? tags});
   external String get description;
   external JSObject? get inputSchema;
   external String get name;
@@ -2456,6 +2657,7 @@ extension type LanguageModelToolInformation(JSObject _self) implements JSObject 
 }
 
 extension type LanguageModelToolInvocationOptions<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory LanguageModelToolInvocationOptions.lit$({T? input, LanguageModelToolTokenizationOptions? tokenizationOptions, JSAny? toolInvocationToken});
   external T get input;
   external set input(T value);
   external LanguageModelToolTokenizationOptions? get tokenizationOptions;
@@ -2465,17 +2667,20 @@ extension type LanguageModelToolInvocationOptions<T extends JSAny?>(JSObject _se
 }
 
 extension type LanguageModelToolInvocationPrepareOptions<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory LanguageModelToolInvocationPrepareOptions.lit$({T? input});
   external T get input;
   external set input(T value);
 }
 
 extension type LanguageModelToolTokenizationOptions(JSObject _self) implements JSObject {
+  external factory LanguageModelToolTokenizationOptions.lit$({JSFunction? countTokens, JSNumber? tokenBudget});
   external JSPromise<JSNumber> countTokens(String text, [CancellationToken? token]);
   external num get tokenBudget;
   external set tokenBudget(num value);
 }
 
 extension type LanguageStatusItem(JSObject _self) implements JSObject {
+  external factory LanguageStatusItem.lit$({AccessibilityInformation? accessibilityInformation, JSBoolean? busy, Command? command, JSString? detail, JSFunction? dispose, JSString? id, JSString? name, JSAny? selector, JSNumber? severity, JSString? text});
   external AccessibilityInformation? get accessibilityInformation;
   external set accessibilityInformation(AccessibilityInformation? value);
   external bool get busy;
@@ -2488,8 +2693,8 @@ extension type LanguageStatusItem(JSObject _self) implements JSObject {
   external String get id;
   external String? get name;
   external set name(String? value);
-  external JSAny? get selector;
-  external set selector(JSAny? value);
+  external JSAny get selector;
+  external set selector(JSAny value);
   external int get severity;
   external set severity(int value);
   external String get text;
@@ -2497,6 +2702,7 @@ extension type LanguageStatusItem(JSObject _self) implements JSObject {
 }
 
 extension type LineCommentRule(JSObject _self) implements JSObject {
+  external factory LineCommentRule.lit$({JSString? comment, JSBoolean? noIndent});
   external String get comment;
   external set comment(String value);
   external bool? get noIndent;
@@ -2504,10 +2710,12 @@ extension type LineCommentRule(JSObject _self) implements JSObject {
 }
 
 extension type LinkedEditingRangeProvider(JSObject _self) implements JSObject {
+  external factory LinkedEditingRangeProvider.lit$({JSFunction? provideLinkedEditingRanges});
   external JSAny? provideLinkedEditingRanges(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type LocationLink(JSObject _self) implements JSObject {
+  external factory LocationLink.lit$({Range? originSelectionRange, Range? targetRange, Range? targetSelectionRange, Uri? targetUri});
   external Range? get originSelectionRange;
   external set originSelectionRange(Range? value);
   external Range get targetRange;
@@ -2519,11 +2727,12 @@ extension type LocationLink(JSObject _self) implements JSObject {
 }
 
 extension type LogOutputChannel(JSObject _self) implements OutputChannel, JSObject {
+  external factory LogOutputChannel.lit$({JSFunction? debug, JSFunction? error, JSFunction? info, JSNumber? logLevel, Event<JSNumber>? onDidChangeLogLevel, JSFunction? trace, JSFunction? warn});
   JSAny? debug(JSString message, [List<JSAny?> args = const []]) {
     final args$ = <JSAny?>[message, ...args];
     return _self.callMethodVarArgs<JSAny?>('debug'.toJS, args$.sublist(0, args$.length));
   }
-  JSAny? error(JSAny? error, [List<JSAny?> args = const []]) {
+  JSAny? error(JSAny error, [List<JSAny?> args = const []]) {
     final args$ = <JSAny?>[error, ...args];
     return _self.callMethodVarArgs<JSAny?>('error'.toJS, args$.sublist(0, args$.length));
   }
@@ -2544,12 +2753,14 @@ extension type LogOutputChannel(JSObject _self) implements OutputChannel, JSObje
 }
 
 extension type McpServerDefinitionProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory McpServerDefinitionProvider.lit$({Event<JSAny?>? onDidChangeMcpServerDefinitions, JSFunction? provideMcpServerDefinitions, JSFunction? resolveMcpServerDefinition});
   external Event<JSAny?>? get onDidChangeMcpServerDefinitions;
   external JSAny? provideMcpServerDefinitions(CancellationToken token);
   external JSAny? resolveMcpServerDefinition(T server, CancellationToken token);
 }
 
 extension type Memento(JSObject _self) implements JSObject {
+  external factory Memento.lit$({JSFunction? get, JSFunction? keys, JSFunction? update});
   external T? get<T extends JSAny?>(String key);
   @JS('get')
   external T get$2<T extends JSAny?>(String key, T defaultValue);
@@ -2558,6 +2769,7 @@ extension type Memento(JSObject _self) implements JSObject {
 }
 
 extension type MessageItem(JSObject _self) implements JSObject {
+  external factory MessageItem.lit$({JSBoolean? isCloseAffordance, JSString? title});
   external bool? get isCloseAffordance;
   external set isCloseAffordance(bool? value);
   external String get title;
@@ -2565,6 +2777,7 @@ extension type MessageItem(JSObject _self) implements JSObject {
 }
 
 extension type MessageOptions(JSObject _self) implements JSObject {
+  external factory MessageOptions.lit$({JSString? detail, JSBoolean? modal});
   external String? get detail;
   external set detail(String? value);
   external bool? get modal;
@@ -2572,6 +2785,7 @@ extension type MessageOptions(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCell(JSObject _self) implements JSObject {
+  external factory NotebookCell.lit$({TextDocument? document, NotebookCellExecutionSummary? executionSummary, JSNumber? index, JSNumber? kind, JSAnon_cd1da709a211? metadata, NotebookDocument? notebook, JSArray<NotebookCellOutput>? outputs});
   external TextDocument get document;
   external NotebookCellExecutionSummary? get executionSummary;
   external num get index;
@@ -2582,6 +2796,7 @@ extension type NotebookCell(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellExecution(JSObject _self) implements JSObject {
+  external factory NotebookCellExecution.lit$({JSFunction? appendOutput, JSFunction? appendOutputItems, NotebookCell? cell, JSFunction? clearOutput, JSFunction? end, JSNumber? executionOrder, JSFunction? replaceOutput, JSFunction? replaceOutputItems, JSFunction? start, CancellationToken? token});
   external JSPromise<JSAny?> appendOutput(JSObject out, [NotebookCell? cell]);
   external JSPromise<JSAny?> appendOutputItems(JSObject items, NotebookCellOutput output);
   external NotebookCell get cell;
@@ -2596,18 +2811,21 @@ extension type NotebookCellExecution(JSObject _self) implements JSObject {
 }
 
 extension type NotebookCellExecutionSummary(JSObject _self) implements JSObject {
+  external factory NotebookCellExecutionSummary.lit$({JSNumber? executionOrder, JSBoolean? success, JSAnon_2ef6a897fc39? timing});
   external num? get executionOrder;
   external bool? get success;
   external JSAnon_2ef6a897fc39? get timing;
 }
 
 extension type NotebookCellStatusBarItemProvider(JSObject _self) implements JSObject {
+  external factory NotebookCellStatusBarItemProvider.lit$({Event<JSAny?>? onDidChangeCellStatusBarItems, JSFunction? provideCellStatusBarItems});
   external Event<JSAny?>? get onDidChangeCellStatusBarItems;
   external set onDidChangeCellStatusBarItems(Event<JSAny?>? value);
   external JSAny? provideCellStatusBarItems(NotebookCell cell, CancellationToken token);
 }
 
 extension type NotebookController(JSObject _self) implements JSObject {
+  external factory NotebookController.lit$({JSFunction? createNotebookCellExecution, JSString? description, JSString? detail, JSFunction? dispose, JSFunction? executeHandler, JSString? id, JSFunction? interruptHandler, JSString? label, JSString? notebookType, Event<JSAnon_a6a068851ba0>? onDidChangeSelectedNotebooks, JSArray<JSString>? supportedLanguages, JSBoolean? supportsExecutionOrder, JSFunction? updateNotebookAffinity});
   external NotebookCellExecution createNotebookCellExecution(NotebookCell cell);
   external String? get description;
   external set description(String? value);
@@ -2631,6 +2849,7 @@ extension type NotebookController(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDocument(JSObject _self) implements JSObject {
+  external factory NotebookDocument.lit$({JSFunction? cellAt, JSNumber? cellCount, JSFunction? getCells, JSBoolean? isClosed, JSBoolean? isDirty, JSBoolean? isUntitled, JSAnon_90b1eaa702e4? metadata, JSString? notebookType, JSFunction? save, Uri? uri, JSNumber? version});
   external NotebookCell cellAt(num index);
   external num get cellCount;
   external JSArray<NotebookCell> getCells([NotebookRange? range]);
@@ -2645,6 +2864,7 @@ extension type NotebookDocument(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDocumentCellChange(JSObject _self) implements JSObject {
+  external factory NotebookDocumentCellChange.lit$({NotebookCell? cell, TextDocument? document, NotebookCellExecutionSummary? executionSummary, JSAnon_90b1eaa702e4? metadata, JSArray<NotebookCellOutput>? outputs});
   external NotebookCell get cell;
   external TextDocument? get document;
   external NotebookCellExecutionSummary? get executionSummary;
@@ -2653,6 +2873,7 @@ extension type NotebookDocumentCellChange(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDocumentChangeEvent(JSObject _self) implements JSObject {
+  external factory NotebookDocumentChangeEvent.lit$({JSArray<NotebookDocumentCellChange>? cellChanges, JSArray<NotebookDocumentContentChange>? contentChanges, JSAnon_90b1eaa702e4? metadata, NotebookDocument? notebook});
   external JSArray<NotebookDocumentCellChange> get cellChanges;
   external JSArray<NotebookDocumentContentChange> get contentChanges;
   external JSAnon_90b1eaa702e4? get metadata;
@@ -2660,12 +2881,14 @@ extension type NotebookDocumentChangeEvent(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDocumentContentChange(JSObject _self) implements JSObject {
+  external factory NotebookDocumentContentChange.lit$({JSArray<NotebookCell>? addedCells, NotebookRange? range, JSArray<NotebookCell>? removedCells});
   external JSArray<NotebookCell> get addedCells;
   external NotebookRange get range;
   external JSArray<NotebookCell> get removedCells;
 }
 
 extension type NotebookDocumentContentOptions(JSObject _self) implements JSObject {
+  external factory NotebookDocumentContentOptions.lit$({JSAnon_8493e550322c? transientCellMetadata, JSAnon_8493e550322c? transientDocumentMetadata, JSBoolean? transientOutputs});
   external JSAnon_8493e550322c? get transientCellMetadata;
   external set transientCellMetadata(JSAnon_8493e550322c? value);
   external JSAnon_8493e550322c? get transientDocumentMetadata;
@@ -2675,6 +2898,7 @@ extension type NotebookDocumentContentOptions(JSObject _self) implements JSObjec
 }
 
 extension type NotebookDocumentShowOptions(JSObject _self) implements JSObject {
+  external factory NotebookDocumentShowOptions.lit$({JSBoolean? preserveFocus, JSBoolean? preview, JSArray<NotebookRange>? selections, JSNumber? viewColumn});
   external bool? get preserveFocus;
   external bool? get preview;
   external JSArray<NotebookRange>? get selections;
@@ -2682,6 +2906,7 @@ extension type NotebookDocumentShowOptions(JSObject _self) implements JSObject {
 }
 
 extension type NotebookDocumentWillSaveEvent(JSObject _self) implements JSObject {
+  external factory NotebookDocumentWillSaveEvent.lit$({NotebookDocument? notebook, JSNumber? reason, CancellationToken? token, JSFunction? waitUntil});
   external NotebookDocument get notebook;
   external int get reason;
   external CancellationToken get token;
@@ -2691,6 +2916,7 @@ extension type NotebookDocumentWillSaveEvent(JSObject _self) implements JSObject
 }
 
 extension type NotebookEditor(JSObject _self) implements JSObject {
+  external factory NotebookEditor.lit$({NotebookDocument? notebook, JSFunction? revealRange, NotebookRange? selection, JSArray<NotebookRange>? selections, JSNumber? viewColumn, JSArray<NotebookRange>? visibleRanges});
   external NotebookDocument get notebook;
   external void revealRange(NotebookRange range, [int? revealType]);
   external NotebookRange get selection;
@@ -2702,26 +2928,31 @@ extension type NotebookEditor(JSObject _self) implements JSObject {
 }
 
 extension type NotebookEditorSelectionChangeEvent(JSObject _self) implements JSObject {
+  external factory NotebookEditorSelectionChangeEvent.lit$({NotebookEditor? notebookEditor, JSArray<NotebookRange>? selections});
   external NotebookEditor get notebookEditor;
   external JSArray<NotebookRange> get selections;
 }
 
 extension type NotebookEditorVisibleRangesChangeEvent(JSObject _self) implements JSObject {
+  external factory NotebookEditorVisibleRangesChangeEvent.lit$({NotebookEditor? notebookEditor, JSArray<NotebookRange>? visibleRanges});
   external NotebookEditor get notebookEditor;
   external JSArray<NotebookRange> get visibleRanges;
 }
 
 extension type NotebookRendererMessaging(JSObject _self) implements JSObject {
+  external factory NotebookRendererMessaging.lit$({Event<JSAnon_68b4d8c85bba>? onDidReceiveMessage, JSFunction? postMessage});
   external Event<JSAnon_68b4d8c85bba> get onDidReceiveMessage;
   external JSPromise<JSBoolean> postMessage(JSAny? message, [NotebookEditor? editor]);
 }
 
 extension type NotebookSerializer(JSObject _self) implements JSObject {
+  external factory NotebookSerializer.lit$({JSFunction? deserializeNotebook, JSFunction? serializeNotebook});
   external JSObject deserializeNotebook(JSUint8Array content, CancellationToken token);
   external JSObject serializeNotebook(NotebookData data, CancellationToken token);
 }
 
 extension type OnEnterRule(JSObject _self) implements JSObject {
+  external factory OnEnterRule.lit$({EnterAction? action, JSObject? afterText, JSObject? beforeText, JSObject? previousLineText});
   external EnterAction get action;
   external set action(EnterAction value);
   external JSObject? get afterText;
@@ -2733,10 +2964,12 @@ extension type OnEnterRule(JSObject _self) implements JSObject {
 }
 
 extension type OnTypeFormattingEditProvider(JSObject _self) implements JSObject {
+  external factory OnTypeFormattingEditProvider.lit$({JSFunction? provideOnTypeFormattingEdits});
   external JSAny? provideOnTypeFormattingEdits(TextDocument document, Position position, String ch, FormattingOptions options, CancellationToken token);
 }
 
 extension type OpenDialogOptions(JSObject _self) implements JSObject {
+  external factory OpenDialogOptions.lit$({JSBoolean? canSelectFiles, JSBoolean? canSelectFolders, JSBoolean? canSelectMany, Uri? defaultUri, JSAnon_04cd047eb59c? filters, JSString? openLabel, JSString? title});
   external bool? get canSelectFiles;
   external set canSelectFiles(bool? value);
   external bool? get canSelectFolders;
@@ -2754,6 +2987,7 @@ extension type OpenDialogOptions(JSObject _self) implements JSObject {
 }
 
 extension type OutputChannel(JSObject _self) implements JSObject {
+  external factory OutputChannel.lit$({JSFunction? append, JSFunction? appendLine, JSFunction? clear, JSFunction? dispose, JSFunction? hide, JSString? name, JSFunction? replace, JSFunction? show});
   external void append(String value);
   external void appendLine(String value);
   external void clear();
@@ -2767,10 +3001,12 @@ extension type OutputChannel(JSObject _self) implements JSObject {
 }
 
 extension type PrepareLanguageModelChatModelOptions(JSObject _self) implements JSObject {
+  external factory PrepareLanguageModelChatModelOptions.lit$({JSBoolean? silent});
   external bool get silent;
 }
 
 extension type PreparedToolInvocation(JSObject _self) implements JSObject {
+  external factory PreparedToolInvocation.lit$({LanguageModelToolConfirmationMessages? confirmationMessages, JSAny? invocationMessage});
   external LanguageModelToolConfirmationMessages? get confirmationMessages;
   external set confirmationMessages(LanguageModelToolConfirmationMessages? value);
   external JSAny? get invocationMessage;
@@ -2778,6 +3014,7 @@ extension type PreparedToolInvocation(JSObject _self) implements JSObject {
 }
 
 extension type ProcessExecutionOptions(JSObject _self) implements JSObject {
+  external factory ProcessExecutionOptions.lit$({JSString? cwd, JSAnon_c77c8585355a? env});
   external String? get cwd;
   external set cwd(String? value);
   external JSAnon_c77c8585355a? get env;
@@ -2785,31 +3022,35 @@ extension type ProcessExecutionOptions(JSObject _self) implements JSObject {
 }
 
 extension type Progress<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory Progress.lit$({JSFunction? report});
   external void report(T value);
 }
 
 extension type ProgressOptions(JSObject _self) implements JSObject {
+  external factory ProgressOptions.lit$({JSBoolean? cancellable, JSAny? location, JSString? title});
   external bool? get cancellable;
   external set cancellable(bool? value);
-  external JSAny? get location;
-  external set location(JSAny? value);
+  external JSAny get location;
+  external set location(JSAny value);
   external String? get title;
   external set title(String? value);
 }
 
 extension type ProvideLanguageModelChatResponseOptions(JSObject _self) implements JSObject {
+  external factory ProvideLanguageModelChatResponseOptions.lit$({JSAnon_cd1da709a211? modelOptions, JSNumber? toolMode, JSArray<LanguageModelChatTool>? tools});
   external JSAnon_cd1da709a211? get modelOptions;
   external int get toolMode;
   external JSArray<LanguageModelChatTool>? get tools;
 }
 
 extension type Pseudoterminal(JSObject _self) implements JSObject {
+  external factory Pseudoterminal.lit$({JSFunction? close, JSFunction? handleInput, Event<JSString>? onDidChangeName, Event<JSAny>? onDidClose, Event<TerminalDimensions?>? onDidOverrideDimensions, Event<JSString>? onDidWrite, JSFunction? open, JSFunction? setDimensions});
   external void close();
   external void handleInput(String data);
   external Event<JSString>? get onDidChangeName;
   external set onDidChangeName(Event<JSString>? value);
-  external Event<JSAny?>? get onDidClose;
-  external set onDidClose(Event<JSAny?>? value);
+  external Event<JSAny>? get onDidClose;
+  external set onDidClose(Event<JSAny>? value);
   external Event<TerminalDimensions?>? get onDidOverrideDimensions;
   external set onDidOverrideDimensions(Event<TerminalDimensions?>? value);
   external Event<JSString> get onDidWrite;
@@ -2819,10 +3060,12 @@ extension type Pseudoterminal(JSObject _self) implements JSObject {
 }
 
 extension type QuickDiffProvider(JSObject _self) implements JSObject {
+  external factory QuickDiffProvider.lit$({JSFunction? provideOriginalResource});
   external JSAny? provideOriginalResource(Uri uri, CancellationToken token);
 }
 
 extension type QuickInput(JSObject _self) implements JSObject {
+  external factory QuickInput.lit$({JSBoolean? busy, JSFunction? dispose, JSBoolean? enabled, JSFunction? hide, JSBoolean? ignoreFocusOut, Event<JSAny?>? onDidHide, JSFunction? show, JSNumber? step, JSString? title, JSNumber? totalSteps});
   external bool get busy;
   external set busy(bool value);
   external void dispose();
@@ -2842,6 +3085,7 @@ extension type QuickInput(JSObject _self) implements JSObject {
 }
 
 extension type QuickInputButton(JSObject _self) implements JSObject {
+  external factory QuickInputButton.lit$({JSObject? iconPath, JSNumber? location, JSAnon_dc1f16364c4a? toggle, JSString? tooltip});
   external JSObject get iconPath;
   external int? get location;
   external set location(int? value);
@@ -2850,6 +3094,7 @@ extension type QuickInputButton(JSObject _self) implements JSObject {
 }
 
 extension type QuickPick<T extends JSAny?>(JSObject _self) implements QuickInput, JSObject {
+  external factory QuickPick.lit$({JSArray<T>? activeItems, JSArray<QuickInputButton>? buttons, JSBoolean? canSelectMany, JSArray<T>? items, JSBoolean? keepScrollPosition, JSBoolean? matchOnDescription, JSBoolean? matchOnDetail, Event<JSAny?>? onDidAccept, Event<JSArray<T>>? onDidChangeActive, Event<JSArray<T>>? onDidChangeSelection, Event<JSString>? onDidChangeValue, Event<QuickInputButton>? onDidTriggerButton, Event<QuickPickItemButtonEvent<T>>? onDidTriggerItemButton, JSString? placeholder, JSString? prompt, JSArray<T>? selectedItems, JSString? value});
   external JSArray<T> get activeItems;
   external set activeItems(JSArray<T> value);
   external JSArray<QuickInputButton> get buttons;
@@ -2881,6 +3126,7 @@ extension type QuickPick<T extends JSAny?>(JSObject _self) implements QuickInput
 }
 
 extension type QuickPickItem(JSObject _self) implements JSObject {
+  external factory QuickPickItem.lit$({JSBoolean? alwaysShow, JSArray<QuickInputButton>? buttons, JSString? description, JSString? detail, JSObject? iconPath, JSNumber? kind, JSString? label, JSBoolean? picked, Uri? resourceUri});
   external bool? get alwaysShow;
   external set alwaysShow(bool? value);
   external JSArray<QuickInputButton>? get buttons;
@@ -2902,11 +3148,13 @@ extension type QuickPickItem(JSObject _self) implements JSObject {
 }
 
 extension type QuickPickItemButtonEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory QuickPickItemButtonEvent.lit$({QuickInputButton? button, T? item});
   external QuickInputButton get button;
   external T get item;
 }
 
 extension type QuickPickOptions(JSObject _self) implements JSObject {
+  external factory QuickPickOptions.lit$({JSBoolean? canPickMany, JSBoolean? ignoreFocusOut, JSBoolean? matchOnDescription, JSBoolean? matchOnDetail, JSFunction? onDidSelectItem, JSString? placeHolder, JSString? prompt, JSString? title});
   external bool? get canPickMany;
   external set canPickMany(bool? value);
   external bool? get ignoreFocusOut;
@@ -2915,7 +3163,7 @@ extension type QuickPickOptions(JSObject _self) implements JSObject {
   external set matchOnDescription(bool? value);
   external bool? get matchOnDetail;
   external set matchOnDetail(bool? value);
-  external JSAny? onDidSelectItem(JSAny? item);
+  external JSAny? onDidSelectItem(JSAny item);
   external String? get placeHolder;
   external set placeHolder(String? value);
   external String? get prompt;
@@ -2925,24 +3173,29 @@ extension type QuickPickOptions(JSObject _self) implements JSObject {
 }
 
 extension type ReferenceContext(JSObject _self) implements JSObject {
+  external factory ReferenceContext.lit$({JSBoolean? includeDeclaration});
   external bool get includeDeclaration;
 }
 
 extension type ReferenceProvider(JSObject _self) implements JSObject {
+  external factory ReferenceProvider.lit$({JSFunction? provideReferences});
   external JSAny? provideReferences(TextDocument document, Position position, ReferenceContext context, CancellationToken token);
 }
 
 extension type RenameProvider(JSObject _self) implements JSObject {
+  external factory RenameProvider.lit$({JSFunction? prepareRename, JSFunction? provideRenameEdits});
   external JSAny? prepareRename(TextDocument document, Position position, CancellationToken token);
   external JSAny? provideRenameEdits(TextDocument document, Position position, String newName, CancellationToken token);
 }
 
 extension type RunOptions(JSObject _self) implements JSObject {
+  external factory RunOptions.lit$({JSBoolean? reevaluateOnRerun});
   external bool? get reevaluateOnRerun;
   external set reevaluateOnRerun(bool? value);
 }
 
 extension type SaveDialogOptions(JSObject _self) implements JSObject {
+  external factory SaveDialogOptions.lit$({Uri? defaultUri, JSAnon_04cd047eb59c? filters, JSString? saveLabel, JSString? title});
   external Uri? get defaultUri;
   external set defaultUri(Uri? value);
   external JSAnon_04cd047eb59c? get filters;
@@ -2954,6 +3207,7 @@ extension type SaveDialogOptions(JSObject _self) implements JSObject {
 }
 
 extension type SecretStorage(JSObject _self) implements JSObject {
+  external factory SecretStorage.lit$({JSFunction? delete, JSFunction? get, JSFunction? keys, Event<SecretStorageChangeEvent>? onDidChange, JSFunction? store});
   external JSPromise<JSAny?> delete(String key);
   external JSPromise<JSString?> get(String key);
   external JSPromise<JSArray<JSString>> keys();
@@ -2962,19 +3216,23 @@ extension type SecretStorage(JSObject _self) implements JSObject {
 }
 
 extension type SecretStorageChangeEvent(JSObject _self) implements JSObject {
+  external factory SecretStorageChangeEvent.lit$({JSString? key});
   external String get key;
 }
 
 extension type SelectedCompletionInfo(JSObject _self) implements JSObject {
+  external factory SelectedCompletionInfo.lit$({Range? range, JSString? text});
   external Range get range;
   external String get text;
 }
 
 extension type SelectionRangeProvider(JSObject _self) implements JSObject {
+  external factory SelectionRangeProvider.lit$({JSFunction? provideSelectionRanges});
   external JSAny? provideSelectionRanges(TextDocument document, JSArray<Position> positions, CancellationToken token);
 }
 
 extension type ShellExecutionOptions(JSObject _self) implements JSObject {
+  external factory ShellExecutionOptions.lit$({JSString? cwd, JSAnon_c77c8585355a? env, JSString? executable, JSArray<JSString>? shellArgs, ShellQuotingOptions? shellQuoting});
   external String? get cwd;
   external set cwd(String? value);
   external JSAnon_c77c8585355a? get env;
@@ -2988,6 +3246,7 @@ extension type ShellExecutionOptions(JSObject _self) implements JSObject {
 }
 
 extension type ShellQuotedString(JSObject _self) implements JSObject {
+  external factory ShellQuotedString.lit$({JSNumber? quoting, JSString? value});
   external int get quoting;
   external set quoting(int value);
   external String get value;
@@ -2995,6 +3254,7 @@ extension type ShellQuotedString(JSObject _self) implements JSObject {
 }
 
 extension type ShellQuotingOptions(JSObject _self) implements JSObject {
+  external factory ShellQuotingOptions.lit$({JSAny? escape, JSString? strong, JSString? weak});
   external JSAny? get escape;
   external set escape(JSAny? value);
   external String? get strong;
@@ -3004,6 +3264,7 @@ extension type ShellQuotingOptions(JSObject _self) implements JSObject {
 }
 
 extension type SignatureHelpContext(JSObject _self) implements JSObject {
+  external factory SignatureHelpContext.lit$({SignatureHelp? activeSignatureHelp, JSBoolean? isRetrigger, JSString? triggerCharacter, JSNumber? triggerKind});
   external SignatureHelp? get activeSignatureHelp;
   external bool get isRetrigger;
   external String? get triggerCharacter;
@@ -3011,15 +3272,18 @@ extension type SignatureHelpContext(JSObject _self) implements JSObject {
 }
 
 extension type SignatureHelpProvider(JSObject _self) implements JSObject {
+  external factory SignatureHelpProvider.lit$({JSFunction? provideSignatureHelp});
   external JSAny? provideSignatureHelp(TextDocument document, Position position, CancellationToken token, SignatureHelpContext context);
 }
 
 extension type SignatureHelpProviderMetadata(JSObject _self) implements JSObject {
+  external factory SignatureHelpProviderMetadata.lit$({JSArray<JSString>? retriggerCharacters, JSArray<JSString>? triggerCharacters});
   external JSArray<JSString> get retriggerCharacters;
   external JSArray<JSString> get triggerCharacters;
 }
 
 extension type SourceControl(JSObject _self) implements JSObject {
+  external factory SourceControl.lit$({Command? acceptInputCommand, JSString? commitTemplate, JSNumber? count, JSFunction? createResourceGroup, JSFunction? dispose, JSString? id, SourceControlInputBox? inputBox, JSString? label, QuickDiffProvider? quickDiffProvider, Uri? rootUri, JSArray<Command>? statusBarCommands});
   external Command? get acceptInputCommand;
   external set acceptInputCommand(Command? value);
   external String? get commitTemplate;
@@ -3039,6 +3303,7 @@ extension type SourceControl(JSObject _self) implements JSObject {
 }
 
 extension type SourceControlInputBox(JSObject _self) implements JSObject {
+  external factory SourceControlInputBox.lit$({JSBoolean? enabled, JSString? placeholder, JSString? value, JSBoolean? visible});
   external bool get enabled;
   external set enabled(bool value);
   external String get placeholder;
@@ -3050,6 +3315,7 @@ extension type SourceControlInputBox(JSObject _self) implements JSObject {
 }
 
 extension type SourceControlResourceDecorations(JSObject _self) implements SourceControlResourceThemableDecorations, JSObject {
+  external factory SourceControlResourceDecorations.lit$({SourceControlResourceThemableDecorations? dark, JSBoolean? faded, SourceControlResourceThemableDecorations? light, JSBoolean? strikeThrough, JSString? tooltip});
   external SourceControlResourceThemableDecorations? get dark;
   external bool? get faded;
   external SourceControlResourceThemableDecorations? get light;
@@ -3058,6 +3324,7 @@ extension type SourceControlResourceDecorations(JSObject _self) implements Sourc
 }
 
 extension type SourceControlResourceGroup(JSObject _self) implements JSObject {
+  external factory SourceControlResourceGroup.lit$({JSString? contextValue, JSFunction? dispose, JSBoolean? hideWhenEmpty, JSString? id, JSString? label, JSArray<SourceControlResourceState>? resourceStates});
   external String? get contextValue;
   external set contextValue(String? value);
   external void dispose();
@@ -3071,6 +3338,7 @@ extension type SourceControlResourceGroup(JSObject _self) implements JSObject {
 }
 
 extension type SourceControlResourceState(JSObject _self) implements JSObject {
+  external factory SourceControlResourceState.lit$({Command? command, JSString? contextValue, SourceControlResourceDecorations? decorations, Uri? resourceUri});
   external Command? get command;
   external String? get contextValue;
   external SourceControlResourceDecorations? get decorations;
@@ -3078,10 +3346,12 @@ extension type SourceControlResourceState(JSObject _self) implements JSObject {
 }
 
 extension type SourceControlResourceThemableDecorations(JSObject _self) implements JSObject {
+  external factory SourceControlResourceThemableDecorations.lit$({JSAny? iconPath});
   external JSAny? get iconPath;
 }
 
 extension type StatusBarItem(JSObject _self) implements JSObject {
+  external factory StatusBarItem.lit$({AccessibilityInformation? accessibilityInformation, JSNumber? alignment, ThemeColor? backgroundColor, JSAny? color, JSAny? command, JSFunction? dispose, JSFunction? hide, JSString? id, JSString? name, JSNumber? priority, JSFunction? show, JSString? text, JSAny? tooltip});
   external AccessibilityInformation? get accessibilityInformation;
   external set accessibilityInformation(AccessibilityInformation? value);
   external int get alignment;
@@ -3105,8 +3375,9 @@ extension type StatusBarItem(JSObject _self) implements JSObject {
 }
 
 extension type Tab(JSObject _self) implements JSObject {
+  external factory Tab.lit$({TabGroup? group, JSAny? input, JSBoolean? isActive, JSBoolean? isDirty, JSBoolean? isPinned, JSBoolean? isPreview, JSString? label});
   external TabGroup get group;
-  external JSAny? get input;
+  external JSAny get input;
   external bool get isActive;
   external bool get isDirty;
   external bool get isPinned;
@@ -3115,12 +3386,14 @@ extension type Tab(JSObject _self) implements JSObject {
 }
 
 extension type TabChangeEvent(JSObject _self) implements JSObject {
+  external factory TabChangeEvent.lit$({JSArray<Tab>? changed, JSArray<Tab>? closed, JSArray<Tab>? opened});
   external JSArray<Tab> get changed;
   external JSArray<Tab> get closed;
   external JSArray<Tab> get opened;
 }
 
 extension type TabGroup(JSObject _self) implements JSObject {
+  external factory TabGroup.lit$({Tab? activeTab, JSBoolean? isActive, JSArray<Tab>? tabs, JSNumber? viewColumn});
   external Tab? get activeTab;
   external bool get isActive;
   external JSArray<Tab> get tabs;
@@ -3128,12 +3401,14 @@ extension type TabGroup(JSObject _self) implements JSObject {
 }
 
 extension type TabGroupChangeEvent(JSObject _self) implements JSObject {
+  external factory TabGroupChangeEvent.lit$({JSArray<TabGroup>? changed, JSArray<TabGroup>? closed, JSArray<TabGroup>? opened});
   external JSArray<TabGroup> get changed;
   external JSArray<TabGroup> get closed;
   external JSArray<TabGroup> get opened;
 }
 
 extension type TabGroups(JSObject _self) implements JSObject {
+  external factory TabGroups.lit$({TabGroup? activeTabGroup, JSArray<TabGroup>? all, JSFunction? close, Event<TabGroupChangeEvent>? onDidChangeTabGroups, Event<TabChangeEvent>? onDidChangeTabs});
   external TabGroup get activeTabGroup;
   external JSArray<TabGroup> get all;
   external JSPromise<JSBoolean> close(JSObject tab, [bool? preserveFocus]);
@@ -3144,22 +3419,26 @@ extension type TabGroups(JSObject _self) implements JSObject {
 }
 
 extension type TaskDefinition(JSObject _self) implements JSObject {
+  external factory TaskDefinition.lit$({JSString? type});
   external JSAny? operator [](String key);
   external void operator []=(String key, JSAny? value);
   external String get type;
 }
 
 extension type TaskEndEvent(JSObject _self) implements JSObject {
+  external factory TaskEndEvent.lit$({TaskExecution? execution});
   external TaskExecution get execution;
 }
 
 extension type TaskExecution(JSObject _self) implements JSObject {
+  external factory TaskExecution.lit$({Task? task, JSFunction? terminate});
   external Task get task;
   external set task(Task value);
   external void terminate();
 }
 
 extension type TaskFilter(JSObject _self) implements JSObject {
+  external factory TaskFilter.lit$({JSString? type, JSString? version});
   external String? get type;
   external set type(String? value);
   external String? get version;
@@ -3167,6 +3446,7 @@ extension type TaskFilter(JSObject _self) implements JSObject {
 }
 
 extension type TaskPresentationOptions(JSObject _self) implements JSObject {
+  external factory TaskPresentationOptions.lit$({JSBoolean? clear, JSBoolean? close, JSBoolean? echo, JSBoolean? focus, JSNumber? panel, JSNumber? reveal, JSBoolean? showReuseMessage});
   external bool? get clear;
   external set clear(bool? value);
   external bool? get close;
@@ -3184,25 +3464,30 @@ extension type TaskPresentationOptions(JSObject _self) implements JSObject {
 }
 
 extension type TaskProcessEndEvent(JSObject _self) implements JSObject {
+  external factory TaskProcessEndEvent.lit$({TaskExecution? execution, JSNumber? exitCode});
   external TaskExecution get execution;
   external num? get exitCode;
 }
 
 extension type TaskProcessStartEvent(JSObject _self) implements JSObject {
+  external factory TaskProcessStartEvent.lit$({TaskExecution? execution, JSNumber? processId});
   external TaskExecution get execution;
   external num get processId;
 }
 
 extension type TaskProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TaskProvider.lit$({JSFunction? provideTasks, JSFunction? resolveTask});
   external JSAny? provideTasks(CancellationToken token);
   external JSAny? resolveTask(T task, CancellationToken token);
 }
 
 extension type TaskStartEvent(JSObject _self) implements JSObject {
+  external factory TaskStartEvent.lit$({TaskExecution? execution});
   external TaskExecution get execution;
 }
 
 extension type TelemetryLogger(JSObject _self) implements JSObject {
+  external factory TelemetryLogger.lit$({JSFunction? dispose, JSBoolean? isErrorsEnabled, JSBoolean? isUsageEnabled, JSFunction? logError, JSFunction? logUsage, Event<TelemetryLogger>? onDidChangeEnableStates});
   external void dispose();
   external bool get isErrorsEnabled;
   external bool get isUsageEnabled;
@@ -3214,18 +3499,21 @@ extension type TelemetryLogger(JSObject _self) implements JSObject {
 }
 
 extension type TelemetryLoggerOptions(JSObject _self) implements JSObject {
+  external factory TelemetryLoggerOptions.lit$({JSObject? additionalCommonProperties, JSBoolean? ignoreBuiltInCommonProperties, JSBoolean? ignoreUnhandledErrors});
   external JSObject? get additionalCommonProperties;
   external bool? get ignoreBuiltInCommonProperties;
   external bool? get ignoreUnhandledErrors;
 }
 
 extension type TelemetrySender(JSObject _self) implements JSObject {
-  external JSAny? flush();
+  external factory TelemetrySender.lit$({JSFunction? flush, JSFunction? sendErrorData, JSFunction? sendEventData});
+  external JSAny flush();
   external void sendErrorData(JSObject error, [JSObject? data]);
   external void sendEventData(String eventName, [JSObject? data]);
 }
 
 extension type Terminal(JSObject _self) implements JSObject {
+  external factory Terminal.lit$({JSObject? creationOptions, JSFunction? dispose, TerminalExitStatus? exitStatus, JSFunction? hide, JSString? name, JSPromise<JSNumber?>? processId, JSFunction? sendText, TerminalShellIntegration? shellIntegration, JSFunction? show, TerminalState? state});
   external JSObject get creationOptions;
   external void dispose();
   external TerminalExitStatus? get exitStatus;
@@ -3239,11 +3527,13 @@ extension type Terminal(JSObject _self) implements JSObject {
 }
 
 extension type TerminalDimensions(JSObject _self) implements JSObject {
+  external factory TerminalDimensions.lit$({JSNumber? columns, JSNumber? rows});
   external num get columns;
   external num get rows;
 }
 
 extension type TerminalEditorLocationOptions(JSObject _self) implements JSObject {
+  external factory TerminalEditorLocationOptions.lit$({JSBoolean? preserveFocus, JSNumber? viewColumn});
   external bool? get preserveFocus;
   external set preserveFocus(bool? value);
   external int get viewColumn;
@@ -3251,11 +3541,13 @@ extension type TerminalEditorLocationOptions(JSObject _self) implements JSObject
 }
 
 extension type TerminalExitStatus(JSObject _self) implements JSObject {
+  external factory TerminalExitStatus.lit$({JSNumber? code, JSNumber? reason});
   external num? get code;
   external int get reason;
 }
 
 extension type TerminalLinkContext(JSObject _self) implements JSObject {
+  external factory TerminalLinkContext.lit$({JSString? line, Terminal? terminal});
   external String get line;
   external set line(String value);
   external Terminal get terminal;
@@ -3263,11 +3555,13 @@ extension type TerminalLinkContext(JSObject _self) implements JSObject {
 }
 
 extension type TerminalLinkProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TerminalLinkProvider.lit$({JSFunction? handleTerminalLink, JSFunction? provideTerminalLinks});
   external JSAny? handleTerminalLink(T link);
   external JSAny? provideTerminalLinks(TerminalLinkContext context, CancellationToken token);
 }
 
 extension type TerminalOptions(JSObject _self) implements JSObject {
+  external factory TerminalOptions.lit$({ThemeColor? color, JSAny? cwd, JSAnon_5cec6a3f14bb? env, JSBoolean? hideFromUser, JSObject? iconPath, JSBoolean? isTransient, JSAny? location, JSString? message, JSString? name, JSAny? shellArgs, JSString? shellIntegrationNonce, JSString? shellPath, JSBoolean? strictEnv});
   external ThemeColor? get color;
   external set color(ThemeColor? value);
   external JSAny? get cwd;
@@ -3297,22 +3591,26 @@ extension type TerminalOptions(JSObject _self) implements JSObject {
 }
 
 extension type TerminalProfileProvider(JSObject _self) implements JSObject {
+  external factory TerminalProfileProvider.lit$({JSFunction? provideTerminalProfile});
   external JSAny? provideTerminalProfile(CancellationToken token);
 }
 
 extension type TerminalShellExecution(JSObject _self) implements JSObject {
+  external factory TerminalShellExecution.lit$({TerminalShellExecutionCommandLine? commandLine, Uri? cwd, JSFunction? read});
   external TerminalShellExecutionCommandLine get commandLine;
   external Uri? get cwd;
   external JSObject read();
 }
 
 extension type TerminalShellExecutionCommandLine(JSObject _self) implements JSObject {
+  external factory TerminalShellExecutionCommandLine.lit$({JSNumber? confidence, JSBoolean? isTrusted, JSString? value});
   external int get confidence;
   external bool get isTrusted;
   external String get value;
 }
 
 extension type TerminalShellExecutionEndEvent(JSObject _self) implements JSObject {
+  external factory TerminalShellExecutionEndEvent.lit$({TerminalShellExecution? execution, JSNumber? exitCode, TerminalShellIntegration? shellIntegration, Terminal? terminal});
   external TerminalShellExecution get execution;
   external num? get exitCode;
   external TerminalShellIntegration get shellIntegration;
@@ -3320,12 +3618,14 @@ extension type TerminalShellExecutionEndEvent(JSObject _self) implements JSObjec
 }
 
 extension type TerminalShellExecutionStartEvent(JSObject _self) implements JSObject {
+  external factory TerminalShellExecutionStartEvent.lit$({TerminalShellExecution? execution, TerminalShellIntegration? shellIntegration, Terminal? terminal});
   external TerminalShellExecution get execution;
   external TerminalShellIntegration get shellIntegration;
   external Terminal get terminal;
 }
 
 extension type TerminalShellIntegration(JSObject _self) implements JSObject {
+  external factory TerminalShellIntegration.lit$({Uri? cwd, JSFunction? executeCommand});
   external Uri? get cwd;
   external TerminalShellExecution executeCommand(String commandLine);
   @JS('executeCommand')
@@ -3333,21 +3633,25 @@ extension type TerminalShellIntegration(JSObject _self) implements JSObject {
 }
 
 extension type TerminalShellIntegrationChangeEvent(JSObject _self) implements JSObject {
+  external factory TerminalShellIntegrationChangeEvent.lit$({TerminalShellIntegration? shellIntegration, Terminal? terminal});
   external TerminalShellIntegration get shellIntegration;
   external Terminal get terminal;
 }
 
 extension type TerminalSplitLocationOptions(JSObject _self) implements JSObject {
+  external factory TerminalSplitLocationOptions.lit$({Terminal? parentTerminal});
   external Terminal get parentTerminal;
   external set parentTerminal(Terminal value);
 }
 
 extension type TerminalState(JSObject _self) implements JSObject {
+  external factory TerminalState.lit$({JSBoolean? isInteractedWith, JSString? shell});
   external bool get isInteractedWith;
   external String? get shell;
 }
 
 extension type TestController(JSObject _self) implements JSObject {
+  external factory TestController.lit$({JSFunction? createRunProfile, JSFunction? createTestItem, JSFunction? createTestRun, JSFunction? dispose, JSString? id, JSFunction? invalidateTestResults, TestItemCollection? items, JSString? label, JSFunction? refreshHandler, JSFunction? resolveHandler});
   external TestRunProfile createRunProfile(String label, int kind, JSFunction runHandler, [bool? isDefault, TestTag? tag, bool? supportsContinuousRun]);
   external TestItem createTestItem(String id, String label, [Uri? uri]);
   external TestRun createTestRun(TestRunRequest request, [String? name, bool? persist]);
@@ -3364,6 +3668,7 @@ extension type TestController(JSObject _self) implements JSObject {
 }
 
 extension type TestItem(JSObject _self) implements JSObject {
+  external factory TestItem.lit$({JSBoolean? busy, JSBoolean? canResolveChildren, TestItemCollection? children, JSString? description, JSAny? error, JSString? id, JSString? label, TestItem? parent, Range? range, JSString? sortText, JSArray<TestTag>? tags, Uri? uri});
   external bool get busy;
   external set busy(bool value);
   external bool get canResolveChildren;
@@ -3387,6 +3692,7 @@ extension type TestItem(JSObject _self) implements JSObject {
 }
 
 extension type TestItemCollection(JSObject _self) implements JSObject {
+  external factory TestItemCollection.lit$({JSFunction? add, JSFunction? delete, JSFunction? forEach, JSFunction? get, JSFunction? replace, JSNumber? size});
   external void add(TestItem item);
   external void delete(String itemId);
   external void forEach(JSFunction callback, [JSAny? thisArg]);
@@ -3396,6 +3702,7 @@ extension type TestItemCollection(JSObject _self) implements JSObject {
 }
 
 extension type TestRun(JSObject _self) implements JSObject {
+  external factory TestRun.lit$({JSFunction? addCoverage, JSFunction? appendOutput, JSFunction? end, JSFunction? enqueued, JSFunction? errored, JSFunction? failed, JSBoolean? isPersisted, JSString? name, Event<JSAny?>? onDidDispose, JSFunction? passed, JSFunction? skipped, JSFunction? started, CancellationToken? token});
   external void addCoverage(FileCoverage fileCoverage);
   external void appendOutput(String output, [Location? location, TestItem? test]);
   external void end();
@@ -3412,6 +3719,7 @@ extension type TestRun(JSObject _self) implements JSObject {
 }
 
 extension type TestRunProfile(JSObject _self) implements JSObject {
+  external factory TestRunProfile.lit$({JSFunction? configureHandler, JSFunction? dispose, JSBoolean? isDefault, JSNumber? kind, JSString? label, JSFunction? loadDetailedCoverage, JSFunction? loadDetailedCoverageForTest, Event<JSBoolean>? onDidChangeDefault, JSFunction? runHandler, JSBoolean? supportsContinuousRun, TestTag? tag});
   external JSFunction? get configureHandler;
   external set configureHandler(JSFunction? value);
   external void dispose();
@@ -3434,6 +3742,7 @@ extension type TestRunProfile(JSObject _self) implements JSObject {
 }
 
 extension type TextDocument(JSObject _self) implements JSObject {
+  external factory TextDocument.lit$({JSString? encoding, JSNumber? eol, JSString? fileName, JSFunction? getText, JSFunction? getWordRangeAtPosition, JSBoolean? isClosed, JSBoolean? isDirty, JSBoolean? isUntitled, JSString? languageId, JSFunction? lineAt, JSNumber? lineCount, JSFunction? offsetAt, JSFunction? positionAt, JSFunction? save, Uri? uri, JSFunction? validatePosition, JSFunction? validateRange, JSNumber? version});
   external String get encoding;
   external int get eol;
   external String get fileName;
@@ -3457,12 +3766,14 @@ extension type TextDocument(JSObject _self) implements JSObject {
 }
 
 extension type TextDocumentChangeEvent(JSObject _self) implements JSObject {
+  external factory TextDocumentChangeEvent.lit$({JSArray<TextDocumentContentChangeEvent>? contentChanges, TextDocument? document, JSNumber? reason});
   external JSArray<TextDocumentContentChangeEvent> get contentChanges;
   external TextDocument get document;
   external int? get reason;
 }
 
 extension type TextDocumentContentChangeEvent(JSObject _self) implements JSObject {
+  external factory TextDocumentContentChangeEvent.lit$({Range? range, JSNumber? rangeLength, JSNumber? rangeOffset, JSString? text});
   external Range get range;
   external num get rangeLength;
   external num get rangeOffset;
@@ -3470,12 +3781,14 @@ extension type TextDocumentContentChangeEvent(JSObject _self) implements JSObjec
 }
 
 extension type TextDocumentContentProvider(JSObject _self) implements JSObject {
+  external factory TextDocumentContentProvider.lit$({Event<Uri>? onDidChange, JSFunction? provideTextDocumentContent});
   external Event<Uri>? get onDidChange;
   external set onDidChange(Event<Uri>? value);
   external JSAny? provideTextDocumentContent(Uri uri, CancellationToken token);
 }
 
 extension type TextDocumentShowOptions(JSObject _self) implements JSObject {
+  external factory TextDocumentShowOptions.lit$({JSBoolean? preserveFocus, JSBoolean? preview, Range? selection, JSNumber? viewColumn});
   external bool? get preserveFocus;
   external set preserveFocus(bool? value);
   external bool? get preview;
@@ -3487,6 +3800,7 @@ extension type TextDocumentShowOptions(JSObject _self) implements JSObject {
 }
 
 extension type TextDocumentWillSaveEvent(JSObject _self) implements JSObject {
+  external factory TextDocumentWillSaveEvent.lit$({TextDocument? document, JSNumber? reason, JSFunction? waitUntil});
   external TextDocument get document;
   external int get reason;
   external void waitUntil(JSPromise<JSArray<TextEdit>> thenable);
@@ -3495,6 +3809,7 @@ extension type TextDocumentWillSaveEvent(JSObject _self) implements JSObject {
 }
 
 extension type TextEditor(JSObject _self) implements JSObject {
+  external factory TextEditor.lit$({TextDocument? document, JSFunction? edit, JSFunction? hide, JSFunction? insertSnippet, TextEditorOptions? options, JSFunction? revealRange, Selection? selection, JSArray<Selection>? selections, JSFunction? setDecorations, JSFunction? show, JSNumber? viewColumn, JSArray<Range>? visibleRanges});
   external TextDocument get document;
   external JSPromise<JSBoolean> edit(JSFunction callback, [JSAnon_c32f2c0618c1? options]);
   external void hide();
@@ -3513,11 +3828,13 @@ extension type TextEditor(JSObject _self) implements JSObject {
 }
 
 extension type TextEditorDecorationType(JSObject _self) implements JSObject {
+  external factory TextEditorDecorationType.lit$({JSFunction? dispose, JSString? key});
   external void dispose();
   external String get key;
 }
 
 extension type TextEditorEdit(JSObject _self) implements JSObject {
+  external factory TextEditorEdit.lit$({JSFunction? delete, JSFunction? insert, JSFunction? replace, JSFunction? setEndOfLine});
   external void delete(JSObject location);
   external void insert(Position location, String value);
   external void replace(JSObject location, String value);
@@ -3525,6 +3842,7 @@ extension type TextEditorEdit(JSObject _self) implements JSObject {
 }
 
 extension type TextEditorOptions(JSObject _self) implements JSObject {
+  external factory TextEditorOptions.lit$({JSNumber? cursorStyle, JSAny? indentSize, JSAny? insertSpaces, JSNumber? lineNumbers, JSAny? tabSize});
   external int? get cursorStyle;
   external set cursorStyle(int? value);
   external JSAny? get indentSize;
@@ -3538,27 +3856,32 @@ extension type TextEditorOptions(JSObject _self) implements JSObject {
 }
 
 extension type TextEditorOptionsChangeEvent(JSObject _self) implements JSObject {
+  external factory TextEditorOptionsChangeEvent.lit$({TextEditorOptions? options, TextEditor? textEditor});
   external TextEditorOptions get options;
   external TextEditor get textEditor;
 }
 
 extension type TextEditorSelectionChangeEvent(JSObject _self) implements JSObject {
+  external factory TextEditorSelectionChangeEvent.lit$({JSNumber? kind, JSArray<Selection>? selections, TextEditor? textEditor});
   external int? get kind;
   external JSArray<Selection> get selections;
   external TextEditor get textEditor;
 }
 
 extension type TextEditorViewColumnChangeEvent(JSObject _self) implements JSObject {
+  external factory TextEditorViewColumnChangeEvent.lit$({TextEditor? textEditor, JSNumber? viewColumn});
   external TextEditor get textEditor;
   external int get viewColumn;
 }
 
 extension type TextEditorVisibleRangesChangeEvent(JSObject _self) implements JSObject {
+  external factory TextEditorVisibleRangesChangeEvent.lit$({TextEditor? textEditor, JSArray<Range>? visibleRanges});
   external TextEditor get textEditor;
   external JSArray<Range> get visibleRanges;
 }
 
 extension type TextLine(JSObject _self) implements JSObject {
+  external factory TextLine.lit$({JSNumber? firstNonWhitespaceCharacterIndex, JSBoolean? isEmptyOrWhitespace, JSNumber? lineNumber, Range? range, Range? rangeIncludingLineBreak, JSString? text});
   external num get firstNonWhitespaceCharacterIndex;
   external bool get isEmptyOrWhitespace;
   external num get lineNumber;
@@ -3568,6 +3891,7 @@ extension type TextLine(JSObject _self) implements JSObject {
 }
 
 extension type ThemableDecorationAttachmentRenderOptions(JSObject _self) implements JSObject {
+  external factory ThemableDecorationAttachmentRenderOptions.lit$({JSAny? backgroundColor, JSString? border, JSAny? borderColor, JSAny? color, JSAny? contentIconPath, JSString? contentText, JSString? fontStyle, JSString? fontWeight, JSString? height, JSString? margin, JSString? textDecoration, JSString? width});
   external JSAny? get backgroundColor;
   external set backgroundColor(JSAny? value);
   external String? get border;
@@ -3595,6 +3919,7 @@ extension type ThemableDecorationAttachmentRenderOptions(JSObject _self) impleme
 }
 
 extension type ThemableDecorationInstanceRenderOptions(JSObject _self) implements JSObject {
+  external factory ThemableDecorationInstanceRenderOptions.lit$({ThemableDecorationAttachmentRenderOptions? after, ThemableDecorationAttachmentRenderOptions? before});
   external ThemableDecorationAttachmentRenderOptions? get after;
   external set after(ThemableDecorationAttachmentRenderOptions? value);
   external ThemableDecorationAttachmentRenderOptions? get before;
@@ -3602,6 +3927,7 @@ extension type ThemableDecorationInstanceRenderOptions(JSObject _self) implement
 }
 
 extension type ThemableDecorationRenderOptions(JSObject _self) implements JSObject {
+  external factory ThemableDecorationRenderOptions.lit$({ThemableDecorationAttachmentRenderOptions? after, JSAny? backgroundColor, ThemableDecorationAttachmentRenderOptions? before, JSString? border, JSAny? borderColor, JSString? borderRadius, JSString? borderSpacing, JSString? borderStyle, JSString? borderWidth, JSAny? color, JSString? cursor, JSString? fontStyle, JSString? fontWeight, JSAny? gutterIconPath, JSString? gutterIconSize, JSString? letterSpacing, JSString? opacity, JSString? outline, JSAny? outlineColor, JSString? outlineStyle, JSString? outlineWidth, JSAny? overviewRulerColor, JSString? textDecoration});
   external ThemableDecorationAttachmentRenderOptions? get after;
   external set after(ThemableDecorationAttachmentRenderOptions? value);
   external JSAny? get backgroundColor;
@@ -3651,10 +3977,12 @@ extension type ThemableDecorationRenderOptions(JSObject _self) implements JSObje
 }
 
 extension type TreeCheckboxChangeEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeCheckboxChangeEvent.lit$({JSArray<JSTuple_87f74e97d0da>? items});
   external JSArray<JSTuple_87f74e97d0da> get items;
 }
 
 extension type TreeDataProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeDataProvider.lit$({JSFunction? getChildren, JSFunction? getParent, JSFunction? getTreeItem, Event<JSAny?>? onDidChangeTreeData, JSFunction? resolveTreeItem});
   external JSAny? getChildren([T? element]);
   external JSAny? getParent(T element);
   external JSObject getTreeItem(T element);
@@ -3664,13 +3992,15 @@ extension type TreeDataProvider<T extends JSAny?>(JSObject _self) implements JSO
 }
 
 extension type TreeDragAndDropController<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeDragAndDropController.lit$({JSArray<JSString>? dragMimeTypes, JSArray<JSString>? dropMimeTypes, JSFunction? handleDrag, JSFunction? handleDrop});
   external JSArray<JSString> get dragMimeTypes;
   external JSArray<JSString> get dropMimeTypes;
-  external JSAny? handleDrag(JSArray<T> source, DataTransfer dataTransfer, CancellationToken token);
-  external JSAny? handleDrop(T? target, DataTransfer dataTransfer, CancellationToken token);
+  external JSAny handleDrag(JSArray<T> source, DataTransfer dataTransfer, CancellationToken token);
+  external JSAny handleDrop(T? target, DataTransfer dataTransfer, CancellationToken token);
 }
 
 extension type TreeItemLabel(JSObject _self) implements JSObject {
+  external factory TreeItemLabel.lit$({JSArray<JSTuple_9b5999d5c048>? highlights, JSString? label});
   external JSArray<JSTuple_9b5999d5c048>? get highlights;
   external set highlights(JSArray<JSTuple_9b5999d5c048>? value);
   external String get label;
@@ -3678,6 +4008,7 @@ extension type TreeItemLabel(JSObject _self) implements JSObject {
 }
 
 extension type TreeView<T extends JSAny?>(JSObject _self) implements Disposable, JSObject {
+  external factory TreeView.lit$({ViewBadge? badge, JSString? description, JSString? message, Event<TreeCheckboxChangeEvent<T>>? onDidChangeCheckboxState, Event<TreeViewSelectionChangeEvent<T>>? onDidChangeSelection, Event<TreeViewVisibilityChangeEvent>? onDidChangeVisibility, Event<TreeViewExpansionEvent<T>>? onDidCollapseElement, Event<TreeViewExpansionEvent<T>>? onDidExpandElement, JSFunction? reveal, JSArray<T>? selection, JSString? title, JSBoolean? visible});
   external ViewBadge? get badge;
   external set badge(ViewBadge? value);
   external String? get description;
@@ -3697,10 +4028,12 @@ extension type TreeView<T extends JSAny?>(JSObject _self) implements Disposable,
 }
 
 extension type TreeViewExpansionEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeViewExpansionEvent.lit$({T? element});
   external T get element;
 }
 
 extension type TreeViewOptions<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeViewOptions.lit$({JSBoolean? canSelectMany, TreeDragAndDropController<T>? dragAndDropController, JSBoolean? manageCheckboxStateManually, JSBoolean? showCollapseAll, TreeDataProvider<T>? treeDataProvider});
   external bool? get canSelectMany;
   external set canSelectMany(bool? value);
   external TreeDragAndDropController<T>? get dragAndDropController;
@@ -3714,33 +4047,40 @@ extension type TreeViewOptions<T extends JSAny?>(JSObject _self) implements JSOb
 }
 
 extension type TreeViewSelectionChangeEvent<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory TreeViewSelectionChangeEvent.lit$({JSArray<T>? selection});
   external JSArray<T> get selection;
 }
 
 extension type TreeViewVisibilityChangeEvent(JSObject _self) implements JSObject {
+  external factory TreeViewVisibilityChangeEvent.lit$({JSBoolean? visible});
   external bool get visible;
 }
 
 extension type TypeDefinitionProvider(JSObject _self) implements JSObject {
+  external factory TypeDefinitionProvider.lit$({JSFunction? provideTypeDefinition});
   external JSAny? provideTypeDefinition(TextDocument document, Position position, CancellationToken token);
 }
 
 extension type TypeHierarchyProvider(JSObject _self) implements JSObject {
+  external factory TypeHierarchyProvider.lit$({JSFunction? prepareTypeHierarchy, JSFunction? provideTypeHierarchySubtypes, JSFunction? provideTypeHierarchySupertypes});
   external JSAny? prepareTypeHierarchy(TextDocument document, Position position, CancellationToken token);
   external JSAny? provideTypeHierarchySubtypes(TypeHierarchyItem item, CancellationToken token);
   external JSAny? provideTypeHierarchySupertypes(TypeHierarchyItem item, CancellationToken token);
 }
 
 extension type UriHandler(JSObject _self) implements JSObject {
+  external factory UriHandler.lit$({JSFunction? handleUri});
   external JSAny? handleUri(Uri uri);
 }
 
 extension type ViewBadge(JSObject _self) implements JSObject {
+  external factory ViewBadge.lit$({JSString? tooltip, JSNumber? value});
   external String get tooltip;
   external num get value;
 }
 
 extension type Webview(JSObject _self) implements JSObject {
+  external factory Webview.lit$({JSFunction? asWebviewUri, JSString? cspSource, JSString? html, Event<JSAny?>? onDidReceiveMessage, WebviewOptions? options, JSFunction? postMessage});
   external Uri asWebviewUri(Uri localResource);
   external String get cspSource;
   external String get html;
@@ -3752,6 +4092,7 @@ extension type Webview(JSObject _self) implements JSObject {
 }
 
 extension type WebviewOptions(JSObject _self) implements JSObject {
+  external factory WebviewOptions.lit$({JSAny? enableCommandUris, JSBoolean? enableForms, JSBoolean? enableScripts, JSArray<Uri>? localResourceRoots, JSArray<WebviewPortMapping>? portMapping});
   external JSAny? get enableCommandUris;
   external bool? get enableForms;
   external bool? get enableScripts;
@@ -3760,6 +4101,7 @@ extension type WebviewOptions(JSObject _self) implements JSObject {
 }
 
 extension type WebviewPanel(JSObject _self) implements JSObject {
+  external factory WebviewPanel.lit$({JSBoolean? active, JSFunction? dispose, JSObject? iconPath, Event<WebviewPanelOnDidChangeViewStateEvent>? onDidChangeViewState, Event<JSAny?>? onDidDispose, WebviewPanelOptions? options, JSFunction? reveal, JSString? title, JSNumber? viewColumn, JSString? viewType, JSBoolean? visible, Webview? webview});
   external bool get active;
   external JSAny? dispose();
   external JSObject? get iconPath;
@@ -3777,24 +4119,29 @@ extension type WebviewPanel(JSObject _self) implements JSObject {
 }
 
 extension type WebviewPanelOnDidChangeViewStateEvent(JSObject _self) implements JSObject {
+  external factory WebviewPanelOnDidChangeViewStateEvent.lit$({WebviewPanel? webviewPanel});
   external WebviewPanel get webviewPanel;
 }
 
 extension type WebviewPanelOptions(JSObject _self) implements JSObject {
+  external factory WebviewPanelOptions.lit$({JSBoolean? enableFindWidget, JSBoolean? retainContextWhenHidden});
   external bool? get enableFindWidget;
   external bool? get retainContextWhenHidden;
 }
 
 extension type WebviewPanelSerializer<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory WebviewPanelSerializer.lit$({JSFunction? deserializeWebviewPanel});
   external JSPromise<JSAny?> deserializeWebviewPanel(WebviewPanel webviewPanel, T state);
 }
 
 extension type WebviewPortMapping(JSObject _self) implements JSObject {
+  external factory WebviewPortMapping.lit$({JSNumber? extensionHostPort, JSNumber? webviewPort});
   external num get extensionHostPort;
   external num get webviewPort;
 }
 
 extension type WebviewView(JSObject _self) implements JSObject {
+  external factory WebviewView.lit$({ViewBadge? badge, JSString? description, Event<JSAny?>? onDidChangeVisibility, Event<JSAny?>? onDidDispose, JSFunction? show, JSString? title, JSString? viewType, JSBoolean? visible, Webview? webview});
   external ViewBadge? get badge;
   external set badge(ViewBadge? value);
   external String? get description;
@@ -3810,19 +4157,23 @@ extension type WebviewView(JSObject _self) implements JSObject {
 }
 
 extension type WebviewViewProvider(JSObject _self) implements JSObject {
-  external JSAny? resolveWebviewView(WebviewView webviewView, WebviewViewResolveContext<JSAny?> context, CancellationToken token);
+  external factory WebviewViewProvider.lit$({JSFunction? resolveWebviewView});
+  external JSAny resolveWebviewView(WebviewView webviewView, WebviewViewResolveContext<JSAny?> context, CancellationToken token);
 }
 
 extension type WebviewViewResolveContext<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory WebviewViewResolveContext.lit$({T? state});
   external T? get state;
 }
 
 extension type WindowState(JSObject _self) implements JSObject {
+  external factory WindowState.lit$({JSBoolean? active, JSBoolean? focused});
   external bool get active;
   external bool get focused;
 }
 
 extension type WorkspaceConfiguration(JSObject _self) implements JSObject {
+  external factory WorkspaceConfiguration.lit$({JSFunction? get, JSFunction? has, JSFunction? inspect, JSFunction? update});
   external JSAny? operator [](String key);
   external T? get<T extends JSAny?>(String section);
   @JS('get')
@@ -3833,6 +4184,7 @@ extension type WorkspaceConfiguration(JSObject _self) implements JSObject {
 }
 
 extension type WorkspaceEditEntryMetadata(JSObject _self) implements JSObject {
+  external factory WorkspaceEditEntryMetadata.lit$({JSString? description, JSObject? iconPath, JSString? label, JSBoolean? needsConfirmation});
   external String? get description;
   external set description(String? value);
   external JSObject? get iconPath;
@@ -3844,17 +4196,20 @@ extension type WorkspaceEditEntryMetadata(JSObject _self) implements JSObject {
 }
 
 extension type WorkspaceEditMetadata(JSObject _self) implements JSObject {
+  external factory WorkspaceEditMetadata.lit$({JSBoolean? isRefactoring});
   external bool? get isRefactoring;
   external set isRefactoring(bool? value);
 }
 
 extension type WorkspaceFolder(JSObject _self) implements JSObject {
+  external factory WorkspaceFolder.lit$({JSNumber? index, JSString? name, Uri? uri});
   external num get index;
   external String get name;
   external Uri get uri;
 }
 
 extension type WorkspaceFolderPickOptions(JSObject _self) implements JSObject {
+  external factory WorkspaceFolderPickOptions.lit$({JSBoolean? ignoreFocusOut, JSString? placeHolder});
   external bool? get ignoreFocusOut;
   external set ignoreFocusOut(bool? value);
   external String? get placeHolder;
@@ -3862,18 +4217,20 @@ extension type WorkspaceFolderPickOptions(JSObject _self) implements JSObject {
 }
 
 extension type WorkspaceFoldersChangeEvent(JSObject _self) implements JSObject {
+  external factory WorkspaceFoldersChangeEvent.lit$({JSArray<WorkspaceFolder>? added, JSArray<WorkspaceFolder>? removed});
   external JSArray<WorkspaceFolder> get added;
   external JSArray<WorkspaceFolder> get removed;
 }
 
 extension type WorkspaceSymbolProvider<T extends JSAny?>(JSObject _self) implements JSObject {
+  external factory WorkspaceSymbolProvider.lit$({JSFunction? provideWorkspaceSymbols, JSFunction? resolveWorkspaceSymbol});
   external JSAny? provideWorkspaceSymbols(String query, CancellationToken token);
   external JSAny? resolveWorkspaceSymbol(T symbol, CancellationToken token);
 }
 
 extension type BranchCoverage(JSObject _self) implements JSObject {
-  external JSAny? get executed;
-  external set executed(JSAny? value);
+  external JSAny get executed;
+  external set executed(JSAny value);
   external String? get label;
   external set label(String? value);
   external JSObject? get location;
@@ -3881,7 +4238,7 @@ extension type BranchCoverage(JSObject _self) implements JSObject {
 }
 
 extension type BranchCoverageCtor(JSFunction _self) implements JSObject {
-  BranchCoverage new$(JSAny? executed, [JSObject? location, JSString? label]) {
+  BranchCoverage new$(JSAny executed, [JSObject? location, JSString? label]) {
     final args$ = <JSAny?>[executed, location, label];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as BranchCoverage;
   }
@@ -3896,6 +4253,9 @@ extension type Breakpoint(JSObject _self) implements JSObject {
 }
 
 extension type BreakpointCtor(JSFunction _self) implements JSObject {
+  Breakpoint new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as Breakpoint;
 }
 
 extension type CallHierarchyIncomingCall(JSObject _self) implements JSObject {
@@ -3968,6 +4328,9 @@ extension type CancellationTokenSource(JSObject _self) implements JSObject {
 }
 
 extension type CancellationTokenSourceCtor(JSFunction _self) implements JSObject {
+  CancellationTokenSource new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as CancellationTokenSource;
 }
 
 extension type ChatRequestTurn(JSObject _self) implements JSObject {
@@ -3979,6 +4342,9 @@ extension type ChatRequestTurn(JSObject _self) implements JSObject {
 }
 
 extension type ChatRequestTurnCtor(JSFunction _self) implements JSObject {
+  ChatRequestTurn new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as ChatRequestTurn;
 }
 
 extension type ChatResponseAnchorPart(JSObject _self) implements JSObject {
@@ -4027,7 +4393,7 @@ extension type ChatResponseMarkdownPart(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseMarkdownPartCtor(JSFunction _self) implements JSObject {
-  ChatResponseMarkdownPart new$(JSAny? value) {
+  ChatResponseMarkdownPart new$(JSAny value) {
     final args$ = <JSAny?>[value];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ChatResponseMarkdownPart;
   }
@@ -4067,6 +4433,9 @@ extension type ChatResponseTurn(JSObject _self) implements JSObject {
 }
 
 extension type ChatResponseTurnCtor(JSFunction _self) implements JSObject {
+  ChatResponseTurn new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as ChatResponseTurn;
 }
 
 extension type CodeAction(JSObject _self) implements JSObject {
@@ -4101,6 +4470,9 @@ extension type CodeActionKind(JSObject _self) implements JSObject {
 }
 
 extension type CodeActionKindCtor(JSFunction _self) implements JSObject {
+  CodeActionKind new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as CodeActionKind;
   external CodeActionKind get Empty;
   external CodeActionKind get Notebook;
   external CodeActionKind get QuickFix;
@@ -4192,8 +4564,8 @@ extension type CompletionItem(JSObject _self) implements JSObject {
   external set keepWhitespace(bool? value);
   external int? get kind;
   external set kind(int? value);
-  external JSAny? get label;
-  external set label(JSAny? value);
+  external JSAny get label;
+  external set label(JSAny value);
   external bool? get preselect;
   external set preselect(bool? value);
   external JSObject? get range;
@@ -4207,7 +4579,7 @@ extension type CompletionItem(JSObject _self) implements JSObject {
 }
 
 extension type CompletionItemCtor(JSFunction _self) implements JSObject {
-  CompletionItem new$(JSAny? label, [JSNumber? kind]) {
+  CompletionItem new$(JSAny label, [JSNumber? kind]) {
     final args$ = <JSAny?>[label, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as CompletionItem;
   }
@@ -4244,6 +4616,9 @@ extension type DataTransfer(JSObject _self) implements JSObject {
 }
 
 extension type DataTransferCtor(JSFunction _self) implements JSObject {
+  DataTransfer new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as DataTransfer;
 }
 
 extension type DataTransferItem(JSObject _self) implements JSObject {
@@ -4312,6 +4687,9 @@ extension type DebugStackFrame(JSObject _self) implements JSObject {
 }
 
 extension type DebugStackFrameCtor(JSFunction _self) implements JSObject {
+  DebugStackFrame new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as DebugStackFrame;
 }
 
 extension type DebugThread(JSObject _self) implements JSObject {
@@ -4320,11 +4698,14 @@ extension type DebugThread(JSObject _self) implements JSObject {
 }
 
 extension type DebugThreadCtor(JSFunction _self) implements JSObject {
+  DebugThread new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as DebugThread;
 }
 
 extension type DeclarationCoverage(JSObject _self) implements JSObject {
-  external JSAny? get executed;
-  external set executed(JSAny? value);
+  external JSAny get executed;
+  external set executed(JSAny value);
   external JSObject get location;
   external set location(JSObject value);
   external String get name;
@@ -4332,7 +4713,7 @@ extension type DeclarationCoverage(JSObject _self) implements JSObject {
 }
 
 extension type DeclarationCoverageCtor(JSFunction _self) implements JSObject {
-  DeclarationCoverage new$(JSString name, JSAny? executed, JSObject location) {
+  DeclarationCoverage new$(JSString name, JSAny executed, JSObject location) {
     final args$ = <JSAny?>[name, executed, location];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as DeclarationCoverage;
   }
@@ -4394,8 +4775,8 @@ extension type DisposableCtor(JSFunction _self) implements JSObject {
 extension type DocumentDropEdit(JSObject _self) implements JSObject {
   external WorkspaceEdit? get additionalEdit;
   external set additionalEdit(WorkspaceEdit? value);
-  external JSAny? get insertText;
-  external set insertText(JSAny? value);
+  external JSAny get insertText;
+  external set insertText(JSAny value);
   external DocumentDropOrPasteEditKind? get kind;
   external set kind(DocumentDropOrPasteEditKind? value);
   external String? get title;
@@ -4405,7 +4786,7 @@ extension type DocumentDropEdit(JSObject _self) implements JSObject {
 }
 
 extension type DocumentDropEditCtor(JSFunction _self) implements JSObject {
-  DocumentDropEdit new$(JSAny? insertText, [JSString? title, DocumentDropOrPasteEditKind? kind]) {
+  DocumentDropEdit new$(JSAny insertText, [JSString? title, DocumentDropOrPasteEditKind? kind]) {
     final args$ = <JSAny?>[insertText, title, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as DocumentDropEdit;
   }
@@ -4422,6 +4803,9 @@ extension type DocumentDropOrPasteEditKind(JSObject _self) implements JSObject {
 }
 
 extension type DocumentDropOrPasteEditKindCtor(JSFunction _self) implements JSObject {
+  DocumentDropOrPasteEditKind new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as DocumentDropOrPasteEditKind;
   external DocumentDropOrPasteEditKind get Empty;
   external DocumentDropOrPasteEditKind get Text;
   external DocumentDropOrPasteEditKind get TextUpdateImports;
@@ -4460,8 +4844,8 @@ extension type DocumentLinkCtor(JSFunction _self) implements JSObject {
 extension type DocumentPasteEdit(JSObject _self) implements JSObject {
   external WorkspaceEdit? get additionalEdit;
   external set additionalEdit(WorkspaceEdit? value);
-  external JSAny? get insertText;
-  external set insertText(JSAny? value);
+  external JSAny get insertText;
+  external set insertText(JSAny value);
   external DocumentDropOrPasteEditKind get kind;
   external set kind(DocumentDropOrPasteEditKind value);
   external String get title;
@@ -4471,7 +4855,7 @@ extension type DocumentPasteEdit(JSObject _self) implements JSObject {
 }
 
 extension type DocumentPasteEditCtor(JSFunction _self) implements JSObject {
-  DocumentPasteEdit new$(JSAny? insertText, JSString title, DocumentDropOrPasteEditKind kind) {
+  DocumentPasteEdit new$(JSAny insertText, JSString title, DocumentDropOrPasteEditKind kind) {
     final args$ = <JSAny?>[insertText, title, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 3))) as DocumentPasteEdit;
   }
@@ -4521,6 +4905,9 @@ extension type EventEmitter<T extends JSAny?>(JSObject _self) implements JSObjec
 }
 
 extension type EventEmitterCtor(JSFunction _self) implements JSObject {
+  EventEmitter<T> new$<T extends JSAny?>() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as EventEmitter<T>;
 }
 
 extension type FileCoverage(JSObject _self) implements JSObject {
@@ -4606,14 +4993,14 @@ extension type FunctionBreakpointCtor(JSFunction _self) implements JSObject {
 }
 
 extension type Hover(JSObject _self) implements JSObject {
-  external JSArray<JSAny?> get contents;
-  external set contents(JSArray<JSAny?> value);
+  external JSArray<JSAny> get contents;
+  external set contents(JSArray<JSAny> value);
   external Range? get range;
   external set range(Range? value);
 }
 
 extension type HoverCtor(JSFunction _self) implements JSObject {
-  Hover new$(JSAny? contents, [Range? range]) {
+  Hover new$(JSAny contents, [Range? range]) {
     final args$ = <JSAny?>[contents, range];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as Hover;
   }
@@ -4622,8 +5009,8 @@ extension type HoverCtor(JSFunction _self) implements JSObject {
 extension type InlayHint(JSObject _self) implements JSObject {
   external int? get kind;
   external set kind(int? value);
-  external JSAny? get label;
-  external set label(JSAny? value);
+  external JSAny get label;
+  external set label(JSAny value);
   external bool? get paddingLeft;
   external set paddingLeft(bool? value);
   external bool? get paddingRight;
@@ -4637,7 +5024,7 @@ extension type InlayHint(JSObject _self) implements JSObject {
 }
 
 extension type InlayHintCtor(JSFunction _self) implements JSObject {
-  InlayHint new$(Position position, JSAny? label, [JSNumber? kind]) {
+  InlayHint new$(Position position, JSAny label, [JSNumber? kind]) {
     final args$ = <JSAny?>[position, label, kind];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as InlayHint;
   }
@@ -4666,14 +5053,14 @@ extension type InlineCompletionItem(JSObject _self) implements JSObject {
   external set command(Command? value);
   external String? get filterText;
   external set filterText(String? value);
-  external JSAny? get insertText;
-  external set insertText(JSAny? value);
+  external JSAny get insertText;
+  external set insertText(JSAny value);
   external Range? get range;
   external set range(Range? value);
 }
 
 extension type InlineCompletionItemCtor(JSFunction _self) implements JSObject {
-  InlineCompletionItem new$(JSAny? insertText, [Range? range, Command? command]) {
+  InlineCompletionItem new$(JSAny insertText, [Range? range, Command? command]) {
     final args$ = <JSAny?>[insertText, range, command];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as InlineCompletionItem;
   }
@@ -4738,9 +5125,9 @@ extension type LanguageModelChatMessage(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelChatMessageCtor(JSFunction _self) implements JSObject {
-  external LanguageModelChatMessage Assistant(JSAny? content, [String? name]);
-  external LanguageModelChatMessage User(JSAny? content, [String? name]);
-  LanguageModelChatMessage new$(JSNumber role, JSAny? content, [JSString? name]) {
+  external LanguageModelChatMessage Assistant(JSAny content, [String? name]);
+  external LanguageModelChatMessage User(JSAny content, [String? name]);
+  LanguageModelChatMessage new$(JSNumber role, JSAny content, [JSString? name]) {
     final args$ = <JSAny?>[role, content, name];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as LanguageModelChatMessage;
   }
@@ -4768,6 +5155,9 @@ extension type LanguageModelError(JSObject _self) implements JSObject {
 }
 
 extension type LanguageModelErrorCtor(JSFunction _self) implements JSObject {
+  LanguageModelError new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as LanguageModelError;
   external LanguageModelError Blocked([String? message]);
   external LanguageModelError NoPermissions([String? message]);
   external LanguageModelError NotFound([String? message]);
@@ -4814,12 +5204,12 @@ extension type LanguageModelToolCallPartCtor(JSFunction _self) implements JSObje
 }
 
 extension type LanguageModelToolResult(JSObject _self) implements JSObject {
-  external JSArray<JSAny?> get content;
-  external set content(JSArray<JSAny?> value);
+  external JSArray<JSAny> get content;
+  external set content(JSArray<JSAny> value);
 }
 
 extension type LanguageModelToolResultCtor(JSFunction _self) implements JSObject {
-  LanguageModelToolResult new$(JSArray<JSAny?> content) {
+  LanguageModelToolResult new$(JSArray<JSAny> content) {
     final args$ = <JSAny?>[content];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as LanguageModelToolResult;
   }
@@ -4828,12 +5218,12 @@ extension type LanguageModelToolResultCtor(JSFunction _self) implements JSObject
 extension type LanguageModelToolResultPart(JSObject _self) implements JSObject {
   external String get callId;
   external set callId(String value);
-  external JSArray<JSAny?> get content;
-  external set content(JSArray<JSAny?> value);
+  external JSArray<JSAny> get content;
+  external set content(JSArray<JSAny> value);
 }
 
 extension type LanguageModelToolResultPartCtor(JSFunction _self) implements JSObject {
-  LanguageModelToolResultPart new$(JSString callId, JSArray<JSAny?> content) {
+  LanguageModelToolResultPart new$(JSString callId, JSArray<JSAny> content) {
     final args$ = <JSAny?>[callId, content];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as LanguageModelToolResultPart;
   }
@@ -5058,12 +5448,12 @@ extension type NotebookRangeCtor(JSFunction _self) implements JSObject {
 extension type ParameterInformation(JSObject _self) implements JSObject {
   external JSAny? get documentation;
   external set documentation(JSAny? value);
-  external JSAny? get label;
-  external set label(JSAny? value);
+  external JSAny get label;
+  external set label(JSAny value);
 }
 
 extension type ParameterInformationCtor(JSFunction _self) implements JSObject {
-  ParameterInformation new$(JSAny? label, [JSAny? documentation]) {
+  ParameterInformation new$(JSAny label, [JSAny? documentation]) {
     final args$ = <JSAny?>[label, documentation];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ParameterInformation;
   }
@@ -5118,6 +5508,9 @@ extension type QuickInputButtons(JSObject _self) implements JSObject {
 }
 
 extension type QuickInputButtonsCtor(JSFunction _self) implements JSObject {
+  QuickInputButtons new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as QuickInputButtons;
   external QuickInputButton get Back;
 }
 
@@ -5159,7 +5552,7 @@ extension type RelativePattern(JSObject _self) implements JSObject {
 }
 
 extension type RelativePatternCtor(JSFunction _self) implements JSObject {
-  RelativePattern new$(JSAny? base, JSString pattern) {
+  RelativePattern new$(JSAny base, JSString pattern) {
     final args$ = <JSAny?>[base, pattern];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as RelativePattern;
   }
@@ -5260,8 +5653,8 @@ extension type SemanticTokensLegendCtor(JSFunction _self) implements JSObject {
 }
 
 extension type ShellExecution(JSObject _self) implements JSObject {
-  external JSArray<JSAny?>? get args;
-  external set args(JSArray<JSAny?>? value);
+  external JSArray<JSAny>? get args;
+  external set args(JSArray<JSAny>? value);
   external JSAny? get command;
   external set command(JSAny? value);
   external String? get commandLine;
@@ -5275,7 +5668,7 @@ extension type ShellExecutionCtor(JSFunction _self) implements JSObject {
     final args$ = <JSAny?>[commandLine, options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as ShellExecution;
   }
-  ShellExecution new$$2(JSAny? command, JSArray<JSAny?> args, [ShellExecutionOptions? options]) {
+  ShellExecution new$$2(JSAny command, JSArray<JSAny> args, [ShellExecutionOptions? options]) {
     final args$ = <JSAny?>[command, args, options];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as ShellExecution;
   }
@@ -5291,6 +5684,9 @@ extension type SignatureHelp(JSObject _self) implements JSObject {
 }
 
 extension type SignatureHelpCtor(JSFunction _self) implements JSObject {
+  SignatureHelp new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as SignatureHelp;
 }
 
 extension type SignatureInformation(JSObject _self) implements JSObject {
@@ -5313,10 +5709,10 @@ extension type SignatureInformationCtor(JSFunction _self) implements JSObject {
 
 extension type SnippetString(JSObject _self) implements JSObject {
   external SnippetString appendChoice(JSArray<JSString> values, [num? number]);
-  external SnippetString appendPlaceholder(JSAny? value, [num? number]);
+  external SnippetString appendPlaceholder(JSAny value, [num? number]);
   external SnippetString appendTabstop([num? number]);
   external SnippetString appendText(String string);
-  external SnippetString appendVariable(String name, JSAny? defaultValue);
+  external SnippetString appendVariable(String name, JSAny defaultValue);
   external String get value;
   external set value(String value);
 }
@@ -5360,14 +5756,14 @@ extension type SourceBreakpointCtor(JSFunction _self) implements JSObject {
 extension type StatementCoverage(JSObject _self) implements JSObject {
   external JSArray<BranchCoverage> get branches;
   external set branches(JSArray<BranchCoverage> value);
-  external JSAny? get executed;
-  external set executed(JSAny? value);
+  external JSAny get executed;
+  external set executed(JSAny value);
   external JSObject get location;
   external set location(JSObject value);
 }
 
 extension type StatementCoverageCtor(JSFunction _self) implements JSObject {
-  StatementCoverage new$(JSAny? executed, JSObject location, [JSArray<BranchCoverage>? branches]) {
+  StatementCoverage new$(JSAny executed, JSObject location, [JSArray<BranchCoverage>? branches]) {
     final args$ = <JSAny?>[executed, location, branches];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 2))) as StatementCoverage;
   }
@@ -5503,7 +5899,7 @@ extension type Task(JSObject _self) implements JSObject {
 }
 
 extension type TaskCtor(JSFunction _self) implements JSObject {
-  Task new$(TaskDefinition taskDefinition, JSAny? scope, JSString name, JSString source, [JSObject? execution, JSAny? problemMatchers]) {
+  Task new$(TaskDefinition taskDefinition, JSAny scope, JSString name, JSString source, [JSObject? execution, JSAny? problemMatchers]) {
     final args$ = <JSAny?>[taskDefinition, scope, name, source, execution, problemMatchers];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 4))) as Task;
   }
@@ -5519,6 +5915,9 @@ extension type TaskGroup(JSObject _self) implements JSObject {
 }
 
 extension type TaskGroupCtor(JSFunction _self) implements JSObject {
+  TaskGroup new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as TaskGroup;
   external TaskGroup get Build;
   external set Build(TaskGroup value);
   external TaskGroup get Clean;
@@ -5591,18 +5990,18 @@ extension type TestMessage(JSObject _self) implements JSObject {
   external set expectedOutput(String? value);
   external Location? get location;
   external set location(Location? value);
-  external JSAny? get message;
-  external set message(JSAny? value);
+  external JSAny get message;
+  external set message(JSAny value);
   external JSArray<TestMessageStackFrame>? get stackTrace;
   external set stackTrace(JSArray<TestMessageStackFrame>? value);
 }
 
 extension type TestMessageCtor(JSFunction _self) implements JSObject {
-  TestMessage new$(JSAny? message) {
+  TestMessage new$(JSAny message) {
     final args$ = <JSAny?>[message];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TestMessage;
   }
-  external TestMessage diff(JSAny? message, String expected, String actual);
+  external TestMessage diff(JSAny message, String expected, String actual);
 }
 
 extension type TestMessageStackFrame(JSObject _self) implements JSObject {
@@ -5718,7 +6117,7 @@ extension type TreeItem(JSObject _self) implements JSObject {
 }
 
 extension type TreeItemCtor(JSFunction _self) implements JSObject {
-  TreeItem new$(JSAny? label, [JSNumber? collapsibleState]) {
+  TreeItem new$(JSAny label, [JSNumber? collapsibleState]) {
     final args$ = <JSAny?>[label, collapsibleState];
     return _self.callAsConstructorVarArgs<JSObject>(args$.sublist(0, _trimTrailingNulls(args$, 1))) as TreeItem;
   }
@@ -5767,6 +6166,9 @@ extension type Uri(JSObject _self) implements JSObject {
 }
 
 extension type UriCtor(JSFunction _self) implements JSObject {
+  Uri new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as Uri;
   external Uri file(String path);
   external Uri from(JSAnon_5503263f5517 components);
   Uri joinPath(Uri base, [List<JSAny?> pathSegments = const []]) {
@@ -5797,6 +6199,9 @@ extension type WorkspaceEdit(JSObject _self) implements JSObject {
 }
 
 extension type WorkspaceEditCtor(JSFunction _self) implements JSObject {
+  WorkspaceEdit new$() =>
+      _self.callAsConstructorVarArgs<JSObject>(const [])
+          as WorkspaceEdit;
 }
 
 /// The VS Code API module object, as passed to activation.

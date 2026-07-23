@@ -610,7 +610,7 @@ final class _Emitter {
           _ => 'JSAny?',
         };
       } else {
-        base = 'JSAny?';
+        base = 'JSAny';
       }
     }
     if (nullable && !base.endsWith('?') && base != 'void') {
@@ -931,10 +931,57 @@ final class _Emitter {
     };
     out.writeln('extension type $name$clause($representation _self) '
         'implements ${bases.join(', ')} {');
+    if (representation == 'JSObject') {
+      _emitLiteralFactory(name, children, out);
+    }
     _emitMembers(children, out, receiver: '_self');
     out
       ..writeln('}')
       ..writeln();
+  }
+
+  /// The blessed creation rule: an external constructor with only named
+  /// parameters produces a JS object literal. Members whose JS name is not
+  /// a plain Dart identifier are excluded (authors use setProperty);
+  /// method members take JSFunction so interfaces are implementable.
+  void _emitLiteralFactory(
+    String name,
+    List<Map<String, Object?>> children,
+    StringBuffer out,
+  ) {
+    final parameters = <String>[];
+    for (final child in children) {
+      if (!_isEmitted(child)) {
+        continue;
+      }
+      final childName = child['name'];
+      if (childName is! String || _dartName(childName) != childName) {
+        continue;
+      }
+      if (child['kind'] == 'property') {
+        var type = _nullableForGeneric(
+          _mapType(
+            child['type'],
+            generic: true,
+            scopes: _scopesFor(child),
+            context: child['id']! as String,
+          ),
+        );
+        if (!type.endsWith('?')) {
+          type = '$type?';
+        }
+        parameters.add('$type $childName');
+      } else if (child['kind'] == 'method' &&
+          (child['overloadOrdinal'] ?? 0) == 0) {
+        parameters.add('JSFunction? $childName');
+      }
+    }
+    if (parameters.isEmpty) {
+      return;
+    }
+    out.writeln(
+      '  external factory $name.lit\$({${parameters.join(', ')}});',
+    );
   }
 
   void _emitClass(Map<String, Object?> declaration, StringBuffer out) {
@@ -966,6 +1013,24 @@ final class _Emitter {
       ..writeln(
         'extension type ${name}Ctor(JSFunction _self) implements JSObject {',
       );
+    final hasConstructor = children.any(
+      (child) => child['kind'] == 'constructor' && _isEmitted(child),
+    );
+    if (!hasConstructor) {
+      final ownerClause = _typeParameterClause(declaration);
+      final parameters =
+          (declaration['typeParameters'] as List<Object?>?) ?? const [];
+      final instantiated = parameters.isEmpty
+          ? name
+          : '$name<${parameters.map(
+              (parameter) =>
+                  (parameter! as Map<Object?, Object?>)['name']! as String,
+            ).join(', ')}>';
+      out
+        ..writeln('  $instantiated new\$$ownerClause() =>')
+        ..writeln('      _self.callAsConstructorVarArgs<JSObject>(const [])')
+        ..writeln('          as $instantiated;');
+    }
     for (final child in children.where(_isEmitted)) {
       if (child['kind'] == 'constructor') {
         _emitConstructor(name, child, out);
@@ -1029,6 +1094,9 @@ final class _Emitter {
           'implements JSObject {');
     final previousErase = _eraseScopeReferences;
     _eraseScopeReferences = true;
+    if (representation == 'JSObject') {
+      _emitLiteralFactory(name, children, body);
+    }
     _emitMembers(children, body, receiver: '_self');
     _eraseScopeReferences = previousErase;
     body

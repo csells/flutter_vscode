@@ -176,7 +176,7 @@
     },
     "test": {
       "path": "test/fixtures/host_extension/test/run.cjs",
-      "sha256": "47ae0db606deb61b48c82c6b9eab870565071b412d3f6421072630693ac8d212"
+      "sha256": "d2a7de21fa248321c17ccdbc4c48e13df410f16670e760431f23d35a14a1f7a1"
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
