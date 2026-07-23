@@ -42,6 +42,7 @@ class TreemapApp extends StatelessWidget {
       title: 'Coverage Treemap',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
+        fontFamily: 'Roboto',
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF35793D),
           brightness: Brightness.dark,
@@ -211,7 +212,7 @@ class _HeaderBar extends StatelessWidget {
     final file = selectedFile;
     final subtitle = file == null
         ? lcovPath
-        : '${file.name} — ${coveragePercent(file.coverage, decimals: 1)} '
+        : '${file.name} - ${coveragePercent(file.coverage, decimals: 1)} '
               '(${file.linesHit}/${file.linesFound} lines)';
     return ColoredBox(
       color: const Color(0xFF252526),
@@ -270,7 +271,7 @@ class _Breadcrumb extends StatelessWidget {
       if (i > 0) {
         crumbs.add(
           const Text(
-            ' › ',
+            ' > ',
             style: TextStyle(color: Color(0xFF6E6E6E), fontSize: 13),
           ),
         );
@@ -355,7 +356,7 @@ class _EmptyPanel extends StatelessWidget {
     return Center(
       child: Text(
         isRoot
-            ? 'No coverage data — run your tests with coverage'
+            ? 'No coverage data - run your tests with coverage'
             : 'This directory has no measurable coverage',
         textAlign: TextAlign.center,
         style: const TextStyle(color: Color(0xFF9D9D9D), fontSize: 13),

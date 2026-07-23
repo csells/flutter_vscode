@@ -257,7 +257,7 @@ class _TopChildrenBars extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          'LARGEST ITEMS · TAP TO OPEN',
+          'LARGEST ITEMS - TAP TO OPEN',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(

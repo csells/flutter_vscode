@@ -321,7 +321,12 @@ ecosystem comes with you:
   [`fl_chart`](https://pub.dev/packages/fl_chart), running unmodified
   inside a VS Code webview. Keep runtime assets local: the webview CSP
   blocks network fonts and images, so avoid packages that fetch
-  resources at runtime (or bundle their assets instead).
+  resources at runtime (or bundle their assets instead). That includes
+  text itself — Flutter web downloads its default Roboto font and the
+  Noto fallback fonts from `fonts.gstatic.com` at runtime, so bundle a
+  font (declare it under `flutter: fonts:` and set
+  `ThemeData(fontFamily: ...)`) or the engine will retry blocked font
+  fetches on every frame that needs a missing glyph.
 - **`host/` and `shared/`** can depend on pure Dart packages — parsers,
   models, codecs, protocol logic. The build's boundary check enforces
   what the Extension Host can actually run: `dart:io`, Flutter, and

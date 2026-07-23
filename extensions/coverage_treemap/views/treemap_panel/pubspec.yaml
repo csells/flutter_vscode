@@ -14,3 +14,9 @@ dependencies:
     path: ../../../..
   flutter_web_plugins:
     sdk: flutter
+
+flutter:
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Variable.ttf
