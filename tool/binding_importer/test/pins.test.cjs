@@ -225,6 +225,32 @@ test('pin input paths escaping the manifest directory fail closed', (context) =>
   );
 });
 
+test('pin inputs behind escaping symlinks fail closed', (context) => {
+  const fixture = createRepositoryPinsFixture(
+    context,
+    'flutter-vscode-pin-symlink-',
+  );
+  const input = fixture.pins.inputs.find(
+    (candidate) => candidate.kind === 'apiDeclarations',
+  );
+  const escapedName = `flutter-vscode-pin-symlink-target-${process.pid}.d.ts`;
+  const escapedPath = path.join(fixture.directory, '..', escapedName);
+  fs.copyFileSync(path.join(fixture.directory, input.path), escapedPath);
+  context.after(() => fs.rmSync(escapedPath, {force: true}));
+  fs.rmSync(path.join(fixture.directory, input.path));
+  fs.symlinkSync(escapedPath, path.join(fixture.directory, input.path));
+  const manifestPath = fixture.write(fixture.pins, 'pins.json');
+
+  assert.throws(
+    () => verifyPinnedInputs(manifestPath),
+    (error) => {
+      assert.equal(error.code, 'PIN_METADATA_INVALID');
+      assert.match(error.message, /inside the pin manifest directory/);
+      return true;
+    },
+  );
+});
+
 test('absolute pin input paths fail closed', (context) => {
   const fixture = createRepositoryPinsFixture(
     context,
