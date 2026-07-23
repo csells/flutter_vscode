@@ -69,9 +69,24 @@ The deterministic transformation from pinned VS Code API sources into the
 Parity Layer, Idiomatic Facade, host interop, and coverage ledger.
 _Avoid_: Translation model, inference step
 
+**Total Mapping Rule**:
+A judgment-free, deterministic rule that maps one class of TypeScript
+construct to Dart interop code for every occurrence in the API Parity
+Baseline; a construct with no Total Mapping Rule fails generation rather
+than being approximated.
+_Avoid_: Heuristic, best-effort mapping, special case
+
+**Precision Helper**:
+A generated Dart member that restores type precision over an erased interop
+boundary, such as typed narrowing for unions, typed literal values, or typed
+tuple access.
+_Avoid_: Convenience wrapper, sugar
+
 **Semantic Override**:
 A reviewed, versioned rule that resolves an API mapping not derivable from the
-pinned upstream sources while keeping the Binding Pipeline deterministic.
+pinned upstream sources while keeping the Binding Pipeline deterministic. The
+Parity Layer uses none — it is produced entirely by Total Mapping Rules;
+Semantic Overrides apply to the Idiomatic Facade.
 _Avoid_: Manual binding, exception, guess
 
 **Host Target**:

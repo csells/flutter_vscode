@@ -27,9 +27,10 @@ webview security, or VS Code's JavaScript object model to ship reliable tools.
 - **Dart and Flutter end to end:** consumer-owned extension code is written in
   Dart and Flutter; host-side JavaScript or TypeScript is generated and managed.
 - **Complete VS Code reach:** the public extension API, contribution points,
-  callbacks, events, providers, and host lifecycles have idiomatic Dart access.
-- **Two speeds of integration:** dynamic access makes exploration immediate;
-  generated typed APIs make established integrations safe and refactorable.
+  callbacks, events, providers, and host lifecycles have typed Dart access.
+- **Two layers of integration:** the complete typed Parity Layer covers every
+  public capability immediately; the Idiomatic Facade layers Dart-first
+  ergonomics over it incrementally.
 - **A known-good path:** one scaffold, build, debug, test, package, and upgrade
   workflow works from a clean Flutter project through a released extension.
 - **Agent-ready by design:** portable guidance helps coding agents translate
@@ -66,11 +67,14 @@ must not need to write or repair it.
 
 - A Flutter developer can scaffold, build, launch, and ship a production
   extension without writing TypeScript or repairing generated host glue.
-- API parity is tracked against supported VS Code releases; a missing Dart path
-  for a public capability is treated as a defect with an executable test.
-- Typed and dynamic access behave consistently across calls, events, callbacks,
-  providers, rich values, errors, cancellation, and disposal.
-- CI proves the real chain: scaffold, generation, host compilation, Flutter web
-  build, artifact validation, and Extension Host round-trips.
+- API parity is total by construction — a public capability the generator
+  cannot map fails the build; behavioral verification and Idiomatic Facade
+  coverage are tracked as measured burn-downs against supported VS Code
+  releases.
+- The Parity Layer and the Idiomatic Facade behave consistently across calls,
+  events, callbacks, providers, rich values, errors, cancellation, and
+  disposal.
+- Tests prove the real chain: scaffold, generation, host compilation, Flutter
+  web build, artifact validation, and Extension Host round-trips.
 - Real extensions demonstrate that the framework's secure defaults, diagnostics,
   contracts, documentation, and upgrade path hold outside toy examples.

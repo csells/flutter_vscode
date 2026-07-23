@@ -41,9 +41,11 @@ preserved as the sequencing narrative for future milestone plans:
 
 1. Runtime semantics: events, cancellation, progress, streams, callback
    retention, ownership scopes, structured errors, session cleanup.
-2. API factory: emit and verify the entire pinned stable API and
-   contribution surface; explicit dynamic call/get/set/construct/
-   subscribe access; then the Idiomatic Facade above it.
+2. API factory: emit the entire pinned stable API and contribution
+   surface as the complete typed Parity Layer via Total Mapping Rules
+   (see specs/research/js-to-dart-mapping.md); then the Idiomatic
+   Facade above it. (Dynamic access was deleted from the vision by
+   owner decision, 2026-07-22.)
 3. Capability fixtures: trees/filesystems, terminals/tasks, language
    features, testing, SCM, notebooks, authentication, debugging,
    webviews — Extension Host tests grouped by semantic pattern.
