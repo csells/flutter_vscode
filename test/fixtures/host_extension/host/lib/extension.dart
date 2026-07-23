@@ -164,7 +164,140 @@ class _VSCodeHostExtension {
             parityHoverRegistration =
                 api.languages.registerHoverProvider(selector, provider);
             return toHostPromise(
-              api.commands.getCommands(true).toDart.then((commands) {
+              Future<JSAny?>(() async {
+                final families = <String, Object?>{};
+
+                final commands = await api.commands.getCommands(true).toDart;
+                families['commands'] = true;
+
+                api.authentication.onDidChangeSessions
+                    .call(((JSObject event) {}).toJS)
+                    .dispose();
+                families['authentication'] = true;
+
+                api.comments
+                    .createCommentController(
+                      'parity-comments',
+                      'Parity Comments',
+                    )
+                    .dispose();
+                families['comments'] = true;
+
+                api.debug.onDidChangeBreakpoints
+                    .call(((JSObject event) {}).toJS)
+                    .dispose();
+                families['debug'] = true;
+
+                await api.env.clipboard.writeText('parity-clip').toDart;
+                final clipboard =
+                    (await api.env.clipboard.readText().toDart).toDart;
+                families['env'] = true;
+
+                final self = api.extensions.getExtension(
+                  'flutter-vscode-test.host-extension-fixture',
+                );
+                families['extensions'] = self != null;
+
+                final localized =
+                    api.l10n.t('parity {0}'.toJS, <JSAny?>['42'.toJS]);
+                families['l10n'] = localized.toDart.contains('parity 42');
+
+                final languages =
+                    await api.languages.getLanguages().toDart;
+                families['languages'] = languages.toDart.isNotEmpty;
+
+                families['lm'] = api.lm.tools.toDart.length >= 0;
+
+                api.notebooks
+                    .createNotebookController(
+                      'parity-notebooks',
+                      'jupyter-notebook',
+                      'Parity Notebooks',
+                    )
+                    .dispose();
+                families['notebooks'] = true;
+
+                api.scm
+                    .createSourceControl('parity-scm', 'Parity SCM')
+                    .dispose();
+                families['scm'] = true;
+
+                final taskProvider = parity.TaskProvider.lit$(
+                  provideTasks: ((JSObject token) => null).toJS,
+                  resolveTask:
+                      ((JSObject task, JSObject token) => null).toJS,
+                );
+                api.tasks
+                    .registerTaskProvider('parity-task-type', taskProvider)
+                    .dispose();
+                families['tasks'] = true;
+
+                api.tests
+                    .createTestController('parity-tests', 'Parity Tests')
+                    .dispose();
+                families['tests'] = true;
+
+                final channel =
+                    api.window.createOutputChannel('Parity Smoke');
+                channel.appendLine('parity families');
+                channel.dispose();
+                families['window'] = true;
+
+                final chatParticipant = api.chat.createChatParticipant(
+                  'flutter-vscode-test.parity',
+                  ((
+                    JSObject request,
+                    JSObject chatContext,
+                    JSObject response,
+                    JSObject token,
+                  ) =>
+                          null)
+                      .toJS,
+                );
+                chatParticipant.dispose();
+                families['chat'] = true;
+
+                final document = await api.workspace
+                    .openTextDocument$3(
+                      parity.WorkspaceOpenTextDocument$2.lit$(
+                        language: 'plaintext'.toJS,
+                        content: 'parity edit target'.toJS,
+                      ),
+                    )
+                    .toDart;
+                final edit = api.WorkspaceEdit.new$();
+                edit.insert(
+                  document.uri,
+                  api.Position.new$(0.toJS, 0.toJS),
+                  'parity ',
+                );
+                final applied =
+                    (await api.workspace.applyEdit(edit).toDart).toDart;
+                families['workspace'] = true;
+
+                final emitter = api.EventEmitter.new$();
+                String? received;
+                final emitterSubscription = emitter.event.call(
+                  ((JSAny? value) {
+                    received = (value! as JSString).toDart;
+                  }).toJS,
+                );
+                emitter.fire('parity-event'.toJS);
+                emitterSubscription.dispose();
+                emitter.dispose();
+
+                final tokenSource = api.CancellationTokenSource.new$();
+                final before = tokenSource.token.isCancellationRequested;
+                tokenSource.cancel();
+                final after = tokenSource.token.isCancellationRequested;
+                tokenSource.dispose();
+
+                final narrowed = api.Position.isInstance(position) &&
+                    !api.Uri.isInstance(position);
+
+                final change = parity.PositionWith$1.lit$(line: 9.toJS);
+                final moved = position.with$$2(change);
+
                 return <String, Object?>{
                   'version': api.version,
                   'viewColumnActive': api.ViewColumn.Active,
@@ -174,6 +307,13 @@ class _VSCodeHostExtension {
                   'uriToString': uri.toString$(),
                   'commandCount': commands.toDart.length,
                   'eventSubscribed': true,
+                  'families': families,
+                  'eventEmitterRoundTrip': received,
+                  'cancellationFlipped': !before && after,
+                  'workspaceEditApplied': applied,
+                  'clipboardRoundTrip': clipboard,
+                  'narrowedPosition': narrowed,
+                  'stableLiteralWith': moved.line,
                 }.jsify();
               }),
             );
