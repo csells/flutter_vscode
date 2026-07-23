@@ -36,9 +36,18 @@ pipeline cannot express fails closed.
    and rejects impossible combinations. The walking slice is derived
    entirely from IR + override strategies — no shadow name/count profile
    in generator source (`test/binding_generator_test.dart`).
-5. **Outputs** — parity layer, runtime, facade, bootstrap, manifest,
-   coverage ledger into the extension project; byte-identical on
-   regeneration (`test/binding_generator_cli_test.dart`).
+5. **Outputs** — walking-slice parity/runtime/facade, bootstrap,
+   manifest, and coverage ledger into the extension project;
+   byte-identical on regeneration
+   (`test/binding_generator_cli_test.dart`).
+6. **Complete Parity Layer** — `tool/binding_generator/parity_layer.dart`
+   (`generate.dart --parity-layer .`) emits the total typed mapping of
+   every public declaration (ADR 0012) as
+   `lib/src/generated/vscode_parity_layer.g.dart`, with a totality
+   ledger covering all IR declarations; `flutter_vscode build` emits the
+   same layer into every Extension Project, and the real-host gate
+   executes it (`test/parity_layer_test.dart`, the fixture parity
+   smoke). Constructs without a Total Mapping Rule fail generation.
 
 ## Regeneration commands
 

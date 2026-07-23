@@ -54,3 +54,33 @@ interop, or an inferred binding to an Extension Project.
 
 The older annotation and TypeScript bridge is documented separately in the
 [legacy mapping](vscode-api-mapping.md) and does not describe new projects.
+
+## The complete typed Parity Layer
+
+Beside the facade, `flutter_vscode build` generates
+`host/lib/generated/vscode_parity_layer.g.dart` (also exported from the
+package as `package:flutter_vscode/vscode_parity.dart`): a mechanically
+complete typed mapping of every public declaration in the pinned VS Code
+API (ADR 0012), produced only by Total Mapping Rules and proven against a
+live Extension Host by the repository gates.
+
+Use it by wrapping the raw module object your extension receives at
+activation:
+
+```dart
+final api = parity.VscodeApi(rawVscode);
+final uri = api.Uri.file('/tmp/notes.md');
+final position = api.Position.new$(0.toJS, 0.toJS);
+final registration = api.languages.registerHoverProvider(
+  parity.DocumentFilter.lit$(language: 'markdown'.toJS),
+  parity.HoverProvider.lit$(provideHover: myProvider.toJS),
+);
+```
+
+Conventions: classes construct through module-rooted `new$` (statics live
+on the same `XCtor` object); enums are `int` typedefs with values on
+`api.<EnumName>`; interfaces and anonymous shapes are created with `lit$`
+object-literal factories; JS `undefined` and `null` both surface as Dart
+`null`; unions are erased to their least upper bound. The facade above
+remains the ergonomic path for the reviewed slice; the Parity Layer is
+the total one. Coverage accounting: [parity report](parity.md).

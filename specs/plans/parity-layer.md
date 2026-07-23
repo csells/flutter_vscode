@@ -17,7 +17,10 @@ Rules of this plan (inherited from the evidence-chain methodology): the
 exit bar below is frozen; reds are commits; discoveries go to
 [`futures.md`](futures.md); behavioral verification of parity members in
 a real Extension Host is explicitly NOT part of this bar (ADR 0012 moves
-it to the burn-down in [`futures.md`](futures.md)).
+it to the burn-down in [`futures.md`](futures.md)). (Post-bar note: the
+sixth-audit round nevertheless added a real-host parity smoke to the
+gate — work beyond the frozen bar, recorded in ledger entries 3–4; the
+per-capability behavioral burn-down itself remains future work.)
 
 ## Exit bar
 
@@ -51,6 +54,9 @@ it to the burn-down in [`futures.md`](futures.md)).
 Status update: all exit-bar items closed; see the ledger.
 
 ## TDD Ledger
+
+Tallies and line counts are values at each entry's recording time; the
+executing suites and files are the current authority.
 
 1. **Red** (commit 643eb85): `flutter test test/parity_layer_test.dart`
    failed across the bar — the emitter stub threw UnimplementedError and

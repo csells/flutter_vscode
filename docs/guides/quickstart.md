@@ -66,3 +66,12 @@ Do not infer or handwrite bindings for APIs absent from the generated facade.
 `dart run flutter_vscode:generate_vscode_extension` remains for existing v0
 projects. It uses the older Node/TypeScript bridge and is not the canonical
 Dart-host workflow above.
+
+## Reaching the full VS Code API
+
+The generated facade covers the reviewed slice. For everything else, the
+build also emits the complete typed Parity Layer into
+`host/lib/generated/vscode_parity_layer.g.dart` — see the
+[Generated Host API reference](../reference/generated-host-api.md) for
+how to wrap the activation module with `VscodeApi` and construct values
+with `new$` and `lit$`.

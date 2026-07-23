@@ -15,7 +15,8 @@ flutter_vscode package                    # installable VSIX
   `views/`. Extension metadata and contributions are Dart-owned in
   `extension.json`.
 - `build` generates every Framework-Managed Artifact — `package.json`,
-  bootstrap, launch configuration, host bundle, source maps — enforces
+  bootstrap, launch configuration, host bundle, source maps, and the
+  complete typed Parity Layer (`vscode_parity_layer.g.dart`) — enforces
   the host import boundary, and reports malformed Dart with
   filename/line/column and remediation (no internal stacks, no exit
   255). Generated activation registers providers synchronously so lazy
