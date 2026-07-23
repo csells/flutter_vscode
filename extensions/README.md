@@ -33,8 +33,17 @@ cd extensions/coverage_treemap
 flutter_vscode build
 ```
 
-Open `extensions/coverage_treemap` in VS Code and press F5. In the
-Extension Development Host, open a workspace containing
+Open `extensions/coverage_treemap` in VS Code and press F5 — or launch
+the Extension Development Host directly from a terminal against any
+project that has coverage data:
+
+```sh
+code --new-window \
+  --extensionDevelopmentPath="$(pwd)/extensions/coverage_treemap" \
+  /path/to/a/project/with/coverage
+```
+
+In the development host, open a workspace containing
 `coverage/lcov.info` (run `flutter test --coverage` in any Flutter
 project first), then:
 

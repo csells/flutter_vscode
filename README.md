@@ -113,6 +113,21 @@ The host bundle ships with a source map back to your Dart sources. After any
 edit, rerun `flutter_vscode build` and restart the debug session (or use
 **Developer: Reload Window** in the development host).
 
+You can also launch the development host straight from a terminal — no
+editor session required. Point VS Code at the built extension and any
+workspace to test against:
+
+```sh
+code --new-window \
+  --extensionDevelopmentPath="$PWD" \
+  /path/to/some/workspace
+```
+
+The path must be absolute and the project must be built. Add
+`--inspect-extensions=<port>` to attach a debugger to the Extension Host,
+or `--disable-extensions` to keep other installed extensions out of the
+development host while you test.
+
 ### Reaching the rest of the VS Code API
 
 The facade covers the reviewed slice; the complete typed Parity Layer covers
