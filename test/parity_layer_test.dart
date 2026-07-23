@@ -294,6 +294,46 @@ void main() {
     }
   });
 
+  test('C-4 the parity report states machine-derived two-axis live coverage',
+      () {
+    final report =
+        File('docs/reference/parity.md').readAsStringSync();
+    expect(
+      report,
+      contains('two axes'),
+      reason: 'the report must define live coverage on both axes',
+    );
+    final namespaces = [
+      for (final declaration in (inventory['declarations']! as List<Object?>)
+          .cast<Map<Object?, Object?>>())
+        if (declaration['kind'] == 'namespace')
+          declaration['name']! as String,
+    ];
+    for (final namespace in namespaces) {
+      expect(
+        report,
+        contains('`$namespace`'),
+        reason: 'the family axis must list the $namespace family, '
+            'derived from the IR',
+      );
+    }
+    for (final constructClass in parity.parityConstructClasses) {
+      expect(
+        report,
+        contains('`$constructClass`'),
+        reason: 'the construct-class axis must list $constructClass, '
+            'derived from the emitter constant',
+      );
+    }
+    for (final reason in parity.parityLiveExemptions.values) {
+      expect(
+        report,
+        contains(reason),
+        reason: 'every live exemption must carry its recorded reason',
+      );
+    }
+  });
+
   test('P-5 unmapped constructs fail generation with an actionable error',
       () {
     final synthetic = <String, Object?>{
