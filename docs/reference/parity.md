@@ -12,6 +12,12 @@ its own totality ledger gated by the parity suite. A
 capability the generator cannot map is a defect that fails
 the build (the vision rule, mechanized).
 
+Family-level live coverage is proven by the real-host
+parity smoke: at least one representative member of every
+API namespace family executes against live VS Code in the
+Extension Host gate, with the family list derived from the
+pinned IR so a new family cannot be skipped silently.
+
 The table below is the behavioral-verification burn-down: a
 `pending` row is public surface whose typed binding exists
 but has not yet carried real-Extension-Host evidence through

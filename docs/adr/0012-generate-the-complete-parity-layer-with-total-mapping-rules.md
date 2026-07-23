@@ -10,16 +10,17 @@ deterministic rules that map each class of TypeScript construct to
 `dart:js_interop` code for every occurrence. The strategy is erasure at the
 `external` boundary (the `package:web` precedent: unions erase to their least
 upper bound in the JS type hierarchy) combined with generated Precision
-Helpers (the ScalablyTyped precedent adapted to extension types).
-(Amended after the sixth audit, 2026-07-22: the shipped helper families
-are per-overload `@JS`-renamed members, typed tuple access, object-literal
-`lit$` factories for interfaces and type literals, module-rooted
-constructors including defaults for ctor-less classes, and call-signature
-helpers. Per-member union narrowing and typed string-literal wrappers
-were originally listed here but did not ship; runtime narrowing is
-available today through the SDK's `instanceOf` against the module-rooted
-class objects, and the two helper families are tracked in
-`specs/plans/futures.md` for the Idiomatic Facade.) A construct with no Total
+Helpers (the ScalablyTyped precedent adapted to extension types): per-
+overload `@JS`-renamed members, typed tuple access, object-literal `lit$`
+factories for interfaces and type literals, module-rooted constructors
+including defaults for ctor-less classes, call-signature helpers, derived
+stable typedefs for anonymous shapes, `isInstance`/`cast` narrowing on
+every class object (via `prototype.isPrototypeOf`, since the platform
+offers no constructor-rooted `instanceOf`), and zero-cost typed wrappers
+for string-literal unions (a proven rule; the pinned baseline contains
+no such unions). (A sixth-audit amendment recorded two of these families
+as unshipped; the parity-runtime round shipped them and this text again
+describes reality.) A construct with no Total
 Mapping Rule fails generation with an actionable error; nothing is
 approximated, guessed, or resolved by review. Semantic Overrides no longer
 participate in the Parity Layer and apply only to the Idiomatic Facade.
