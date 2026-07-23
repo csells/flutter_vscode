@@ -12,11 +12,36 @@ its own totality ledger gated by the parity suite. A
 capability the generator cannot map is a defect that fails
 the build (the vision rule, mechanized).
 
-Family-level live coverage is proven by the real-host
-parity smoke: at least one representative member of every
-API namespace family executes against live VS Code in the
-Extension Host gate, with the family list derived from the
-pinned IR so a new family cannot be skipped silently.
+Live coverage is measured on two axes (see CONTEXT.md:
+API Family, Construct Class), both machine-derived and
+enforced by the parity suite and the real Extension Host
+gate.
+
+Family axis (derived from the pinned IR): at least one representative
+member of every API namespace family executes against live VS Code in
+the real-host parity smoke, so a new family cannot be skipped silently.
+The 16 families: `authentication`, `chat`, `commands`, `comments`,
+`debug`, `env`, `extensions`, `l10n`, `languages`, `lm`, `notebooks`,
+`scm`, `tasks`, `tests`, `window`, `workspace`.
+
+Construct-class axis (derived from the emitter constant): every Total
+Mapping Rule construct class has a rule-level unit case over synthetic
+IR, and every class without a recorded exemption carries a `cc:`-tagged
+probe in the same live gate. The 23 classes: `array`, `call-signature`,
+`declared-constructor`, `default-constructor`, `external-setter`,
+`function-type`, `index-signature`, `intersection`, `mixed-union`,
+`narrowing`, `numeric-enum`, `object-literal-factory`,
+`optional-member`, `overload-set`, `promise-thenable`,
+`readonly-property`, `reserved-name`, `rest-parameter`,
+`stable-typedef`, `string-literal-union`, `tuple`, `type-literal`,
+`underscore-name`.
+
+Live-exempt construct classes, each with its recorded
+reason:
+
+- `readonly-property` — the rule is the absence of a setter, provable only at compile time
+- `string-literal-union` — zero occurrences in the pinned baseline; rule proven on synthetic IR
+- `underscore-name` — the only baseline sites are deprecated internal fields with no stable behavior to observe
 
 The table below is the behavioral-verification burn-down: a
 `pending` row is public surface whose typed binding exists

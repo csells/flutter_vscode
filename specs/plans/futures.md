@@ -14,7 +14,13 @@ sequence or schedule. Rough dependency order below.
 - **Behavioral verification burn-down**: real-host evidence for parity
   members, grouped by capability fixture (trees/filesystems,
   terminals/tasks, language features, testing, SCM, notebooks,
-  authentication, debugging, webviews).
+  authentication, debugging, webviews). The next burn-down instrument
+  is member-level live accounting via generated observation hooks: the
+  emitter tags each generated member so the live gate can record which
+  members actually executed, turning the per-member `pending` rows in
+  `docs/reference/parity.md` into mechanically observed dispositions
+  (family-level and construct-class-level accounting shipped in the
+  live-coverage round).
 - Runtime semantics for the View protocol: cancellation, host-to-view
   requests, events/streams, handles, backpressure (protocol v1 today has
   none of these; disposal is session-level only).

@@ -5,8 +5,13 @@
 /// never edited by hand.
 library;
 
-/// Renders the parity burn-down for one coverage ledger.
-String buildParityReport(Map<String, Object?> coverage) {
+import 'parity_layer.dart';
+
+/// Renders the parity burn-down for one coverage ledger and pinned IR.
+String buildParityReport(
+  Map<String, Object?> coverage,
+  Map<String, Object?> inventory,
+) {
   final summary = (coverage['summary']! as Map<Object?, Object?>)
       .cast<String, Object?>();
   final entries = (coverage['entries']! as List<Object?>)
@@ -52,11 +57,46 @@ String buildParityReport(Map<String, Object?> coverage) {
     ..writeln('capability the generator cannot map is a defect that fails')
     ..writeln('the build (the vision rule, mechanized).')
     ..writeln()
-    ..writeln('Family-level live coverage is proven by the real-host')
-    ..writeln('parity smoke: at least one representative member of every')
-    ..writeln('API namespace family executes against live VS Code in the')
-    ..writeln('Extension Host gate, with the family list derived from the')
-    ..writeln('pinned IR so a new family cannot be skipped silently.')
+    ..writeln('Live coverage is measured on two axes (see CONTEXT.md:')
+    ..writeln('API Family, Construct Class), both machine-derived and')
+    ..writeln('enforced by the parity suite and the real Extension Host')
+    ..writeln('gate.')
+    ..writeln();
+  final families = [
+    for (final declaration in (inventory['declarations']! as List<Object?>)
+        .cast<Map<Object?, Object?>>())
+      if (declaration['kind'] == 'namespace') declaration['name']! as String,
+  ]..sort();
+  _writeWrapped(
+    buffer,
+    'Family axis (derived from the pinned IR): at least one '
+    'representative member of every API namespace family executes '
+    'against live VS Code in the real-host parity smoke, so a new '
+    'family cannot be skipped silently. The '
+    '${families.length} families: '
+    '${families.map((family) => '`$family`').join(', ')}.',
+  );
+  buffer.writeln();
+  final constructClasses = [...parityConstructClasses]..sort();
+  _writeWrapped(
+    buffer,
+    'Construct-class axis (derived from the emitter constant): every '
+    'Total Mapping Rule construct class has a rule-level unit case '
+    'over synthetic IR, and every class without a recorded exemption '
+    'carries a `cc:`-tagged probe in the same live gate. The '
+    '${constructClasses.length} classes: '
+    '${constructClasses.map((name) => '`$name`').join(', ')}.',
+  );
+  buffer
+    ..writeln()
+    ..writeln('Live-exempt construct classes, each with its recorded')
+    ..writeln('reason:')
+    ..writeln();
+  final exemptions = parityLiveExemptions.keys.toList()..sort();
+  for (final name in exemptions) {
+    buffer.writeln('- `$name` — ${parityLiveExemptions[name]}');
+  }
+  buffer
     ..writeln()
     ..writeln('The table below is the behavioral-verification burn-down: a')
     ..writeln('`pending` row is public surface whose typed binding exists')
@@ -88,6 +128,24 @@ String buildParityReport(Map<String, Object?> coverage) {
     ..writeln('construct with no Total Mapping Rule blocks the release')
     ..writeln('(ADR 0008 as evolved by ADR 0012).');
   return buffer.toString();
+}
+
+void _writeWrapped(StringBuffer buffer, String text) {
+  const width = 72;
+  var line = StringBuffer();
+  for (final word in text.split(' ')) {
+    if (line.isNotEmpty && line.length + 1 + word.length > width) {
+      buffer.writeln(line);
+      line = StringBuffer();
+    }
+    if (line.isNotEmpty) {
+      line.write(' ');
+    }
+    line.write(word);
+  }
+  if (line.isNotEmpty) {
+    buffer.writeln(line);
+  }
 }
 
 String _groupFor(String entryId) {

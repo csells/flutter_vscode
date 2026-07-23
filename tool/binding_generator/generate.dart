@@ -38,8 +38,11 @@ Future<void> main(List<String> arguments) async {
       final coverage = await _readJson(
         '$root/test/fixtures/host_extension/coverage.json',
       );
+      final inventory = await _readJson(
+        '$root/tool/bindings/ir/vscode-1.129.1.json',
+      );
       await File('$root/docs/reference/parity.md')
-          .writeAsString(buildParityReport(coverage));
+          .writeAsString(buildParityReport(coverage, inventory));
       return;
     }
     if (arguments.isNotEmpty && arguments.first == '--contract') {

@@ -12,9 +12,13 @@ void main() {
       File('test/fixtures/host_extension/coverage.json').readAsStringSync(),
     ) as Map<Object?, Object?>)
         .cast<String, Object?>();
+    final inventory = (jsonDecode(
+      File('tool/bindings/ir/vscode-1.129.1.json').readAsStringSync(),
+    ) as Map<Object?, Object?>)
+        .cast<String, Object?>();
     expect(
       File('docs/reference/parity.md').readAsStringSync(),
-      parity.buildParityReport(coverage),
+      parity.buildParityReport(coverage, inventory),
       reason: 'The parity report is a Framework-Managed doc. Refresh it '
           'with: dart tool/binding_generator/generate.dart --parity .',
     );
