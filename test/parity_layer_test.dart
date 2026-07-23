@@ -12,6 +12,26 @@ Map<String, Object?> _readJson(String path) =>
     (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
         .cast<String, Object?>();
 
+/// Returns the source of exactly one `extension type <name><...>(` block.
+String _typeBlock(String source, String name) {
+  final start = source.indexOf(RegExp('extension type $name[<(]'));
+  if (start < 0) {
+    fail('extension type $name not found');
+  }
+  final open = source.indexOf('{', start);
+  var depth = 0;
+  for (var index = open; index < source.length; index += 1) {
+    if (source[index] == '{') depth += 1;
+    if (source[index] == '}') {
+      depth -= 1;
+      if (depth == 0) {
+        return source.substring(start, index + 1);
+      }
+    }
+  }
+  fail('unterminated block for $name');
+}
+
 void main() {
   final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
 
@@ -152,9 +172,73 @@ void main() {
       );
     });
 
+    test('LUB union erasure holds at external boundaries', () {
+      expect(source, contains('typedef DocumentSelector = JSAny;'));
+      expect(source, contains('typedef Declaration = JSObject;'));
+      expect(source, contains('typedef GlobPattern = JSAny;'));
+    });
+
+    test('registered type literals are extension types with typed members',
+        () {
+      expect(source, matches(RegExp(r'extension type JSAnon_\w+\(JSObject')));
+      expect(
+        'extension type JSAnon_'.allMatches(source).length,
+        greaterThan(50),
+      );
+    });
+
+    test('ctor-less classes still construct through the class object', () {
+      final block = _typeBlock(source, 'EventEmitterCtor');
+      expect(block, contains(r'new$'));
+      final workspaceEdit = _typeBlock(source, 'WorkspaceEditCtor');
+      expect(workspaceEdit, contains(r'new$'));
+    });
+
+    test('interfaces and type literals get object-literal factories', () {
+      final documentFilter = _typeBlock(source, 'DocumentFilter');
+      expect(
+        documentFilter,
+        contains(r'external factory DocumentFilter.lit$('),
+      );
+      expect(documentFilter, contains('String? language'));
+      expect(source, matches(RegExp(r'external factory JSAnon_\w+\.lit\$\(')));
+    });
+
+    test('index signatures include the setter operator', () {
+      expect(source, contains('external void operator []=('));
+    });
+
+    test('Promise and Thenable references map to JSPromise in signatures',
+        () {
+      expect(source, matches(RegExp('external JSPromise<[^>]+> ')));
+    });
+
+    test('overload suffixes sit directly on their JS binding', () {
+      expect(
+        source,
+        matches(
+          RegExp(r"@JS\('showQuickPick'\)\n  external [^\n]+showQuickPick\$2"),
+        ),
+      );
+    });
+
+    test('enum value objects are module-rooted on VscodeApi', () {
+      final api = _typeBlock(source, 'VscodeApi');
+      expect(api, contains('FileTypeValues get FileType;'));
+      expect(api, contains('ViewColumnValues get ViewColumn;'));
+    });
+
     test('optionality is nullable, readonly is getter-only', () {
       // The only mention of undefined is the documented conflation note.
       expect('undefined'.allMatches(source).length, 1);
+      expect(source, contains('external String? get placeHolder;'));
+      final document = _typeBlock(source, 'TextDocument');
+      expect(document, contains('external Uri get uri;'));
+      expect(
+        document,
+        isNot(contains('external set uri(')),
+        reason: 'readonly properties must not emit setters',
+      );
       final selectionGetter =
           RegExp(r'external\s+Selection\s+get\s+selection;');
       expect(source, matches(selectionGetter));
