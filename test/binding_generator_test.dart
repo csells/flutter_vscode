@@ -5571,6 +5571,53 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
     );
   });
 
+  test('rejects registered shape members with malformed values', () {
+    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+    final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
+    final declarations = (inventory['declarations']! as List<Object?>)
+        .cast<Map<Object?, Object?>>();
+    final literal = declarations
+        .firstWhere(
+          (candidate) =>
+              candidate['kind'] == 'typeLiteral' &&
+              declarations.any(
+                (child) =>
+                    child['parentId'] == candidate['id'] &&
+                    child['kind'] == 'method',
+              ),
+        )
+        .cast<String, Object?>();
+    final shape = (jsonDecode(jsonEncode(literal['shape']))
+            as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    final members = (shape['members']! as List<Object?>)
+        .cast<Map<Object?, Object?>>();
+    members.firstWhere((member) => member['kind'] == 'method')['name'] = null;
+    literal['shape'] = shape;
+    final shapeHash = _shapeHash(shape);
+    final oldId = literal['id']! as String;
+    literal['shapeHash'] = shapeHash;
+    _replaceRegisteredTypeLiteralShapeHash(inventory, oldId, shapeHash);
+    _reindexProducerSubtree(inventory, overrides, oldId);
+
+    expect(
+      () => VSCodeBindingGenerator().generate(
+        inventory: inventory,
+        overrides: overrides,
+        project: _readJson('test/fixtures/host_extension/extension.json'),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              contains('unsupported member schema'),
+            ),
+      ),
+    );
+  });
+
   test('rejects out-of-scope canonical refs in inline generic shapes', () {
     final inventory = _inventory(['interface:vscode.Box']);
     final declaration = (inventory['declarations']! as List<Object?>).single!
