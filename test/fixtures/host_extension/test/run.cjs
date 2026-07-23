@@ -48,59 +48,6 @@ async function run() {
     jsPromiseSource.dispose();
   }
 
-  console.log('[host-test] RED/GREEN: parity layer against the live host');
-  const paritySmoke = await vscode.commands.executeCommand(
-    'flutter-vscode.host-test.paritySmoke',
-  );
-  assert.ok(paritySmoke, 'parity smoke command returned nothing');
-  assert.equal(paritySmoke.version, vscode.version);
-  assert.equal(paritySmoke.viewColumnActive, -1);
-  assert.equal(paritySmoke.fileTypeFile, 1);
-  assert.equal(paritySmoke.translatedLine, 4);
-  assert.equal(paritySmoke.uriFsPath, '/parity/smoke.json');
-  assert.equal(paritySmoke.uriToString, 'file:///parity/smoke.json');
-  assert.ok(paritySmoke.commandCount > 10, 'getCommands round-trip empty');
-  assert.equal(paritySmoke.eventSubscribed, true);
-  const parityDocument = await vscode.workspace.openTextDocument({
-    language: 'json',
-    content: '{"parity": true}',
-  });
-  const parityHovers = await vscode.commands.executeCommand(
-    'vscode.executeHoverProvider',
-    parityDocument.uri,
-    new vscode.Position(0, 3),
-  );
-  // The facade fixture also registers a json hover provider, so both
-  // providers answer; the parity one is identified by its content.
-  assert.equal(parityHovers.length, 2, 'parity-registered provider missing');
-  assert.equal(
-    parityHovers.filter(
-      (hover) => hover.contents[0].value === 'Hover from the parity layer',
-    ).length,
-    1,
-    'parity hover content missing',
-  );
-  await vscode.commands.executeCommand(
-    'flutter-vscode.host-test.disposeParityProvider',
-  );
-  const afterDispose = await vscode.commands.executeCommand(
-    'vscode.executeHoverProvider',
-    parityDocument.uri,
-    new vscode.Position(0, 3),
-  );
-  assert.equal(
-    afterDispose.length,
-    1,
-    'parity-registered provider survived disposal',
-  );
-  assert.equal(
-    afterDispose.filter(
-      (hover) => hover.contents[0].value === 'Hover from the parity layer',
-    ).length,
-    0,
-    'disposal removed the wrong provider',
-  );
-
   console.log('[host-test] RED/GREEN: Dart async error');
   await assert.rejects(
     vscode.commands.executeCommand(failAsyncCommandId),
@@ -167,6 +114,59 @@ async function run() {
   assert.equal(
     await vscode.commands.executeCommand(eventCountCommandId),
     1,
+  );
+
+  console.log('[host-test] RED/GREEN: parity layer against the live host');
+  const paritySmoke = await vscode.commands.executeCommand(
+    'flutter-vscode.host-test.paritySmoke',
+  );
+  assert.ok(paritySmoke, 'parity smoke command returned nothing');
+  assert.equal(paritySmoke.version, vscode.version);
+  assert.equal(paritySmoke.viewColumnActive, -1);
+  assert.equal(paritySmoke.fileTypeFile, 1);
+  assert.equal(paritySmoke.translatedLine, 4);
+  assert.equal(paritySmoke.uriFsPath, '/parity/smoke.json');
+  assert.equal(paritySmoke.uriToString, 'file:///parity/smoke.json');
+  assert.ok(paritySmoke.commandCount > 10, 'getCommands round-trip empty');
+  assert.equal(paritySmoke.eventSubscribed, true);
+  const parityDocument = await vscode.workspace.openTextDocument({
+    language: 'json',
+    content: '{"parity": true}',
+  });
+  const parityHovers = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    parityDocument.uri,
+    new vscode.Position(0, 3),
+  );
+  // The facade fixture also registers a json hover provider, so both
+  // providers answer; the parity one is identified by its content.
+  assert.equal(parityHovers.length, 2, 'parity-registered provider missing');
+  assert.equal(
+    parityHovers.filter(
+      (hover) => hover.contents[0].value === 'Hover from the parity layer',
+    ).length,
+    1,
+    'parity hover content missing',
+  );
+  await vscode.commands.executeCommand(
+    'flutter-vscode.host-test.disposeParityProvider',
+  );
+  const afterDispose = await vscode.commands.executeCommand(
+    'vscode.executeHoverProvider',
+    parityDocument.uri,
+    new vscode.Position(0, 3),
+  );
+  assert.equal(
+    afterDispose.length,
+    1,
+    'parity-registered provider survived disposal',
+  );
+  assert.equal(
+    afterDispose.filter(
+      (hover) => hover.contents[0].value === 'Hover from the parity layer',
+    ).length,
+    0,
+    'disposal removed the wrong provider',
   );
 
   console.log('[host-test] RED/GREEN: optional Flutter View protocol v1');
