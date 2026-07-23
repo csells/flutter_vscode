@@ -32,7 +32,7 @@
     },
     "bootstrapLifecycleTest": {
       "path": "tool/extension_host_test/bootstrap_lifecycle.test.cjs",
-      "sha256": "952536d106c8c6aaa2a674f2ff1317bc53b2cb9223cd331e9af6a7b3b2d9c604"
+      "sha256": "6d459094a8baef499c210bced03858317404e52adc1929fa4fa9ee7eff1959f1"
     },
     "buildReceipt": {
       "path": "lib/src/cli/build_receipt.dart",
