@@ -14,7 +14,9 @@ This file is the root index for AI and contributor documentation.
 ## Quick Navigation
 
 - [Project Vision](specs/vision/vision.md)
-- [First Working Extension Plan](specs/plans/first-working-extension.md)
+- [Architecture (living)](specs/architecture/index.md)
+- [Backlog and Roadmap](specs/plans/backlog.md)
+- [First Working Extension Plan (archived)](specs/plans/archive/first-working-extension.md)
 - [Domain Language](CONTEXT.md)
 - [Architecture Decisions](docs/adr/)
 - [Documentation Root](docs/index.md)

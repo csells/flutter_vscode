@@ -3,15 +3,30 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
+/// The archived plan's frozen bytes. Changing the archive requires
+/// consciously updating this pin in the same commit with a reason.
+const archivedPlanSha256 =
+    'dc2b932fa4053b8e04492746017d59dca61a5e0a47b2b96b50210d4a7fd1f970';
+
 /// The plan may cite a 64-hex digest only if a machine can vouch for it:
 /// either it matches current tree state or its context says it is history.
 ///
 /// This ratchet exists because all four hardening rounds rotted the same
 /// way — digests recorded as prose while the tree moved on.
 void main() {
-  const planPath = 'specs/plans/first-working-extension.md';
+  const planPath = 'specs/plans/archive/first-working-extension.md';
   final planLines = File(planPath).readAsLinesSync();
   final plan = planLines.join('\n');
+
+  test('the archived plan is frozen history', () {
+    expect(
+      sha256.convert(File(planPath).readAsBytesSync()).toString(),
+      archivedPlanSha256,
+      reason: 'The archive is a frozen historical record; edits to it are '
+          'forbidden by design. If a change is genuinely intended, update '
+          'archivedPlanSha256 in the same commit and say why.',
+    );
+  });
 
   test('every full digest in the plan is current or marked historical', () {
     final currentDigests = <String>{

@@ -1,7 +1,18 @@
 # First Working Extension Plan
 
-Status: Implemented and verified — Round 5 closed; valid only while `scripts/check_round5_exit.sh` exits 0 at HEAD
+Status: Implemented and verified — archived 2026-07-22
 Date: 2026-07-22
+
+> **ARCHIVED.** This document is the frozen historical record of the
+> first-extension effort and its five hardening rounds. The single
+> validity rule it leaves behind: a completion claim holds only while
+> `scripts/check_round5_exit.sh` exits 0 at HEAD. The living authorities
+> are [`specs/architecture/`](../../architecture/index.md), the
+> executable gates, and [`specs/plans/backlog.md`](../backlog.md). All
+> in-document tallies, hashes, and script descriptions are
+> recording-time evidence, not present-tense claims; the archive's bytes
+> are pinned by digest in `test/plan_truth_test.dart`, so any edit fails
+> the ratchet deliberately.
 
 ## Fresh Reopening Audit
 
@@ -196,7 +207,9 @@ exit bar; the gap is tracked in `specs/plans/backlog.md`.
 
 ## Third-Audit TDD Ledger
 
-Each entry names the exact command and observed result for red and green.
+Each entry names the exact command and observed result for red and green;
+all tallies are counts at their recording time (suites grew in Round 5;
+the executing suites are the current authority).
 Entries 1, 5, and 6 carry their reds and greens as separate commits on
 `project-hardening` (85d8141 through 689ae8d), so their chronology is
 corroborated by history. Entries 2, 3, and 4 used temporary implementation
@@ -299,7 +312,8 @@ forbids going forward.
 8. **Ledger truth.** Superseded hashes (`af68dd17…`, `c41b1853…`) and
    stale tallies (72/72, 119/119, 61/61, 145/145, 43 receipts) in earlier
    ledgers are annotated in place as historical rather than rewritten; the
-   current values are the ones recorded in this ledger. The real-host
+   values recorded in this ledger were current at its recording time (the
+   executing suites are the current authority). The real-host
    gate ran green on this tree (entry 6), and the exit item is closed by
    the Final Execution Evidence: two consecutive unchanged
    `./scripts/test_all.sh` runs — each including the real Extension Host
@@ -323,7 +337,9 @@ Rules of this round, fixed before any item below was started:
 
 - This exit bar is FROZEN. Items may move to done; no item may be added,
   weakened, or closed through an escape hatch. Anything discovered during
-  the round goes to `specs/plans/backlog.md`, not here.
+  the round goes to `specs/plans/backlog.md`, not here. (The freeze bound
+  the executing agent; the one exception is the visibly recorded owner
+  amendment removing R5-3 below.)
 - Every item names its machine check. `scripts/check_round5_exit.sh`
   evaluates all of them and is the only authority allowed to call this
   round done; the status line may claim completion only when that script
@@ -415,9 +431,10 @@ Rules of this round, fixed before any item below was started:
 
 ## Round-5 TDD Ledger
 
-Every red below is a commit, not prose; `git log 50fa8d9..` replays the
-round. Where behavior already existed and no red was expressible, the
-entry says so.
+Every red below is a commit — or, where repository state could not
+express it, a recorded scratch-clone command — and `git log 50fa8d9..`
+replays the round. Where behavior already existed and no red was
+expressible, the entry says so. Tallies are counts at recording time.
 
 1. **R5-1/R5-2 prose truth** (red 4f52c24, green 02bf587). `flutter test
    test/plan_truth_test.dart` failed 2/3: the pinned-IR digest and the
@@ -473,9 +490,12 @@ entry says so.
     failure, a hyphenation mismatch in the CHANGELOG grep, and the
     regenerator check demanding a clean tree instead of comparing
     before/after snapshots. Each fix tightened nothing and was
-    re-verified; the script reports exactly two open items, both by
-    design: the CI witness (R5-3) and heavy-gate execution when
-    `--skip-heavy` is given.
+    re-verified; at that recording time the script reported exactly two
+    open items, both by design: the CI witness (R5-3) and heavy-gate
+    execution when `--skip-heavy` is given. (Historical: the closing
+    commit then converted R5-3's check to an informational line per the
+    owner amendment, leaving heavy-gate skip as the only by-design open
+    item.)
 11. **Owner amendment and closure.** The CI-witness item R5-3 was removed
     from the frozen exit bar by owner decision on 2026-07-22 (a fork
     should not host the project's CI; the upstream pull request and first
@@ -587,13 +607,16 @@ substitute for the specific evidence.
 
 Completion requires all four focused checkpoint suites, `flutter analyze`, and
 two consecutive clean runs of `scripts/test_all.sh` to pass. Only then may this
-plan return to `Implemented and verified`.
+plan return to `Implemented and verified`. (Historical rule; the Round-5
+closure added the operative exit-script rule recorded in the status
+banner.)
 
 ## Hardening TDD Ledger
 
 These entries record failures observed while introducing each assertion and
 the focused command that subsequently passed. They are evidence of chronology,
-not deductions from the finished diff.
+not deductions from the finished diff. All tallies are counts at their
+recording time; the executing suites are the current authority.
 
 ### Checkpoint 1
 
@@ -811,8 +834,8 @@ full gates.
    it fails closed unless `Event<T>`, `Thenable<T>`, `ProviderResult<T>`,
    `executeCommand<T>`, webview, provider, URI, and disposal relationships are
    exact. `flutter test test/binding_generator_test.dart -r compact` passed
-   72/72 (tally at recording time; the suite has since grown — current
-   counts live in the Third-Audit ledger).
+   72/72 (tally at recording time; the suite has since grown — the
+   executing suite is the current authority).
 5. **Truthful native attribution.** Generated wrappers originally recorded
    bindings before native calls completed, and a false `postMessage` result was
    counted as success. New tests failed until observations moved after native
@@ -845,8 +868,8 @@ full gates.
    structural rule and a regression test; unsupported variants fail closed.
 
 `(cd tool/binding_importer && npm test)` passed 119/119 plus the adjacent
-baseline-series check at recording time (current counts live in the
-Third-Audit ledger). `node --test
+baseline-series check at recording time (the executing suite is the
+current authority). `node --test
 tool/extension_host_test/bootstrap_lifecycle.test.cjs
 tool/extension_host_test/host_contract.test.cjs` passes 11/11.
 
@@ -871,8 +894,8 @@ tool/extension_host_test/host_contract.test.cjs` passes 11/11.
 ### View Protocol Lifecycle
 
 Every protocol red below was observed in focused Dart tests; the repaired
-`test/view_protocol_test.dart` suite passed 61/61 at recording time (current
-counts live in the Third-Audit ledger).
+`test/view_protocol_test.dart` suite passed 61/61 at recording time (the
+executing suite is the current authority).
 
 1. **Validate and snapshot before send.** Invalid IDs, nonces, operation names,
    messages, and error details either emitted invalid frames or hung. Mutable
@@ -916,8 +939,8 @@ counts live in the Third-Audit ledger).
 3. **Focused convergence.** The combined generator, generator CLI, evidence,
    protocol, native transport, and repository command passed 145/145 with no
    skips at recording time (the third audit later observed 4 failures from
-   evidence drift; the repaired current counts live in the Third-Audit
-   ledger). Shell syntax checks and `git diff --check` also pass.
+   evidence drift, since repaired; the executing suites are the current
+   authority). Shell syntax checks and `git diff --check` also pass.
 4. **Trackable root resolution.** A repository-gate red showed that the build
    required `--enforce-lockfile` while the root `pubspec.lock` was ignored and
    could not survive a checkout. Green — the root lockfile is explicitly
@@ -939,13 +962,16 @@ clean worktree before, between, and after every run:
 - `./scripts/test_all.sh` run 2: exit 0 on the byte-identical tree,
   immediately after run 1 with no changes between runs.
 - `flutter analyze`: no issues found.
-- `dart pub publish --dry-run`: exit 0 with one pre-existing advisory
-  layout warning (the top-level `docs/` directory name); the archive
+- `dart pub publish --dry-run`: recorded at the time as "exit 0 with one
+  pre-existing advisory layout warning" (historical: Round-5 ledger
+  entry 9 corrected this — the bare command exits nonzero on the
+  advisory warning and the recorded exit code was a piped artifact; the
+  canonical form is `--dry-run --ignore-warnings`). The archive
   validates and excludes repository-only hardening sources.
 
-The status line may say `Implemented and verified` only while the tree
-continues to satisfy exactly this evidence; any source change reopens the
-question until the gates rerun.
+(Historical validity rule of the third-audit closure, superseded: the
+operative rule is the one in the status banner — the completion claim
+holds only while `scripts/check_round5_exit.sh` exits 0 at HEAD.)
 
 ## Goal and Stop Rule
 
@@ -960,7 +986,7 @@ Code test build, and one local Node Extension Host. It makes no compatibility
 promise beyond that combination.
 
 This plan is the shortest executable path from the current implementation to
-the [project vision](../vision/vision.md). Broader API parity, host matrices, and
+the [project vision](../../vision/vision.md). Broader API parity, host matrices, and
 support guarantees follow the working system rather than precede it.
 
 ## Starting Gap (Closed by This Plan)
@@ -1186,5 +1212,5 @@ inference exercise.
 - full API classification and contribution coverage;
 - production performance and security budgets.
 
-The accepted [architecture decisions](../../docs/adr/) remain direction, but
+The accepted [architecture decisions](../../../docs/adr/) remain direction, but
 none of these deferred policies may delay Checkpoint 1.

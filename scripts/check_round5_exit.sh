@@ -118,14 +118,18 @@ else
   fail "R5-12" "CHANGELOG missing consumer-visible hardening entries"
 fi
 
-# R5-13: terminal closure basics (full test_all runs are witnessed by CI)
+# R5-13: terminal closure basics (the two consecutive test_all runs are
+# procedural evidence executed at closure; this script cannot re-verify
+# them and does not claim to)
 if run_quiet flutter analyze; then
   pass "R5-13 flutter analyze clean"
 else
   fail "R5-13" "flutter analyze reports issues"
 fi
 STATUS_BEFORE="$(git status --porcelain)"
-dart tool/binding_generator/generate.dart --contract . >/dev/null 2>&1
+if ! dart tool/binding_generator/generate.dart --contract . >/dev/null 2>&1; then
+  fail "R5-13" "contract regenerator failed to execute"
+fi
 STATUS_AFTER="$(git status --porcelain)"
 if [[ "${STATUS_AFTER}" == "${STATUS_BEFORE}" ]]; then
   pass "R5-13 contract regenerator byte-for-byte no-op"

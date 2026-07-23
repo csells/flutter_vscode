@@ -43,4 +43,5 @@ Flutter view          -> flutter build web                   -> view assets
 ```
 
 See the accepted [architecture decisions](../adr/) and the
-[first working extension plan](../../specs/plans/first-working-extension.md).
+[archived first working extension plan](../../specs/plans/archive/first-working-extension.md)
+and the living [specs/architecture](../../specs/architecture/index.md) capture.

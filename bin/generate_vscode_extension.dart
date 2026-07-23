@@ -28,6 +28,13 @@ class _ScaffoldSummary {
 }
 
 void main() {
+  print(
+    'LEGACY v0 SCAFFOLD: this generator produces the original '
+    'webview/TypeScript bridge, retained for existing users only. New '
+    'extensions should use the Dart-owned host workflow instead: '
+    'flutter_vscode create / build / package '
+    '(see docs/guides/quickstart.md).',
+  );
   final currentDirectory = Directory.current.path;
   print('Generating VSCode extension files in: $currentDirectory');
   final summary = _ScaffoldSummary();
