@@ -48,11 +48,28 @@ In the development host, open a workspace containing
 project first), then:
 
 - covered and uncovered lines are highlighted in the active editor;
-- the status bar shows the overall percentage;
-- **Coverage: Show Treemap** opens the Flutter treemap panel;
+- the status bar shows the overall percentage — click it (or run
+  **Coverage: Run Tests with Coverage**) to run `flutter test
+  --coverage` in a VS Code terminal and refresh everything from the
+  new numbers, no external CLI session needed;
+- **Coverage: Show Treemap** opens the Flutter treemap panel, which
+  renders its summary charts with the pub.dev package `fl_chart` —
+  Flutter-ecosystem code reuse running inside VS Code;
 - **Coverage: Refresh** and **Coverage: Toggle Line Highlights** do
   what they say;
 - editing or regenerating `lcov.info` refreshes automatically.
+
+Note: the Dart extension's Testing-UI "Run with Coverage" feeds
+VS Code's native Test Coverage API and does not write
+`coverage/lcov.info`; use the status-bar action (or any
+`flutter test --coverage` run) to update this extension's data.
+
+The real-host gate for this extension is
+`scripts/test_coverage_extension.sh`: it packages the VSIX, installs
+it into the pinned Extension Host in Docker, opens a workspace with a
+known tracefile, and asserts both the parsed snapshot and that the
+Flutter View boots and serves the snapshot operation over the view
+protocol in a real webview.
 
 `flutter_vscode package` writes the installable VSIX under `build/`.
 

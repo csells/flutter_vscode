@@ -300,6 +300,28 @@ generated view protocol (`ViewOperation` in
 `package:flutter_vscode/view.dart`); see the
 [architecture docs](docs/architecture/index.md).
 
+### Using pub.dev packages
+
+Extension Projects are ordinary Dart and Flutter packages, so the
+ecosystem comes with you:
+
+- **Views** can depend on any Flutter package that works on the web —
+  the shipped Coverage Treemap example renders its summary charts with
+  [`fl_chart`](https://pub.dev/packages/fl_chart), running unmodified
+  inside a VS Code webview. Keep runtime assets local: the webview CSP
+  blocks network fonts and images, so avoid packages that fetch
+  resources at runtime (or bundle their assets instead).
+- **`host/` and `shared/`** can depend on pure Dart packages — parsers,
+  models, codecs, protocol logic. The build's boundary check enforces
+  what the Extension Host can actually run: `dart:io`, Flutter, and
+  browser-only libraries are rejected with actionable errors, and
+  package `test/` directories are exempt so you can test shared code
+  normally.
+
+This is the core reuse story: logic your team already ships as Dart
+packages — and the pub.dev ecosystem around it — becomes VS Code
+extension code without a rewrite.
+
 ### Debugging the Flutter View
 
 Debugging works the same way: `flutter_vscode build`, press **F5**, and run

@@ -62,12 +62,16 @@ final class _CoverageController {
   var _panelOpen = false;
   HostViewSession? _session;
   HostWebviewTransport? _transport;
+  parity.Terminal? _terminal;
+  final Completer<String> _firstSnapshotServed = Completer<String>();
 
   Future<JSAny?> start() async {
     _coveredType = _lineDecoration('diffEditor.insertedTextBackground');
     _uncoveredType = _lineDecoration('diffEditor.removedTextBackground');
     _statusBar =
-        _api.window.createStatusBarItem$2(_api.StatusBarAlignment.Left, 100);
+        _api.window.createStatusBarItem$2(_api.StatusBarAlignment.Left, 100)
+          ..command = 'coverage-treemap.runTests'.toJS
+          ..tooltip = 'Run tests with coverage'.toJS;
 
     _registerCommand('coverage-treemap.refresh', () async {
       await _refresh();
@@ -81,6 +85,25 @@ final class _CoverageController {
     _registerCommand('coverage-treemap.showTreemap', () async {
       await _openPanel();
       return null;
+    });
+    _registerCommand('coverage-treemap.runTests', () async {
+      (_terminal ??= _api.window.createTerminal('Coverage Treemap'))
+        ..show()
+        ..sendText('flutter test --coverage');
+      return null;
+    });
+    _registerCommand('coverage-treemap.viewSmoke', () async {
+      await _openPanel();
+      final lcovPath = await _firstSnapshotServed.future.timeout(
+        const Duration(seconds: 120),
+        onTimeout: () => throw StateError(
+          'The Flutter View did not serve a snapshot within 120s.',
+        ),
+      );
+      return jsonEncode(<String, Object?>{
+        'viewConnected': true,
+        'lcovPath': lcovPath,
+      }).toJS;
     });
     _registerCommand('coverage-treemap.smoke', () async {
       await _refresh();
@@ -247,7 +270,12 @@ final class _CoverageController {
               'with coverage first.',
             );
           }
-          return CoverageSnapshot.fromReport(_lcovRelativePath, report);
+          final snapshot =
+              CoverageSnapshot.fromReport(_lcovRelativePath, report);
+          if (!_firstSnapshotServed.isCompleted) {
+            _firstSnapshotServed.complete(snapshot.lcovPath);
+          }
+          return snapshot;
         }),
       ],
     );

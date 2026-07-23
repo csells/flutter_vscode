@@ -62,6 +62,29 @@ Extension Author would:
   extension's build/run/debug story; the root README points at the
   shipped examples. Check: repository gate suite.
 
+## Owner additions (2026-07-23)
+
+Added by owner direction after the original bar froze; the original
+items above are unchanged.
+
+- [ ] T-8 Coverage runs from inside VS Code: the status-bar item is
+  clickable and a `Coverage: Run Tests with Coverage` command runs
+  `flutter test --coverage` in a VS Code terminal, so the watcher picks
+  up fresh numbers with no external CLI session. The README explains
+  that the Dart extension's Testing-UI coverage feeds VS Code's native
+  Test Coverage API and never writes `coverage/lcov.info`. Check: gate
+  and README.
+- [ ] T-9 Ecosystem showcase: the view integrates a well-known pub.dev
+  package (`fl_chart`) rendering a coverage summary alongside the
+  treemap, demonstrating Flutter-ecosystem code reuse inside VS Code.
+  Check: build green with the dependency; view analyze-clean.
+- [ ] T-10 The blank-panel defect observed on desktop VS Code (macOS,
+  current release) is root-caused via the T-6 gate: if the view boots
+  in the pinned host, the defect is a newer-VS Code regression to
+  diagnose against the webview console; either way the root cause and
+  fix land before this plan closes. Check: T-6 green plus a recorded
+  root cause.
+
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.

@@ -22,8 +22,16 @@ const extension = <String, Object?>{
       'title': 'Coverage: Toggle Line Highlights',
     },
     <String, Object?>{
+      'command': 'coverage-treemap.runTests',
+      'title': 'Coverage: Run Tests with Coverage',
+    },
+    <String, Object?>{
       'command': 'coverage-treemap.smoke',
       'title': 'Coverage: Smoke Snapshot (diagnostics)',
+    },
+    <String, Object?>{
+      'command': 'coverage-treemap.viewSmoke',
+      'title': 'Coverage: View Smoke (diagnostics)',
     },
   ],
 };

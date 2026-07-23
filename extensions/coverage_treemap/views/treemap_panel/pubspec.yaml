@@ -7,6 +7,7 @@ environment:
 dependencies:
   coverage_treemap_shared:
     path: ../../shared
+  fl_chart: ^1.2.0
   flutter:
     sdk: flutter
   flutter_vscode:

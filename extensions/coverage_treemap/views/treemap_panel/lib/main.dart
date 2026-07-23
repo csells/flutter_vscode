@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vscode/view.dart';
+import 'package:treemap_panel/summary_charts.dart';
 import 'package:treemap_panel/treemap.dart';
 
 /// The typed view-protocol operation that fetches the coverage snapshot
@@ -162,6 +163,8 @@ class _TreemapPageState extends State<_TreemapPage> {
           onNavigate: _navigateTo,
           onRefresh: _refresh,
         ),
+        if (current.linesFound > 0)
+          CoverageSummaryStrip(node: current, onChildTap: _handleNodeTap),
         Expanded(
           child: hasTiles
               ? Padding(

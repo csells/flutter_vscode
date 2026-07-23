@@ -26,8 +26,16 @@
         "title": "Coverage: Toggle Line Highlights"
       },
       {
+        "command": "coverage-treemap.runTests",
+        "title": "Coverage: Run Tests with Coverage"
+      },
+      {
         "command": "coverage-treemap.smoke",
         "title": "Coverage: Smoke Snapshot (diagnostics)"
+      },
+      {
+        "command": "coverage-treemap.viewSmoke",
+        "title": "Coverage: View Smoke (diagnostics)"
       }
     ]
   }
