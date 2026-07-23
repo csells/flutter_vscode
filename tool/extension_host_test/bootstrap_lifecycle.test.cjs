@@ -105,14 +105,20 @@ test('failed activation rolls back each new registration once', async () => {
       return true;
     });
     assert.equal(eventDisposals, 1);
-    assert.deepEqual([...contextDisposals.values()], [1, 1, 1, 1, 1, 1]);
+    assert.deepEqual(
+      [...contextDisposals.values()],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+    );
     assert.equal(preexistingDisposals, 0);
     assert.deepEqual(context.subscriptions, [preexisting]);
 
     await lifecycle.deactivate();
     await lifecycle.deactivate();
     assert.equal(eventDisposals, 1);
-    assert.deepEqual([...contextDisposals.values()], [1, 1, 1, 1, 1, 1]);
+    assert.deepEqual(
+      [...contextDisposals.values()],
+      [1, 1, 1, 1, 1, 1, 1, 1],
+    );
     assert.equal(preexistingDisposals, 0);
     assert.deepEqual(context.subscriptions, [preexisting]);
   } finally {
