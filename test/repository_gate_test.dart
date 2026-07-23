@@ -168,6 +168,67 @@ void main() {
     );
   });
 
+  test('legacy v0 surfaces are labeled or gone', () {
+    expect(
+      File('bin/init.dart').existsSync(),
+      isFalse,
+      reason: 'the dead v0 scaffolder must not ship',
+    );
+
+    final prdHead =
+        File('PRD.md').readAsLinesSync().take(5).join('\n').toLowerCase();
+    expect(
+      prdHead,
+      contains('historical'),
+      reason: 'PRD.md describes the v0 product and must say so up front',
+    );
+
+    final exampleMainHead = File('example/lib/main.dart')
+        .readAsLinesSync()
+        .take(10)
+        .join('\n')
+        .toLowerCase();
+    expect(
+      exampleMainHead,
+      contains('legacy'),
+      reason: 'the pub.dev example surface must label the v0 demo as legacy',
+    );
+    final exampleReadme = File('example/README.md');
+    expect(
+      exampleReadme.existsSync(),
+      isTrue,
+      reason: 'example/ must present the current Dart-host path',
+    );
+    expect(
+      exampleReadme.readAsStringSync(),
+      contains('flutter_vscode create'),
+      reason: 'example/README.md must route readers to the v1 workflow',
+    );
+
+    final markerPattern =
+        RegExp('generate_vscode_extension|VSCodeWebViewHelper');
+    final labelPattern = RegExp('legacy|historical', caseSensitive: false);
+    final surfaces = <File>[
+      File('README.md'),
+      File('PRD.md'),
+      ...Directory('docs')
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((file) => file.path.endsWith('.md')),
+    ];
+    for (final surface in surfaces) {
+      final contents = surface.readAsStringSync();
+      if (markerPattern.hasMatch(contents)) {
+        expect(
+          labelPattern.hasMatch(contents),
+          isTrue,
+          reason: '${surface.path} mentions a v0 entry point and must carry '
+              'a legacy or historical label',
+        );
+      }
+    }
+  });
+
   test('generated Host API guide registers providers synchronously', () {
     final guide =
         File('docs/reference/generated-host-api.md').readAsStringSync();
