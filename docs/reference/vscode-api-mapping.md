@@ -21,11 +21,13 @@ Need VS Code API?
 │
 ├─ Register provider / listen to events / run at activation?
 │  └─ YES → Edit src/extension.ts (extension host)
-│           See skills/flutter-vscode-extension-host/
+│           (The current skills/ describe the v1 Dart-host
+│           workflow, not this legacy step.)
 │
 ├─ Add sidebar, command palette entry, menu, keybinding?
 │  └─ YES → Edit package.json contributions
-│           See skills/flutter-vscode-contributions/
+│           (The current skills/ describe the v1 Dart-host
+│           workflow, not this legacy step.)
 │
 └─ Tree view, terminal, debug adapter, language server?
    └─ Host-only patterns — not supported via annotations today.
@@ -355,4 +357,5 @@ Use these to verify agent-assisted workflows:
 - [Message Contract](message-contract.md)
 - [Quickstart](../guides/quickstart.md)
 - [Troubleshooting](../guides/troubleshooting.md)
-- Package skills: `skills/` in the `flutter_vscode` repository
+- Package skills: `skills/` in the `flutter_vscode` repository (these now
+  document the v1 Dart-host workflow and supersede the v0 steps above)

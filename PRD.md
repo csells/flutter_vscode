@@ -1,3 +1,9 @@
+> **Historical (v0) document.** This PRD describes the original
+> webview/TypeScript product, which required author-side npm and
+> TypeScript. It is retained for history only and contradicts the current
+> non-negotiable 100%-Dart boundary; the current product is defined by
+> [the vision](specs/vision/vision.md) and the [README](README.md).
+
 ### 1. Product Summary
 
 `flutter_vscode` is a Flutter package that lets developers build VS Code extensions using **Flutter for the UI** and **Dart for the business logic**, instead of writing all UI and wiring by hand in TypeScript and raw webviews. It provides annotations, code generation, and tooling that automatically generate the VS Code extension scaffolding, TypeScript handlers, and a webview-ready Flutter web app so that extension authors can focus on product behavior and UI rather than boilerplate.
