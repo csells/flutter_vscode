@@ -68,11 +68,15 @@ void main() {
     );
     final nonBindingFiles =
         checkedInFiles.keys.toSet().difference(firstFiles.keys.toSet());
+    const cliOwnedArtifacts = {
+      'host/lib/generated/view_protocol.g.dart',
+      'host/lib/generated/vscode_parity_layer.g.dart',
+    };
     expect(
-      nonBindingFiles,
-      anyOf(isEmpty, {'host/lib/generated/view_protocol.g.dart'}),
-      reason: 'Only the CLI-owned shared view protocol may live beside the '
-          'binding generator outputs.',
+      nonBindingFiles.difference(cliOwnedArtifacts),
+      isEmpty,
+      reason: 'Only the CLI-owned shared view protocol and Parity Layer may '
+          'live beside the binding generator outputs.',
     );
     for (final entry in firstFiles.entries) {
       if (!_bytesEqual(checkedInFiles[entry.key]!, entry.value)) {
