@@ -297,6 +297,67 @@ class _VSCodeHostExtension {
                 final narrowed = api.Position.isInstance(position) &&
                     !api.Uri.isInstance(position);
 
+                // cc:tuple — real directory entries as [name, FileType].
+                final parityContext = parity.ExtensionContext(rawContext);
+                final entries = (await api.workspace.fs
+                        .readDirectory(parityContext.extensionUri)
+                        .toDart)
+                    .toDart;
+                final firstEntry = entries.first;
+                final tupleEntryName = firstEntry.$1.toDart;
+                final tupleEntryIsFile = entries.any(
+                  (entry) => entry.$2.toDartInt == api.FileType.File,
+                );
+
+                // cc:intersection — Memento & setKeysForSync live.
+                final state = parityContext.globalState
+                  ..setKeysForSync(<JSAny?>[].toJS as JSArray<JSString>);
+                await state
+                    .update('parityKey', 'parity-state'.toJS)
+                    .toDart;
+                final intersectionRoundTrip =
+                    (state.get('parityKey')! as JSString).toDart;
+
+                // cc:external-setter — write then read a real QuickPick.
+                final quickPick = api.window.createQuickPick()
+                  ..value = 'parity-value';
+                final setterRoundTrip = quickPick.value;
+                quickPick.dispose();
+
+                // cc:index-signature — operator [] on live configuration.
+                final configuration = api.workspace.getConfiguration();
+                final indexSignatureRead = configuration['editor'] != null;
+
+                // cc:narrowing cc:mixed-union — narrow a union value that
+                // VS Code itself produced.
+                await api.window.showTextDocument(document).toDart;
+                final activeTab =
+                    api.window.tabGroups.activeTabGroup.activeTab;
+                final tabInputNarrowed = activeTab != null &&
+                    api.TabInputText.isInstance(activeTab.input);
+
+                // cc:function-type — VS Code-invoked callback arguments
+                // plus a lit$ progress report.
+                final progressResult = (await api.window
+                        .withProgress<JSString>(
+                          parity.ProgressOptions.lit$(
+                            location:
+                                api.ProgressLocation.Notification.toJS,
+                          ),
+                          ((JSObject progress, JSObject token) {
+                            parity.Progress(progress).report(
+                              parity.WindowWithProgress$1.lit$(
+                                message: 'parity progress'.toJS,
+                              ),
+                            );
+                            return Future<JSAny?>.value(
+                              'parity-progress'.toJS,
+                            ).toJS;
+                          }).toJS,
+                        )
+                        .toDart)
+                    .toDart;
+
                 final change = parity.PositionWith$1.lit$(line: 9.toJS);
                 final moved = position.with$$2(change);
 
@@ -316,6 +377,13 @@ class _VSCodeHostExtension {
                   'clipboardRoundTrip': clipboard,
                   'narrowedPosition': narrowed,
                   'stableLiteralWith': moved.line,
+                  'tupleEntryName': tupleEntryName,
+                  'tupleEntryIsFile': tupleEntryIsFile,
+                  'intersectionRoundTrip': intersectionRoundTrip,
+                  'setterRoundTrip': setterRoundTrip,
+                  'indexSignatureRead': indexSignatureRead,
+                  'tabInputNarrowed': tabInputNarrowed,
+                  'progressResult': progressResult,
                 }.jsify();
               }),
             );

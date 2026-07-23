@@ -8,7 +8,8 @@ import '../tool/binding_generator/parity_layer.dart' as parity;
 /// the byte-compare cannot.
 void main() {
   group('Total Mapping Rules on synthetic IRs', () {
-    for (final testCase in [..._ruleCases, ..._extraRuleCases]) {
+    for (final testCase
+        in [..._ruleCases, ..._extraRuleCases, ..._coverageRuleCases]) {
       test(testCase.name, () {
         final library = parity.emitParityLayer({
           'schemaVersion': 1,
@@ -179,7 +180,7 @@ const _boxId = 'interface:vscode.Box';
 
 final List<_RuleCase> _ruleCases = <_RuleCase>[
   _RuleCase(
-    'mixed-category unions erase to JSAny, not JSAny?',
+    'mixed-category unions erase to JSAny, not JSAny? (cc:mixed-union)',
     [
       _uriClass,
       _boxIface,
@@ -192,7 +193,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['external JSAny? get value;'],
   ),
   _RuleCase(
-    'null union members produce nullability on the LUB',
+    'null union members produce nullability on the LUB (cc:mixed-union)',
     [
       _uriClass,
       _boxIface,
@@ -207,7 +208,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['external Uri? get target;'],
   ),
   _RuleCase(
-    'overload sets expand with suffixes bound via @JS',
+    'overload sets expand with suffixes bound via @JS (cc:overload-set)',
     [
       _boxIface,
       _method(_boxId, 'open', parameters: [_param('a', _string)]),
@@ -221,7 +222,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ["@JS('open')", r'open$2(num a);'],
   ),
   _RuleCase(
-    'reserved words mangle with a dollar and keep the JS name',
+    'reserved words mangle with a dollar and keep the JS name (cc:reserved-name)',
     [
       _boxIface,
       _property(_boxId, 'with', _string),
@@ -229,7 +230,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ["@JS('with')", r'get with$;'],
   ),
   _RuleCase(
-    'leading-underscore names become public with a dollar prefix',
+    'leading-underscore names become public with a dollar prefix (cc:underscore-name)',
     [
       _boxIface,
       _property(_boxId, '_inner', _string),
@@ -237,7 +238,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ["@JS('_inner')", r'get $_inner;'],
   ),
   _RuleCase(
-    'numeric enums typedef to int with module-rooted values',
+    'numeric enums typedef to int with module-rooted values (cc:numeric-enum)',
     [
       _decl('enum', 'Kind', 'module:vscode', extra: {'constant': false}),
       _decl(
@@ -258,7 +259,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ],
   ),
   _RuleCase(
-    'readonly properties emit no setter',
+    'readonly properties emit no setter (cc:readonly-property)',
     [
       _boxIface,
       _property(_boxId, 'uri', _uriRef, readonly: true),
@@ -268,7 +269,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['set uri('],
   ),
   _RuleCase(
-    'optional properties and parameters are nullable',
+    'optional properties and parameters are nullable (cc:optional-member)',
     [
       _boxIface,
       _property(_boxId, 'label', _string, optional: true),
@@ -284,7 +285,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['external String? get label;', '[num? limit]'],
   ),
   _RuleCase(
-    'rest parameters route through callMethodVarArgs',
+    'rest parameters route through callMethodVarArgs (cc:rest-parameter)',
     [
       _boxIface,
       _method(
@@ -299,7 +300,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['callMethodVarArgs', 'List<JSAny?>'],
   ),
   _RuleCase(
-    'Promise and Thenable references map to JSPromise',
+    'Promise and Thenable references map to JSPromise (cc:promise-thenable)',
     [
       _boxIface,
       _method(
@@ -315,7 +316,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['JSPromise<JSString> load();'],
   ),
   _RuleCase(
-    'arrays carry generic-form element types',
+    'arrays carry generic-form element types (cc:array)',
     [
       _boxIface,
       _property(_boxId, 'names', {'kind': 'array', 'elementType': _string}),
@@ -323,7 +324,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ['external JSArray<JSString> get names;'],
   ),
   _RuleCase(
-    'declared constructors and ctor-less classes both construct',
+    'declared constructors and ctor-less classes both construct (cc:declared-constructor cc:default-constructor)',
     [
       _class('Point'),
       _decl(
@@ -351,7 +352,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ],
   ),
   _RuleCase(
-    r'interfaces gain object-literal lit$ factories',
+    r'interfaces gain object-literal lit$ factories (cc:object-literal-factory)',
     [
       _boxIface,
       _property(_boxId, 'language', _string, optional: true),
@@ -359,7 +360,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [r'external factory Box.lit$({JSString? language});'],
   ),
   _RuleCase(
-    'index signatures use the blessed operators',
+    'index signatures use the blessed operators (cc:index-signature)',
     [
       _boxIface,
       _decl(
@@ -381,7 +382,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
   ),
   // V-1: derived stable typedefs for registered type literals.
   _RuleCase(
-    'registered literals get derived stable typedefs',
+    'registered literals get derived stable typedefs (cc:stable-typedef)',
     [
       _class('Position'),
       _method(
@@ -426,7 +427,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
   ),
   // V-2: module-rooted narrowing on every Ctor type.
   _RuleCase(
-    'class objects narrow with isInstance and cast',
+    'class objects narrow with isInstance and cast (cc:narrowing)',
     [_class('Uri')],
     [
       'bool isInstance(JSAny? value)',
@@ -436,7 +437,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
   ),
   // V-2: string-literal unions become zero-cost typed wrappers.
   _RuleCase(
-    'string-literal unions emit typed wrappers',
+    'string-literal unions emit typed wrappers (cc:string-literal-union)',
     [
       _boxIface,
       _property(_boxId, 'align', {
@@ -494,6 +495,67 @@ final List<_RuleCase> _extraRuleCases = <_RuleCase>[
       _property('interface:vscode.Holder', 'value', _string),
     ],
     ['external String get value;', 'external set value(String value);'],
+  ),
+];
+
+final List<_RuleCase> _coverageRuleCases = <_RuleCase>[
+  _RuleCase(
+    'tuples become typed accessors over JSArray (cc:tuple)',
+    [
+      _iface('Holder'),
+      _property('interface:vscode.Holder', 'pair', {
+        'kind': 'tuple',
+        'elements': [_string, _number],
+      }),
+    ],
+    ['extension type JSTuple_', r'$1', r'$2'],
+  ),
+  _RuleCase(
+    'registered type literals emit typed extension types (cc:type-literal)',
+    [
+      _iface('Holder'),
+      _property('interface:vscode.Holder', 'options', {
+        'kind': 'typeLiteral',
+        'id': r'typeLiteral:interface:vscode.Holder/$shape@cccc',
+        'shapeHash': 'c' * 64,
+      }),
+      _decl('typeLiteral', r'$type', 'interface:vscode.Holder', extra: {
+        'id': r'typeLiteral:interface:vscode.Holder/$shape@cccc',
+        'shapeHash': 'c' * 64,
+        'shape': {
+          'members': [
+            {
+              'kind': 'property',
+              'name': 'flag',
+              'optional': true,
+              'readonly': false,
+              'type': {'kind': 'primitive', 'name': 'boolean'},
+            },
+          ],
+        },
+      },),
+      _property(
+        r'typeLiteral:interface:vscode.Holder/$shape@cccc',
+        'flag',
+        const {'kind': 'primitive', 'name': 'boolean'},
+        optional: true,
+      ),
+    ],
+    ['extension type JSAnon_', 'external bool? get flag;'],
+  ),
+  _RuleCase(
+    'function types erase to JSFunction (cc:function-type)',
+    [
+      _iface('Holder'),
+      _property('interface:vscode.Holder', 'onDone', {
+        'kind': 'function',
+        'typeParameters': <Object?>[],
+        'parameters': <Object?>[],
+        'returnType': {'kind': 'primitive', 'name': 'void'},
+        'canonicalSignature': '{}',
+      }),
+    ],
+    ['external JSFunction get onDone;'],
   ),
 ];
 
