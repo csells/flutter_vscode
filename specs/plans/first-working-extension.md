@@ -408,8 +408,67 @@ Rules of this round, fixed before any item below was started:
 
 ## Round-5 TDD Ledger
 
-Entries are appended as items close, naming exact commands and results;
-reds are commits, not prose.
+Every red below is a commit, not prose; `git log 50fa8d9..` replays the
+round. Where behavior already existed and no red was expressible, the
+entry says so.
+
+1. **R5-1/R5-2 prose truth** (red 4f52c24, green 02bf587). `flutter test
+   test/plan_truth_test.dart` failed 2/3: the pinned-IR digest and the
+   43-receipt block stood in stale present tense, and the plan
+   simultaneously called its exit item open and closed. Green — both
+   blocks are annotated historical (the earlier annotation pass had
+   silently no-op'd on mismatched line wrapping), the contradiction and
+   the overclaiming chronology header are corrected, and the ratchet now
+   runs inside every full gate. During the round the ratchet fired twice
+   more, catching the artifact digest going stale minutes after a
+   regeneration moved it.
+2. **R5-4 shape member values** (red cb3e381, green 20ab771). A
+   hash-consistent tamper nulling a method member's name generated
+   successfully; member schemas now validate values, and `flutter test
+   test/binding_generator_test.dart` passes 202/202.
+3. **R5-5 lockfile in HEAD** (green e5144f4; red observed in a scratch
+   clone whose HEAD dropped the lockfile while the index staged it —
+   `git ls-tree HEAD` fails there while `--cached` passes).
+4. **R5-8 pin symlink containment** (red 0a9aa0e, green 7469653). An
+   escaping symlink verified successfully under the textual rule; real
+   paths must now resolve inside the manifest directory, and
+   `(cd tool/binding_importer && npm test)` exits 0.
+5. **R5-9 writer write path** (0a1b7fe). No in-repo red was expressible
+   for the already-correct paths; the new tests still surfaced and fixed
+   one robustness gap (missing contracts directory) and executed the
+   never-run ambiguous-pin branches.
+6. **R5-10 shipped surface** (red 16ca6f8, green 145c06d). The legacy
+   gate failed on the dead scaffolder, the unlabeled PRD, and the
+   unlabeled example; all are fixed and permanently gated.
+7. **R5-11 parity burn-down** (red 3d06270, green cc0cc6e). The
+   regeneration-match test failed on the missing report; the generated
+   `docs/reference/parity.md` is byte-compared, linked, and states the
+   defect rule. R5-12 landed in 55bfe41.
+8. **R5-6/R5-7 packaged proof** (ed33932, fix fabc2cc, harness fix
+   d780000). The first execution failed honestly:
+   `onLanguage:plaintext` activates at window startup because a fresh
+   harness window can hold an untitled plaintext editor — an
+   environmental fact no static analysis had surfaced. With json-based
+   activation, `./scripts/test_packaged_extension.sh` exits 0 staging
+   from pub's own archive listing with one unified inactive-start,
+   activation-wait, single-hover-first flow for both installed
+   fixtures; `./scripts/test_host_extension.sh` exits 0 on the
+   regenerated evidence.
+9. **Full gates.** Two consecutive `./scripts/test_all.sh` runs exited 0
+   on the byte-identical tree at d780000 with a clean worktree before,
+   between, and after. Correction to round-3 evidence: bare
+   `dart pub publish --dry-run` exits nonzero on the advisory `docs/`
+   layout warning (the earlier "exit 0" was a piped exit code); the
+   canonical form, which CI runs, is `--dry-run --ignore-warnings`.
+10. **Instrument honesty.** The first full run of
+    `scripts/check_round5_exit.sh` produced three false negatives —
+    pipefail turning `grep -q`'s early pipe close into a node SIGPIPE
+    failure, a hyphenation mismatch in the CHANGELOG grep, and the
+    regenerator check demanding a clean tree instead of comparing
+    before/after snapshots. Each fix tightened nothing and was
+    re-verified; the script reports exactly two open items, both by
+    design: the CI witness (R5-3) and heavy-gate execution when
+    `--skip-heavy` is given.
 
 ## Pre-Hardening Evidence
 

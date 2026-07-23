@@ -79,8 +79,11 @@ else
 fi
 
 # R5-8: symlink-resolving pin containment
-if (cd tool/binding_importer && node --test test/pins.test.cjs 2>&1 | grep -q "symlink") \
-  && (cd tool/binding_importer && run_quiet node --test test/pins.test.cjs); then
+# Capture first: with pipefail, grep -q's early pipe close would turn a
+# passing node run into a SIGPIPE failure.
+PINS_OUTPUT="$(cd tool/binding_importer && node --test test/pins.test.cjs 2>&1)"
+PINS_EXIT=$?
+if [[ "${PINS_EXIT}" -eq 0 ]] && grep -q "symlink" <<<"${PINS_OUTPUT}"; then
   pass "R5-8 pin containment resolves symlinks"
 else
   fail "R5-8" "symlink containment test missing or red"
@@ -112,7 +115,7 @@ else
 fi
 
 # R5-12: CHANGELOG covers the hardening rounds
-if grep -qi "host binding" CHANGELOG.md && grep -qi "evidence" CHANGELOG.md; then
+if grep -qiE "host.bindings?" CHANGELOG.md && grep -qi "evidence" CHANGELOG.md; then
   pass "R5-12 CHANGELOG records host-path and evidence-model changes"
 else
   fail "R5-12" "CHANGELOG missing consumer-visible hardening entries"
@@ -124,11 +127,13 @@ if run_quiet flutter analyze; then
 else
   fail "R5-13" "flutter analyze reports issues"
 fi
+STATUS_BEFORE="$(git status --porcelain)"
 dart tool/binding_generator/generate.dart --contract . >/dev/null 2>&1
-if [[ -z "$(git status --porcelain)" ]]; then
+STATUS_AFTER="$(git status --porcelain)"
+if [[ "${STATUS_AFTER}" == "${STATUS_BEFORE}" ]]; then
   pass "R5-13 contract regenerator byte-for-byte no-op"
 else
-  git checkout -- tool/bindings tool 2>/dev/null
+  git checkout -- tool/bindings 2>/dev/null
   fail "R5-13" "regenerator changed tracked files on a converged tree"
 fi
 
