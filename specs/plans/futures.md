@@ -1,8 +1,10 @@
 # Futures
 
-Deferred work, in rough dependency order. Items graduate into a named
-plan under `specs/plans/` with their own machine-checked exit bar;
-nothing here is a commitment to sequence or schedule.
+Deferred work and the discovery inbox: findings made during a frozen
+round land here instead of growing that round's exit bar. Items graduate
+into a named plan under `specs/plans/` with their own machine-checked
+exit bar; nothing here blocks a round's closure or commits to a
+sequence or schedule. Rough dependency order below.
 
 ## Product
 

@@ -112,7 +112,10 @@ void main() {
 
     test('tuples get typed accessors over JSArray', () {
       expect(source, contains('typedef CharacterPair = JSTuple_'));
-      expect(source, matches(RegExp(r'JSTuple_\w+\(JSArray<JSAny\?> _\)')));
+      expect(
+        source,
+        matches(RegExp(r'JSTuple_\w+\(JSArray<JSAny\?> _self\)')),
+      );
     });
 
     test('index signatures use the only blessed operators', () {
@@ -150,7 +153,8 @@ void main() {
     });
 
     test('optionality is nullable, readonly is getter-only', () {
-      expect(source, isNot(contains('undefined')));
+      // The only mention of undefined is the documented conflation note.
+      expect('undefined'.allMatches(source).length, 1);
       final selectionGetter =
           RegExp(r'external\s+Selection\s+get\s+selection;');
       expect(source, matches(selectionGetter));

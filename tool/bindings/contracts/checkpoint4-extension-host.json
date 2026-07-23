@@ -120,7 +120,7 @@
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",
-      "sha256": "6ec5a125967baa884f7c95f58f5a915bc77525a241d368520e99fa25e6d6b354"
+      "sha256": "75c057467306e0761bc09f3104067b6eb52b2a0eb5fbdf05078b34b56a279a3b"
     },
     "frameworkPackageLock": {
       "path": "pubspec.lock",

@@ -19,5 +19,5 @@ because this project's history shows that unenforced prose rots.
 
 Status rule inherited from the plan: a completion claim is valid only
 while `scripts/check_round5_exit.sh` exits 0 at HEAD. Forward work is
-tracked in [the backlog](../plans/backlog.md); API coverage is measured
+tracked in [futures](../plans/futures.md); API coverage is measured
 in the generated [parity report](../../docs/reference/parity.md).

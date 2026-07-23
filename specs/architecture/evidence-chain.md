@@ -43,7 +43,7 @@ generated operations after native success.
 
 - **Frozen exit bars.** A hardening round freezes its machine-checkable
   exit bar before work starts; discoveries go to
-  `specs/plans/backlog.md`, never into the running bar. Only the round's
+  `specs/plans/futures.md`, never into the running bar. Only the round's
   script may declare it done. Owners may amend a bar; amendments are
   recorded visibly with what was lost.
 - **Reds are commits.** Failing tests are committed before their fixes so
