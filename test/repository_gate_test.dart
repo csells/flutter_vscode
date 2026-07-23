@@ -154,6 +154,18 @@ void main() {
       reason: 'pubspec.lock must be committed, not merely untracked and '
           'unignored, so a fresh checkout satisfies --enforce-lockfile.',
     );
+
+    final committedFiles = Process.runSync(
+      'git',
+      ['ls-tree', '--name-only', 'HEAD', '--', 'pubspec.lock'],
+    );
+    expect(committedFiles.exitCode, 0);
+    expect(
+      (committedFiles.stdout as String).trim(),
+      'pubspec.lock',
+      reason: 'pubspec.lock must exist in the HEAD tree, not merely the '
+          'index, so a fresh checkout satisfies --enforce-lockfile.',
+    );
   });
 
   test('generated Host API guide registers providers synchronously', () {
