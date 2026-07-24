@@ -94,6 +94,92 @@ void main() {
     }
   });
 
+  test('the runtime host fetch helper performs a real HTTP request',
+      () async {
+    final temporary = await Directory.systemTemp.createTemp(
+      'flutter_vscode_host_fetch_probe_',
+    );
+    addTearDown(() => temporary.delete(recursive: true));
+    final auditSource = File(p.join(temporary.path, 'audit.dart'));
+    final compiledAudit = File(p.join(temporary.path, 'audit.js'));
+    final nodeProbe = File(p.join(temporary.path, 'probe.cjs'));
+    final hostPackageConfig = p.join(
+      'test',
+      'fixtures',
+      'host_extension',
+      'host',
+      '.dart_tool',
+      'package_config.json',
+    );
+
+    await auditSource.writeAsString('''
+import 'dart:js_interop';
+
+import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
+
+@JS('fetchProbe')
+external set _fetchProbe(JSFunction value);
+
+void main() {
+  _fetchProbe = ((JSString url) => toHostPromise(
+        hostFetch(url.toDart).then(
+          (response) => '\${response.status}:\${response.body}'.toJS,
+        ),
+      )).toJS;
+}
+''');
+    await nodeProbe.writeAsString('''
+const http = require('node:http');
+globalThis.self = globalThis;
+require(process.argv[2]);
+const server = http.createServer((request, response) => {
+  response.writeHead(200, {'content-type': 'text/plain'});
+  response.end('pong-body');
+});
+server.listen(0, '127.0.0.1', async () => {
+  try {
+    const port = server.address().port;
+    const result =
+      await globalThis.fetchProbe(`http://127.0.0.1:\${port}/ping`);
+    if (result !== '200:pong-body') {
+      console.error(`unexpected: \${result}`);
+      process.exitCode = 1;
+    }
+  } catch (error) {
+    console.error(error);
+    process.exitCode = 1;
+  } finally {
+    server.close();
+  }
+});
+''');
+
+    final compile = await Process.run(
+      'dart',
+      [
+        'compile',
+        'js',
+        '--packages=$hostPackageConfig',
+        auditSource.path,
+        '-o',
+        compiledAudit.path,
+      ],
+      workingDirectory: Directory.current.path,
+    );
+    expect(
+      compile.exitCode,
+      0,
+      reason: '${compile.stdout}\n${compile.stderr}',
+    );
+
+    final probe = await Process.run(
+      'node',
+      [nodeProbe.path, compiledAudit.path],
+      workingDirectory: Directory.current.path,
+    );
+    expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
+  });
+
   test('rejected webview delivery records no successful bindings', () async {
     final temporary = await Directory.systemTemp.createTemp(
       'flutter_vscode_post_message_probe_',
