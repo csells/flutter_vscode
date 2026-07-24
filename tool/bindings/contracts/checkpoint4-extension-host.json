@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "ce476ecc6b63facd15679c6e7640d250d50ccc9642f69d16ddf1edb9a6d5d6f0"
+      "sha256": "0e91108ed5708ddfb6d940367d2608151d83b39c88d37d4d2fb3eae2103e5606"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -196,7 +196,7 @@
     },
     "viewLibrary": {
       "path": "lib/view.dart",
-      "sha256": "c82b6b24544cd6fea8b5d4293ee8e046ed8fbaf08ba77f0f1e979ec4a0f100e1"
+      "sha256": "b52cb4498b6a8cf3dd086d99ee0b3a6139bf2334efb2184741256d81e5a9bec6"
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
