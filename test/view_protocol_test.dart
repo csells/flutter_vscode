@@ -2526,8 +2526,13 @@ final class _ReadyAckObservingViewTransport implements ViewTransport {
         'operation': 'view.echo',
         'arguments': null,
       });
-      await host.closed;
+      await pumpEventQueue();
+
+      // A stale-version frame is ignored fail-closed: never executed,
+      // never answered, and the session stays healthy.
+      expect(host.pendingRequestCount, 0);
       await view.close();
+      await host.closed;
     });
   });
 
