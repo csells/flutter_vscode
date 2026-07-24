@@ -172,6 +172,24 @@ is the difference between a demo and a dependency, and unlocks a real
 `upgrade` story.
 Check: two baselines in-tree; a fixture builds against each.
 
+D-8 round exit bar:
+
+- [ ] D-8a A second pinned stable VS Code baseline ships in-tree
+  beside the 1.129.1 seed: pinned inputs with verified checksums,
+  imported IR, and a same-version Semantic Override file, with no
+  orphaned IR or override files. Check: cli_multi_baseline_test
+  structural case; the importer baseline series gate.
+- [ ] D-8b `build` resolves binding inputs by enumerating the pinned
+  baselines and rejects an unknown `apiTarget` with an actionable
+  error naming every shipped target. Check: cli_multi_baseline_test.
+- [ ] D-8c A scaffolded Extension Project builds against each pinned
+  baseline — walking-slice facade, runtime, and Complete Parity Layer
+  included — selected only by its descriptor `apiTarget`. Check:
+  cli_multi_baseline_test.
+- [ ] D-8d `docs/guides/new-baseline.md` documents the onboarding
+  procedure actually used for the second baseline. Check:
+  cli_multi_baseline_test doc case.
+
 ## D-9 Nested-package analysis honesty
 
 Discovered during the view build: the root `analysis_options.yaml`'s
