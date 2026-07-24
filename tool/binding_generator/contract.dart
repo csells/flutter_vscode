@@ -169,8 +169,10 @@ String buildHostContractArtifact(Directory repositoryRoot) {
 
 /// Writes the artifact and repins its hash inside the Semantic Overrides.
 ///
-/// The overrides file is edited surgically so reviewed content and
-/// formatting stay byte-identical outside the single artifactSha256 value.
+/// Every checked-in baseline cites the same checkpoint-4 contract, so each
+/// `tool/bindings/overrides/vscode-*.json` is edited surgically: reviewed
+/// content and formatting stay byte-identical outside the single
+/// artifactSha256 value per file.
 void writeHostContractArtifact(Directory repositoryRoot) {
   final root = repositoryRoot.path;
   final artifact = buildHostContractArtifact(repositoryRoot);
@@ -178,16 +180,30 @@ void writeHostContractArtifact(Directory repositoryRoot) {
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(artifact);
 
-  final overridesFile = File('$root/tool/bindings/overrides/vscode-1.129.1.json');
-  final overridesText = overridesFile.readAsStringSync();
   final digest = sha256.convert(utf8.encode(artifact)).toString();
-  final pinPattern = RegExp('"artifactSha256": "[0-9a-f]{64}"');
-  if (pinPattern.allMatches(overridesText).length != 1) {
-    throw StateError(
-      'Expected exactly one artifactSha256 pin in the Semantic Overrides.',
+  final overridesFiles = Directory('$root/tool/bindings/overrides')
+      .listSync()
+      .whereType<File>()
+      .where(
+        (file) => RegExp(r'vscode-\d+\.\d+\.\d+\.json$')
+            .hasMatch(file.uri.pathSegments.last),
+      )
+      .toList()
+    ..sort((left, right) => left.path.compareTo(right.path));
+  if (overridesFiles.isEmpty) {
+    throw StateError('Expected at least one Semantic Override file to repin.');
+  }
+  for (final overridesFile in overridesFiles) {
+    final overridesText = overridesFile.readAsStringSync();
+    final pinPattern = RegExp('"artifactSha256": "[0-9a-f]{64}"');
+    if (pinPattern.allMatches(overridesText).length != 1) {
+      throw StateError(
+        'Expected exactly one artifactSha256 pin in the Semantic Overrides '
+        '(${overridesFile.path}).',
+      );
+    }
+    overridesFile.writeAsStringSync(
+      overridesText.replaceFirst(pinPattern, '"artifactSha256": "$digest"'),
     );
   }
-  overridesFile.writeAsStringSync(
-    overridesText.replaceFirst(pinPattern, '"artifactSha256": "$digest"'),
-  );
 }

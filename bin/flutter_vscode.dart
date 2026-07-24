@@ -1091,6 +1091,16 @@ Future<_BindingInputs> _selectBindingInputs({
       code: 'INVALID_PROJECT_API_TARGET',
     );
   }
+  final available = _pinnedApiTargets(packageRoot);
+  if (!available.contains(apiTarget)) {
+    final listed = available.isEmpty ? 'none' : available.join(', ');
+    throw _CliException(
+      'No pinned binding inputs are available for Project API Target '
+      '$apiTarget. Pinned API Targets shipped with this flutter_vscode '
+      'version: $listed.',
+      code: 'UNAVAILABLE_PROJECT_API_TARGET',
+    );
+  }
   final inventoryFile = File(
     p.join(
       packageRoot.path,
@@ -1109,18 +1119,55 @@ Future<_BindingInputs> _selectBindingInputs({
       'vscode-$apiTarget.json',
     ),
   );
-  if (!inventoryFile.existsSync() || !overridesFile.existsSync()) {
-    throw _CliException(
-      'No pinned binding inputs are available for Project API Target '
-      '$apiTarget. Choose a target shipped with this flutter_vscode version.',
-      code: 'UNAVAILABLE_PROJECT_API_TARGET',
-    );
-  }
   return _BindingInputs(
     apiTarget: apiTarget,
     inventory: await _readJson(inventoryFile),
     overrides: await _readJson(overridesFile),
   );
+}
+
+/// Enumerates the pinned VS Code baselines shipped with this package.
+///
+/// A version counts only when all three artifacts exist: the pinned-inputs
+/// directory with its `pins.json`, the imported IR, and the same-version
+/// Semantic Override file. The result is sorted numerically so error
+/// messages read oldest to newest.
+List<String> _pinnedApiTargets(Directory packageRoot) {
+  final inputsRoot = Directory(
+    p.join(packageRoot.path, 'tool', 'bindings', 'inputs', 'vscode'),
+  );
+  if (!inputsRoot.existsSync()) {
+    return const [];
+  }
+  final versionPattern = RegExp(r'^\d+\.\d+\.\d+$');
+  bool isPinned(String version) =>
+      File(p.join(inputsRoot.path, version, 'pins.json')).existsSync() &&
+      File(
+        p.join(packageRoot.path, 'tool', 'bindings', 'ir',
+            'vscode-$version.json'),
+      ).existsSync() &&
+      File(
+        p.join(packageRoot.path, 'tool', 'bindings', 'overrides',
+            'vscode-$version.json'),
+      ).existsSync();
+  final targets = [
+    for (final entity in inputsRoot.listSync())
+      if (entity is Directory &&
+          versionPattern.hasMatch(p.basename(entity.path)) &&
+          isPinned(p.basename(entity.path)))
+        p.basename(entity.path),
+  ];
+  int numeric(String version, int index) => int.parse(version.split('.')[index]);
+  targets.sort((left, right) {
+    for (var index = 0; index < 3; index += 1) {
+      final order = numeric(left, index) - numeric(right, index);
+      if (order != 0) {
+        return order;
+      }
+    }
+    return 0;
+  });
+  return targets;
 }
 
 Future<Directory> _resolvePackageRoot() async {

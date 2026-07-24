@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "ce476ecc6b63facd15679c6e7640d250d50ccc9642f69d16ddf1edb9a6d5d6f0"
+      "sha256": "5de57982bc4174c279f6069376483b5eee8c02fb57420025f9d8634b0ad8599e"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -60,7 +60,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "1dc9947cf5fd9b9466a0b6a1be11f2d9b2371ac0cd0420a89c7a9e7565d4958b"
+      "sha256": "5f311e53520d17550bf6d30a95eeba9dce8273017b4f1866ca5f82afbf5688fa"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -196,7 +196,7 @@
     },
     "viewLibrary": {
       "path": "lib/view.dart",
-      "sha256": "c82b6b24544cd6fea8b5d4293ee8e046ed8fbaf08ba77f0f1e979ec4a0f100e1"
+      "sha256": "b52cb4498b6a8cf3dd086d99ee0b3a6139bf2334efb2184741256d81e5a9bec6"
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
