@@ -34,6 +34,15 @@
   activation module object, with object-literal factories, module-rooted
   constructors, typed tuples, and a totality ledger; `build` emits it
   into every Extension Project and the real-host gate exercises it.
+- Ship the mechanical Dart-ergonomics layer over the Parity Layer
+  (`package:flutter_vscode/vscode_dart.dart`): a second generated,
+  total, judgment-free rule set — ordinary `String`/`num`/`bool` at
+  helper boundaries, `Future` from `JSPromise`, broadcast
+  `onDidXStream` accessors beside `Event` members, `lit$` factories
+  that include inherited interface members, and alias-named literal
+  wrappers — entered with `VscodeApi(rawVscode).dart`, accounted for by
+  a full totality ledger, and emitted by `build` into every Extension
+  Project beside the parity layer.
 
 ## 0.1.0
 

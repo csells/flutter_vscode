@@ -77,6 +77,33 @@ separate product for the places that need taste.
 Check: emitter unit cases per new rule; the extension's host rewritten
 on the layer with a large measured drop in interop noise.
 
+D-2 round exit bar:
+
+- [x] D-2a The mechanical layer ships (red c66d70c), generated from
+  the same pinned IR as the parity layer into
+  `lib/src/generated/vscode_dart_layer.g.dart` (exported as
+  `package:flutter_vscode/vscode_dart.dart`, regenerated via
+  `generate.dart --dart-layer .`): boundary de-JS on helper scalars,
+  `Future` from `JSPromise`, broadcast `onDidXStream` accessors gained
+  beside `Event` members (additive, not redeclared — a Stream getter
+  beside an inherited Event setter is illegal at the package language
+  level, and provider objects still take raw Events), `lit$` factories
+  flattened across the declared hierarchy (`DecorationRenderOptions`
+  gains `backgroundColor`), the alias-named literal wrapper landed in
+  the parity emitter (ledger entry 6 closed; zero baseline
+  occurrences, parity bytes unchanged), and a full totality ledger
+  (2,982 dispositions: 741 emitted, 2,229 passthrough-identical, 12
+  carried parity erasures, zero dart-layer erasures). Check: the
+  dart-layer emitter unit suite; byte-compare regeneration, ledger
+  totality, and `--fatal-infos` analysis in the dart-layer suite.
+- [x] D-2b `build` emits `host/lib/generated/vscode_dart_layer.g.dart`
+  beside the parity layer from the same pinned inputs, byte-stable
+  across identical builds and within the Host Dart import boundary
+  (red 9715d58). Check: cli_build_test.
+- [ ] D-2c The extension's host rewrites onto the layer with a large
+  measured drop in interop noise. Check: the real-host gates green on
+  the rewritten host.
+
 ## D-3 The dev loop: watch, reload, breakpoints
 
 `flutter_vscode build --watch` plus automatic Extension Development
