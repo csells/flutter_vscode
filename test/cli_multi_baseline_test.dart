@@ -219,4 +219,42 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 10)),
   );
+
+  test('D-8d the new-baseline guide documents the onboarding procedure', () {
+    final guide = File(p.join('docs', 'guides', 'new-baseline.md'));
+    expect(
+      guide.existsSync(),
+      isTrue,
+      reason: 'onboarding a pinned VS Code release must be a documented '
+          'procedure, not tribal knowledge',
+    );
+    final text = guide.readAsStringSync();
+    for (final required in [
+      // Pin the official inputs with checksums.
+      'pins.json',
+      // Import the pinned inputs into canonical IR.
+      'src/cli.cjs',
+      '--pins',
+      '--output',
+      'tool/bindings/ir/vscode-',
+      // Review the delta into a same-version Semantic Override file.
+      'tool/bindings/overrides/vscode-',
+      // Validate the whole checked-in series, then run the full gate.
+      'check:baseline-series',
+      './scripts/test_binding_importer.sh',
+      // Select the new baseline from a project.
+      'apiTarget',
+    ]) {
+      expect(
+        text,
+        contains(required),
+        reason: 'the guide must cover `$required`',
+      );
+    }
+    expect(
+      File(p.join('docs', 'guides', 'index.md')).readAsStringSync(),
+      contains('new-baseline.md'),
+      reason: 'the guide must be discoverable from the guides index',
+    );
+  });
 }
