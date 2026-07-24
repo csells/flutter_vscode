@@ -48,7 +48,7 @@
     },
     "canonicalViewProtocol": {
       "path": "lib/src/view_protocol.dart",
-      "sha256": "a295f7edf2a8e36cae69a58cca4c9cc2ec8e6f20c3f980f147e789dab1e30de2"
+      "sha256": "203deb2aa89e83509fe73bb84b1460bdafca51232a236440b4bb046a5f5f7830"
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
@@ -156,7 +156,7 @@
     },
     "generatedViewProtocol": {
       "path": "test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart",
-      "sha256": "a295f7edf2a8e36cae69a58cca4c9cc2ec8e6f20c3f980f147e789dab1e30de2"
+      "sha256": "203deb2aa89e83509fe73bb84b1460bdafca51232a236440b4bb046a5f5f7830"
     },
     "harnessPackage": {
       "path": "tool/extension_host_test/package.json",

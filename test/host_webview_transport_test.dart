@@ -35,7 +35,7 @@ void main() {
 import 'dart:js_interop';
 
 import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
-import 'package:flutter_vscode_host_fixture/host_webview_transport.dart';
+import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportDisposeProbe')
 external set _transportDisposeProbe(JSFunction value);
@@ -172,7 +172,7 @@ import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
-import 'package:flutter_vscode_host_fixture/host_webview_transport.dart';
+import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportRejectProbe')
 external set _transportRejectProbe(JSFunction value);

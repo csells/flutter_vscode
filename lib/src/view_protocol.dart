@@ -26,7 +26,10 @@ enum ViewProtocolErrorCode {
   operationFailed('operation_failed'),
 
   /// The session closed before an operation could complete.
-  sessionClosed('session_closed');
+  sessionClosed('session_closed'),
+
+  /// An in-flight request was cancelled by its initiator.
+  cancelled('cancelled');
 
   const ViewProtocolErrorCode(this.wireName);
 
@@ -244,7 +247,7 @@ final class HostViewSession {
     required ViewTransport transport,
     required String sessionId,
     required String bootstrapNonce,
-    required Iterable<ViewOperationBinding> operations,
+    Iterable<ViewOperationBinding> operations = const [],
   }) {
     _requireNonEmptyProtocolIdentifier(sessionId, 'sessionId');
     _requireNonEmptyProtocolIdentifier(bootstrapNonce, 'bootstrapNonce');
@@ -291,6 +294,8 @@ final class HostViewSession {
       Completer<ViewCloseReport>();
   final Set<String> _responseEligibleRequestIds = {};
   final Set<String> _seenRequestIds = {};
+  final Map<String, Completer<Object?>> _pendingHostCalls = {};
+  var _nextHostCallId = 0;
   var _inFlightOperationCount = 0;
   // The session cancels its owned subscription during every terminal path.
   // ignore: cancel_subscriptions
@@ -309,6 +314,9 @@ final class HostViewSession {
 
   /// Number of calls whose Host Dart operations have not completed.
   int get pendingRequestCount => _inFlightOperationCount;
+
+  /// Number of host-initiated calls waiting for a Flutter View result.
+  int get pendingHostCallCount => _pendingHostCalls.length;
 
   /// Number of protocol transport subscriptions owned by this session.
   int get subscriptionCount => _subscription == null ? 0 : 1;
@@ -359,11 +367,166 @@ final class HostViewSession {
         _observeOptionalError(_acceptReady(message));
       case 'call':
         _observeOptionalError(_acceptCall(message));
+      case 'cancel':
+        _acceptCancel(message);
+      case 'hostResult':
+        _acceptHostResult(message);
+      case 'hostError':
+        _acceptHostError(message);
       case 'rendered':
         _acceptRendered(message);
       case 'closing':
         _acceptClosing(message);
     }
+  }
+
+  bool _isActiveFrame(Map<String, Object?> message) =>
+      message['protocol'] == 'flutter-vscode.view' &&
+      message['version'] == 2 &&
+      message['session'] == _sessionId &&
+      message['nonce'] == _activeNonce;
+
+  void _acceptCancel(Map<String, Object?> message) {
+    if (!_isActiveFrame(message)) {
+      return;
+    }
+    // Per-request disposal: a cancelled view call loses response
+    // eligibility, so its late result or error is never delivered.
+    _responseEligibleRequestIds.remove(message['id']);
+  }
+
+  void _acceptHostResult(Map<String, Object?> message) {
+    if (!_isActiveFrame(message)) {
+      return;
+    }
+    _pendingHostCalls.remove(message['id'])?.complete(message['result']);
+  }
+
+  void _acceptHostError(Map<String, Object?> message) {
+    if (!_isActiveFrame(message)) {
+      return;
+    }
+    _pendingHostCalls
+        .remove(message['id'])
+        ?.completeError(_errorFromFrame(message));
+  }
+
+  /// Calls a Flutter View-bound [operation] and awaits its result.
+  Future<Result> call<Request, Result>(
+    ViewOperation<Request, Result> operation,
+    Request arguments,
+  ) =>
+      callWithHandle(operation, arguments).result;
+
+  /// Calls a Flutter View-bound [operation], returning a cancellable
+  /// handle for the in-flight request.
+  HostViewCall<Result> callWithHandle<Request, Result>(
+    ViewOperation<Request, Result> operation,
+    Request arguments,
+  ) {
+    final id = 'host-request-${++_nextHostCallId}';
+    final completer = Completer<Object?>();
+    _observeOptionalError(completer.future);
+    if (_closed || !_ready.isCompleted) {
+      completer.completeError(
+        ViewProtocolException(
+          ViewProtocolErrorCode.sessionClosed,
+          'The Host Flutter View session is not connected.',
+        ),
+      );
+      return HostViewCall._(
+        completer.future.then(operation._decodeResult),
+        () {},
+      );
+    }
+    _pendingHostCalls[id] = completer;
+    Object? encoded;
+    try {
+      encoded = operation._encodeArguments(arguments);
+      if (!_isProtocolValue(encoded)) {
+        throw _invalidMessage(
+          'Host call arguments must be a protocol-safe snapshot.',
+        );
+      }
+    } on Object catch (error, stackTrace) {
+      _pendingHostCalls.remove(id);
+      completer.completeError(error, stackTrace);
+      return HostViewCall._(
+        completer.future.then(operation._decodeResult),
+        () {},
+      );
+    }
+    unawaited(
+      _transport.send({
+        'protocol': 'flutter-vscode.view',
+        'version': 2,
+        'kind': 'hostCall',
+        'session': _sessionId,
+        'nonce': _activeNonce,
+        'id': id,
+        'operation': operation._name,
+        'arguments': encoded,
+      }).catchError((Object error, StackTrace stackTrace) {
+        _pendingHostCalls.remove(id);
+        if (!completer.isCompleted) {
+          completer.completeError(error, stackTrace);
+        }
+      }),
+    );
+    void cancel() {
+      final pending = _pendingHostCalls.remove(id);
+      if (pending == null) {
+        return;
+      }
+      pending.completeError(
+        ViewProtocolException(
+          ViewProtocolErrorCode.cancelled,
+          'The host cancelled the "${operation._name}" call.',
+        ),
+      );
+      if (!_closed) {
+        unawaited(
+          _transport.send({
+            'protocol': 'flutter-vscode.view',
+            'version': 2,
+            'kind': 'cancel',
+            'session': _sessionId,
+            'nonce': _activeNonce,
+            'id': id,
+          }).catchError((Object _) {}),
+        );
+      }
+    }
+
+    return HostViewCall._(
+      completer.future.then(operation._decodeResult),
+      cancel,
+    );
+  }
+
+  /// Pushes a one-way event [payload] to the Flutter View on [stream].
+  Future<void> emitEvent(String stream, Object? payload) async {
+    _requireNonEmptyProtocolIdentifier(stream, 'stream');
+    if (_closed || !_ready.isCompleted) {
+      throw ViewProtocolException(
+        ViewProtocolErrorCode.sessionClosed,
+        'The Host Flutter View session is not connected.',
+      );
+    }
+    if (!_isProtocolValue(payload)) {
+      throw _invalidMessage(
+        'An event payload must be a protocol-safe snapshot.',
+      );
+    }
+    await _transport.send({
+      'protocol': 'flutter-vscode.view',
+      'version': 2,
+      'kind': 'event',
+      'session': _sessionId,
+      'nonce': _activeNonce,
+      'stream': stream,
+      'payload': _protocolSnapshot(payload),
+    });
   }
 
   void _acceptRendered(Map<String, Object?> message) {
@@ -387,7 +550,7 @@ final class HostViewSession {
 
   Future<void> _acceptReady(Map<String, Object?> message) async {
     if (message['protocol'] != 'flutter-vscode.view' ||
-        message['version'] != 1 ||
+        message['version'] != 2 ||
         message['session'] != _sessionId ||
         message['nonce'] != _bootstrapNonce) {
       return;
@@ -403,7 +566,7 @@ final class HostViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'readyAck',
         'session': _sessionId,
         'nonce': _bootstrapNonce,
@@ -423,7 +586,7 @@ final class HostViewSession {
 
   Future<void> _acceptCall(Map<String, Object?> message) async {
     if (message['protocol'] != 'flutter-vscode.view' ||
-        message['version'] != 1 ||
+        message['version'] != 2 ||
         message['session'] != _sessionId ||
         message['nonce'] != _activeNonce) {
       return;
@@ -492,7 +655,7 @@ final class HostViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'result',
         'session': _sessionId,
         'nonce': _activeNonce,
@@ -516,7 +679,7 @@ final class HostViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'error',
         'session': _sessionId,
         'nonce': _activeNonce,
@@ -572,7 +735,7 @@ final class HostViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'closing',
         'session': _sessionId,
         'nonce': nonce,
@@ -613,7 +776,7 @@ final class HostViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'shutdown',
         'session': _sessionId,
         'nonce': nonce,
@@ -723,33 +886,65 @@ final class HostViewSession {
   }
 }
 
-/// The Flutter View side of one version-1 Host Dart session.
+/// One cancellable host-initiated call to a Flutter View operation.
+final class HostViewCall<Result> {
+  HostViewCall._(this.result, this._cancel);
+
+  /// Completes with the operation result, a structured error, or
+  /// [ViewProtocolErrorCode.cancelled].
+  final Future<Result> result;
+
+  final void Function() _cancel;
+
+  /// Cancels the in-flight call; a late peer response is discarded.
+  void cancel() => _cancel();
+}
+
+/// The Flutter View side of one version-2 Host Dart session.
 final class FlutterViewSession {
   FlutterViewSession._(
     this._transport,
     this._sessionId,
     this._bootstrapNonce,
+    this._operations,
   ) {
     _observeOptionalError(_connected.future);
   }
 
   /// Connects to Host Dart using a bootstrap session and nonce.
+  ///
+  /// [operations] are the typed operations this Flutter View allows the
+  /// host to call over the version-2 host-to-view direction.
   static Future<FlutterViewSession> connect({
     required ViewTransport transport,
     required String sessionId,
     required String bootstrapNonce,
+    Iterable<ViewOperationBinding> operations = const [],
   }) async {
     _requireNonEmptyProtocolIdentifier(sessionId, 'sessionId');
     _requireNonEmptyProtocolIdentifier(bootstrapNonce, 'bootstrapNonce');
+    final handlers = <String, _HostViewOperation>{};
+    for (final operation in operations) {
+      if (handlers.containsKey(operation._name)) {
+        throw ArgumentError.value(
+          operation._name,
+          'operations',
+          'Flutter View operation names must be unique; '
+              '"${operation._name}" was bound more than once.',
+        );
+      }
+      handlers[operation._name] = operation._handler;
+    }
     final session = FlutterViewSession._(
       transport,
       sessionId,
       bootstrapNonce,
+      Map.unmodifiable(handlers),
     ).._listen();
     try {
       await session._transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'ready',
         'session': sessionId,
         'nonce': bootstrapNonce,
@@ -770,9 +965,13 @@ final class FlutterViewSession {
   final ViewTransport _transport;
   final String _sessionId;
   final String _bootstrapNonce;
+  final Map<String, _HostViewOperation> _operations;
   final Completer<void> _connected = Completer<void>();
   final Completer<ViewCloseReport> _closedReport = Completer<ViewCloseReport>();
   final Map<String, Completer<Object?>> _pendingRequests = {};
+  final Set<String> _seenHostCallIds = {};
+  final Set<String> _cancelledHostCallIds = {};
+  final Map<String, StreamController<Object?>> _eventStreams = {};
   // The session cancels its owned subscription during every terminal path.
   // ignore: cancel_subscriptions
   StreamSubscription<Object?>? _subscription;
@@ -784,6 +983,9 @@ final class FlutterViewSession {
 
   /// Number of calls waiting for a Host Dart result.
   int get pendingRequestCount => _pendingRequests.length;
+
+  /// The nonce active for this session phase, once connected.
+  String? get activeNonce => _activeNonce;
 
   /// Number of protocol transport subscriptions owned by this session.
   int get subscriptionCount => _subscription == null ? 0 : 1;
@@ -872,7 +1074,7 @@ final class FlutterViewSession {
     switch (kind) {
       case 'readyAck':
         if (message['protocol'] == 'flutter-vscode.view' &&
-            message['version'] == 1 &&
+            message['version'] == 2 &&
             message['session'] == _sessionId &&
             message['nonce'] == _bootstrapNonce) {
           _activeNonce = message['activeNonce']! as String;
@@ -882,7 +1084,7 @@ final class FlutterViewSession {
         }
       case 'result':
         if (message['protocol'] == 'flutter-vscode.view' &&
-            message['version'] == 1 &&
+            message['version'] == 2 &&
             message['session'] == _sessionId &&
             message['nonce'] == _activeNonce) {
           _pendingRequests.remove(message['id'])?.complete(message['result']);
@@ -891,11 +1093,128 @@ final class FlutterViewSession {
         _pendingRequests
             .remove(message['id'])
             ?.completeError(_errorFromFrame(message));
+      case 'hostCall':
+        _observeOptionalError(_acceptHostCall(message));
+      case 'cancel':
+        if (message['version'] == 2 && message['nonce'] == _activeNonce) {
+          _cancelledHostCallIds.add(message['id']! as String);
+        }
+      case 'event':
+        if (message['version'] == 2 && message['nonce'] == _activeNonce) {
+          _eventStreams[message['stream']]?.add(message['payload']);
+        }
       case 'shutdown':
         _observeOptionalError(_closeAndReport());
       case 'closing':
         _observeOptionalError(_terminate());
     }
+  }
+
+  Future<void> _acceptHostCall(Map<String, Object?> message) async {
+    if (message['protocol'] != 'flutter-vscode.view' ||
+        message['version'] != 2 ||
+        message['nonce'] != _activeNonce) {
+      return;
+    }
+    final id = message['id']! as String;
+    if (!_seenHostCallIds.add(id)) {
+      await _sendHostError(
+        id,
+        ViewProtocolException(
+          ViewProtocolErrorCode.duplicateRequest,
+          'A host request ID may be used only once in a session.',
+        ),
+      );
+      return;
+    }
+    final operation = _operations[message['operation']];
+    if (operation == null) {
+      await _sendHostError(
+        id,
+        ViewProtocolException(
+          ViewProtocolErrorCode.operationNotAllowed,
+          'The Flutter View does not allow the '
+          '"${message['operation']}" operation.',
+        ),
+      );
+      return;
+    }
+    Object? result;
+    ViewProtocolException? operationError;
+    try {
+      result = await operation(message['arguments']);
+    } on ViewProtocolException catch (error) {
+      operationError = error;
+    } on Object catch (error) {
+      operationError = ViewProtocolException(
+        ViewProtocolErrorCode.operationFailed,
+        'Flutter View operation "${message['operation']}" failed: $error',
+      );
+    }
+    if (_closed || _cancelledHostCallIds.remove(id)) {
+      // Per-request disposal: the host cancelled, so no response may
+      // be delivered.
+      return;
+    }
+    if (operationError != null) {
+      await _sendHostError(id, operationError);
+      return;
+    }
+    if (!_isProtocolValue(result)) {
+      await _sendHostError(
+        id,
+        ViewProtocolException(
+          ViewProtocolErrorCode.operationFailed,
+          'Flutter View operation "${message['operation']}" did not '
+          'return a protocol-safe snapshot.',
+        ),
+      );
+      return;
+    }
+    try {
+      await _transport.send({
+        'protocol': 'flutter-vscode.view',
+        'version': 2,
+        'kind': 'hostResult',
+        'session': _sessionId,
+        'nonce': _activeNonce,
+        'id': id,
+        'result': result,
+      });
+    } on Object {
+      await _terminate();
+    }
+  }
+
+  Future<void> _sendHostError(
+    String id,
+    ViewProtocolException error,
+  ) async {
+    try {
+      await _transport.send({
+        'protocol': 'flutter-vscode.view',
+        'version': 2,
+        'kind': 'hostError',
+        'session': _sessionId,
+        'nonce': _activeNonce,
+        'id': id,
+        'error': {
+          'code': error.code.wireName,
+          'message': error.message,
+          'details': error.details,
+        },
+      });
+    } on Object {
+      await _terminate();
+    }
+  }
+
+  /// Host-pushed events for [stream], in delivery order.
+  Stream<Object?> events(String stream) {
+    _requireNonEmptyProtocolIdentifier(stream, 'stream');
+    return _eventStreams
+        .putIfAbsent(stream, StreamController<Object?>.broadcast)
+        .stream;
   }
 
   /// Calls one operation explicitly allowlisted by Host Dart.
@@ -922,7 +1241,7 @@ final class FlutterViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'call',
         'session': _sessionId,
         'nonce': _activeNonce,
@@ -958,7 +1277,7 @@ final class FlutterViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'rendered',
         'session': _sessionId,
         'nonce': _activeNonce,
@@ -1041,7 +1360,7 @@ final class FlutterViewSession {
     try {
       await _transport.send({
         'protocol': 'flutter-vscode.view',
-        'version': 1,
+        'version': 2,
         'kind': 'closing',
         'session': _sessionId,
         'nonce': _activeNonce ?? _bootstrapNonce,
@@ -1200,7 +1519,7 @@ Map<String, Object?> _parseFrame(Object? value) {
   if (version is! int) {
     throw _invalidMessage('The protocol version must be an integer.');
   }
-  if (version != 1) {
+  if (version != 2) {
     throw ViewProtocolException(
       ViewProtocolErrorCode.unsupportedVersion,
       'The peer selected an unsupported Flutter View protocol version.',
@@ -1255,6 +1574,44 @@ Map<String, Object?> _parseFrame(Object? value) {
         'nonce',
         'id',
         'error',
+      },
+    'hostCall' => const {
+        'protocol',
+        'version',
+        'kind',
+        'session',
+        'nonce',
+        'id',
+        'operation',
+        'arguments',
+      },
+    'hostResult' => const {
+        'protocol',
+        'version',
+        'kind',
+        'session',
+        'nonce',
+        'id',
+        'result',
+      },
+    'hostError' => const {
+        'protocol',
+        'version',
+        'kind',
+        'session',
+        'nonce',
+        'id',
+        'error',
+      },
+    'cancel' => const {'protocol', 'version', 'kind', 'session', 'nonce', 'id'},
+    'event' => const {
+        'protocol',
+        'version',
+        'kind',
+        'session',
+        'nonce',
+        'stream',
+        'payload',
       },
     'shutdown' => const {'protocol', 'version', 'kind', 'session', 'nonce'},
     'closing' => const {
