@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_vscode/src/cli/flutter_view_host_source.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -259,6 +260,75 @@ Map<String, Object?> _createExtension() {
   );
 
   test(
+    'build emits the Flutter View host module for view projects',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_view_host_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+      final create = await Process.run(
+        'dart',
+        [executable, 'create', 'my_extension'],
+        workingDirectory: workspace.path,
+      );
+      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
+      final project = Directory(p.join(workspace.path, 'my_extension'));
+
+      final hostOnlyBuild = await Process.run(
+        'dart',
+        [executable, 'build'],
+        workingDirectory: project.path,
+      );
+      expect(
+        hostOnlyBuild.exitCode,
+        0,
+        reason: '${hostOnlyBuild.stdout}\n${hostOnlyBuild.stderr}',
+      );
+      final module = File(
+        p.join(
+          project.path,
+          'host',
+          'lib',
+          'generated',
+          'flutter_view_host.g.dart',
+        ),
+      );
+      expect(
+        module.existsSync(),
+        isFalse,
+        reason: 'A host-only project must not carry the view host module',
+      );
+
+      _writeMinimalFlutterViewInto(
+        Directory(p.join(project.path, 'views', 'main_panel')),
+      );
+      final viewBuild = await Process.run(
+        'dart',
+        [executable, 'build'],
+        workingDirectory: project.path,
+      );
+      expect(
+        viewBuild.exitCode,
+        0,
+        reason: '${viewBuild.stdout}\n${viewBuild.stderr}',
+      );
+      expect(module.existsSync(), isTrue);
+      expect(
+        module.readAsStringSync(),
+        flutterViewHostSource,
+        reason: 'The emitted module must match the framework template '
+            'byte-for-byte',
+      );
+    },
+    timeout: const Timeout(Duration(minutes: 10)),
+  );
+
+  test(
     'build ignores package test directories in the boundary check',
     () async {
       final workspace = await Directory.systemTemp.createTemp(
@@ -418,4 +488,46 @@ Map<String, Object?> _createExtension() {
     },
     timeout: const Timeout(Duration(minutes: 2)),
   );
+}
+
+
+void _writeMinimalFlutterViewInto(Directory view) {
+  Directory(p.join(view.path, 'lib')).createSync(recursive: true);
+  Directory(p.join(view.path, 'web')).createSync(recursive: true);
+  File(p.join(view.path, 'pubspec.yaml')).writeAsStringSync('''
+name: main_panel
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+''');
+  File(p.join(view.path, 'lib', 'main.dart')).writeAsStringSync('''
+import 'package:flutter/widgets.dart';
+
+void main() {
+  runApp(
+    const Directionality(
+      textDirection: TextDirection.ltr,
+      child: Text('Flutter View ready'),
+    ),
+  );
+}
+''');
+  File(p.join(view.path, 'web', 'index.html')).writeAsStringSync(r'''
+<!DOCTYPE html>
+<html>
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+  <meta charset="UTF-8">
+  <title>Main Panel</title>
+</head>
+<body>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>
+''');
 }

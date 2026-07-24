@@ -1,7 +1,6 @@
 # Developer Experience Plan
 
-Status: Proposed — queued behind
-[`coverage-treemap.md`](coverage-treemap.md); items ordered by leverage
+Status: In progress — the D-1 round is open; D-2..D-10 remain proposed
 Date: 2026-07-23
 
 Captures the framework-compelling/dev-friendly direction agreed with
@@ -28,6 +27,23 @@ Treemap: `MaterialApp`'s history integration throws a cross-origin
 connects the session.
 Check: the extension and the host fixture both consume the framework
 module; the copies are gone.
+
+D-1 round exit bar:
+
+- [ ] D-1a `build` emits `host/lib/generated/flutter_view_host.g.dart`
+  (transport + `FlutterViewHost.open` + CSP HTML) for view-bearing
+  projects only, byte-equal to the framework template. Check:
+  cli_build_test.
+- [ ] D-1b The host fixture consumes the emitted module; its local
+  transport copy is deleted. Check: `./scripts/test_host_extension.sh`.
+- [ ] D-1c Coverage Treemap consumes `FlutterViewHost.open`; its
+  transport and HTML copies are deleted. Check:
+  `./scripts/test_coverage_extension.sh`.
+- [ ] D-1d `runFlutterView(app)` ships in
+  `package:flutter_vscode/view.dart` (URL strategy + runApp); the
+  extension's view uses it. Check: view analyze + the same gates.
+- [ ] D-1e The README's Flutter View walkthrough is rewritten on the
+  new APIs. Check: prose matches the shipped surface.
 
 ## D-2 Mechanical ergonomics layer over the Parity Layer
 
