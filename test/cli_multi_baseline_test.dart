@@ -148,4 +148,75 @@ void main() {
     },
     timeout: const Timeout(Duration(minutes: 2)),
   );
+
+  test(
+    'D-8c a scaffolded project builds against each pinned baseline',
+    () async {
+      final versions = _pinnedVersions();
+      expect(
+        versions.length,
+        greaterThanOrEqualTo(2),
+        reason: 'a fixture must build against plural baselines',
+      );
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+      for (final version in versions) {
+        final workspace = await Directory.systemTemp.createTemp(
+          'flutter_vscode_cli_baseline_',
+        );
+        addTearDown(() => workspace.delete(recursive: true));
+        final create = await Process.run(
+          'dart',
+          [executable, 'create', 'my_extension'],
+          workingDirectory: workspace.path,
+        );
+        expect(
+          create.exitCode,
+          0,
+          reason: '$version: ${create.stdout}\n${create.stderr}',
+        );
+        final project = Directory(p.join(workspace.path, 'my_extension'));
+        final descriptor = File(p.join(project.path, 'extension.dart'));
+        descriptor.writeAsStringSync(
+          descriptor.readAsStringSync().replaceFirst(
+                "'apiTarget': '1.129.1'",
+                "'apiTarget': '$version'",
+              ),
+        );
+
+        final build = await Process.run(
+          'dart',
+          [executable, 'build'],
+          workingDirectory: project.path,
+        );
+
+        expect(
+          build.exitCode,
+          0,
+          reason: '$version: ${build.stdout}\n${build.stderr}',
+        );
+        final manifest = _readJson(p.join(project.path, 'package.json'));
+        expect(
+          manifest['engines'],
+          <String, Object?>{'vscode': version},
+          reason: '$version must select its own engine floor',
+        );
+        for (final artifact in [
+          p.join('host', 'lib', 'generated', 'vscode_facade.g.dart'),
+          p.join('host', 'lib', 'generated', 'vscode_parity_layer.g.dart'),
+          p.join('out', 'extension.dart.js'),
+        ]) {
+          expect(
+            File(p.join(project.path, artifact)).existsSync(),
+            isTrue,
+            reason: '$version must emit $artifact',
+          );
+        }
+      }
+    },
+    timeout: const Timeout(Duration(minutes: 10)),
+  );
 }
