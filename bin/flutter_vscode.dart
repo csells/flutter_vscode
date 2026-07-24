@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:isolate';
@@ -21,6 +22,8 @@ Future<void> main(List<String> arguments) async {
         await _createProject(name);
       case ['build']:
         await _buildProject(Directory.current);
+      case ['build', '--watch']:
+        await _buildWatch(Directory.current);
       case ['package']:
         await _packageProject(Directory.current);
       case ['doctor']:
@@ -30,7 +33,7 @@ Future<void> main(List<String> arguments) async {
       default:
         throw const _CliException(
           'Usage: flutter_vscode '
-          '<create <project_name>|build|package|doctor|test>',
+          '<create <project_name>|build [--watch]|package|doctor|test>',
           code: 'INVALID_USAGE',
           exitCode: 64,
         );
@@ -456,6 +459,80 @@ String _relativeProjectPath(Directory root, File file) =>
 
 File _projectFile(Directory root, String relativePath) =>
     File(p.joinAll([root.path, ...p.posix.split(relativePath)]));
+
+Future<void> _buildWatch(Directory root) async {
+  Future<void> buildOnce() async {
+    try {
+      await _buildProject(root);
+    } on _CliException catch (error) {
+      stderr.writeln('${error.code}: ${error.message}');
+    } on HostDartSourceException catch (error) {
+      final source = p
+          .relative(error.path, from: root.path)
+          .split(p.separator)
+          .join('/');
+      stderr.writeln(
+        'INVALID_HOST_DART: $source:${error.line}:${error.column}: '
+        '${error.message}',
+      );
+    } on Object catch (error) {
+      stderr.writeln('WATCH_BUILD_FAILED: $error');
+    }
+  }
+
+  await buildOnce();
+  stdout.writeln('Watching for changes; press Ctrl+C to stop.');
+
+  bool relevant(FileSystemEvent event) {
+    final path = event.path;
+    final separator = p.separator;
+    if (path.contains('$separator.dart_tool') ||
+        path.contains('${separator}generated$separator') ||
+        path.endsWith('${separator}generated') ||
+        path.contains('${separator}out$separator') ||
+        path.contains('${separator}build$separator')) {
+      return false;
+    }
+    return true;
+  }
+
+  final events = StreamController<FileSystemEvent>();
+  void watchTree(String path) {
+    final directory = Directory(path);
+    if (directory.existsSync()) {
+      directory.watch(recursive: true).listen(events.add);
+    }
+  }
+
+  watchTree(p.join(root.path, 'host', 'lib'));
+  watchTree(p.join(root.path, 'shared', 'lib'));
+  for (final view in _discoverViews(root)) {
+    watchTree(p.join(view.root.path, 'lib'));
+  }
+  root.watch().where((event) {
+    final name = p.basename(event.path);
+    return name == 'extension.dart' || name == 'extension.json';
+  }).listen(events.add);
+
+  var pending = false;
+  var running = false;
+  Future<void> schedule() async {
+    pending = true;
+    if (running) {
+      return;
+    }
+    running = true;
+    while (pending) {
+      pending = false;
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+      await buildOnce();
+    }
+    running = false;
+  }
+
+  events.stream.where(relevant).listen((_) => unawaited(schedule()));
+  await Completer<void>().future;
+}
 
 Future<void> _doctorProject(Directory root) async {
   final checks = <(String, bool, String?)>[];
