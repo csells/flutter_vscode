@@ -53,4 +53,57 @@ end_of_record
       );
     });
   });
+
+  group('theme report codec', () {
+    test('round-trips a report with and without a background', () {
+      final full = decodeThemeReport(
+        encodeThemeReport(
+          const ThemeReport(kind: 'dark', editorBackground: 0xFF1E1E1E),
+        ),
+      );
+      expect(full.kind, 'dark');
+      expect(full.editorBackground, 0xFF1E1E1E);
+
+      final bare = decodeThemeReport(
+        encodeThemeReport(const ThemeReport(kind: 'highContrast')),
+      );
+      expect(bare.kind, 'highContrast');
+      expect(bare.editorBackground, isNull);
+    });
+
+    test('decode rejects malformed payloads', () {
+      expect(() => decodeThemeReport(null), throwsFormatException);
+      expect(
+        () => decodeThemeReport(<Object?, Object?>{'kind': 'dark'}),
+        throwsFormatException,
+      );
+      expect(
+        () => decodeThemeReport(<Object?, Object?>{
+          'kind': 42,
+          'editorBackground': null,
+        }),
+        throwsFormatException,
+      );
+      expect(
+        () => decodeThemeReport(<Object?, Object?>{
+          'kind': 'dark',
+          'editorBackground': 'red',
+        }),
+        throwsFormatException,
+      );
+      expect(
+        () => decodeThemeReport(<Object?, Object?>{
+          'kind': 'dark',
+          'editorBackground': null,
+          'extra': true,
+        }),
+        throwsFormatException,
+      );
+    });
+
+    test('the ack codec accepts only the empty payload', () {
+      expect(encodeThemeReportAck(null), isNull);
+      expect(() => decodeThemeReportAck('extra'), throwsFormatException);
+    });
+  });
 }

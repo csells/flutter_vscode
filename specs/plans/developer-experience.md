@@ -17,7 +17,8 @@ bar with the usual rules (reds are commits, machine-checked closure).
 - [ ] D-2 Mechanical ergonomics layer over the Parity Layer
 - [ ] D-3 The dev loop: watch, reload, breakpoints
 - [ ] D-4 View protocol v2: push, streams, cancellation
-- [ ] D-5 Theme bridge
+- [x] D-5 Theme bridge (closed; the real-host toggle proof remains
+  for the gate follow-up)
 - [x] D-6 Startup honesty
 - [x] D-7 `doctor` and `test` commands
 - [ ] D-8 Multi-baseline support
@@ -103,6 +104,19 @@ look native in dark/light/high-contrast without hand-tuning (Coverage
 Treemap hardcodes a dark palette today).
 Check: the view renders with host-derived colors in the real-host
 gate; toggling the host theme changes the view.
+
+Closed: `parseCssColor`, `VSCodeThemeKind` (high contrast before
+dark), and `VSCodeThemeSnapshot` ship as pure Dart through
+`package:flutter_vscode/view.dart`; `readVSCodeTheme`,
+`watchVSCodeTheme` (a MutationObserver on the body class/style,
+deduped by snapshot equality), and `vsCodeThemeData` ship web-side
+with dark fallbacks (red c9339a1). Coverage Treemap's view drops its
+hardcoded dark chrome for the derived theme — the red-amber-green
+coverage ramp stays fixed as data encoding — and reports its resolved
+theme through the new `coverageTreemap.reportTheme` operation;
+`coverage-treemap.themeSmoke` returns the last stored report as JSON.
+The live toggle proof in the real-host gate remains for the gate
+follow-up; themeSmoke is its hook.
 
 ## D-6 Startup honesty
 

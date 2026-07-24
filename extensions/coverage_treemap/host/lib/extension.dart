@@ -18,6 +18,14 @@ const _snapshotOperation = ViewOperation<void, CoverageSnapshot>(
   decodeResult: decodeCoverageSnapshot,
 );
 
+const _themeReportOperation = ViewOperation<ThemeReport, void>(
+  name: themeReportOperationName,
+  encodeArguments: encodeThemeReport,
+  decodeArguments: decodeThemeReport,
+  encodeResult: encodeThemeReportAck,
+  decodeResult: decodeThemeReportAck,
+);
+
 const _lcovRelativePath = 'coverage/lcov.info';
 
 @JSExport()
@@ -60,6 +68,7 @@ final class _CoverageController {
   var _highlightsEnabled = true;
   FlutterViewHost? _viewHost;
   parity.Terminal? _terminal;
+  ThemeReport? _lastThemeReport;
   final Completer<String> _firstSnapshotServed = Completer<String>();
 
   Future<JSAny?> start() async {
@@ -101,6 +110,12 @@ final class _CoverageController {
         'viewConnected': true,
         'lcovPath': lcovPath,
       }).toJS;
+    });
+    _registerCommand('coverage-treemap.themeSmoke', () async {
+      final report = _lastThemeReport;
+      return jsonEncode(
+        report == null ? null : encodeThemeReport(report),
+      ).toJS;
     });
     _registerCommand('coverage-treemap.smoke', () async {
       await _refresh();
@@ -258,6 +273,9 @@ final class _CoverageController {
             _firstSnapshotServed.complete(snapshot.lcovPath);
           }
           return snapshot;
+        }),
+        _themeReportOperation.bind((report) {
+          _lastThemeReport = report;
         }),
       ],
     );

@@ -36,6 +36,10 @@
       {
         "command": "coverage-treemap.viewSmoke",
         "title": "Coverage: View Smoke (diagnostics)"
+      },
+      {
+        "command": "coverage-treemap.themeSmoke",
+        "title": "Coverage: Theme Smoke (diagnostics)"
       }
     ]
   }

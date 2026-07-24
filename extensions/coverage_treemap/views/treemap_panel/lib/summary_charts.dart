@@ -7,13 +7,10 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:treemap_panel/treemap.dart';
 
+// Covered/uncovered are the green and red ends of the coverage ramp:
+// data encoding, not chrome, so they stay fixed across VS Code themes.
 const _coveredColor = Color(0xFF35793D);
 const _uncoveredColor = Color(0xFFB54533);
-const _stripColor = Color(0xFF252526);
-const _tooltipColor = Color(0xFF3C3C3C);
-const _textColor = Color(0xFFF2F2F2);
-const _mutedColor = Color(0xFF9D9D9D);
-const _captionColor = Color(0xFF6E6E6E);
 
 /// The bar chart hides below this strip width so narrow panels keep a
 /// clean donut-plus-legend layout.
@@ -50,13 +47,14 @@ class CoverageSummaryStrip extends StatelessWidget {
     if (node.linesFound <= 0) {
       return const SizedBox.shrink();
     }
+    final theme = Theme.of(context);
     return Container(
       height: 136,
-      decoration: const BoxDecoration(
-        color: _stripColor,
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainer,
         border: Border(
-          top: BorderSide(color: treemapSurfaceColor),
-          bottom: BorderSide(color: treemapSurfaceColor),
+          top: BorderSide(color: theme.dividerColor),
+          bottom: BorderSide(color: theme.dividerColor),
         ),
       ),
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -109,6 +107,7 @@ class _CoverageDonut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final hit = node.linesHit;
     final missed = node.linesFound - node.linesHit;
     return Stack(
@@ -145,15 +144,15 @@ class _CoverageDonut extends StatelessWidget {
           children: [
             Text(
               coveragePercent(node.coverage),
-              style: const TextStyle(
-                color: _textColor,
+              style: TextStyle(
+                color: scheme.onSurface,
                 fontSize: 15,
                 fontWeight: FontWeight.w600,
               ),
             ),
-            const Text(
+            Text(
               'covered',
-              style: TextStyle(color: _mutedColor, fontSize: 9),
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 9),
             ),
           ],
         ),
@@ -189,7 +188,10 @@ class _CoverageLegend extends StatelessWidget {
           '${node.linesFound} lines total',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
-          style: const TextStyle(color: _mutedColor, fontSize: 10),
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurfaceVariant,
+            fontSize: 10,
+          ),
         ),
       ],
     );
@@ -209,6 +211,7 @@ class _LegendEntry extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -225,12 +228,15 @@ class _LegendEntry extends StatelessWidget {
           child: Text.rich(
             TextSpan(
               text: '$label ',
-              style: const TextStyle(color: _mutedColor, fontSize: 11),
+              style: TextStyle(
+                color: scheme.onSurfaceVariant,
+                fontSize: 11,
+              ),
               children: [
                 TextSpan(
                   text: '$value',
-                  style: const TextStyle(
-                    color: _textColor,
+                  style: TextStyle(
+                    color: scheme.onSurface,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
@@ -253,28 +259,29 @@ class _TopChildrenBars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
+        Text(
           'LARGEST ITEMS - TAP TO OPEN',
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
           style: TextStyle(
-            color: _captionColor,
+            color: scheme.onSurfaceVariant,
             fontSize: 9,
             letterSpacing: 0.6,
           ),
         ),
         const SizedBox(height: 4),
         Expanded(
-          child: BarChart(_barData(), duration: _chartAnimationDuration),
+          child: BarChart(_barData(scheme), duration: _chartAnimationDuration),
         ),
       ],
     );
   }
 
-  BarChartData _barData() {
+  BarChartData _barData(ColorScheme scheme) {
     return BarChartData(
       // One clockwise quarter turn renders the bars horizontally; the
       // (pre-rotation) bottom titles become the left-hand name labels.
@@ -294,7 +301,8 @@ class _TopChildrenBars extends StatelessWidget {
             interval: 1,
             minIncluded: false,
             maxIncluded: false,
-            getTitlesWidget: _buildBarTitle,
+            getTitlesWidget: (value, meta) =>
+                _buildBarTitle(value, meta, scheme.onSurfaceVariant),
           ),
         ),
       ),
@@ -313,7 +321,7 @@ class _TopChildrenBars extends StatelessWidget {
             ? MouseCursor.defer
             : SystemMouseCursors.click,
         touchTooltipData: BarTouchTooltipData(
-          getTooltipColor: (group) => _tooltipColor,
+          getTooltipColor: (group) => scheme.inverseSurface,
           fitInsideHorizontally: true,
           fitInsideVertically: true,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
@@ -322,7 +330,7 @@ class _TopChildrenBars extends StatelessWidget {
               '${_displayName(child)}\n'
               '${coveragePercent(child.coverage, decimals: 1)} covered '
               '(${child.linesHit}/${child.linesFound} lines)',
-              const TextStyle(color: _textColor, fontSize: 11),
+              TextStyle(color: scheme.onInverseSurface, fontSize: 11),
             );
           },
         ),
@@ -356,7 +364,7 @@ class _TopChildrenBars extends StatelessWidget {
     );
   }
 
-  Widget _buildBarTitle(double value, TitleMeta meta) {
+  Widget _buildBarTitle(double value, TitleMeta meta, Color labelColor) {
     final index = value.toInt();
     if (value != index || index < 0 || index >= nodes.length) {
       return const SizedBox.shrink();
@@ -374,7 +382,7 @@ class _TopChildrenBars extends StatelessWidget {
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.right,
-            style: const TextStyle(color: _mutedColor, fontSize: 10),
+            style: TextStyle(color: labelColor, fontSize: 10),
           ),
         ),
       ),

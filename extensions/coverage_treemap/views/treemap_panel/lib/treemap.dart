@@ -6,12 +6,16 @@ import 'dart:math' as math;
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:flutter/material.dart';
 
-/// The treemap surface color, also used as the gap color between tiles.
-const treemapSurfaceColor = Color(0xFF1E1E1E);
-
+// The red-amber-green coverage ramp is data encoding, not chrome: it
+// stays fixed across VS Code themes so a tile's color always means the
+// same coverage.
 const _lowColor = Color(0xFFB54533);
 const _midColor = Color(0xFFBD8628);
 const _highColor = Color(0xFF35793D);
+
+/// Tile label color. Labels sit on the fixed coverage ramp rather than
+/// on theme chrome, so they keep a fixed light color that reads on all
+/// three ramp stops in every VS Code theme.
 const _labelColor = Color(0xFFF2F2F2);
 
 /// One coverage node laid out as a rectangle by [squarify].
@@ -171,7 +175,9 @@ class TreemapView extends StatelessWidget {
       builder: (context, constraints) {
         final tiles = squarify(nodes, constraints.biggest);
         return ColoredBox(
-          color: treemapSurfaceColor,
+          // The editor background doubles as the gap color between
+          // tiles, so the treemap sits directly on the host theme.
+          color: Theme.of(context).scaffoldBackgroundColor,
           child: Stack(
             children: [
               for (final tile in tiles)
@@ -212,7 +218,9 @@ class _TreemapTileView extends StatelessWidget {
           child: DecoratedBox(
             decoration: BoxDecoration(
               color: coverageColor(node.coverage),
-              border: Border.all(color: treemapSurfaceColor),
+              border: Border.all(
+                color: Theme.of(context).scaffoldBackgroundColor,
+              ),
             ),
             child: showLabel
                 ? Padding(
