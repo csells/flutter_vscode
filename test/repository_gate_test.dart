@@ -111,6 +111,35 @@ void main() {
     }
   });
 
+  test('the startup measurement is documented from gate output', () {
+    final doc = File('docs/reference/startup.md').readAsStringSync();
+    expect(
+      doc,
+      contains('webview load to first rendered frame'),
+      reason: 'the doc must define what the measurement covers',
+    );
+    expect(
+      doc,
+      contains('viewColdStartMs'),
+      reason: 'the doc must name the gate field it cites',
+    );
+    expect(
+      doc,
+      contains('Recorded'),
+      reason: 'the doc must carry a recording-time value from a gate run',
+    );
+    for (final harness in [
+      'test/fixtures/host_extension/test/run.cjs',
+      'test/fixtures/packaged_test_driver/test/run.cjs',
+    ]) {
+      expect(
+        File(harness).readAsStringSync(),
+        contains('viewColdStartMs'),
+        reason: '$harness must assert and print the measurement',
+      );
+    }
+  });
+
   test('packaged E2E activates the pub-filtered framework contents', () {
     final packagedGate =
         File('scripts/test_packaged_extension.sh').readAsStringSync();

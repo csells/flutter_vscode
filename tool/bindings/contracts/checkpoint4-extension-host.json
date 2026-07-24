@@ -24,7 +24,7 @@
     },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "2210011aa511efcdb33dd351c06ae3fc8b1a50a5b5bb95f401a8460a58252416"
+      "sha256": "6e42909d22b9f526c0119edfd3de9861e492cfbb69d32426a9922e9b10cae685"
     },
     "bindingWriter": {
       "path": "tool/binding_generator/writer.dart",
@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "3ed499aa57787fcc3d10c4abdad84b22a9ed4afb3b9100dcb8a425f072f0a15a"
+      "sha256": "ea16286020b4f344b722fc18b2ef4bc39ad773666c83d9a120a533de32e27086"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -72,7 +72,7 @@
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "b71d96cc81c8de79e4bfc7f77bf84f78d6efdad482b46972a4235edfdd18fee5"
+      "sha256": "c1a9f1a6cd8f3c7e5979f8829ce2422459286a0ed6c045ee5069c3384c46c251"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -152,7 +152,7 @@
     },
     "generatedRuntime": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
-      "sha256": "baf4b7b9ba58773b58efa80a06f8efb6ffff2f6799c8d1cc00beed86c6173411"
+      "sha256": "1b6c32d185d7db28edd4287763263d64c15f15826eb6f39e3966a224712e5f77"
     },
     "generatedViewProtocol": {
       "path": "test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart",

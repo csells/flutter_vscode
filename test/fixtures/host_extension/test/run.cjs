@@ -220,6 +220,16 @@ async function run() {
   assert.equal(viewReport.hostPendingSends, 0);
   assert.equal(viewReport.hostReceivingSubscriptions, 0);
   assert.equal(viewReport.hostObservedRenderCount, 1);
+  assert.ok(
+    Number.isFinite(viewReport.viewColdStartMs) &&
+      viewReport.viewColdStartMs > 0 &&
+      viewReport.viewColdStartMs < 60000,
+    `viewColdStartMs out of range: ${viewReport.viewColdStartMs}`,
+  );
+  console.log(
+    `[host-test] Flutter View cold start (webview load to first ` +
+      `rendered frame): ${viewReport.viewColdStartMs}ms`,
+  );
   assert.equal(
     viewReport.hostObservedRenderedContent,
     'hello from Host Dart',

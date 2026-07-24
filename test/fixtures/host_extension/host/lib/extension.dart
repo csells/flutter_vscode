@@ -403,6 +403,21 @@ class _VSCodeHostExtension {
           );
           context.addSubscription(disposeParityProviderRegistration);
 
+          final hostFetchProbe = ((JSAny? portValue) {
+            final port = (portValue! as JSNumber).toDartInt;
+            return toHostPromise(
+              hostFetch('http://127.0.0.1:$port/ping').then(
+                (response) => '${response.status}:${response.body}'.toJS,
+              ),
+            );
+          }).toJS;
+          final hostFetchProbeRegistration =
+              vscode.commandApi.registerCommandCallback(
+            'flutter-vscode.host-test.hostFetchProbe'.toJS,
+            hostFetchProbe,
+          );
+          context.addSubscription(hostFetchProbeRegistration);
+
           final failAsync = (() {
             return toHostPromise(
               Future<JSAny?>.error(
@@ -548,6 +563,7 @@ class _VSCodeHostExtension {
         ? 'hello from Host Dart'
         : 'Protocol probe completed';
     var hostObservedRenderCount = 0;
+    int? viewColdStartMs;
     String? hostObservedRenderedContent;
     final viewRoot = _joinUri(context.extensionRootUri, const [
       'out',
@@ -655,6 +671,8 @@ class _VSCodeHostExtension {
               );
             }
             hostObservedRenderCount += 1;
+            viewColdStartMs ??=
+                DateTime.now().difference(viewLoadStarted).inMilliseconds;
             hostObservedRenderedContent = observation.content;
             return true;
           }),
@@ -671,6 +689,7 @@ class _VSCodeHostExtension {
             );
           }).toJS,
         );
+      final viewLoadStarted = DateTime.now();
       panel.webviewSurface.htmlText = viewHtml;
 
       await _awaitViewMilestone(session.ready, transport);
@@ -733,6 +752,7 @@ class _VSCodeHostExtension {
         'hostPendingSends': resources.pendingSendCount,
         'hostReceivingSubscriptions': hostReceivingSubscriptions,
         'hostObservedRenderCount': hostObservedRenderCount,
+        'viewColdStartMs': viewColdStartMs,
         'hostObservedRenderedContent': hostObservedRenderedContent,
       };
       if (fixtureMode == protocolProbeMode) {

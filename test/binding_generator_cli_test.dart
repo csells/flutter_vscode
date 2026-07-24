@@ -112,7 +112,7 @@ void main() {
       'package_config.json',
     );
 
-    await auditSource.writeAsString('''
+    await auditSource.writeAsString(r'''
 import 'dart:js_interop';
 
 import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
@@ -123,12 +123,12 @@ external set _fetchProbe(JSFunction value);
 void main() {
   _fetchProbe = ((JSString url) => toHostPromise(
         hostFetch(url.toDart).then(
-          (response) => '\${response.status}:\${response.body}'.toJS,
+          (response) => '${response.status}:${response.body}'.toJS,
         ),
       )).toJS;
 }
 ''');
-    await nodeProbe.writeAsString('''
+    await nodeProbe.writeAsString(r'''
 const http = require('node:http');
 globalThis.self = globalThis;
 require(process.argv[2]);
@@ -140,9 +140,9 @@ server.listen(0, '127.0.0.1', async () => {
   try {
     const port = server.address().port;
     const result =
-      await globalThis.fetchProbe(`http://127.0.0.1:\${port}/ping`);
+      await globalThis.fetchProbe(`http://127.0.0.1:${port}/ping`);
     if (result !== '200:pong-body') {
-      console.error(`unexpected: \${result}`);
+      console.error(`unexpected: ${result}`);
       process.exitCode = 1;
     }
   } catch (error) {

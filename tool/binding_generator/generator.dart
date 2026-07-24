@@ -4111,6 +4111,7 @@ String _emitWalkingSliceRuntime(String extensionKey) {
 
 import 'dart:async';
 import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
 
 @JS('__flutterVscode.stackMappers.$extensionKey')
 external JSString _mapHostStack(JSString stack);
@@ -4169,6 +4170,54 @@ JSFunction observeHostCallback(
       callback,
       bindingIds.map((bindingId) => bindingId.toJS).toList().toJS,
     );
+
+/// One HTTP response snapshot from the Extension Host's global `fetch`.
+final class HostFetchResponse {
+  /// Creates a response snapshot.
+  const HostFetchResponse({required this.status, required this.body});
+
+  /// HTTP status code.
+  final int status;
+
+  /// Response body decoded as text.
+  final String body;
+
+  /// Whether [status] is in the 2xx range.
+  bool get ok => status >= 200 && status < 300;
+}
+
+@JS('fetch')
+external JSPromise<JSObject> _hostGlobalFetch(JSString url, JSObject init);
+
+/// Performs an HTTP request with the Extension Host's global `fetch`.
+///
+/// The supported host network path: Node's WHATWG `fetch`, bound by the
+/// generated runtime and returned as a protocol-safe snapshot.
+Future<HostFetchResponse> hostFetch(
+  String url, {
+  String method = 'GET',
+  Map<String, String> headers = const {},
+  String? body,
+}) async {
+  final init = JSObject()..setProperty('method'.toJS, method.toJS);
+  if (headers.isNotEmpty) {
+    final headerBag = JSObject();
+    for (final entry in headers.entries) {
+      headerBag.setProperty(entry.key.toJS, entry.value.toJS);
+    }
+    init.setProperty('headers'.toJS, headerBag);
+  }
+  if (body != null) {
+    init.setProperty('body'.toJS, body.toJS);
+  }
+  final response = await _hostGlobalFetch(url.toJS, init).toDart;
+  final status =
+      (response.getProperty('status'.toJS)! as JSNumber).toDartInt;
+  final text =
+      await (response.callMethod('text'.toJS)! as JSPromise<JSString>)
+          .toDart;
+  return HostFetchResponse(status: status, body: text.toDart);
+}
 
 /// Converts [future] to a host promise while retaining Dart stack frames.
 JSPromise<T> toHostPromise<T extends JSAny?>(Future<T> future) {

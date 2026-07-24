@@ -98,6 +98,38 @@ async function run() {
     assert.equal(viewReport.hostSubscriptions, 0);
     assert.equal(viewReport.hostPendingSends, 0);
     assert.equal(viewReport.hostObservedRenderCount, 1);
+    assert.ok(
+      Number.isFinite(viewReport.viewColdStartMs) &&
+        viewReport.viewColdStartMs > 0 &&
+        viewReport.viewColdStartMs < 60000,
+      `viewColdStartMs out of range: ${viewReport.viewColdStartMs}`,
+    );
+    console.log(
+      `[host-test] Flutter View cold start (webview load to first ` +
+        `rendered frame): ${viewReport.viewColdStartMs}ms`,
+    );
+
+    console.log('[packaged-host-test] checking the host network story');
+    const registered = await vscode.commands.getCommands(true);
+    if (registered.includes('flutter-vscode.host-test.hostFetchProbe')) {
+      const http = require('node:http');
+      const server = http.createServer((request, response) => {
+        response.writeHead(200, {'content-type': 'text/plain'});
+        response.end('pong-from-driver');
+      });
+      await new Promise((resolve) =>
+        server.listen(0, '127.0.0.1', resolve),
+      );
+      try {
+        const fetchReport = await vscode.commands.executeCommand(
+          'flutter-vscode.host-test.hostFetchProbe',
+          server.address().port,
+        );
+        assert.equal(fetchReport, '200:pong-from-driver');
+      } finally {
+        server.close();
+      }
+    }
 
     console.log(
       '[packaged-host-test] checking real-webview disallowed operation',
