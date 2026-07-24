@@ -12,6 +12,15 @@ dart pub global activate --source path /path/to/flutter_vscode
 Once this release is available on pub.dev, use
 `dart pub global activate flutter_vscode` instead.
 
+Verify the toolchain any time with:
+
+```sh
+flutter_vscode doctor
+```
+
+Inside an Extension Project it also validates the layout, the project
+descriptor, and the pinned API target, with actionable errors.
+
 ## 2. Create an Extension Project
 
 ```sh
@@ -48,7 +57,17 @@ This deterministically regenerates the manifest, bindings, bootstrap, host
 JavaScript, source map, and `.vscode/launch.json`. Open the project in VS Code
 and press F5 to launch the generated debug configuration.
 
-## 5. Package
+## 5. Test
+
+```sh
+flutter_vscode test
+```
+
+Runs every author suite the project has — `shared/test` and
+`host/test` with `dart test`, and each `views/<name>/test` with
+`flutter test` — and fails if any suite fails.
+
+## 6. Package
 
 ```sh
 flutter_vscode package

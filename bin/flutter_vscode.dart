@@ -23,9 +23,14 @@ Future<void> main(List<String> arguments) async {
         await _buildProject(Directory.current);
       case ['package']:
         await _packageProject(Directory.current);
+      case ['doctor']:
+        await _doctorProject(Directory.current);
+      case ['test']:
+        await _testProject(Directory.current);
       default:
         throw const _CliException(
-          'Usage: flutter_vscode <create <project_name>|build|package>',
+          'Usage: flutter_vscode '
+          '<create <project_name>|build|package|doctor|test>',
           code: 'INVALID_USAGE',
           exitCode: 64,
         );
@@ -451,6 +456,180 @@ String _relativeProjectPath(Directory root, File file) =>
 
 File _projectFile(Directory root, String relativePath) =>
     File(p.joinAll([root.path, ...p.posix.split(relativePath)]));
+
+Future<void> _doctorProject(Directory root) async {
+  final checks = <(String, bool, String?)>[];
+
+  Future<void> checkTool(String label, String executable) async {
+    try {
+      final result = await Process.run(executable, const ['--version']);
+      final banner =
+          '${result.stdout}${result.stderr}'.trim().split('\n').first.trim();
+      checks.add((label, result.exitCode == 0, banner));
+    } on ProcessException {
+      checks.add((label, false, 'not found on PATH'));
+    }
+  }
+
+  await checkTool('Dart SDK', 'dart');
+  await checkTool('Flutter SDK', 'flutter');
+
+  final dartDescriptor = File(p.join(root.path, 'extension.dart'));
+  final jsonDescriptor = File(p.join(root.path, 'extension.json'));
+  final insideProject =
+      dartDescriptor.existsSync() || jsonDescriptor.existsSync();
+  if (insideProject) {
+    const requiredPaths = [
+      'host',
+      'host/lib',
+      'host/lib/extension.dart',
+      'shared',
+      'shared/lib',
+      'views',
+    ];
+    final missing = [
+      for (final relative in requiredPaths)
+        if (FileSystemEntity.typeSync(p.join(root.path, relative)) ==
+            FileSystemEntityType.notFound)
+          relative,
+    ];
+    if (missing.isNotEmpty) {
+      checks.add(
+        (
+          'Project layout',
+          false,
+          'missing ${missing.join(', ')} — run flutter_vscode create for a '
+              'reference layout',
+        ),
+      );
+    } else {
+      try {
+        _validateProjectLayout(root);
+        checks.add(('Project layout', true, null));
+      } on _CliException catch (error) {
+        checks.add(('Project layout', false, error.message));
+      }
+    }
+    try {
+      final project = await readProjectDescriptor(
+        dartDescriptor.existsSync() ? dartDescriptor : jsonDescriptor,
+      );
+      final target = project['apiTarget'];
+      if (target is String && target.isNotEmpty) {
+        final packageRoot = await _resolvePackageRoot();
+        final pins = File(
+          p.join(
+            packageRoot.path,
+            'tool',
+            'bindings',
+            'inputs',
+            'vscode',
+            target,
+            'pins.json',
+          ),
+        );
+        checks.add(
+          (
+            'API target $target',
+            pins.existsSync(),
+            pins.existsSync()
+                ? null
+                : 'this flutter_vscode has no pinned inputs for $target',
+          ),
+        );
+      } else {
+        checks.add(
+          (
+            'API target',
+            false,
+            'apiTarget is missing from the project descriptor',
+          ),
+        );
+      }
+    } on Object catch (error) {
+      checks.add(('Project descriptor', false, '$error'));
+    }
+  }
+
+  var failures = 0;
+  for (final (label, ok, detail) in checks) {
+    final suffix = detail == null || detail.isEmpty ? '' : ': $detail';
+    stdout.writeln('${ok ? '[ok]' : '[!!]'} $label$suffix');
+    if (!ok) {
+      failures += 1;
+    }
+  }
+  if (!insideProject) {
+    stdout.writeln(
+      'This directory is not an Extension Project (no extension.dart); '
+      'toolchain checks only.',
+    );
+  }
+  if (failures == 0) {
+    stdout.writeln('No issues found.');
+  } else {
+    stdout.writeln('$failures issue(s) found.');
+    exitCode = 1;
+  }
+}
+
+Future<void> _testProject(Directory root) async {
+  _validateProjectLayout(root);
+  final suites = <(String, Directory, String)>[];
+  final shared = Directory(p.join(root.path, 'shared'));
+  if (Directory(p.join(shared.path, 'test')).existsSync()) {
+    suites.add(('shared', shared, 'dart'));
+  }
+  final host = Directory(p.join(root.path, 'host'));
+  if (Directory(p.join(host.path, 'test')).existsSync()) {
+    suites.add(('host', host, 'dart'));
+  }
+  for (final view in _discoverViews(root)) {
+    if (Directory(p.join(view.root.path, 'test')).existsSync()) {
+      suites.add(('views/${view.name}', view.root, 'flutter'));
+    }
+  }
+  if (suites.isEmpty) {
+    stdout.writeln(
+      'No test suites found. Add tests under shared/test, host/test, or '
+      'views/<name>/test.',
+    );
+    return;
+  }
+  var failures = 0;
+  for (final (label, directory, tool) in suites) {
+    stdout.writeln('--- $label');
+    final resolve = await Process.run(
+      tool,
+      const ['pub', 'get'],
+      workingDirectory: directory.path,
+    );
+    if (resolve.exitCode != 0) {
+      stdout
+        ..write(resolve.stdout)
+        ..write(resolve.stderr);
+      failures += 1;
+      continue;
+    }
+    final run = await Process.run(
+      tool,
+      const ['test'],
+      workingDirectory: directory.path,
+    );
+    stdout
+      ..write(run.stdout)
+      ..write(run.stderr);
+    if (run.exitCode != 0) {
+      failures += 1;
+    }
+  }
+  if (failures == 0) {
+    stdout.writeln('All suites passed.');
+  } else {
+    stdout.writeln('$failures suite(s) failed.');
+    exitCode = 1;
+  }
+}
 
 void _validateProjectLayout(Directory root) {
   _validateRealProjectDirectories(

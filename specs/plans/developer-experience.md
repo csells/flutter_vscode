@@ -19,7 +19,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
 - [ ] D-4 View protocol v2: push, streams, cancellation
 - [ ] D-5 Theme bridge
 - [ ] D-6 Startup honesty
-- [ ] D-7 `doctor` and `test` commands
+- [x] D-7 `doctor` and `test` commands
 - [ ] D-8 Multi-baseline support
 - [x] D-9 Nested-package analysis honesty
 - [ ] D-10 Host network story
@@ -120,6 +120,14 @@ with actionable errors; `test` gives Extension Authors a first-class
 way to run shared/host suites (the boundary checker now skips package
 `test/` directories — shipped during the Coverage Treemap round).
 Check: CLI tests for both commands; quickstart documents the flow.
+
+Closed: `doctor` checks the Dart and Flutter toolchains, project
+layout existence and safety, the descriptor, and pinned-input
+availability for the API target, with `[ok]`/`[!!]` lines and exit
+codes (red 038b416); `test` discovers and runs `shared/test`,
+`host/test`, and per-view suites, aggregating failures. Five CLI
+tests cover healthy, broken-layout, outside-project, failing-suite,
+and no-suite flows; the quickstart documents both.
 
 ## D-8 Multi-baseline support
 
