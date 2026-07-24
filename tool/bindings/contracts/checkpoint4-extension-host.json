@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "5de57982bc4174c279f6069376483b5eee8c02fb57420025f9d8634b0ad8599e"
+      "sha256": "8790cc78deb6f76ba3a65b3548c4cde93956aa879428a040a4670caefe6fcec6"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",

@@ -467,10 +467,8 @@ Future<void> _buildWatch(Directory root) async {
     } on _CliException catch (error) {
       stderr.writeln('${error.code}: ${error.message}');
     } on HostDartSourceException catch (error) {
-      final source = p
-          .relative(error.path, from: root.path)
-          .split(p.separator)
-          .join('/');
+      final source =
+          p.relative(error.path, from: root.path).split(p.separator).join('/');
       stderr.writeln(
         'INVALID_HOST_DART: $source:${error.line}:${error.column}: '
         '${error.message}',
@@ -1143,12 +1141,22 @@ List<String> _pinnedApiTargets(Directory packageRoot) {
   bool isPinned(String version) =>
       File(p.join(inputsRoot.path, version, 'pins.json')).existsSync() &&
       File(
-        p.join(packageRoot.path, 'tool', 'bindings', 'ir',
-            'vscode-$version.json'),
+        p.join(
+          packageRoot.path,
+          'tool',
+          'bindings',
+          'ir',
+          'vscode-$version.json',
+        ),
       ).existsSync() &&
       File(
-        p.join(packageRoot.path, 'tool', 'bindings', 'overrides',
-            'vscode-$version.json'),
+        p.join(
+          packageRoot.path,
+          'tool',
+          'bindings',
+          'overrides',
+          'vscode-$version.json',
+        ),
       ).existsSync();
   final targets = [
     for (final entity in inputsRoot.listSync())
@@ -1157,7 +1165,8 @@ List<String> _pinnedApiTargets(Directory packageRoot) {
           isPinned(p.basename(entity.path)))
         p.basename(entity.path),
   ];
-  int numeric(String version, int index) => int.parse(version.split('.')[index]);
+  int numeric(String version, int index) =>
+      int.parse(version.split('.')[index]);
   targets.sort((left, right) {
     for (var index = 0; index < 3; index += 1) {
       final order = numeric(left, index) - numeric(right, index);
