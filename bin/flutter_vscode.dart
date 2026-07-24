@@ -10,6 +10,7 @@ import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
 
+import '../tool/binding_generator/dart_layer.dart';
 import '../tool/binding_generator/generator.dart';
 import '../tool/binding_generator/parity_layer.dart';
 import '../tool/binding_generator/writer.dart';
@@ -171,7 +172,10 @@ import 'dart:js_interop';
 import 'package:${projectName}_host/generated/vscode_facade.g.dart';
 // The complete typed VS Code API is also generated into this project:
 //   import 'package:${projectName}_host/generated/vscode_parity_layer.g.dart';
-// Wrap the raw activation module with VscodeApi(rawVscode) to use it.
+// Wrap the raw activation module with VscodeApi(rawVscode) to use it, or
+// import the Dart-first ergonomics layer over it and enter with
+// VscodeApi(rawVscode).dart:
+//   import 'package:${projectName}_host/generated/vscode_dart_layer.g.dart';
 import 'package:${projectName}_shared/shared.dart';
 
 const _helloCommand = '$manifestName.hello';
@@ -267,6 +271,9 @@ Future<void> _buildProject(Directory root) async {
   final parityArtifacts = emitParityLayer(bindingInputs.inventory);
   await File(p.join(generatedRoot.path, 'vscode_parity_layer.g.dart'))
       .writeAsString(parityArtifacts.library);
+  final dartLayerArtifacts = emitDartLayer(bindingInputs.inventory);
+  await File(p.join(generatedRoot.path, 'vscode_dart_layer.g.dart'))
+      .writeAsString(dartLayerArtifacts.library);
   if (views.isNotEmpty) {
     final protocolSource = File(
       p.join(packageRoot.path, 'lib', 'src', 'view_protocol.dart'),
