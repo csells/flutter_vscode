@@ -21,7 +21,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
   for the gate follow-up)
 - [x] D-6 Startup honesty
 - [x] D-7 `doctor` and `test` commands
-- [ ] D-8 Multi-baseline support
+- [x] D-8 Multi-baseline support (closed; 1.129.1 and 1.130.0 pinned)
 - [x] D-9 Nested-package analysis honesty
 - [x] D-10 Host network story
 
@@ -174,21 +174,39 @@ Check: two baselines in-tree; a fixture builds against each.
 
 D-8 round exit bar:
 
-- [ ] D-8a A second pinned stable VS Code baseline ships in-tree
+- [x] D-8a A second pinned stable VS Code baseline ships in-tree
   beside the 1.129.1 seed: pinned inputs with verified checksums,
   imported IR, and a same-version Semantic Override file, with no
   orphaned IR or override files. Check: cli_multi_baseline_test
   structural case; the importer baseline series gate.
-- [ ] D-8b `build` resolves binding inputs by enumerating the pinned
+- [x] D-8b `build` resolves binding inputs by enumerating the pinned
   baselines and rejects an unknown `apiTarget` with an actionable
   error naming every shipped target. Check: cli_multi_baseline_test.
-- [ ] D-8c A scaffolded Extension Project builds against each pinned
+- [x] D-8c A scaffolded Extension Project builds against each pinned
   baseline — walking-slice facade, runtime, and Complete Parity Layer
   included — selected only by its descriptor `apiTarget`. Check:
   cli_multi_baseline_test.
-- [ ] D-8d `docs/guides/new-baseline.md` documents the onboarding
+- [x] D-8d `docs/guides/new-baseline.md` documents the onboarding
   procedure actually used for the second baseline. Check:
   cli_multi_baseline_test doc case.
+
+Closed in four parts (reds 5fe437e, 6f105f2, f2f1c08, 30b6853).
+(a) VS Code 1.130.0 — the newest stable after the seed — is pinned
+beside 1.129.1 by the seed mechanism: the six official inputs fetched
+at tag commit 1b6a188, checksummed into pins.json, imported into
+canonical IR with the pinned parser, and classified by a same-version
+Semantic Override file. The public API delta was empty — vscode.d.ts
+and the schema/validator inputs were byte-identical and only the
+transitive strings.ts helper changed outside the extracted validation
+projection — so the seed's reviewed classifications carried over
+unchanged and the Complete Parity Layer emitted with no new Total
+Mapping Rule. (b) apiTarget selection enumerates the pinned baselines
+(inputs + IR + overrides all present) and the unknown-target error
+names every shipped target; the contract writer repins every
+baseline's overrides. (c) cli_multi_baseline_test builds a scaffolded
+project against each pinned baseline with the engine floor following
+the selected target. (d) docs/guides/new-baseline.md records the
+procedure as executed.
 
 ## D-9 Nested-package analysis honesty
 
