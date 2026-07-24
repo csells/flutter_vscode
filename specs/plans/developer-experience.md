@@ -15,7 +15,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
 - [x] D-1 One-call Flutter View hosting (closed; both real-host gates
   green on the module)
 - [ ] D-2 Mechanical ergonomics layer over the Parity Layer
-- [ ] D-3 The dev loop: watch, reload, breakpoints
+- [x] D-3 The dev loop: watch, reload, breakpoints
 - [ ] D-4 View protocol v2: push, streams, cancellation
 - [ ] D-5 Theme bridge
 - [x] D-6 Startup honesty
@@ -85,6 +85,19 @@ breakpoint/source-map hardening item). Edit-rebuild-restart is the
 difference between a demo and a daily tool.
 Check: a scripted gate sets a breakpoint via the debug adapter in the
 pinned host and observes a stop on a Dart line.
+
+Closed in three parts. (a) `build --watch` rebuilds on host/shared/
+view source changes with debounced, self-trigger-proof scheduling
+(red dd0a200). (b) Development-mode hosts watch the emitted bundle
+and reload the window when it changes (red 901737e). (c)
+`scripts/test_breakpoints.sh` proves breakpoints bind to Dart source
+lines through the emitted source maps in the pinned host
+(red 6f337f4): the driver hand-decodes the fixture's source map
+(base64 VLQ, no npm deps), locates the openEventCount command
+callback line by content, and an out-of-process inspector client
+arms every mapped generated position over `--inspect-extensions`;
+executing the command pauses the Extension Host on a location that
+maps back to the same Dart line, then resumes it.
 
 ## D-4 View protocol v2: push, streams, cancellation
 
