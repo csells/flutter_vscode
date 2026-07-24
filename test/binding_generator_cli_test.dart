@@ -75,6 +75,7 @@ void main() {
     const cliOwnedArtifacts = {
       'host/lib/generated/flutter_view_host.g.dart',
       'host/lib/generated/view_protocol.g.dart',
+      'host/lib/generated/vscode_dart_layer.g.dart',
       'host/lib/generated/vscode_parity_layer.g.dart',
     };
     expect(

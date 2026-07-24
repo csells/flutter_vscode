@@ -355,7 +355,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       r'extension type PointCtorDart(PointCtor $js) implements PointCtor {',
       r'Point new$(num x) => $js.new$(x.toJS);',
       'extension PointCtorToDart on PointCtor {',
-      r'PointCtorDart get dart => PointCtorDart(this);',
+      'PointCtorDart get dart => PointCtorDart(this);',
     ],
     [r'Point new$(JSNumber x) => '],
   ),
@@ -377,8 +377,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       ),
     ],
     [
-      r'JSAny? push(String first, [List<JSAny?> rest = const []]) => '
-          r'$js.push(first.toJS, rest);',
+      r'JSAny? push(String first, [List<JSAny?> rest = const []]) => $js.push(first.toJS, rest);',
     ],
   ),
   _RuleCase(
@@ -390,7 +389,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [
       r'factory BoxDart.lit$({String? language}) {',
       r'final object$ = JSObject();',
-      "object\$.setProperty('language'.toJS, language.toJS);",
+      r"object$.setProperty('language'.toJS, language.toJS);",
       r'return BoxDart(Box(object$));',
     ],
     [r'factory BoxDart.lit$({JSString? language})'],
@@ -407,12 +406,11 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [
       r'String get $1 => $js.$1.toDart;',
       r'num get $2 => $js.$2.toDartDouble;',
-      r'Dart get dart => ',
+      'Dart get dart => ',
     ],
   ),
   _RuleCase(
-    'promise returns become futures with de-JSed values '
-    '(dc:future-from-promise)',
+    'promise returns become futures with de-JSed values (dc:future-from-promise)',
     [
       _boxIface,
       _method(
@@ -428,13 +426,11 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       ),
     ],
     [
-      r'Future<String?> load() => '
-          r'$js.load().toDart.then((value) => value?.toDart);',
+      r'Future<String?> load() => $js.load().toDart.then((value) => value?.toDart);',
     ],
   ),
   _RuleCase(
-    'promise conversions preserve trailing-optional trimming '
-    '(dc:future-from-promise)',
+    'promise conversions preserve trailing-optional trimming (dc:future-from-promise)',
     [
       _boxIface,
       _method(
@@ -448,14 +444,11 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       ),
     ],
     [
-      r'Future<bool> find(String query, [num? limit]) => '
-          r'(limit != null ? $js.find(query, limit) : $js.find(query))'
-          r'.toDart.then((value) => value.toDart);',
+      r'Future<bool> find(String query, [num? limit]) => (limit != null ? $js.find(query, limit) : $js.find(query)).toDart.then((value) => value.toDart);',
     ],
   ),
   _RuleCase(
-    'non-scalar promise arguments pass through unchanged '
-    '(dc:future-from-promise)',
+    'non-scalar promise arguments pass through unchanged (dc:future-from-promise)',
     [
       _uriClass,
       _boxIface,
@@ -465,8 +458,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [r'Future<Uri> locate() => $js.locate().toDart.then'],
   ),
   _RuleCase(
-    'event properties gain broadcast stream accessors '
-    '(dc:stream-from-event)',
+    'event properties gain broadcast stream accessors (dc:stream-from-event)',
     [
       ..._eventSupport(),
       _boxIface,
@@ -475,15 +467,14 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [
       r'Stream<String> get onDidThingStream => _eventStream$(',
       r'(listener) => $js.onDidThing.call(listener),',
-      r'(raw) => (raw! as JSString).toDart,',
+      '(raw) => (raw! as JSString).toDart,',
       r'Stream<S> _eventStream$<S>(',
-      r'StreamController<S>.broadcast(',
+      'StreamController<S>.broadcast(',
       "callMethod('dispose'.toJS)",
     ],
   ),
   _RuleCase(
-    'optional event properties gain nullable stream accessors '
-    '(dc:stream-from-event)',
+    'optional event properties gain nullable stream accessors (dc:stream-from-event)',
     [
       ..._eventSupport(),
       _uriClass,
@@ -491,15 +482,14 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       _property(_boxId, 'onMaybe', _eventOf(_uriRef), optional: true),
     ],
     [
-      r'Stream<Uri>? get onMaybeStream {',
+      'Stream<Uri>? get onMaybeStream {',
       r'final event$ = $js.onMaybe;',
       r'if (event$ == null) return null;',
-      r'(raw) => raw as Uri,',
+      '(raw) => raw as Uri,',
     ],
   ),
   _RuleCase(
-    r'dart-layer lit$ factories flatten inherited interface members '
-    '(dc:flattened-literal-factory)',
+    r'dart-layer lit$ factories flatten inherited interface members (dc:flattened-literal-factory)',
     [
       _iface('Base'),
       _property(
@@ -526,14 +516,12 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       ),
     ],
     [
-      r'factory DerivedDart.lit$('
-          '{bool? isWholeLine, String? backgroundColor}) {',
-      "object\$.setProperty('backgroundColor'.toJS, backgroundColor.toJS);",
+      r'factory DerivedDart.lit$({bool? isWholeLine, String? backgroundColor}) {',
+      r"object$.setProperty('backgroundColor'.toJS, backgroundColor.toJS);",
     ],
   ),
   _RuleCase(
-    r'dart-layer lit$ factories flatten members of extended classes '
-    '(dc:flattened-literal-factory)',
+    r'dart-layer lit$ factories flatten members of extended classes (dc:flattened-literal-factory)',
     [
       _class('Disposable'),
       _method('class:vscode.Disposable', 'dispose'),
@@ -550,12 +538,11 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ],
     [
       r'factory WatcherDart.lit$({JSFunction? dispose}) {',
-      "object\$.setProperty('dispose'.toJS, dispose);",
+      r"object$.setProperty('dispose'.toJS, dispose);",
     ],
   ),
   _RuleCase(
-    'namespaces and the module root re-root onto the dart layer '
-    '(dc:future-from-promise)',
+    'namespaces and the module root re-root onto the dart layer (dc:future-from-promise)',
     [
       _decl('namespace', 'zone', 'module:vscode'),
       _decl(
@@ -573,19 +560,17 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ],
     [
       r'extension type ZoneNsDart(ZoneNs $js) implements ZoneNs {',
-      r'Future<String> fetch() => '
-          r'$js.fetch().toDart.then((value) => value.toDart);',
+      r'Future<String> fetch() => $js.fetch().toDart.then((value) => value.toDart);',
       r'ZoneNsDart get zone => ZoneNsDart($js.zone);',
       'extension VscodeApiToDart on VscodeApi {',
-      r'VscodeApiDart get dart => VscodeApiDart(this);',
+      'VscodeApiDart get dart => VscodeApiDart(this);',
     ],
   ),
 ];
 
 final List<_RuleCase> _parityRuleCases = <_RuleCase>[
   _RuleCase(
-    'an all-string-literal alias names its wrapper after the alias '
-    '(dc:alias-named-wrapper)',
+    'an all-string-literal alias names its wrapper after the alias (dc:alias-named-wrapper)',
     [
       _decl(
         'typeAlias',

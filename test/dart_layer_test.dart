@@ -116,21 +116,20 @@ void main() {
       expect(
         source,
         contains(
-          r'Future<T?> showInformationMessage<T extends JSAny?>'
-          '(String message',
+          'Future<T?> showInformationMessage<T extends JSAny?>(String message',
         ),
       );
       expect(source, contains('.toDart.then((value) => value?.toDart)'));
-      expect(source, contains(r'Future<bool> '));
+      expect(source, contains('Future<bool> '));
     });
 
     test('event members gain stream accessors (dc:stream-from-event)', () {
       expect(
         source,
-        contains(r'Stream<TextEditor?> get onDidChangeActiveTextEditorStream'),
+        contains('Stream<TextEditor?> get onDidChangeActiveTextEditorStream'),
       );
       expect(source, contains(r'Stream<S> _eventStream$<S>('));
-      expect(source, contains(r'StreamController<S>.broadcast('));
+      expect(source, contains('StreamController<S>.broadcast('));
       // EventEmitter.event carries its type parameter into the stream.
       expect(source, contains('Stream<T> get eventStream'));
     });
@@ -184,7 +183,7 @@ void main() {
       expect(source, contains('extension TextEditorToDart on TextEditor {'));
       expect(
         source,
-        contains(r'TextEditorDart get dart => TextEditorDart(this);'),
+        contains('TextEditorDart get dart => TextEditorDart(this);'),
       );
     });
   });
