@@ -95,4 +95,57 @@ void main() {
       );
     }
   });
+
+  test(
+    'D-8b build names every pinned API target for an unknown target',
+    () async {
+      final versions = _pinnedVersions();
+      expect(
+        versions.length,
+        greaterThanOrEqualTo(2),
+        reason: 'the actionable error must select among plural baselines',
+      );
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_unknown_target_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final executable = p.join(
+        Directory.current.path,
+        'bin',
+        'flutter_vscode.dart',
+      );
+      final create = await Process.run(
+        'dart',
+        [executable, 'create', 'my_extension'],
+        workingDirectory: workspace.path,
+      );
+      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
+      final descriptor = File(
+        p.join(workspace.path, 'my_extension', 'extension.dart'),
+      );
+      descriptor.writeAsStringSync(
+        descriptor
+            .readAsStringSync()
+            .replaceFirst("'apiTarget': '1.129.1'", "'apiTarget': '9.9.9'"),
+      );
+
+      final build = await Process.run(
+        'dart',
+        [executable, 'build'],
+        workingDirectory: p.join(workspace.path, 'my_extension'),
+      );
+
+      expect(build.exitCode, 1, reason: '${build.stdout}\n${build.stderr}');
+      expect(build.stderr, contains('No pinned binding inputs'));
+      for (final version in versions) {
+        expect(
+          build.stderr,
+          contains(version),
+          reason: 'the error must name pinned target $version so the '
+              'author can correct apiTarget without reading source',
+        );
+      }
+    },
+    timeout: const Timeout(Duration(minutes: 2)),
+  );
 }
