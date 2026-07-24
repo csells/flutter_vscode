@@ -27,7 +27,22 @@ exists.
 - Reload truth: stale responses are abandoned by generation; Host
   handler futures stay counted until application settlement.
 - Webview safety: CSP with `Webview.cspSource` and a nonce'd script tag,
-  private `acquireVsCodeApi` handling, webview-safe asset URLs.
+  private `acquireVsCodeApi` handling, webview-safe asset URLs. A real
+  webview adds two requirements. The web URL strategy must be disabled
+  before `runApp`: Flutter's default strategy calls
+  `history.replaceState` with a `vscode-resource` base inside a
+  document whose real origin is `vscode-webview://`, and the resulting
+  cross-origin `SecurityError` kills engine startup — so views boot
+  through `runFlutterView(app)` from `package:flutter_vscode/view.dart`
+  (`lib/src/view_transport_web.dart`). And fonts must be bundled in
+  the view's pubspec: Flutter web fetches its default Roboto and Noto
+  fallbacks from `fonts.gstatic.com` at runtime, the CSP blocks those
+  requests, and missing-glyph frames retry forever.
+- Host-side hosting is generated, not hand-copied: view-bearing
+  projects receive `flutter_view_host.g.dart`
+  (`lib/src/cli/flutter_view_host_source.dart`) carrying
+  `HostWebviewTransport`, `FlutterViewHost.open`, and the CSP-correct
+  webview HTML.
 
 Proven by `test/view_protocol_test.dart` (in-memory pair that
 JSON-round-trips payloads), `test/host_webview_transport_test.dart`

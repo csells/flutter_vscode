@@ -32,7 +32,7 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
   fixtureSharedPackage:
     'test/fixtures/host_extension/shared/pubspec.yaml',
   fixtureTransport:
-    'test/fixtures/host_extension/host/lib/host_webview_transport.dart',
+    'test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart',
   fixtureView: 'test/fixtures/host_extension/views/main/lib/main.dart',
   fixtureViewIndex:
     'test/fixtures/host_extension/views/main/web/index.html',
@@ -40,6 +40,7 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
     'test/fixtures/host_extension/views/main/pubspec.yaml',
   fixtureViewPackageLock:
     'test/fixtures/host_extension/views/main/pubspec.lock',
+  flutterViewHostTemplate: 'lib/src/cli/flutter_view_host_source.dart',
   frameworkPackage: 'pubspec.yaml',
   frameworkPackageLock: 'pubspec.lock',
   generatedBootstrap: 'test/fixtures/host_extension/host/bootstrap.cjs',

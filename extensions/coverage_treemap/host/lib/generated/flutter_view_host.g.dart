@@ -1,15 +1,3 @@
-/// The framework-owned Flutter View hosting module emitted into
-/// Extension Projects as `host/lib/generated/flutter_view_host.g.dart`
-/// whenever the project contains at least one Flutter View.
-///
-/// The module is a template because it imports its generated siblings
-/// (`view_protocol.g.dart`, `vscode_facade.g.dart`), which only exist
-/// inside a generated project; the host-extension fixture carries the
-/// analyzed, gate-tested instance.
-library;
-
-/// Source text for `host/lib/generated/flutter_view_host.g.dart`.
-const flutterViewHostSource = r"""
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // ignore_for_file: always_use_package_imports
 
@@ -285,4 +273,3 @@ String _secureToken() {
   final random = Random.secure();
   return List.generate(32, (_) => random.nextInt(16).toRadixString(16)).join();
 }
-""";

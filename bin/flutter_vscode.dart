@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:archive/archive.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
+import 'package:flutter_vscode/src/cli/flutter_view_host_source.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 import 'package:xml/xml.dart';
@@ -271,6 +272,15 @@ Future<void> _buildProject(Directory root) async {
     await protocolSource.copy(
       p.join(generatedRoot.path, 'view_protocol.g.dart'),
     );
+    await File(p.join(generatedRoot.path, 'flutter_view_host.g.dart'))
+        .writeAsString(flutterViewHostSource);
+  } else {
+    final staleModule = File(
+      p.join(generatedRoot.path, 'flutter_view_host.g.dart'),
+    );
+    if (staleModule.existsSync()) {
+      await staleModule.delete();
+    }
   }
 
   await _run(

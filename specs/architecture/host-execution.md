@@ -30,7 +30,11 @@ Rules and their enforcement:
 - **Import boundary.** Host and shared Dart cannot import Flutter,
   browser-only libraries, or unsupported platform APIs; enforced by
   `tool/check_host_imports.dart` in the CLI build path and
-  `test/host_import_guard_test.dart`.
+  `test/host_import_guard_test.dart`. The build's sweep deliberately
+  skips package `test/` directories — author tests may depend on
+  `package:test` and never execute inside the Extension Host — proven
+  red-green by "build ignores package test directories in the boundary
+  check" in `test/cli_build_test.dart`.
 - **Toolchain carve-out.** Extension authors never manage Node or npm.
   Maintainer tooling and CI may use pinned Node packages
   (`tool/binding_importer`, `tool/extension_host_test`), which are never

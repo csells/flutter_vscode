@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:flutter_vscode/src/view_protocol.dart';
 
 /// Acquires and owns the transport for one VS Code-hosted Flutter View.
@@ -28,4 +29,14 @@ final class VSCodeViewBootstrap {
       'VSCodeViewBootstrap requires a compiled VS Code webview runtime.',
     );
   }
+}
+
+/// Boots a Flutter View safely inside a VS Code webview.
+///
+/// Only the compiled web build of a Flutter View can run; other
+/// platforms have no VS Code webview runtime.
+void runFlutterView(Widget app) {
+  throw UnsupportedError(
+    'runFlutterView requires a compiled VS Code webview runtime.',
+  );
 }

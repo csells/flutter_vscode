@@ -78,3 +78,10 @@ current authority.
 5. **V-5**: ADR 0012 restored to describe shipped reality; the parity
    report states the family-level coverage definition; futures drops
    the graduated items.
+6. **Post-close audit (2026-07-23)**: a synthetic-IR probe showed the
+   V-2 named-alias clause unimplemented — an all-string-literal alias
+   erases its typedef to `JSString` while the wrapper takes a
+   shape-hash name that appears in member signatures. Latent: the
+   pinned 1.129.1 baseline contains zero string-literal-union aliases,
+   so no shipped output is affected. The alias-named-wrapper rule
+   lands with [developer-experience.md](developer-experience.md) D-2.

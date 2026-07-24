@@ -73,6 +73,7 @@ void main() {
     final nonBindingFiles =
         checkedInFiles.keys.toSet().difference(firstFiles.keys.toSet());
     const cliOwnedArtifacts = {
+      'host/lib/generated/flutter_view_host.g.dart',
       'host/lib/generated/view_protocol.g.dart',
       'host/lib/generated/vscode_parity_layer.g.dart',
     };

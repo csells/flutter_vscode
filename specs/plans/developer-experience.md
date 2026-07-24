@@ -1,6 +1,6 @@
 # Developer Experience Plan
 
-Status: In progress — the D-1 round is open; D-2..D-10 remain proposed
+Status: In progress — D-1 closed (red b5ef194; both real-host gates green on the module); D-2..D-10 remain proposed
 Date: 2026-07-23
 
 Captures the framework-compelling/dev-friendly direction agreed with
@@ -9,6 +9,20 @@ the owner, plus the gaps that building the first real extension
 graduates here from [`futures.md`](futures.md) or from a build
 discovery; when a round opens, its items freeze into that round's exit
 bar with the usual rules (reds are commits, machine-checked closure).
+
+## Queue
+
+- [x] D-1 One-call Flutter View hosting (closed; both real-host gates
+  green on the module)
+- [ ] D-2 Mechanical ergonomics layer over the Parity Layer
+- [ ] D-3 The dev loop: watch, reload, breakpoints
+- [ ] D-4 View protocol v2: push, streams, cancellation
+- [ ] D-5 Theme bridge
+- [ ] D-6 Startup honesty
+- [ ] D-7 `doctor` and `test` commands
+- [ ] D-8 Multi-baseline support
+- [ ] D-9 Nested-package analysis honesty
+- [ ] D-10 Host network story
 
 ## D-1 One-call Flutter View hosting
 
@@ -30,19 +44,19 @@ module; the copies are gone.
 
 D-1 round exit bar:
 
-- [ ] D-1a `build` emits `host/lib/generated/flutter_view_host.g.dart`
+- [x] D-1a `build` emits `host/lib/generated/flutter_view_host.g.dart`
   (transport + `FlutterViewHost.open` + CSP HTML) for view-bearing
   projects only, byte-equal to the framework template. Check:
   cli_build_test.
-- [ ] D-1b The host fixture consumes the emitted module; its local
+- [x] D-1b The host fixture consumes the emitted module; its local
   transport copy is deleted. Check: `./scripts/test_host_extension.sh`.
-- [ ] D-1c Coverage Treemap consumes `FlutterViewHost.open`; its
+- [x] D-1c Coverage Treemap consumes `FlutterViewHost.open`; its
   transport and HTML copies are deleted. Check:
   `./scripts/test_coverage_extension.sh`.
-- [ ] D-1d `runFlutterView(app)` ships in
+- [x] D-1d `runFlutterView(app)` ships in
   `package:flutter_vscode/view.dart` (URL strategy + runApp); the
   extension's view uses it. Check: view analyze + the same gates.
-- [ ] D-1e The README's Flutter View walkthrough is rewritten on the
+- [x] D-1e The README's Flutter View walkthrough is rewritten on the
   new APIs. Check: prose matches the shipped surface.
 
 ## D-2 Mechanical ergonomics layer over the Parity Layer
@@ -54,7 +68,9 @@ from `JSPromise<T>`, `Stream<T>` from `Event<T>`, named optional
 parameters from options interfaces, and `lit$` factories that include
 inherited interface members (discovered building Coverage Treemap:
 `DecorationRenderOptions.lit$` cannot set `backgroundColor` because it
-lives on the superinterface). Kills most `.toJS` noise while keeping
+lives on the superinterface), plus the parity-runtime post-close audit
+find: an all-string-literal alias must name its wrapper after the
+alias instead of erasing to `JSString` beside a hash-named wrapper. Kills most `.toJS` noise while keeping
 the zero-judgment guarantee; the hand-reviewed facade remains a later,
 separate product for the places that need taste.
 Check: emitter unit cases per new rule; the extension's host rewritten

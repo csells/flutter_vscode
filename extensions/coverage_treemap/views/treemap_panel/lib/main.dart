@@ -6,7 +6,7 @@ import 'dart:async';
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_vscode/view.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:treemap_panel/drilldown.dart';
 import 'package:treemap_panel/summary_charts.dart';
 import 'package:treemap_panel/treemap.dart';
 
@@ -21,15 +21,7 @@ const snapshotOperation = ViewOperation<void, CoverageSnapshot>(
 );
 
 /// Runs the coverage treemap view.
-///
-/// The URL strategy must be disabled inside a VS Code webview: the
-/// document's real origin is `vscode-webview://`, so any history
-/// update against the `vscode-resource` base URI throws a
-/// `SecurityError` during engine startup and no frame ever renders.
-void main() {
-  setUrlStrategy(null);
-  runApp(const TreemapApp());
-}
+void main() => runFlutterView(const TreemapApp());
 
 /// Dark-themed root widget for the coverage treemap panel.
 class TreemapApp extends StatelessWidget {
@@ -90,7 +82,7 @@ class _TreemapPageState extends State<_TreemapPage> {
       }
       setState(() {
         _snapshot = snapshot;
-        _path = _rebasePath(snapshot.root);
+        _path = rebasePath(newRoot: snapshot.root, previousPath: _path);
         _selectedFile = null;
         _loading = false;
       });
@@ -105,47 +97,6 @@ class _TreemapPageState extends State<_TreemapPage> {
     }
   }
 
-  /// Re-resolves the current drill-down path against a fresh [newRoot],
-  /// keeping the deepest prefix whose directory names still exist.
-  List<CoverageNode> _rebasePath(CoverageNode newRoot) {
-    final path = [newRoot];
-    for (final previous in _path.skip(1)) {
-      CoverageNode? match;
-      for (final child in path.last.children) {
-        if (!child.isFile && child.name == previous.name) {
-          match = child;
-          break;
-        }
-      }
-      if (match == null) {
-        break;
-      }
-      path.add(match);
-    }
-    return _descendSingleChildChain(path);
-  }
-
-  /// Auto-descends through directories whose only child is another
-  /// directory, so the first render shows a spread of tiles instead of
-  /// one lonely wrapper square (every Dart project funnels through
-  /// `lib/`). The breadcrumb keeps the full chain navigable.
-  List<CoverageNode> _descendSingleChildChain(List<CoverageNode> path) {
-    final result = [...path];
-    while (true) {
-      final children =
-          result.last.children.where((child) => child.linesFound > 0);
-      if (children.length != 1) {
-        break;
-      }
-      final only = children.single;
-      if (only.isFile) {
-        break;
-      }
-      result.add(only);
-    }
-    return result;
-  }
-
   void _refresh() => unawaited(_load());
 
   void _handleNodeTap(CoverageNode node) {
@@ -153,7 +104,7 @@ class _TreemapPageState extends State<_TreemapPage> {
       if (node.isFile) {
         _selectedFile = node;
       } else {
-        _path = _descendSingleChildChain([..._path, node]);
+        _path = descendSingleChildChain([..._path, node]);
         _selectedFile = null;
       }
     });

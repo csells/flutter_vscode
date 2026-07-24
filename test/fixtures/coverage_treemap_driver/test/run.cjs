@@ -48,6 +48,21 @@ async function run() {
   assert.equal(viewReport.viewConnected, true);
   assert.equal(viewReport.lcovPath, 'coverage/lcov.info');
 
+  console.log('[coverage-treemap-test] exercising the in-VSC coverage run');
+  const terminalsBefore = vscode.window.terminals.length;
+  await vscode.commands.executeCommand('coverage-treemap.runTests');
+  assert.equal(
+    vscode.window.terminals.length,
+    terminalsBefore + 1,
+    'runTests must create the coverage terminal',
+  );
+  assert.ok(
+    vscode.window.terminals.some(
+      (terminal) => terminal.name === 'Coverage Treemap',
+    ),
+    'The coverage terminal must carry the extension name',
+  );
+
   console.log('[coverage-treemap-test] all assertions passed');
 }
 

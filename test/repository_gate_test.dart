@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 void main() {
@@ -50,6 +51,7 @@ void main() {
         '**/build/',
         '/tool/binding_importer/',
         '/tool/extension_host_test/',
+        '/extensions/',
       }),
     );
     expect(pubIgnore, isNot(contains('/tool/binding_generator/')));
@@ -63,6 +65,50 @@ void main() {
       ).lengthSync(),
       lessThan(16 * 1024),
     );
+  });
+
+  test('shipped example extensions honor the consumer guardrails', () {
+    final areaReadme = File('extensions/README.md').readAsStringSync();
+    expect(
+      areaReadme,
+      contains('consumes the framework the way an Extension'),
+      reason: 'extensions/README.md must record the guardrails',
+    );
+    expect(
+      File('README.md').readAsStringSync(),
+      contains('extensions/'),
+      reason: 'the root README must route readers to the shipped examples',
+    );
+    final aggregate = File('scripts/test_all.sh').readAsStringSync();
+    expect(
+      aggregate,
+      contains('test_coverage_extension.sh'),
+      reason: 'the aggregate gate must run the example-extension gate',
+    );
+    final extensionDirs = Directory('extensions')
+        .listSync()
+        .whereType<Directory>();
+    expect(extensionDirs, isNotEmpty);
+    for (final extension in extensionDirs) {
+      for (final root in ['host', 'shared']) {
+        final dir = Directory(p.join(extension.path, root, 'lib'));
+        if (!dir.existsSync()) {
+          continue;
+        }
+        for (final entity in dir.listSync(recursive: true)) {
+          if (entity is! File || !entity.path.endsWith('.dart')) {
+            continue;
+          }
+          final source = entity.readAsStringSync();
+          expect(
+            source,
+            isNot(contains("import 'package:flutter_vscode/")),
+            reason: '${entity.path} must consume only generated files, '
+                'never the framework package directly (guardrail)',
+          );
+        }
+      }
+    }
   });
 
   test('packaged E2E activates the pub-filtered framework contents', () {

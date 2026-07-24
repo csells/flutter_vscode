@@ -132,3 +132,15 @@ Tallies are recording-time values. Entries appended as items close.
    `fl_chart` 1.2.0 charts over the same snapshot. The README's view
    walkthrough now mandates the URL-strategy line and the D-1 item
    grew a view-side `runFlutterView` boot helper.
+7. **Post-close audit and D-1 adoption (2026-07-23)**: a fresh-eyes
+   audit found five honesty gaps, all remedied — the T-1/T-7
+   "repository gate" checks gained real assertions (pubignore
+   exclusion, guardrail prose, no direct framework imports in
+   extension host/shared code), `scripts/test_all.sh` now runs the
+   extension gate, the driver exercises `runTests` and asserts the
+   coverage terminal, and the auto-descend logic moved to a pure
+   `drilldown.dart` with a 7-test unit suite. The extension then
+   adopted the D-1 framework module: `FlutterViewHost.open` and
+   `runFlutterView` replaced the hand-copied transport, HTML, and
+   URL-strategy boot code. Both real-host gates re-ran green on the
+   result.

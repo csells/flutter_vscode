@@ -15,9 +15,9 @@ This file is the root index for AI and contributor documentation.
 
 - [Project Vision](specs/vision/vision.md)
 - [Architecture (living)](specs/architecture/index.md)
-- [Parity Layer Plan (active)](specs/plans/parity-layer.md)
+- [Developer Experience Plan (active)](specs/plans/developer-experience.md)
 - [Futures](specs/plans/futures.md)
-- [First Working Extension Plan (archived)](specs/plans/archive/first-working-extension.md)
+- [Archived Plans](specs/plans/archive/)
 - [Domain Language](CONTEXT.md)
 - [Architecture Decisions](docs/adr/)
 - [Documentation Root](docs/index.md)

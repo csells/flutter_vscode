@@ -13,14 +13,23 @@ flutter_vscode package                    # installable VSIX
 - `create` writes an analyzable project immediately (the generated facade
   exists before the first build); a host-only extension simply has no
   `views/`. Extension metadata and contributions are Dart-owned in
-  `extension.json`.
+  `extension.dart` — a single const Dart literal map parsed as data,
+  never executed (`lib/src/cli/project_descriptor.dart`).
+  `extension.json` is the alternate form; `build` errors when both
+  exist.
 - `build` generates every Framework-Managed Artifact — `package.json`,
-  bootstrap, launch configuration, host bundle, source maps, and the
-  complete typed Parity Layer (`vscode_parity_layer.g.dart`) — enforces
-  the host import boundary, and reports malformed Dart with
-  filename/line/column and remediation (no internal stacks, no exit
-  255). Generated activation registers providers synchronously so lazy
-  activation cannot race a first query.
+  bootstrap, launch configuration, host bundle, source maps, the
+  complete typed Parity Layer (`vscode_parity_layer.g.dart`), and, for
+  view-bearing projects, the Flutter View host module
+  (`flutter_view_host.g.dart`) — enforces the host import boundary
+  (deliberately skipping package `test/` directories: author tests may
+  depend on `package:test` and never execute in the Extension Host),
+  and reports malformed Dart with filename/line/column and remediation
+  (no internal stacks, no exit 255). Generated activation registers
+  providers synchronously so lazy activation cannot race a first
+  query. Flutter Views boot through `runFlutterView` from
+  `package:flutter_vscode/view.dart`, which prepares the webview
+  runtime before `runApp` ([View Protocol](view-protocol.md)).
 - `package` validates `extension.vsixmanifest` and
   `[Content_Types].xml` as real XML (declarations required, XML
   1.0-forbidden characters rejected) before emitting a VSIX, and

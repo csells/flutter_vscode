@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_vscode/src/view_protocol.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:web/web.dart' as web;
 
 /// Acquires and owns the transport for one VS Code-hosted Flutter View.
@@ -163,4 +165,16 @@ String _requiredMetadata(String name) {
     );
   }
   return value;
+}
+
+/// Boots a Flutter View safely inside a VS Code webview.
+///
+/// Disables the web URL strategy before running [app]: a webview
+/// document's real origin is `vscode-webview://`, so Flutter's default
+/// strategy — exercised by `MaterialApp`'s navigation history
+/// integration — throws a cross-origin `SecurityError` during engine
+/// startup and the view never renders a frame.
+void runFlutterView(Widget app) {
+  setUrlStrategy(null);
+  runApp(app);
 }

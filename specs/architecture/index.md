@@ -17,7 +17,19 @@ because this project's history shows that unenforced prose rots.
 - [Author Workflow](author-workflow.md) — create, build, package, and how
   the installed result is proven.
 
-Status rule inherited from the plan: a completion claim is valid only
-while `scripts/check_round5_exit.sh` exits 0 at HEAD. Forward work is
-tracked in [futures](../plans/futures.md); API coverage is measured
-in the generated [parity report](../../docs/reference/parity.md).
+The shipped examples under `extensions/` are an architectural surface
+of their own: real, installable extensions that consume the framework
+only the way an Extension Author can — through the CLI and the
+published package surface, never the repository's `lib/`, `tool/`, or
+fixtures. They are excluded from the pub archive (`.pubignore`) and
+proven in a pinned real Extension Host by
+`scripts/test_coverage_extension.sh`.
+
+Status rule inherited from the plans: a completion claim is valid only
+while its named check is green at HEAD. `scripts/check_round5_exit.sh`
+is the closure authority for the archived first-working-extension
+plan; later closed plans carry their own validity checks (the parity
+suite, the coverage-extension gate) rather than that one script.
+Forward work is tracked in [futures](../plans/futures.md); API
+coverage is measured in the generated
+[parity report](../../docs/reference/parity.md).

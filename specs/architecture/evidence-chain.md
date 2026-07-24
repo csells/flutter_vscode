@@ -7,10 +7,12 @@ keep "verified" meaning something.
 ## Receipts and the durable Host Contract
 
 `tool/bindings/contracts/checkpoint4-extension-host.json` attests the
-real-host evidence run: API and runtime targets, 44 source receipts
-(exact SHA-256 of every load-bearing file — generator, writer, CLI,
-fixtures, lockfiles, the verifier, its test, and the contract writer
-itself), and the attributed binding IDs. It is written only by the
+real-host evidence run: API and runtime targets, one source receipt
+per load-bearing file (exact SHA-256 — generator, writer, CLI,
+generated parity layer, fixtures, lockfiles, the verifier, its test,
+and the contract writer itself; the artifact's `sources` block is the
+authoritative list, not any count in prose), and the attributed
+binding IDs. It is written only by the
 mechanical regenerator (`tool/binding_generator/contract.dart`, invoked
 as `generate.dart --contract .`); hand-editing evidence is not a
 supported workflow. `test/binding_evidence_test.dart` proves the
@@ -33,11 +35,18 @@ generated operations after native success.
 3. `./scripts/test_packaged_extension.sh` — installed-VSIX proof for both
    fixtures, staged from `dart pub`'s own archive listing
    (`tool/pub_archive_list.dart`), hover-first lazy activation asserted.
-4. `./scripts/test_all.sh` — everything above plus build_runner, builder
+4. `./scripts/test_coverage_extension.sh` — the shipped
+   `extensions/coverage_treemap` example, built and packaged by the
+   CLI, installed into the pinned Extension Host in Docker against a
+   workspace with a known tracefile; asserts the parsed coverage
+   snapshot and that the Flutter View boots and serves it over the
+   view protocol in a real webview.
+5. `./scripts/test_all.sh` — everything above plus build_runner, builder
    checks, and example tests.
-5. `./scripts/check_round5_exit.sh` — the closure authority: evaluates
-   the archived plan's exit bar, including executing the packaged gate
-   and the regenerator no-op check.
+6. `./scripts/check_round5_exit.sh` — the archived
+   first-working-extension plan's closure authority: evaluates that
+   plan's exit bar, including executing the packaged gate and the
+   regenerator no-op check.
 
 ## Methodology (inherited, binding on future rounds)
 

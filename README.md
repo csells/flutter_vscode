@@ -200,32 +200,31 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
+  flutter_vscode:
+    path: /path/to/flutter_vscode
 ```
 
 ```dart
 // views/main_panel/lib/main.dart
 import 'package:flutter/widgets.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:flutter_vscode/view.dart';
 
-void main() {
-  setUrlStrategy(null);
-  runApp(
-    const Directionality(
-      textDirection: TextDirection.ltr,
-      child: Text('Flutter View ready'),
-    ),
-  );
-}
+void main() => runFlutterView(
+      const Directionality(
+        textDirection: TextDirection.ltr,
+        child: Text('Flutter View ready'),
+      ),
+    );
 ```
 
-The `setUrlStrategy(null)` line matters: a VS Code webview's document
-origin is `vscode-webview://`, so Flutter's default URL strategy —
-which `MaterialApp`'s navigation history integration exercises —
-throws a `SecurityError` during engine startup and the view renders
-nothing. Disabling it is required for any view that uses `MaterialApp`
-or a `Router`.
+`runFlutterView` boots the app safely inside a VS Code webview — the
+document's real origin is `vscode-webview://`, and Flutter's default
+URL strategy (exercised by `MaterialApp`'s history integration) would
+otherwise throw a `SecurityError` during engine startup and render
+nothing. One more webview rule: bundle any fonts you use (declare them
+under `flutter: fonts:`) — Flutter web fetches its default Roboto and
+Noto fallbacks from the network at runtime, which the webview CSP
+blocks.
 
 ```html
 <!-- views/main_panel/web/index.html -->
@@ -260,40 +259,23 @@ Add a command to `extension.dart`:
   ],
 ```
 
-Then open the panel from the command — this is the VS Code webview API,
-driven entirely from Dart through the generated facade:
+For view-bearing projects, `build` also generates
+`host/lib/generated/flutter_view_host.g.dart`: the framework-owned
+hosting module. Opening the view from the command is one call —
+`FlutterViewHost.open` owns panel creation, resource-root scoping,
+session identifiers, CSP-correct HTML, and disposal:
 
 ```dart
+FlutterViewHost? viewHost;
 final showPanel = (() {
-  var viewRoot = context.extensionRootUri;
-  for (final segment in ['out', 'views', 'main_panel']) {
-    viewRoot = joinHostUriPath(viewRoot, segment.toJS);
-  }
-  final panel = vscode.windowApi.createFlutterViewPanel(
+  viewHost ??= FlutterViewHost.open(
+    context: context,
+    vscode: vscode,
+    viewName: 'main_panel',
     viewType: 'my-extension.mainPanel',
     title: 'Flutter Panel',
-    localResourceRoots: [viewRoot],
+    onClosed: () => viewHost = null,
   );
-  final webview = panel.webviewSurface;
-  final base = webview.asFlutterViewUri(viewRoot).toDartString();
-  final bootstrap = webview
-      .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
-      .toDartString();
-  final csp = webview.contentSecurityPolicySource;
-  webview.htmlText = '''
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src $csp data:; font-src $csp; style-src $csp 'unsafe-inline'; script-src $csp 'wasm-unsafe-eval'; connect-src $csp; worker-src $csp blob:">
-  <base href="$base/">
-  <title>Flutter Panel</title>
-</head>
-<body>
-  <script src="$bootstrap"></script>
-</body>
-</html>
-''';
 }).toJS;
 context.subscriptions.toDart.add(
   vscode.commands.registerCommandCallback(
@@ -303,40 +285,15 @@ context.subscriptions.toDart.add(
 );
 ```
 
-`createFlutterViewPanel` wraps `window.createWebviewPanel` with scripts
-enabled and resource roots scoped to your built view; `asFlutterViewUri` and
-`contentSecurityPolicySource` are VS Code's own webview URI and CSP
-primitives, surfaced with Dart types. Typed view-to-host requests use the
-generated view protocol (`ViewOperation` in
-`package:flutter_vscode/view.dart`); see the
+Typed view-to-host requests plug into the same call: pass
+`operations: [myOperation.bind(handler)]` and the view invokes them
+over the versioned protocol (`ViewOperation` in
+`package:flutter_vscode/view.dart`).
+
+`FlutterViewHost` builds on `window.createWebviewPanel` with scripts
+enabled and resource roots scoped to your built view — VS Code's own
+webview primitives, surfaced with Dart types. See the
 [architecture docs](docs/architecture/index.md).
-
-### Using pub.dev packages
-
-Extension Projects are ordinary Dart and Flutter packages, so the
-ecosystem comes with you:
-
-- **Views** can depend on any Flutter package that works on the web —
-  the shipped Coverage Treemap example renders its summary charts with
-  [`fl_chart`](https://pub.dev/packages/fl_chart), running unmodified
-  inside a VS Code webview. Keep runtime assets local: the webview CSP
-  blocks network fonts and images, so avoid packages that fetch
-  resources at runtime (or bundle their assets instead). That includes
-  text itself — Flutter web downloads its default Roboto font and the
-  Noto fallback fonts from `fonts.gstatic.com` at runtime, so bundle a
-  font (declare it under `flutter: fonts:` and set
-  `ThemeData(fontFamily: ...)`) or the engine will retry blocked font
-  fetches on every frame that needs a missing glyph.
-- **`host/` and `shared/`** can depend on pure Dart packages — parsers,
-  models, codecs, protocol logic. The build's boundary check enforces
-  what the Extension Host can actually run: `dart:io`, Flutter, and
-  browser-only libraries are rejected with actionable errors, and
-  package `test/` directories are exempt so you can test shared code
-  normally.
-
-This is the core reuse story: logic your team already ships as Dart
-packages — and the pub.dev ecosystem around it — becomes VS Code
-extension code without a rewrite.
 
 ### Debugging the Flutter View
 

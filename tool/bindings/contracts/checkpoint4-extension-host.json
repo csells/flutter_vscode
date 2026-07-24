@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "43a436aa998d8f0384a8bff7eead5fe9839a0ec32349d4f5b38bbd301fa86818"
+      "sha256": "3ed499aa57787fcc3d10c4abdad84b22a9ed4afb3b9100dcb8a425f072f0a15a"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -60,7 +60,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "77653dececc311e3d0e7d98ef61dded6cd974aef6cccc6742881cb6f0841ac92"
+      "sha256": "1dc9947cf5fd9b9466a0b6a1be11f2d9b2371ac0cd0420a89c7a9e7565d4958b"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -68,11 +68,11 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "e4ec7d48856ee509e31dbe14c4b9836d7136091b1cd0ec3d1acd29dfef8eb787"
+      "sha256": "9277c9f4d20076a2386610057fd3ac35a27ae37471985defd3a01600ffb312b6"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "c25dad1de70023cf62b2f407dd757d769384e2abf72d2a40f4dff521fa4596c7"
+      "sha256": "b71d96cc81c8de79e4bfc7f77bf84f78d6efdad482b46972a4235edfdd18fee5"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -99,8 +99,8 @@
       "sha256": "4b7df008b526f4a68d1ff86ab178a64be139d746521a1bff6e269325a308d086"
     },
     "fixtureTransport": {
-      "path": "test/fixtures/host_extension/host/lib/host_webview_transport.dart",
-      "sha256": "91d7c87bbe5d0254650b11e84a9ee62bbaf5d5da7446b7693ca5fccdc9ff9eeb"
+      "path": "test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart",
+      "sha256": "b69f1293f370ead590b640cc1e6561460caaa41d13dfd34ab4ee8bc440caa216"
     },
     "fixtureView": {
       "path": "test/fixtures/host_extension/views/main/lib/main.dart",
@@ -116,15 +116,19 @@
     },
     "fixtureViewPackageLock": {
       "path": "test/fixtures/host_extension/views/main/pubspec.lock",
-      "sha256": "435d96d07eb9e8f680c21b5bb492e1e62906d14baa8df059f4cb6014aebebec5"
+      "sha256": "47b48ae7322ed74c8b8bc0f36b0a7d2a07b259a5d5d90c530ce10fb8cd9d4653"
+    },
+    "flutterViewHostTemplate": {
+      "path": "lib/src/cli/flutter_view_host_source.dart",
+      "sha256": "b872a981d357fde5e46a8365b267873cdd84cb2d70cbb579a7849532cb39dbd8"
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",
-      "sha256": "75c057467306e0761bc09f3104067b6eb52b2a0eb5fbdf05078b34b56a279a3b"
+      "sha256": "12ab24ddb473e371b3a62292ae7c1f6a8d542bcc6ffa685674dec4567e2c6e72"
     },
     "frameworkPackageLock": {
       "path": "pubspec.lock",
-      "sha256": "82a4ec06005d94815291b21af94cd1d3866b86815f67ce79c62cd9c9673ec08d"
+      "sha256": "662704da6c587feb126178119191875c77b1ea07732f034f08f486558e92ec57"
     },
     "generatedBootstrap": {
       "path": "test/fixtures/host_extension/host/bootstrap.cjs",
@@ -184,7 +188,7 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "e5d530c49927259ec63584a8b3430bb7da7eab282dab523ff5027690d632ad80"
+      "sha256": "77b9e502521ba3a7b54bc6271a554f977f24f62c4c0530ff05f7f337cd73c395"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",
@@ -196,7 +200,7 @@
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
-      "sha256": "9303ffd87dcb4c17bbf4676c3e02b16fb5c4884b11b9a6692cc4a97d663aaabe"
+      "sha256": "7dd695818cf0fc43f0b78adfbc7197823f42cccb664783e04b4da0efb76734e5"
     }
   },
   "evidence": {

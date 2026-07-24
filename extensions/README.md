@@ -73,7 +73,7 @@ protocol in a real webview.
 
 `flutter_vscode package` writes the installable VSIX under `build/`.
 
-Plan and status: [`specs/plans/coverage-treemap.md`](../specs/plans/coverage-treemap.md).
+Plan and status: [`specs/plans/coverage-treemap.md`](../specs/plans/archive/coverage-treemap.md).
 
 A Dart-only (host-only) example extension is planned to follow once
 this one ships.

@@ -51,5 +51,8 @@ echo
 echo "==> Installing and exercising a packaged Dart-owned extension..."
 ./scripts/test_packaged_extension.sh
 
+echo '--- shipped example extension: real-host gate'
+./scripts/test_coverage_extension.sh
+
 echo
 echo "All tests and build_runner checks completed successfully."

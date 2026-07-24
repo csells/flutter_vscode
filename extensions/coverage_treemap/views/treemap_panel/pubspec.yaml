@@ -12,7 +12,9 @@ dependencies:
     sdk: flutter
   flutter_vscode:
     path: ../../../..
-  flutter_web_plugins:
+
+dev_dependencies:
+  flutter_test:
     sdk: flutter
 
 flutter:

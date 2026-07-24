@@ -1,13 +1,12 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
-import 'dart:math';
 
+import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
 import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_facade.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_parity_layer.g.dart'
     as parity;
-import 'package:coverage_treemap_host/host_webview_transport.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 
@@ -59,9 +58,7 @@ final class _CoverageController {
   late final parity.StatusBarItem _statusBar;
   LcovReport? _report;
   var _highlightsEnabled = true;
-  var _panelOpen = false;
-  HostViewSession? _session;
-  HostWebviewTransport? _transport;
+  FlutterViewHost? _viewHost;
   parity.Terminal? _terminal;
   final Completer<String> _firstSnapshotServed = Completer<String>();
 
@@ -134,13 +131,9 @@ final class _CoverageController {
 
   /// Closes the view session resources when the panel or extension ends.
   Future<void> closePanelSession() async {
-    final session = _session;
-    final transport = _transport;
-    _session = null;
-    _transport = null;
-    _panelOpen = false;
-    await session?.close();
-    await transport?.close();
+    final viewHost = _viewHost;
+    _viewHost = null;
+    await viewHost?.close();
   }
 
   JSFunction get _refreshListener =>
@@ -239,27 +232,16 @@ final class _CoverageController {
   }
 
   Future<void> _openPanel() async {
-    if (_panelOpen) {
+    if (_viewHost != null) {
       return;
     }
-    final sessionId = _secureToken();
-    final bootstrapNonce = _secureToken();
-    var viewRoot = _context.extensionRootUri;
-    for (final segment in ['out', 'views', 'treemap_panel']) {
-      viewRoot = joinHostUriPath(viewRoot, segment.toJS);
-    }
-    final panel = _vscode.windowApi.createFlutterViewPanel(
+    _viewHost = FlutterViewHost.open(
+      context: _context,
+      vscode: _vscode,
+      viewName: 'treemap_panel',
       viewType: 'coverageTreemap.panel',
       title: 'Coverage Treemap',
-      localResourceRoots: [viewRoot],
-    );
-    _panelOpen = true;
-    final transport = HostWebviewTransport(panel.webviewSurface);
-    _transport = transport;
-    _session = HostViewSession.connect(
-      transport: transport,
-      sessionId: sessionId,
-      bootstrapNonce: bootstrapNonce,
+      onClosed: () => _viewHost = null,
       operations: [
         _snapshotOperation.bind((_) async {
           await _refresh();
@@ -279,13 +261,8 @@ final class _CoverageController {
         }),
       ],
     );
-    panel.webviewSurface.htmlText = _viewHtml(
-      webview: panel.webviewSurface,
-      viewRoot: viewRoot,
-      sessionId: sessionId,
-      bootstrapNonce: bootstrapNonce,
-    );
   }
+
 
   parity.TextEditorDecorationType _lineDecoration(String colorId) {
     final themable = parity.ThemableDecorationRenderOptions.lit$(
@@ -295,41 +272,6 @@ final class _CoverageController {
       parity.DecorationRenderOptions(themable)..isWholeLine = true,
     );
   }
-}
-
-String _secureToken() {
-  final random = Random.secure();
-  return List.generate(32, (_) => random.nextInt(16).toRadixString(16)).join();
-}
-
-String _viewHtml({
-  required Webview webview,
-  required Uri viewRoot,
-  required String sessionId,
-  required String bootstrapNonce,
-}) {
-  final base = webview.asFlutterViewUri(viewRoot).toDartString();
-  final bootstrap = webview
-      .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
-      .toDartString();
-  final csp = webview.contentSecurityPolicySource;
-  return '''
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src $csp data:; font-src $csp; style-src $csp 'unsafe-inline'; script-src $csp 'wasm-unsafe-eval'; connect-src $csp; worker-src $csp blob:">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="flutter-vscode-session" content="$sessionId">
-  <meta name="flutter-vscode-bootstrap-nonce" content="$bootstrapNonce">
-  <base href="$base/">
-  <title>Coverage Treemap</title>
-</head>
-<body>
-  <script src="$bootstrap"></script>
-</body>
-</html>
-''';
 }
 
 void main() {

@@ -84,8 +84,14 @@ current authority, never prose.
 ## Coverage honesty
 
 `coverage.json` and `docs/reference/parity.md` distinguish emitted,
-reviewed-excluded, non-public, and pending symbols. Runtime evidence is
-one aggregate real-host contract with mechanically attributed binding
-IDs — not independent behavioral contracts — and the docs say so. A
-missing Dart path for a public capability is a defect (vision rule,
-stated in the parity report).
+reviewed-excluded, non-public, and pending symbols. Live coverage is
+measured on two machine-derived axes, generated into the parity
+report: the API Family axis is derived from the pinned IR (at least
+one representative of every namespace family executes against live
+VS Code), and the Construct Class axis from the emitter's canonical
+constant (every Total Mapping Rule construct class carries a
+`cc:`-tagged live probe unless it has a recorded live exemption with
+its reason). Runtime evidence is one aggregate real-host contract with
+mechanically attributed binding IDs — not independent behavioral
+contracts — and the docs say so. A missing Dart path for a public
+capability is a defect (vision rule, stated in the parity report).
