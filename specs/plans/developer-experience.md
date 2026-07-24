@@ -16,7 +16,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
   green on the module)
 - [ ] D-2 Mechanical ergonomics layer over the Parity Layer
 - [x] D-3 The dev loop: watch, reload, breakpoints
-- [ ] D-4 View protocol v2: push, streams, cancellation
+- [x] D-4 View protocol v2: push, streams, cancellation
 - [x] D-5 Theme bridge (closed; the real-host toggle proof remains
   for the gate follow-up)
 - [x] D-6 Startup honesty
@@ -77,6 +77,24 @@ separate product for the places that need taste.
 Check: emitter unit cases per new rule; the extension's host rewritten
 on the layer with a large measured drop in interop noise.
 
+D-2 round exit bar:
+
+- [ ] D-2a A generated `vscode_dart.g.dart` layer over the Parity
+  Layer, produced by total judgment-free rules: ordinary Dart types at
+  boundaries (String/int/bool/double), `Future<T>` from
+  `JSPromise<T>`, `Stream<T>` from `Event<T>`, `lit$` factories that
+  include inherited interface members, and alias-named string-literal
+  wrappers. Every parity declaration is accounted (emitted or a
+  recorded principled erasure); unmapped constructs fail generation.
+  Check: emitter unit suite per rule + totality ledger test.
+- [ ] D-2b The CLI emits the layer into Extension Projects beside the
+  parity layer. Check: cli_build byte-compare test.
+- [ ] D-2c Coverage Treemap's host adopts the layer with a measured
+  drop in interop noise (`.toJS`/`JS`-type token count recorded
+  before/after). Check: extension builds; both real-host gates green.
+
+
+
 ## D-3 The dev loop: watch, reload, breakpoints
 
 `flutter_vscode build --watch` plus automatic Extension Development
@@ -109,6 +127,19 @@ requests/events (streams), protocol-level cancellation, and
 per-request disposal, versioned alongside v1.
 Check: protocol suite plus the extension's watcher pushing a fresh
 snapshot to an open panel in the real-host gate.
+
+Closed: the protocol gains hostCall/hostResult/hostError frames with
+typed view-bound operations, one-way host events on named streams,
+and cancellation with per-request disposal on both directions; the
+wire version is 2 wholesale (both halves always ship from one build;
+mixed generations fail closed as unsupported_version, and
+stale-version frames are ignored, never executed, never answered —
+red ff8e9ea, spec correction 158c652). Proven three ways: 67-test
+protocol suite over the in-memory pair; Coverage Treemap's watcher
+pushing a fresh snapshot to the open panel in the real-host gate,
+with the view applying and acknowledging it; the host fixture's
+adversity probes re-running green on v2 (the unsupported-version
+probe now speaks 3).
 
 ## D-5 Theme bridge
 
@@ -171,6 +202,21 @@ procedure for onboarding a new release. "Supported releases, plural"
 is the difference between a demo and a dependency, and unlocks a real
 `upgrade` story.
 Check: two baselines in-tree; a fixture builds against each.
+
+D-8 round exit bar:
+
+- [ ] D-8a A second pinned VS Code release is imported end to end:
+  pinned inputs under `tool/bindings/inputs/vscode/<version>/`, IR
+  under `tool/bindings/ir/`, produced by the existing importer with
+  receipts. Check: importer run committed with pins.
+- [ ] D-8b `apiTarget` selects among the pinned baselines; an unknown
+  target fails actionably naming the available ones. Check: CLI tests.
+- [ ] D-8c A project created with the second baseline builds green,
+  emitting that baseline's facade and Parity Layer. Check: cli test.
+- [ ] D-8d The onboarding procedure for a new release is documented.
+  Check: docs page exists and matches the shipped mechanism.
+
+
 
 ## D-9 Nested-package analysis honesty
 

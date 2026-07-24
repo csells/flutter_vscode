@@ -72,7 +72,7 @@
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "5ee64c1f9a0313138db2b6d21a00bce0d893ba3b3818ea24ca71e0d3a4177b2a"
+      "sha256": "00e2aae0cd7391d5aa3c2b3d980ec9085a4529111252ec7aecd647c8b865731b"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -196,7 +196,7 @@
     },
     "viewLibrary": {
       "path": "lib/view.dart",
-      "sha256": "c82b6b24544cd6fea8b5d4293ee8e046ed8fbaf08ba77f0f1e979ec4a0f100e1"
+      "sha256": "b52cb4498b6a8cf3dd086d99ee0b3a6139bf2334efb2184741256d81e5a9bec6"
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",

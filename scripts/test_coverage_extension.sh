@@ -51,7 +51,7 @@ docker build \
 
 docker run --rm --init --shm-size=1g \
   --volume "${REPO_ROOT}:/workspace:ro" \
-  --volume "${WORKSPACE}:/coverage-workspace:ro" \
+  --volume "${WORKSPACE}:/coverage-workspace" \
   --volume "${CACHE_ROOT}:/vscode-test-cache" \
   --env VSCODE_TEST_CACHE_PATH=/vscode-test-cache \
   --env FLUTTER_VSCODE_COVERAGE_PROJECT=/workspace/extensions/coverage_treemap \

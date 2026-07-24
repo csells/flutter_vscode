@@ -31,6 +31,15 @@ const themeReportOperation = ViewOperation<ThemeReport, void>(
 );
 
 /// Runs the coverage treemap view under the live VS Code theme.
+/// Acknowledges host-pushed snapshots back to Host Dart.
+const pushReceivedOperation = ViewOperation<int, void>(
+  name: pushReceivedOperationName,
+  encodeArguments: encodePushReceived,
+  decodeArguments: decodePushReceived,
+  encodeResult: encodeThemeReportAck,
+  decodeResult: decodeThemeReportAck,
+);
+
 void main() => runFlutterView(TreemapApp(initialTheme: readVSCodeTheme()));
 
 /// Root widget themed from the host VS Code color theme.
@@ -80,6 +89,7 @@ class _TreemapPageState extends State<_TreemapPage> {
   Object? _error;
   var _loading = true;
   StreamSubscription<VSCodeThemeSnapshot>? _themeEvents;
+  StreamSubscription<Object?>? _pushEvents;
 
   @override
   void initState() {
@@ -93,7 +103,34 @@ class _TreemapPageState extends State<_TreemapPage> {
   @override
   void dispose() {
     unawaited(_themeEvents?.cancel());
+    unawaited(_pushEvents?.cancel());
     super.dispose();
+  }
+
+  /// Applies a host-pushed snapshot and acknowledges it, so the panel
+  /// refreshes without polling whenever the coverage file changes.
+  void _applyPushedSnapshot(FlutterViewSession session, Object? payload) {
+    final CoverageSnapshot snapshot;
+    try {
+      snapshot = decodeCoverageSnapshot(payload);
+    } on FormatException {
+      // A malformed push is ignored; pull refresh remains available.
+      return;
+    }
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _snapshot = snapshot;
+      _path = rebasePath(newRoot: snapshot.root, previousPath: _path);
+      _selectedFile = null;
+      _loading = false;
+    });
+    unawaited(
+      pushReceivedOperation
+          .call(session, snapshot.root.linesFound)
+          .catchError((Object _) {}),
+    );
   }
 
   Future<void> _load() async {
@@ -107,6 +144,10 @@ class _TreemapPageState extends State<_TreemapPage> {
         session = await VSCodeViewBootstrap.acquire().connect();
         _session = session;
         unawaited(_reportTheme(readVSCodeTheme()));
+        final connected = session;
+        _pushEvents = connected.events(snapshotPushStreamName).listen(
+              (payload) => _applyPushedSnapshot(connected, payload),
+            );
       }
       final snapshot = await snapshotOperation.call(session, null);
       if (!mounted) {

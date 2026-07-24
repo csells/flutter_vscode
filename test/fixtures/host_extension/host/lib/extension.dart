@@ -849,7 +849,7 @@ final class _ProtocolProbe {
     if (value case final Map<Object?, Object?> frame
         when frame['kind'] == 'call' &&
             frame['operation'] == unsupportedVersionOperationName &&
-            frame['version'] == 2) {
+            frame['version'] == 3) {
       unsupportedVersionFramesInjected += 1;
     }
   }
@@ -1003,7 +1003,7 @@ String _viewHtml({
                   outgoing = {...message, unexpected: true};
                   break;
                 case '$unsupportedVersionOperationName':
-                  outgoing = {...message, version: 2};
+                  outgoing = {...message, version: 3};
                   break;
               }
             }

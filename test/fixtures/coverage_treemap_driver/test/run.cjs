@@ -48,6 +48,58 @@ async function run() {
   assert.equal(viewReport.viewConnected, true);
   assert.equal(viewReport.lcovPath, 'coverage/lcov.info');
 
+  console.log('[coverage-treemap-test] verifying host-to-view snapshot push');
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const lcovPath = path.join(
+    workspaceFolders[0].uri.fsPath,
+    'coverage',
+    'lcov.info',
+  );
+  fs.writeFileSync(
+    lcovPath,
+    [
+      'SF:lib/main.dart',
+      'DA:1,4',
+      'DA:2,0',
+      'DA:3,1',
+      'DA:4,1',
+      'DA:5,0',
+      'DA:6,1',
+      'LF:6',
+      'LH:4',
+      'end_of_record',
+      'SF:lib/src/util.dart',
+      'DA:1,0',
+      'DA:2,0',
+      'DA:3,5',
+      'LF:3',
+      'LH:1',
+      'end_of_record',
+      '',
+    ].join('\n'),
+  );
+  const pushDeadline = Date.now() + 60000;
+  for (;;) {
+    const pushJson = await vscode.commands.executeCommand(
+      'coverage-treemap.pushSmoke',
+    );
+    const push = JSON.parse(pushJson);
+    if (push.pushesApplied >= 1 && push.lastAppliedLinesFound === 9) {
+      console.log(
+        `[coverage-treemap-test] view applied pushed snapshot ` +
+          `(${push.pushesApplied} applied, ${push.pushesSent} sent)`,
+      );
+      break;
+    }
+    if (Date.now() > pushDeadline) {
+      assert.fail(
+        `The view never applied the pushed snapshot: ${pushJson}`,
+      );
+    }
+    await new Promise((resolve) => setTimeout(resolve, 250));
+  }
+
   console.log('[coverage-treemap-test] exercising the in-VSC coverage run');
   const terminalsBefore = vscode.window.terminals.length;
   await vscode.commands.executeCommand('coverage-treemap.runTests');

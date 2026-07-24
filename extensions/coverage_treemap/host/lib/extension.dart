@@ -28,6 +28,14 @@ const _themeReportOperation = ViewOperation<ThemeReport, void>(
 
 const _lcovRelativePath = 'coverage/lcov.info';
 
+const _pushReceivedOperation = ViewOperation<int, void>(
+  name: pushReceivedOperationName,
+  encodeArguments: encodePushReceived,
+  decodeArguments: decodePushReceived,
+  encodeResult: encodeThemeReportAck,
+  decodeResult: decodeThemeReportAck,
+);
+
 @JSExport()
 class _Extension {
   _CoverageController? _controller;
@@ -67,6 +75,9 @@ final class _CoverageController {
   LcovReport? _report;
   var _highlightsEnabled = true;
   FlutterViewHost? _viewHost;
+  var _pushesSent = 0;
+  var _pushesApplied = 0;
+  int? _lastAppliedLinesFound;
   parity.Terminal? _terminal;
   ThemeReport? _lastThemeReport;
   final Completer<String> _firstSnapshotServed = Completer<String>();
@@ -116,6 +127,13 @@ final class _CoverageController {
       return jsonEncode(
         report == null ? null : encodeThemeReport(report),
       ).toJS;
+    });
+    _registerCommand('coverage-treemap.pushSmoke', () async {
+      return jsonEncode(<String, Object?>{
+        'pushesSent': _pushesSent,
+        'pushesApplied': _pushesApplied,
+        'lastAppliedLinesFound': _lastAppliedLinesFound,
+      }).toJS;
     });
     _registerCommand('coverage-treemap.smoke', () async {
       await _refresh();
@@ -193,6 +211,20 @@ final class _CoverageController {
       _statusBar
         ..text = '\$(beaker) Cov $percent%'
         ..show();
+      final viewHost = _viewHost;
+      if (viewHost != null) {
+        _pushesSent += 1;
+        unawaited(
+          viewHost.session
+              .emitEvent(
+                snapshotPushStreamName,
+                encodeCoverageSnapshot(
+                  CoverageSnapshot.fromReport(_lcovRelativePath, report),
+                ),
+              )
+              .catchError((Object _) {}),
+        );
+      }
     }
     _decorateActiveEditor();
   }
@@ -258,6 +290,10 @@ final class _CoverageController {
       title: 'Coverage Treemap',
       onClosed: () => _viewHost = null,
       operations: [
+        _pushReceivedOperation.bind((linesFound) {
+          _pushesApplied += 1;
+          _lastAppliedLinesFound = linesFound;
+        }),
         _snapshotOperation.bind((_) async {
           await _refresh();
           final report = _report;

@@ -11,6 +11,23 @@ const coverageSnapshotOperationName = 'coverageTreemap.getSnapshot';
 /// Operation name the view calls to report its resolved theme.
 const themeReportOperationName = 'coverageTreemap.reportTheme';
 
+/// Event stream on which the host pushes fresh coverage snapshots.
+const snapshotPushStreamName = 'coverageTreemap.snapshotPush';
+
+/// Operation name the view calls after applying a pushed snapshot.
+const pushReceivedOperationName = 'coverageTreemap.pushReceived';
+
+/// Encodes the applied snapshot's total instrumented lines.
+Object? encodePushReceived(int linesFound) => linesFound;
+
+/// Decodes the applied snapshot's total instrumented lines.
+int decodePushReceived(Object? value) {
+  if (value is int) {
+    return value;
+  }
+  throw const FormatException('Expected the applied linesFound count.');
+}
+
 /// One node of the protocol-safe coverage tree.
 ///
 /// A file node has no [children]; a directory node aggregates its
