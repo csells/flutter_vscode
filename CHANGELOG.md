@@ -1,5 +1,10 @@
 ## Unreleased
 
+- Support plural pinned VS Code baselines: 1.130.0 ships beside the
+  1.129.1 seed, the project descriptor's `apiTarget` selects among
+  them, an unknown target fails with an error naming every pinned
+  target, and `docs/guides/new-baseline.md` documents onboarding a
+  new release.
 - Add the Dart-owned `flutter_vscode create`, `build`, and `package` workflow.
 - Generate a reviewed VS Code 1.129.1 host-binding slice from pinned inputs.
 - Pin and project transitive contribution validators with exact JavaScript trim
