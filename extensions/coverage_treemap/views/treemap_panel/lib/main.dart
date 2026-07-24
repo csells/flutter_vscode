@@ -20,28 +20,47 @@ const snapshotOperation = ViewOperation<void, CoverageSnapshot>(
   decodeResult: decodeCoverageSnapshot,
 );
 
-/// Runs the coverage treemap view.
-void main() => runFlutterView(const TreemapApp());
+/// The typed view-protocol operation that reports the view's resolved
+/// theme to Host Dart.
+const themeReportOperation = ViewOperation<ThemeReport, void>(
+  name: themeReportOperationName,
+  encodeArguments: encodeThemeReport,
+  decodeArguments: decodeThemeReport,
+  encodeResult: encodeThemeReportAck,
+  decodeResult: decodeThemeReportAck,
+);
 
-/// Dark-themed root widget for the coverage treemap panel.
+/// Runs the coverage treemap view under the live VS Code theme.
+void main() => runFlutterView(TreemapApp(initialTheme: readVSCodeTheme()));
+
+/// Root widget themed from the host VS Code color theme.
+///
+/// The webview's `--vscode-*` variables captured at startup seed the
+/// Material theme; [watchVSCodeTheme] rebuilds it live when the user
+/// switches VS Code color themes.
 class TreemapApp extends StatelessWidget {
-  /// Creates the root widget.
-  const TreemapApp({super.key});
+  /// Creates the root widget over the theme captured at startup.
+  const TreemapApp({required this.initialTheme, super.key});
+
+  /// The VS Code theme snapshot read before the first frame.
+  final VSCodeThemeSnapshot initialTheme;
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Coverage Treemap',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        fontFamily: 'Roboto',
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF35793D),
-          brightness: Brightness.dark,
-        ),
-        scaffoldBackgroundColor: treemapSurfaceColor,
-      ),
-      home: const _TreemapPage(),
+    return StreamBuilder<VSCodeThemeSnapshot>(
+      stream: watchVSCodeTheme(),
+      initialData: initialTheme,
+      builder: (context, snapshot) {
+        final theme = vsCodeThemeData(snapshot.data ?? initialTheme);
+        return MaterialApp(
+          title: 'Coverage Treemap',
+          debugShowCheckedModeBanner: false,
+          theme: theme.copyWith(
+            textTheme: theme.textTheme.apply(fontFamily: 'Roboto'),
+          ),
+          home: const _TreemapPage(),
+        );
+      },
     );
   }
 }
@@ -60,11 +79,21 @@ class _TreemapPageState extends State<_TreemapPage> {
   CoverageNode? _selectedFile;
   Object? _error;
   var _loading = true;
+  StreamSubscription<VSCodeThemeSnapshot>? _themeEvents;
 
   @override
   void initState() {
     super.initState();
+    _themeEvents = watchVSCodeTheme().listen(
+      (snapshot) => unawaited(_reportTheme(snapshot)),
+    );
     unawaited(_load());
+  }
+
+  @override
+  void dispose() {
+    unawaited(_themeEvents?.cancel());
+    super.dispose();
   }
 
   Future<void> _load() async {
@@ -74,8 +103,11 @@ class _TreemapPageState extends State<_TreemapPage> {
     });
     try {
       var session = _session;
-      session ??= await VSCodeViewBootstrap.acquire().connect();
-      _session = session;
+      if (session == null) {
+        session = await VSCodeViewBootstrap.acquire().connect();
+        _session = session;
+        unawaited(_reportTheme(readVSCodeTheme()));
+      }
       final snapshot = await snapshotOperation.call(session, null);
       if (!mounted) {
         return;
@@ -94,6 +126,26 @@ class _TreemapPageState extends State<_TreemapPage> {
         _error = error;
         _loading = false;
       });
+    }
+  }
+
+  /// Reports the resolved theme to Host Dart for gate verification.
+  Future<void> _reportTheme(VSCodeThemeSnapshot snapshot) async {
+    final session = _session;
+    if (session == null) {
+      return;
+    }
+    try {
+      await themeReportOperation.call(
+        session,
+        ThemeReport(
+          kind: snapshot.kind.name,
+          editorBackground: snapshot.editorBackground,
+        ),
+      );
+    } on Object {
+      // Theme reporting is diagnostic-only; the view keeps rendering
+      // when the host cannot accept a report.
     }
   }
 
@@ -180,6 +232,7 @@ class _HeaderBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final current = path.last;
     final file = selectedFile;
     final subtitle = file == null
@@ -187,7 +240,7 @@ class _HeaderBar extends StatelessWidget {
         : '${file.name} - ${coveragePercent(file.coverage, decimals: 1)} '
               '(${file.linesHit}/${file.linesFound} lines)';
     return ColoredBox(
-      color: const Color(0xFF252526),
+      color: scheme.surfaceContainer,
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Column(
@@ -201,8 +254,8 @@ class _HeaderBar extends StatelessWidget {
                 const SizedBox(width: 12),
                 Text(
                   coveragePercent(current.coverage, decimals: 1),
-                  style: const TextStyle(
-                    color: Color(0xFFF2F2F2),
+                  style: TextStyle(
+                    color: scheme.onSurface,
                     fontSize: 13,
                     fontWeight: FontWeight.w600,
                   ),
@@ -219,7 +272,7 @@ class _HeaderBar extends StatelessWidget {
               subtitle,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(color: Color(0xFF9D9D9D), fontSize: 11),
+              style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 11),
             ),
           ],
         ),
@@ -236,15 +289,16 @@ class _Breadcrumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final crumbs = <Widget>[];
     for (var i = 0; i < path.length; i++) {
       final isLast = i == path.length - 1;
       final name = i == 0 ? 'root' : path[i].name;
       if (i > 0) {
         crumbs.add(
-          const Text(
+          Text(
             ' > ',
-            style: TextStyle(color: Color(0xFF6E6E6E), fontSize: 13),
+            style: TextStyle(color: scheme.onSurfaceVariant, fontSize: 13),
           ),
         );
       }
@@ -252,8 +306,8 @@ class _Breadcrumb extends StatelessWidget {
         isLast
             ? Text(
                 name,
-                style: const TextStyle(
-                  color: Color(0xFFF2F2F2),
+                style: TextStyle(
+                  color: scheme.onSurface,
                   fontSize: 13,
                   fontWeight: FontWeight.w600,
                 ),
@@ -262,8 +316,8 @@ class _Breadcrumb extends StatelessWidget {
                 onTap: () => onNavigate(i),
                 child: Text(
                   name,
-                  style: const TextStyle(
-                    color: Color(0xFF6FB1E8),
+                  style: TextStyle(
+                    color: scheme.primary,
                     fontSize: 13,
                   ),
                 ),
@@ -286,6 +340,7 @@ class _ErrorPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     return Center(
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 420),
@@ -294,10 +349,10 @@ class _ErrorPanel extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text(
+              Text(
                 'Could not load coverage',
                 style: TextStyle(
-                  color: Color(0xFFF2F2F2),
+                  color: scheme.onSurface,
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
                 ),
@@ -306,7 +361,10 @@ class _ErrorPanel extends StatelessWidget {
               Text(
                 '$error',
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Color(0xFF9D9D9D), fontSize: 12),
+                style: TextStyle(
+                  color: scheme.onSurfaceVariant,
+                  fontSize: 12,
+                ),
               ),
               const SizedBox(height: 16),
               OutlinedButton(onPressed: onRetry, child: const Text('Retry')),
@@ -331,7 +389,10 @@ class _EmptyPanel extends StatelessWidget {
             ? 'No coverage data - run your tests with coverage'
             : 'This directory has no measurable coverage',
         textAlign: TextAlign.center,
-        style: const TextStyle(color: Color(0xFF9D9D9D), fontSize: 13),
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onSurfaceVariant,
+          fontSize: 13,
+        ),
       ),
     );
   }

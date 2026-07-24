@@ -1,11 +1,15 @@
 /// The typed view-protocol contract between Host Dart and the treemap
-/// Flutter View: one operation returning a coverage snapshot.
+/// Flutter View: one operation returning a coverage snapshot and one
+/// through which the view reports its resolved theme.
 library;
 
 import 'package:coverage_treemap_shared/lcov.dart';
 
 /// Operation name for requesting the current coverage snapshot.
 const coverageSnapshotOperationName = 'coverageTreemap.getSnapshot';
+
+/// Operation name the view calls to report its resolved theme.
+const themeReportOperationName = 'coverageTreemap.reportTheme';
 
 /// One node of the protocol-safe coverage tree.
 ///
@@ -129,4 +133,47 @@ CoverageNode _decodeNode(Object? value) {
     );
   }
   throw const FormatException('Malformed coverage node.');
+}
+
+/// The view's resolved theme, reported to Host Dart so gates can verify
+/// that live VS Code colors reached the Flutter View.
+final class ThemeReport {
+  /// Creates a report.
+  const ThemeReport({required this.kind, this.editorBackground});
+
+  /// The resolved theme-kind name (`light`, `dark`, or `highContrast`).
+  final String kind;
+
+  /// The resolved `--vscode-editor-background` as a 32-bit ARGB
+  /// integer, when the theme provided it.
+  final int? editorBackground;
+}
+
+/// Encodes [report] as a protocol-safe value.
+Object? encodeThemeReport(ThemeReport report) => <String, Object?>{
+      'kind': report.kind,
+      'editorBackground': report.editorBackground,
+    };
+
+/// Validates and decodes the exact theme report schema.
+ThemeReport decodeThemeReport(Object? value) {
+  if (value case <Object?, Object?>{
+    'kind': final String kind,
+    'editorBackground': final int? editorBackground,
+  } when value.length == 2) {
+    return ThemeReport(kind: kind, editorBackground: editorBackground);
+  }
+  throw const FormatException('Malformed theme report.');
+}
+
+/// Encodes a theme-report acknowledgement; the operation returns
+/// nothing.
+Object? encodeThemeReportAck(void ack) => null;
+
+/// Decodes a theme-report acknowledgement; the operation returns
+/// nothing.
+void decodeThemeReportAck(Object? value) {
+  if (value != null) {
+    throw const FormatException('The theme report returns no result.');
+  }
 }
