@@ -137,3 +137,79 @@ test('failed activation rolls back each new registration once', async () => {
     }
   }
 });
+
+test('development mode reloads the window when the host bundle changes',
+    async () => {
+  const os = require('node:os');
+  const temp = fs.mkdtempSync(path.join(os.tmpdir(), 'flutter-vscode-reload-'));
+  fs.mkdirSync(path.join(temp, 'out'), {recursive: true});
+  const tempBootstrap = path.join(temp, 'out', 'bootstrap.cjs');
+  const tempBundle = path.join(temp, 'out', 'extension.dart.js');
+  fs.copyFileSync(bootstrapPath, tempBootstrap);
+  fs.copyFileSync(dartBundlePath, tempBundle);
+  fs.copyFileSync(`${dartBundlePath}.map`, `${tempBundle}.map`);
+  fs.copyFileSync(
+    path.join(fixtureRoot, 'package.json'),
+    path.join(temp, 'package.json'),
+  );
+
+  const executed = [];
+  const fakeVscode = {
+    ExtensionMode: {Production: 1, Development: 2, Test: 3},
+    commands: {
+      executeCommand(id) {
+        executed.push(id);
+        return Promise.resolve();
+      },
+      registerCommand(command) {
+        if (command === 'flutter-vscode.host-test.openEventCount') {
+          throw new Error('injected activation failure');
+        }
+        return {dispose() {}};
+      },
+    },
+    languages: {registerHoverProvider: () => ({dispose() {}})},
+    workspace: {onDidOpenTextDocument: () => ({dispose() {}})},
+  };
+  const context = {subscriptions: [], extensionMode: 2};
+
+  const originalLoad = Module._load;
+  const originalNamespace = globalThis.__flutterVscode;
+  Module._load = function load(request, parent, isMain) {
+    if (request === 'vscode') {
+      return fakeVscode;
+    }
+    return originalLoad.call(this, request, parent, isMain);
+  };
+  delete require.cache[tempBootstrap];
+  delete require.cache[tempBundle];
+  delete globalThis.__flutterVscode;
+
+  try {
+    const lifecycle = require(tempBootstrap);
+    await assert.rejects(lifecycle.activate(context), /injected activation/);
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    fs.appendFileSync(tempBundle, '\n// rebuilt\n');
+    const deadline = Date.now() + 5000;
+    while (!executed.includes('workbench.action.reloadWindow')) {
+      if (Date.now() > deadline) {
+        assert.fail(
+          'The development host never requested a window reload after ' +
+            'the bundle changed.',
+        );
+      }
+      await new Promise((resolve) => setTimeout(resolve, 50));
+    }
+  } finally {
+    Module._load = originalLoad;
+    globalThis.__flutterVscode = originalNamespace;
+    for (const subscription of context.subscriptions) {
+      try {
+        subscription.dispose();
+      } catch {
+        // Cleanup only.
+      }
+    }
+    fs.rmSync(temp, {recursive: true, force: true});
+  }
+});
