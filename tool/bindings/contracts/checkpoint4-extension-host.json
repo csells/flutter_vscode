@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "8790cc78deb6f76ba3a65b3548c4cde93956aa879428a040a4670caefe6fcec6"
+      "sha256": "0e91108ed5708ddfb6d940367d2608151d83b39c88d37d4d2fb3eae2103e5606"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -60,7 +60,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "5f311e53520d17550bf6d30a95eeba9dce8273017b4f1866ca5f82afbf5688fa"
+      "sha256": "1dc9947cf5fd9b9466a0b6a1be11f2d9b2371ac0cd0420a89c7a9e7565d4958b"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -72,7 +72,7 @@
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "00e2aae0cd7391d5aa3c2b3d980ec9085a4529111252ec7aecd647c8b865731b"
+      "sha256": "5ee64c1f9a0313138db2b6d21a00bce0d893ba3b3818ea24ca71e0d3a4177b2a"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
