@@ -724,7 +724,42 @@ if (!host) {
   throw new Error('Dart host did not register its lifecycle exports.');
 }
 
+let devReloadWatcher;
+const startDevReload = (context) => {
+  if (devReloadWatcher) {
+    return;
+  }
+  const bundlePath = path.join(__dirname, '..', 'out', 'extension.dart.js');
+  let debounce;
+  devReloadWatcher = fs.watch(path.dirname(bundlePath), (_event, filename) => {
+    if (filename !== path.basename(bundlePath)) {
+      return;
+    }
+    clearTimeout(debounce);
+    debounce = setTimeout(() => {
+      vscode.commands.executeCommand('workbench.action.reloadWindow');
+    }, 150);
+  });
+  context.subscriptions.push({
+    dispose() {
+      clearTimeout(debounce);
+      try {
+        devReloadWatcher.close();
+      } catch {
+        // The watcher may already be gone during host shutdown.
+      }
+      devReloadWatcher = undefined;
+    },
+  });
+};
+
 exports.activate = async (context) => {
+  if (
+    vscode.ExtensionMode &&
+    context.extensionMode === vscode.ExtensionMode.Development
+  ) {
+    startDevReload(context);
+  }
   const firstActivationSubscription = context.subscriptions.length;
   try {
     return await host.activate(context, vscode);

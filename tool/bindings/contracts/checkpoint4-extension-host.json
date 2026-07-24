@@ -24,7 +24,7 @@
     },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "6e42909d22b9f526c0119edfd3de9861e492cfbb69d32426a9922e9b10cae685"
+      "sha256": "e522d619fabdb05d1e856735d3d3f135a73f52fa619e2655aba9cb0e471186a3"
     },
     "bindingWriter": {
       "path": "tool/binding_generator/writer.dart",
@@ -32,7 +32,7 @@
     },
     "bootstrapLifecycleTest": {
       "path": "tool/extension_host_test/bootstrap_lifecycle.test.cjs",
-      "sha256": "0188d03f6fdb089dba796a7034eff89d631e649e38b9d57f921abad7af87922c"
+      "sha256": "09f3ceab28f1effa3141e4b7cf9dbbb0f21cc4af5f32e9b0c3e8e413fe489ff4"
     },
     "buildReceipt": {
       "path": "lib/src/cli/build_receipt.dart",
@@ -52,7 +52,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "ea16286020b4f344b722fc18b2ef4bc39ad773666c83d9a120a533de32e27086"
+      "sha256": "ce476ecc6b63facd15679c6e7640d250d50ccc9642f69d16ddf1edb9a6d5d6f0"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -132,7 +132,7 @@
     },
     "generatedBootstrap": {
       "path": "test/fixtures/host_extension/host/bootstrap.cjs",
-      "sha256": "5ba38b52e2c5610b63245edec4c8deeb36027d0b359c4ca95bde4db85a3623e1"
+      "sha256": "1e3a120e234f8d1b82562f1115f86f435164ca71276c2ba665e6f2b01897c54b"
     },
     "generatedFacade": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart",
