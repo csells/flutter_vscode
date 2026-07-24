@@ -18,11 +18,11 @@ bar with the usual rules (reds are commits, machine-checked closure).
 - [ ] D-3 The dev loop: watch, reload, breakpoints
 - [ ] D-4 View protocol v2: push, streams, cancellation
 - [ ] D-5 Theme bridge
-- [ ] D-6 Startup honesty
+- [x] D-6 Startup honesty
 - [x] D-7 `doctor` and `test` commands
 - [ ] D-8 Multi-baseline support
 - [x] D-9 Nested-package analysis honesty
-- [ ] D-10 Host network story
+- [x] D-10 Host network story
 
 ## D-1 One-call Flutter View hosting
 
@@ -112,6 +112,13 @@ evaluate wasm/deferred loading against it. Flutter-web weight is the
 first objection every evaluator raises; meet it with data.
 Check: the measurement runs in a gate and the doc cites its output.
 
+Closed: both real-host gates measure webview-load-to-first-rendered-
+frame via the fixture's render observer, assert sanity, and print the
+number; `docs/reference/startup.md` defines the span and records
+284ms (dev flow) / 315ms (installed VSIX) on the pinned host
+(red 80defa9). Wasm/deferred-loading evaluation stays deferred until
+a real extension regresses the number.
+
 ## D-7 `doctor` and `test` commands
 
 Graduates the product-workflow futures item (minus `upgrade`, which
@@ -164,3 +171,10 @@ Decide and ship the supported path (a total-rule binding or a runtime
 helper), unblocking the pub.dev-explorer class of extensions.
 Check: a fixture host performs a real request in the packaged gate
 against a local server.
+
+Closed: the generated runtime ships `hostFetch` — Node's WHATWG
+`fetch` bound with method/headers/body support, returning a
+protocol-safe status+body snapshot (red d0e5332). Proven two ways: a
+compiled-probe unit test round-trips against a local Node server, and
+the packaged gate's driver serves HTTP from inside VS Code while the
+installed fixture's `hostFetchProbe` command fetches it live.

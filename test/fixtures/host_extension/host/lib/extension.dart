@@ -564,6 +564,7 @@ class _VSCodeHostExtension {
         : 'Protocol probe completed';
     var hostObservedRenderCount = 0;
     int? viewColdStartMs;
+    DateTime? viewLoadStarted;
     String? hostObservedRenderedContent;
     final viewRoot = _joinUri(context.extensionRootUri, const [
       'out',
@@ -671,8 +672,11 @@ class _VSCodeHostExtension {
               );
             }
             hostObservedRenderCount += 1;
-            viewColdStartMs ??=
-                DateTime.now().difference(viewLoadStarted).inMilliseconds;
+            final loadStarted = viewLoadStarted;
+            if (viewColdStartMs == null && loadStarted != null) {
+              viewColdStartMs =
+                  DateTime.now().difference(loadStarted).inMilliseconds;
+            }
             hostObservedRenderedContent = observation.content;
             return true;
           }),
@@ -689,7 +693,7 @@ class _VSCodeHostExtension {
             );
           }).toJS,
         );
-      final viewLoadStarted = DateTime.now();
+      viewLoadStarted = DateTime.now();
       panel.webviewSurface.htmlText = viewHtml;
 
       await _awaitViewMilestone(session.ready, transport);
