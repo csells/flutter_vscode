@@ -21,7 +21,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
 - [ ] D-6 Startup honesty
 - [ ] D-7 `doctor` and `test` commands
 - [ ] D-8 Multi-baseline support
-- [ ] D-9 Nested-package analysis honesty
+- [x] D-9 Nested-package analysis honesty
 - [ ] D-10 Host network story
 
 ## D-1 One-call Flutter View hosting
@@ -141,6 +141,13 @@ enforce the strict lint set. Make the gates mean what they say
 that proves the lint set is active).
 Check: a deliberately violating probe file fails analysis in a nested
 package.
+
+Closed: every nested package (extensions and fixtures, host/shared/
+views) carries `analysis_options.yaml` including the strict set plus a
+`very_good_analysis` dev dependency; `test/nested_analysis_test.dart`
+enforces the wiring structurally and proves activation with a
+violating probe that must fail standalone `dart analyze`
+(red c659677).
 
 ## D-10 Host network story
 

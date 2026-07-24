@@ -13,3 +13,6 @@ dependencies:
   flutter_vscode_host_fixture_shared:
     path: ../../shared
   web: ^1.1.0
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

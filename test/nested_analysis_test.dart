@@ -65,10 +65,10 @@ void main() {
       final source = Directory('extensions/coverage_treemap/shared');
       final copy = Directory(p.join(temporary.path, 'shared'));
       await Process.run('cp', ['-R', source.path, copy.path]);
-      final probe = File(p.join(copy.path, 'lib', 'probe.dart'));
       // Violates only the strict set (prefer_single_quotes), never the
       // default analyzer, so failure proves the include resolved.
-      probe.writeAsStringSync('final String probe = "double quoted";\n');
+      File(p.join(copy.path, 'lib', 'probe.dart'))
+          .writeAsStringSync('final String probe = "double quoted";\n');
 
       final resolve = await Process.run(
         'dart',

@@ -7,3 +7,6 @@ environment:
 dependencies:
   coverage_treemap_shared:
     path: ../shared
+
+dev_dependencies:
+  very_good_analysis: ^10.0.0

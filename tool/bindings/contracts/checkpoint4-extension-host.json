@@ -76,11 +76,11 @@
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
-      "sha256": "d68787956cca61e089ade2fe54a5e6cfcd01bf2a0c56a7f6ac5f568fbef35d72"
+      "sha256": "a1d2d78795cb7f1054f43bef9e5832bfa2c2c35110eda493e8f29a7213f4121d"
     },
     "fixtureHostPackageLock": {
       "path": "test/fixtures/host_extension/host/pubspec.lock",
-      "sha256": "41bdd9973cff6f621b55bc18d2950f738b5026b3af8d49be33567c19276f59d6"
+      "sha256": "b3c7412762ad8768fd28e27f4d8b8bbd1550bc881a598a5984116c804bb145ff"
     },
     "fixtureManifest": {
       "path": "test/fixtures/host_extension/package.json",
@@ -96,7 +96,7 @@
     },
     "fixtureSharedPackage": {
       "path": "test/fixtures/host_extension/shared/pubspec.yaml",
-      "sha256": "4b7df008b526f4a68d1ff86ab178a64be139d746521a1bff6e269325a308d086"
+      "sha256": "a49e24227a26642e6a1d1788f317c386201503b6be9aebcef1336995678deef4"
     },
     "fixtureTransport": {
       "path": "test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart",
@@ -112,11 +112,11 @@
     },
     "fixtureViewPackage": {
       "path": "test/fixtures/host_extension/views/main/pubspec.yaml",
-      "sha256": "8a7faef813f65e16aaa0fd925e7e00501cace7f02e182427c4e90efccea718f9"
+      "sha256": "d30551dee4731586da08ed7772e7008edfd7e267b60895e9eff0902f126f3c57"
     },
     "fixtureViewPackageLock": {
       "path": "test/fixtures/host_extension/views/main/pubspec.lock",
-      "sha256": "47b48ae7322ed74c8b8bc0f36b0a7d2a07b259a5d5d90c530ce10fb8cd9d4653"
+      "sha256": "45b52db7ee865a8c3526037348f4ed174928244df443f0e5002173a85588f559"
     },
     "flutterViewHostTemplate": {
       "path": "lib/src/cli/flutter_view_host_source.dart",
