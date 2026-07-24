@@ -10,7 +10,10 @@ sequence or schedule. Rough dependency order below.
 
 - **Idiomatic Facade** over the Parity Layer: Dart-first ergonomics,
   Semantic Overrides, reviewed design — built up incrementally after the
-  Parity Layer ships.
+  Parity Layer ships. The mechanical Dart layer (developer-experience
+  D-2) now covers the judgment-free half; the facade adds the reviewed
+  half, including a broader options-to-named-parameters surface beyond
+  the flattened `lit$` factories.
 - **Behavioral verification burn-down**: real-host evidence for parity
   members, grouped by capability fixture (trees/filesystems,
   terminals/tasks, language features, testing, SCM, notebooks,

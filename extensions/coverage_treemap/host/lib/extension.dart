@@ -4,6 +4,8 @@ import 'dart:js_interop';
 
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
 import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
+import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
+    as vs;
 import 'package:coverage_treemap_host/generated/vscode_facade.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_parity_layer.g.dart'
     as parity;
@@ -44,7 +46,7 @@ class _Extension {
     final controller = _CoverageController(
       ExtensionContext.fromJS(rawContext),
       VSCode.fromJS(rawVscode),
-      parity.VscodeApi(rawVscode),
+      parity.VscodeApi(rawVscode).dart,
     );
     _controller = controller;
     return toHostPromise(controller.start());
@@ -67,7 +69,7 @@ final class _CoverageController {
 
   final ExtensionContext _context;
   final VSCode _vscode;
-  final parity.VscodeApi _api;
+  final vs.VscodeApiDart _api;
 
   late final parity.TextEditorDecorationType _coveredType;
   late final parity.TextEditorDecorationType _uncoveredType;
@@ -146,17 +148,17 @@ final class _CoverageController {
       return jsonEncode(payload).toJS;
     });
 
-    final watcher =
-        _api.workspace.createFileSystemWatcher('**/$_lcovRelativePath'.toJS);
+    final watcher = _api.workspace
+        .createFileSystemWatcher('**/$_lcovRelativePath'.toJS)
+        .dart;
     _subscribeParity(watcher);
-    _subscribeParity(watcher.onDidChange.call(_refreshListener));
-    _subscribeParity(watcher.onDidCreate.call(_refreshListener));
-    _subscribeParity(watcher.onDidDelete.call(_refreshListener));
-    _subscribeParity(
-      _api.window.onDidChangeActiveTextEditor.call(
-        ((JSAny? _) => _decorateActiveEditor()).toJS,
-      ),
-    );
+    _subscriptions.addAll([
+      watcher.onDidChangeStream.listen(_refreshOnEvent),
+      watcher.onDidCreateStream.listen(_refreshOnEvent),
+      watcher.onDidDeleteStream.listen(_refreshOnEvent),
+      _api.window.onDidChangeActiveTextEditorStream
+          .listen((_) => _decorateActiveEditor()),
+    ]);
 
     await _refresh();
     return null;
@@ -164,13 +166,18 @@ final class _CoverageController {
 
   /// Closes the view session resources when the panel or extension ends.
   Future<void> closePanelSession() async {
+    for (final subscription in _subscriptions) {
+      unawaited(subscription.cancel());
+    }
+    _subscriptions.clear();
     final viewHost = _viewHost;
     _viewHost = null;
     await viewHost?.close();
   }
 
-  JSFunction get _refreshListener =>
-      ((JSAny? _) => unawaited(_refresh())).toJS;
+  final List<StreamSubscription<Object?>> _subscriptions = [];
+
+  void _refreshOnEvent(Object? _) => unawaited(_refresh());
 
   void _registerCommand(String name, Future<JSAny?> Function() body) {
     _context.subscriptions.toDart.add(
@@ -199,10 +206,11 @@ final class _CoverageController {
       _report = parseLcov(content);
     } on FormatException catch (error) {
       _report = null;
-      _api.window.showErrorMessage(
-        'Coverage Treemap could not parse $_lcovRelativePath: '
-                '${error.message}'
-            .toJS,
+      unawaited(
+        _api.window.showErrorMessage(
+          'Coverage Treemap could not parse $_lcovRelativePath: '
+          '${error.message}',
+        ),
       );
     }
     final report = _report;
@@ -239,7 +247,7 @@ final class _CoverageController {
       ['coverage'.toJS, 'lcov.info'.toJS],
     );
     try {
-      final bytes = await _api.workspace.fs.readFile(uri).toDart;
+      final bytes = await _api.workspace.fs.dart.readFile(uri);
       return utf8.decode(bytes.toDart);
     } on Object {
       // A missing or unreadable coverage file is a normal state.
@@ -266,8 +274,7 @@ final class _CoverageController {
           if (line < 0) {
             continue;
           }
-          final range =
-              _api.Range.new$$2(line.toJS, 0.toJS, line.toJS, 0.toJS);
+          final range = _api.Range.new$$2(line, 0, line, 0);
           (entry.value > 0 ? covered : uncovered).add(range);
         }
         break;
@@ -318,14 +325,13 @@ final class _CoverageController {
   }
 
 
-  parity.TextEditorDecorationType _lineDecoration(String colorId) {
-    final themable = parity.ThemableDecorationRenderOptions.lit$(
-      backgroundColor: _api.ThemeColor.new$(colorId.toJS),
-    );
-    return _api.window.createTextEditorDecorationType(
-      parity.DecorationRenderOptions(themable)..isWholeLine = true,
-    );
-  }
+  parity.TextEditorDecorationType _lineDecoration(String colorId) =>
+      _api.window.createTextEditorDecorationType(
+        vs.DecorationRenderOptionsDart.lit$(
+          backgroundColor: _api.ThemeColor.new$(colorId),
+          isWholeLine: true,
+        ),
+      );
 }
 
 void main() {

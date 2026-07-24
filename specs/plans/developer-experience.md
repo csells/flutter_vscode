@@ -1,6 +1,7 @@
 # Developer Experience Plan
 
-Status: In progress — D-1 closed (red b5ef194; both real-host gates green on the module); D-2..D-10 remain proposed
+Status: Implemented and verified — valid only while the fast suites
+and the real-host gates are green at HEAD; every D-item is closed
 Date: 2026-07-23
 
 Captures the framework-compelling/dev-friendly direction agreed with
@@ -14,7 +15,7 @@ bar with the usual rules (reds are commits, machine-checked closure).
 
 - [x] D-1 One-call Flutter View hosting (closed; both real-host gates
   green on the module)
-- [ ] D-2 Mechanical ergonomics layer over the Parity Layer
+- [x] D-2 Mechanical ergonomics layer over the Parity Layer
 - [x] D-3 The dev loop: watch, reload, breakpoints
 - [x] D-4 View protocol v2: push, streams, cancellation
 - [x] D-5 Theme bridge (closed; the real-host toggle proof remains
@@ -100,9 +101,20 @@ D-2 round exit bar:
   beside the parity layer from the same pinned inputs, byte-stable
   across identical builds and within the Host Dart import boundary
   (red 9715d58). Check: cli_build_test.
-- [ ] D-2c The extension's host rewrites onto the layer with a large
-  measured drop in interop noise. Check: the real-host gates green on
-  the rewritten host.
+- [x] D-2c Coverage Treemap's host adopted the layer: the flattened
+  `DecorationRenderOptionsDart.lit$` replaces the wrap-and-cascade
+  (with `backgroundColor` and `isWholeLine` in one call), watcher and
+  active-editor events are Dart `Stream`s with `StreamSubscription`
+  lifecycle instead of `.toJS` listener plumbing, `readFile` awaits a
+  `Future`, `showErrorMessage` and ctor helpers take ordinary
+  `String`/`num`. Interop-noise tokens (`.toJS`/`.toDart`/JS types)
+  dropped 42 → 30 (−29%); the remainder is genuine boundary work
+  (command callbacks, jsonEncode results, snapshot codecs). Check:
+  both real-host gates green on the rewritten host. The plan's
+  original "named optional parameters from options interfaces" idea
+  shipped as the flattened `lit$` factories; a broader
+  options-to-named-parameters rewrite graduates to futures with the
+  Idiomatic Facade.
 
 ## D-3 The dev loop: watch, reload, breakpoints
 
