@@ -124,15 +124,15 @@ void main() {
       expect(source, contains(r'Future<bool> '));
     });
 
-    test('event members become streams (dc:stream-from-event)', () {
+    test('event members gain stream accessors (dc:stream-from-event)', () {
       expect(
         source,
-        contains(r'Stream<TextEditor?> get onDidChangeActiveTextEditor'),
+        contains(r'Stream<TextEditor?> get onDidChangeActiveTextEditorStream'),
       );
       expect(source, contains(r'Stream<S> _eventStream$<S>('));
       expect(source, contains(r'StreamController<S>.broadcast('));
       // EventEmitter.event carries its type parameter into the stream.
-      expect(source, contains('Stream<T> get event'));
+      expect(source, contains('Stream<T> get eventStream'));
     });
 
     test('constructor helpers take ordinary Dart scalars '

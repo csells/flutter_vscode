@@ -465,14 +465,15 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     [r'Future<Uri> locate() => $js.locate().toDart.then'],
   ),
   _RuleCase(
-    'event properties become broadcast streams (dc:stream-from-event)',
+    'event properties gain broadcast stream accessors '
+    '(dc:stream-from-event)',
     [
       ..._eventSupport(),
       _boxIface,
       _property(_boxId, 'onDidThing', _eventOf(_string), readonly: true),
     ],
     [
-      r'Stream<String> get onDidThing => _eventStream$(',
+      r'Stream<String> get onDidThingStream => _eventStream$(',
       r'(listener) => $js.onDidThing.call(listener),',
       r'(raw) => (raw! as JSString).toDart,',
       r'Stream<S> _eventStream$<S>(',
@@ -481,7 +482,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
     ],
   ),
   _RuleCase(
-    'optional event properties become nullable streams '
+    'optional event properties gain nullable stream accessors '
     '(dc:stream-from-event)',
     [
       ..._eventSupport(),
@@ -490,7 +491,7 @@ final List<_RuleCase> _ruleCases = <_RuleCase>[
       _property(_boxId, 'onMaybe', _eventOf(_uriRef), optional: true),
     ],
     [
-      r'Stream<Uri>? get onMaybe {',
+      r'Stream<Uri>? get onMaybeStream {',
       r'final event$ = $js.onMaybe;',
       r'if (event$ == null) return null;',
       r'(raw) => raw as Uri,',
