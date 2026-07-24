@@ -122,7 +122,28 @@ class _TreemapPageState extends State<_TreemapPage> {
       }
       path.add(match);
     }
-    return path;
+    return _descendSingleChildChain(path);
+  }
+
+  /// Auto-descends through directories whose only child is another
+  /// directory, so the first render shows a spread of tiles instead of
+  /// one lonely wrapper square (every Dart project funnels through
+  /// `lib/`). The breadcrumb keeps the full chain navigable.
+  List<CoverageNode> _descendSingleChildChain(List<CoverageNode> path) {
+    final result = [...path];
+    while (true) {
+      final children =
+          result.last.children.where((child) => child.linesFound > 0);
+      if (children.length != 1) {
+        break;
+      }
+      final only = children.single;
+      if (only.isFile) {
+        break;
+      }
+      result.add(only);
+    }
+    return result;
   }
 
   void _refresh() => unawaited(_load());
@@ -132,7 +153,7 @@ class _TreemapPageState extends State<_TreemapPage> {
       if (node.isFile) {
         _selectedFile = node;
       } else {
-        _path = [..._path, node];
+        _path = _descendSingleChildChain([..._path, node]);
         _selectedFile = null;
       }
     });
