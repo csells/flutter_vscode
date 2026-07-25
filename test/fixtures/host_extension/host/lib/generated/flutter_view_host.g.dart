@@ -160,6 +160,13 @@ final class FlutterViewHost {
   /// Owns panel creation, resource-root scoping, session identifiers,
   /// CSP-correct HTML, and disposal: when the user closes the panel,
   /// the session and transport close and [onClosed] fires.
+  ///
+  /// [extraHead] fragments are written verbatim before `</head>`;
+  /// callers own their escaping. Inline scripts among them execute
+  /// only when they carry [scriptNonce], which also joins the CSP
+  /// `script-src` directive and is stamped on the bootstrap script
+  /// tag. [onIncomingMessage] observes each parsed native webview
+  /// message without changing delivery.
   factory FlutterViewHost.open({
     required ExtensionContext context,
     required VSCode vscode,
@@ -167,6 +174,9 @@ final class FlutterViewHost {
     required String viewType,
     required String title,
     Iterable<ViewOperationBinding> operations = const [],
+    List<String> extraHead = const [],
+    String? scriptNonce,
+    IncomingViewMessageObserver? onIncomingMessage,
     void Function()? onClosed,
   }) {
     var viewRoot = context.extensionRootUri;
@@ -178,7 +188,10 @@ final class FlutterViewHost {
       title: title,
       localResourceRoots: [viewRoot],
     );
-    final transport = HostWebviewTransport(panel.webviewSurface);
+    final transport = HostWebviewTransport(
+      panel.webviewSurface,
+      onIncomingMessage,
+    );
     final sessionId = _secureToken();
     final bootstrapNonce = _secureToken();
     final session = HostViewSession.connect(
@@ -187,14 +200,19 @@ final class FlutterViewHost {
       bootstrapNonce: bootstrapNonce,
       operations: operations,
     );
-    final host = FlutterViewHost._(panel, session, transport);
-    panel.webviewSurface.htmlText = flutterViewHtml(
-      webview: panel.webviewSurface,
-      viewRoot: viewRoot,
-      sessionId: sessionId,
-      bootstrapNonce: bootstrapNonce,
-      title: title,
+    final host = FlutterViewHost._(
+      panel,
+      session,
+      transport,
+      DateTime.now(),
+      viewRoot,
+      sessionId,
+      bootstrapNonce,
+      title,
+      List<String>.unmodifiable(extraHead),
+      scriptNonce,
     );
+    panel.webviewSurface.htmlText = host._viewHtml();
     panel.listenOnDidDispose(
       ((JSAny? _) {
         unawaited(host.close());
@@ -204,7 +222,18 @@ final class FlutterViewHost {
     return host;
   }
 
-  FlutterViewHost._(this.panel, this.session, this.transport);
+  FlutterViewHost._(
+    this.panel,
+    this.session,
+    this.transport,
+    this.loadStartedAt,
+    this._viewRoot,
+    this._sessionId,
+    this._bootstrapNonce,
+    this._title,
+    this._extraHead,
+    this._scriptNonce,
+  );
 
   /// The native webview panel showing the view.
   final WebviewPanel panel;
@@ -215,8 +244,40 @@ final class FlutterViewHost {
   /// The transport backing [session].
   final HostWebviewTransport transport;
 
+  /// Instant the initial view HTML was handed to the webview; the
+  /// start of a cold-start measurement ending at first render.
+  final DateTime loadStartedAt;
+
+  final Uri _viewRoot;
+  final String _sessionId;
+  final String _bootstrapNonce;
+  final String _title;
+  final List<String> _extraHead;
+  final String? _scriptNonce;
+  var _reloadGeneration = 0;
   var _closed = false;
 
+  /// Reloads the running view document in place.
+  ///
+  /// Regenerates the session's view HTML with a bumped reload
+  /// generation — each document is distinct, so the webview always
+  /// applies it — and hands it to the panel. The protocol session
+  /// stays connected and accepts the reloaded view's handshake.
+  void reload() {
+    _reloadGeneration += 1;
+    panel.webviewSurface.htmlText = _viewHtml();
+  }
+
+  String _viewHtml() => flutterViewHtml(
+        webview: panel.webviewSurface,
+        viewRoot: _viewRoot,
+        sessionId: _sessionId,
+        bootstrapNonce: _bootstrapNonce,
+        title: _title,
+        extraHead: _extraHead,
+        scriptNonce: _scriptNonce,
+        reloadGeneration: _reloadGeneration,
+      );
 
   /// Closes the protocol session and transport.
   ///
@@ -234,18 +295,29 @@ final class FlutterViewHost {
 
 /// CSP-correct webview HTML that boots the built Flutter View under
 /// [viewRoot] and carries the protocol bootstrap metadata.
+///
+/// [extraHead] fragments are written verbatim before `</head>`. When
+/// [scriptNonce] is supplied it joins the `script-src` directive and
+/// is stamped on the bootstrap script tag. [reloadGeneration] stamps
+/// a document-distinguishing meta so in-place reloads always apply.
 String flutterViewHtml({
   required Webview webview,
   required Uri viewRoot,
   required String sessionId,
   required String bootstrapNonce,
   required String title,
+  List<String> extraHead = const [],
+  String? scriptNonce,
+  int reloadGeneration = 0,
 }) {
   final base = webview.asFlutterViewUri(viewRoot).toDartString();
   final bootstrap = webview
       .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
       .toDartString();
   final csp = webview.contentSecurityPolicySource;
+  final scriptSources = scriptNonce == null ? csp : "$csp 'nonce-$scriptNonce'";
+  final nonceAttribute = scriptNonce == null ? '' : ' nonce="$scriptNonce"';
+  final headExtras = extraHead.map((fragment) => '\n  $fragment').join();
   final safeTitle = title
       .replaceAll('&', '&amp;')
       .replaceAll('<', '&lt;')
@@ -255,15 +327,16 @@ String flutterViewHtml({
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src $csp data:; font-src $csp; style-src $csp 'unsafe-inline'; script-src $csp 'wasm-unsafe-eval'; connect-src $csp; worker-src $csp blob:">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src $csp data:; font-src $csp; style-src $csp 'unsafe-inline'; script-src $scriptSources 'wasm-unsafe-eval'; connect-src $csp; worker-src $csp blob:">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="flutter-vscode-session" content="$sessionId">
   <meta name="flutter-vscode-bootstrap-nonce" content="$bootstrapNonce">
+  <meta name="flutter-vscode-reload-generation" content="$reloadGeneration">
   <base href="$base/">
-  <title>$safeTitle</title>
+  <title>$safeTitle</title>$headExtras
 </head>
 <body>
-  <script src="$bootstrap"></script>
+  <script$nonceAttribute src="$bootstrap"></script>
 </body>
 </html>
 ''';

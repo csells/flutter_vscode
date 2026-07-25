@@ -556,146 +556,110 @@ class _VSCodeHostExtension {
     final protocolProbe = fixtureMode == protocolProbeMode
         ? _ProtocolProbe()
         : null;
-    final sessionId = _secureToken();
-    final bootstrapNonce = _secureToken();
     final renderObservationToken = _secureToken();
+    final scriptNonce = _secureToken();
     final expectedRenderedContent = protocolProbe == null
         ? 'hello from Host Dart'
         : 'Protocol probe completed';
     var hostObservedRenderCount = 0;
     int? viewColdStartMs;
-    DateTime? viewLoadStarted;
     String? hostObservedRenderedContent;
-    final viewRoot = _joinUri(context.extensionRootUri, const [
-      'out',
-      'views',
-      'main',
-    ]);
-    final panel = vscode.windowApi.createFlutterViewPanel(
+    late final _ViewResources resources;
+    late final FlutterViewHost viewHost;
+    viewHost = FlutterViewHost.open(
+      context: context,
+      vscode: vscode,
+      viewName: 'main',
       viewType: 'flutter-vscode.host-test.mainPanel',
       title: 'Flutter View Fixture',
-      localResourceRoots: [viewRoot],
+      extraHead: _fixtureHead(
+        fixtureMode: fixtureMode,
+        scriptNonce: scriptNonce,
+        renderObservationToken: renderObservationToken,
+        expectedRenderedContent: expectedRenderedContent,
+      ),
+      scriptNonce: scriptNonce,
+      onIncomingMessage: protocolProbe?.observeIncoming,
+      onClosed: () {
+        unawaited(
+          resources
+              .cleanup(panelAlreadyDisposed: true)
+              .then<void>((_) {}, onError: (Object _, StackTrace _) {}),
+        );
+      },
+      operations: [
+        _readHostValueOperation.bind((request) {
+          if (request.key != 'greeting') {
+            throw ArgumentError.value(request.key, 'key');
+          }
+          return 'hello from Host Dart';
+        }),
+        const ViewOperation<Object?, Object?>(
+          name: failingOperationName,
+          encodeArguments: encodeFixtureSnapshot,
+          decodeArguments: decodeFixtureSnapshot,
+          encodeResult: encodeFixtureSnapshot,
+          decodeResult: decodeFixtureSnapshot,
+        ).bind(
+          (_) => throw StateError('Host operation failed intentionally'),
+        ),
+        _wrongNonceOperation.bind((value) {
+          protocolProbe?.wrongNonceHandlerInvocations += 1;
+          return value;
+        }),
+        _malformedSchemaOperation.bind((value) {
+          protocolProbe?.malformedSchemaHandlerInvocations += 1;
+          return value;
+        }),
+        _unsupportedVersionOperation.bind((value) {
+          protocolProbe?.unsupportedVersionHandlerInvocations += 1;
+          return value;
+        }),
+        _pendingAcrossReloadOperation.bind((_) {
+          final result = Completer<Object?>();
+          protocolProbe!.pendingResults.add(result);
+          return result.future;
+        }),
+        _protocolProbePhaseOperation.bind((_) {
+          protocolProbe!.phaseInvocations += 1;
+          return protocolProbe.phaseInvocations == 1 ? 'reload' : 'complete';
+        }),
+        _requestReloadOperation.bind((_) {
+          protocolProbe!
+            ..pendingRequestsBeforeReload =
+                viewHost.session.pendingRequestCount - 1
+            ..reloadCount += 1;
+          unawaited(Future<void>(viewHost.reload));
+          return null;
+        }),
+        _confirmRenderObservationOperation.bind((observation) {
+          if (observation.token != renderObservationToken) {
+            throw StateError(
+              'Flutter View did not confirm the Host-owned render token.',
+            );
+          }
+          if (observation.content != expectedRenderedContent) {
+            throw StateError(
+              'Host DOM observer found "${observation.content}" instead of '
+              '"$expectedRenderedContent".',
+            );
+          }
+          hostObservedRenderCount += 1;
+          viewColdStartMs ??= DateTime.now()
+              .difference(viewHost.loadStartedAt)
+              .inMilliseconds;
+          hostObservedRenderedContent = observation.content;
+          return true;
+        }),
+      ],
     );
-    final resources = _ViewResources(panel);
+    resources = _ViewResources(viewHost);
+    final session = viewHost.session;
+    final transport = viewHost.transport;
     JSAny? result;
     Object? firstError;
     StackTrace? firstStackTrace;
     try {
-      final transport = HostWebviewTransport(
-        panel.webviewSurface,
-        protocolProbe?.observeIncoming,
-      );
-      resources.transport = transport;
-      final viewHtml = _viewHtml(
-        webview: panel.webviewSurface,
-        viewRoot: viewRoot,
-        sessionId: sessionId,
-        bootstrapNonce: bootstrapNonce,
-        renderObservationToken: renderObservationToken,
-        expectedRenderedContent: expectedRenderedContent,
-        fixtureMode: fixtureMode,
-        fixtureGeneration: 0,
-      );
-      final reloadedViewHtml = _viewHtml(
-        webview: panel.webviewSurface,
-        viewRoot: viewRoot,
-        sessionId: sessionId,
-        bootstrapNonce: bootstrapNonce,
-        renderObservationToken: renderObservationToken,
-        expectedRenderedContent: expectedRenderedContent,
-        fixtureMode: fixtureMode,
-        fixtureGeneration: 1,
-      );
-      late final HostViewSession session;
-      session = HostViewSession.connect(
-        transport: transport,
-        sessionId: sessionId,
-        bootstrapNonce: bootstrapNonce,
-        operations: [
-          _readHostValueOperation.bind((request) {
-            if (request.key != 'greeting') {
-              throw ArgumentError.value(request.key, 'key');
-            }
-            return 'hello from Host Dart';
-          }),
-          const ViewOperation<Object?, Object?>(
-            name: failingOperationName,
-            encodeArguments: encodeFixtureSnapshot,
-            decodeArguments: decodeFixtureSnapshot,
-            encodeResult: encodeFixtureSnapshot,
-            decodeResult: decodeFixtureSnapshot,
-          ).bind(
-            (_) => throw StateError('Host operation failed intentionally'),
-          ),
-          _wrongNonceOperation.bind((value) {
-            protocolProbe?.wrongNonceHandlerInvocations += 1;
-            return value;
-          }),
-          _malformedSchemaOperation.bind((value) {
-            protocolProbe?.malformedSchemaHandlerInvocations += 1;
-            return value;
-          }),
-          _unsupportedVersionOperation.bind((value) {
-            protocolProbe?.unsupportedVersionHandlerInvocations += 1;
-            return value;
-          }),
-          _pendingAcrossReloadOperation.bind((_) {
-            final result = Completer<Object?>();
-            protocolProbe!.pendingResults.add(result);
-            return result.future;
-          }),
-          _protocolProbePhaseOperation.bind((_) {
-            protocolProbe!.phaseInvocations += 1;
-            return protocolProbe.phaseInvocations == 1 ? 'reload' : 'complete';
-          }),
-          _requestReloadOperation.bind((_) {
-            protocolProbe!
-              ..pendingRequestsBeforeReload = session.pendingRequestCount - 1
-              ..reloadCount += 1;
-            unawaited(
-              Future<void>(() {
-                panel.webviewSurface.htmlText = reloadedViewHtml;
-              }),
-            );
-            return null;
-          }),
-          _confirmRenderObservationOperation.bind((observation) {
-            if (observation.token != renderObservationToken) {
-              throw StateError(
-                'Flutter View did not confirm the Host-owned render token.',
-              );
-            }
-            if (observation.content != expectedRenderedContent) {
-              throw StateError(
-                'Host DOM observer found "${observation.content}" instead of '
-                '"$expectedRenderedContent".',
-              );
-            }
-            hostObservedRenderCount += 1;
-            final loadStarted = viewLoadStarted;
-            if (viewColdStartMs == null && loadStarted != null) {
-              viewColdStartMs =
-                  DateTime.now().difference(loadStarted).inMilliseconds;
-            }
-            hostObservedRenderedContent = observation.content;
-            return true;
-          }),
-        ],
-      );
-      resources
-        ..session = session
-        ..panelDisposed = panel.listenOnDidDispose(
-          (() {
-            unawaited(
-              resources
-                  .cleanup(panelAlreadyDisposed: true)
-                  .then<void>((_) {}, onError: (Object _, StackTrace _) {}),
-            );
-          }).toJS,
-        );
-      viewLoadStarted = DateTime.now();
-      panel.webviewSurface.htmlText = viewHtml;
-
       await _awaitViewMilestone(session.ready, transport);
       final rendered = await _awaitViewMilestone(session.rendered, transport);
       if (hostObservedRenderedContent != expectedRenderedContent) {
@@ -878,23 +842,19 @@ Future<T> _awaitViewMilestone<T>(
 }
 
 final class _ViewResources {
-  _ViewResources(this.panel);
+  _ViewResources(this.viewHost);
 
-  final WebviewPanel panel;
-  HostWebviewTransport? transport;
-  HostViewSession? session;
-  Disposable? panelDisposed;
+  final FlutterViewHost viewHost;
   Future<void>? _cleanup;
   var _panelAlreadyDisposed = false;
 
-  int get pendingRequestCount => session?.pendingRequestCount ?? 0;
+  int get pendingRequestCount => viewHost.session.pendingRequestCount;
 
-  int get pendingSendCount => transport?.pendingSendCount ?? 0;
+  int get pendingSendCount => viewHost.transport.pendingSendCount;
 
   int get subscriptionCount =>
-      (session?.subscriptionCount ?? 0) +
-      (transport?.subscriptionCount ?? 0) +
-      (panelDisposed == null ? 0 : 1);
+      viewHost.session.subscriptionCount +
+      viewHost.transport.subscriptionCount;
 
   Future<void> cleanup({bool panelAlreadyDisposed = false}) {
     _panelAlreadyDisposed |= panelAlreadyDisposed;
@@ -914,24 +874,15 @@ final class _ViewResources {
       }
     }
 
-    final currentSession = session;
-    if (currentSession != null) {
-      await preserveFirstError(currentSession.close);
-      await preserveFirstError(() async {
-        await currentSession.closed;
-      });
-    }
-    final currentPanelDisposed = panelDisposed;
-    panelDisposed = null;
-    await preserveFirstError(() => currentPanelDisposed?.disposeHostResource());
-    final currentTransport = transport;
-    if (currentTransport != null) {
-      await preserveFirstError(
-        () => currentTransport.close().timeout(const Duration(seconds: 5)),
-      );
-    }
+    await preserveFirstError(viewHost.session.close);
+    await preserveFirstError(() async {
+      await viewHost.session.closed;
+    });
+    await preserveFirstError(
+      () => viewHost.transport.close().timeout(const Duration(seconds: 5)),
+    );
     if (!_panelAlreadyDisposed) {
-      await preserveFirstError(panel.disposeHostPanel);
+      await preserveFirstError(viewHost.panel.disposeHostPanel);
     }
     if (firstError != null) {
       Error.throwWithStackTrace(firstError!, firstStackTrace!);
@@ -939,52 +890,37 @@ final class _ViewResources {
   }
 }
 
-Uri _joinUri(Uri base, List<String> segments) {
-  var result = base;
-  for (final segment in segments) {
-    result = joinHostUriPath(result, segment.toJS);
-  }
-  return result;
-}
-
-String _viewHtml({
-  required Webview webview,
-  required Uri viewRoot,
-  required String sessionId,
-  required String bootstrapNonce,
+/// Fixture-owned `<head>` fragments composed into [FlutterViewHost.open]:
+/// probe-selection and render-observation metas plus the adversity
+/// scripts, all carrying the fixture's CSP [scriptNonce].
+List<String> _fixtureHead({
+  required String fixtureMode,
+  required String scriptNonce,
   required String renderObservationToken,
   required String expectedRenderedContent,
-  required String fixtureMode,
-  required int fixtureGeneration,
 }) {
-  final resourceRoot = webview.asFlutterViewUri(viewRoot).toDartString();
-  final bootstrap = webview
-      .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
-      .toDartString();
-  final cspSource = webview.contentSecurityPolicySource;
-  final cspNonce = _secureToken();
+  final expectedContentMeta =
+      '<meta name="$hostExpectedRenderContentMetaName" '
+      'content="${_html(expectedRenderedContent)}">';
+  return [
+    '<meta name="$fixtureModeMetaName" content="${_html(fixtureMode)}">',
+    '<meta name="$hostRenderObservationMetaName" content="">',
+    expectedContentMeta,
+    if (fixtureMode == protocolProbeMode) _faultInjectionScript(scriptNonce),
+    _renderObserverScript(
+      scriptNonce: scriptNonce,
+      renderObservationToken: renderObservationToken,
+    ),
+  ];
+}
+
+/// Fixture-only fault injection: mutates protocol frames inside the
+/// Flutter View before delegating to VS Code's native postMessage
+/// boundary.
+String _faultInjectionScript(String scriptNonce) {
   return '''
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; img-src ${_html(cspSource)} data:; font-src ${_html(cspSource)}; style-src ${_html(cspSource)} 'unsafe-inline'; script-src ${_html(cspSource)} 'nonce-$cspNonce' 'wasm-unsafe-eval'; connect-src ${_html(cspSource)}; worker-src ${_html(cspSource)} blob:">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="flutter-vscode-session" content="${_html(sessionId)}">
-  <meta name="flutter-vscode-bootstrap-nonce" content="${_html(bootstrapNonce)}">
-  <meta name="$fixtureModeMetaName" content="${_html(fixtureMode)}">
-  <meta name="flutter-vscode-fixture-generation" content="$fixtureGeneration">
-  <meta name="$hostRenderObservationMetaName" content="">
-  <meta name="$hostExpectedRenderContentMetaName" content="${_html(expectedRenderedContent)}">
-  <base href="${_html(resourceRoot)}/">
-  <title>Flutter View Fixture</title>
-</head>
-<body>
-  ${fixtureMode == protocolProbeMode ? '''
-  <script nonce="$cspNonce">
+<script nonce="$scriptNonce">
     (() => {
-      // Fixture-only fault injection: mutate inside the Flutter View before
-      // delegating to VS Code's native postMessage boundary.
       const acquireNativeVsCodeApi = globalThis.acquireVsCodeApi;
       globalThis.acquireVsCodeApi = () => {
         const nativeApi = acquireNativeVsCodeApi();
@@ -1018,9 +954,17 @@ String _viewHtml({
         };
       };
     })();
-  </script>
-  ''' : ''}
-  <script nonce="$cspNonce">
+  </script>''';
+}
+
+/// Fixture-only DOM observer that stamps the Host-owned render token
+/// once the expected content is visibly rendered.
+String _renderObserverScript({
+  required String scriptNonce,
+  required String renderObservationToken,
+}) {
+  return '''
+<script nonce="$scriptNonce">
     (() => {
       const marker = document.querySelector(
         'meta[name="$hostRenderObservationMetaName"]',
@@ -1053,11 +997,7 @@ String _viewHtml({
       };
       requestAnimationFrame(observeRenderedContent);
     })();
-  </script>
-  <script nonce="$cspNonce" src="${_html(bootstrap)}"></script>
-</body>
-</html>
-''';
+  </script>''';
 }
 
 String _secureToken() {
