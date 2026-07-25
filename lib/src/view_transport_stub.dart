@@ -17,7 +17,13 @@ final class VSCodeViewBootstrap {
   static const bootstrapNonceMetaName = 'flutter-vscode-bootstrap-nonce';
 
   /// Connects the Flutter View using Host-provided metadata.
-  Future<FlutterViewSession> connect() {
+  ///
+  /// [operations] are the typed operations this view allows Host Dart to
+  /// call; the connection is created once, so only the first call's
+  /// operations take effect.
+  Future<FlutterViewSession> connect({
+    Iterable<ViewOperationBinding> operations = const [],
+  }) {
     throw UnsupportedError(
       'VSCodeViewBootstrap requires a compiled VS Code webview runtime.',
     );

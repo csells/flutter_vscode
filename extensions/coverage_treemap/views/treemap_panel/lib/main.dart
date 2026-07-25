@@ -12,62 +12,65 @@ import 'package:treemap_panel/treemap.dart';
 
 /// The typed view-protocol operation that fetches the coverage snapshot
 /// from Host Dart.
-const snapshotOperation = ViewOperation<void, CoverageSnapshot>(
-  name: coverageSnapshotOperationName,
-  encodeArguments: encodeSnapshotRequest,
-  decodeArguments: decodeSnapshotRequest,
+final ViewOperation<void, CoverageSnapshot> snapshotOperation =
+    ViewOperation.noArgs(
+  coverageSnapshotOperationName,
   encodeResult: encodeCoverageSnapshot,
   decodeResult: decodeCoverageSnapshot,
 );
 
 /// The typed view-protocol operation that reports the view's resolved
 /// theme to Host Dart.
-const themeReportOperation = ViewOperation<ThemeReport, void>(
-  name: themeReportOperationName,
+final ViewOperation<ThemeReport, void> themeReportOperation =
+    ViewOperation.noResult(
+  themeReportOperationName,
   encodeArguments: encodeThemeReport,
   decodeArguments: decodeThemeReport,
-  encodeResult: encodeThemeReportAck,
-  decodeResult: decodeThemeReportAck,
 );
 
-/// Runs the coverage treemap view under the live VS Code theme.
-/// Acknowledges host-pushed snapshots back to Host Dart.
-const pushReceivedOperation = ViewOperation<int, void>(
-  name: pushReceivedOperationName,
+/// The typed view-protocol operation acknowledging host-pushed
+/// snapshots back to Host Dart.
+final ViewOperation<int, void> pushReceivedOperation =
+    ViewOperation.noResult(
+  pushReceivedOperationName,
   encodeArguments: encodePushReceived,
   decodeArguments: decodePushReceived,
-  encodeResult: encodeThemeReportAck,
-  decodeResult: decodeThemeReportAck,
 );
 
-void main() => runFlutterView(TreemapApp(initialTheme: readVSCodeTheme()));
+/// Runs the coverage treemap view over one connected [ViewShell], which
+/// owns the session, the live VS Code theme, and every protocol
+/// subscription for the lifetime of the view.
+Future<void> main() async {
+  final shell = await ViewShell.connect();
+  runFlutterView(TreemapApp(shell: shell));
+}
 
 /// Root widget themed from the host VS Code color theme.
 ///
-/// The webview's `--vscode-*` variables captured at startup seed the
-/// Material theme; [watchVSCodeTheme] rebuilds it live when the user
+/// The shell's theme snapshot captured at startup seeds the Material
+/// theme; its deduplicated theme stream rebuilds it live when the user
 /// switches VS Code color themes.
 class TreemapApp extends StatelessWidget {
-  /// Creates the root widget over the theme captured at startup.
-  const TreemapApp({required this.initialTheme, super.key});
+  /// Creates the root widget over the connected [shell].
+  const TreemapApp({required this.shell, super.key});
 
-  /// The VS Code theme snapshot read before the first frame.
-  final VSCodeThemeSnapshot initialTheme;
+  /// The connected view shell owning session and theme lifecycles.
+  final ViewShell shell;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<VSCodeThemeSnapshot>(
-      stream: watchVSCodeTheme(),
-      initialData: initialTheme,
+      stream: shell.themeChanges,
+      initialData: shell.theme,
       builder: (context, snapshot) {
-        final theme = vsCodeThemeData(snapshot.data ?? initialTheme);
+        final theme = vsCodeThemeData(snapshot.data ?? shell.theme);
         return MaterialApp(
           title: 'Coverage Treemap',
           debugShowCheckedModeBanner: false,
           theme: theme.copyWith(
             textTheme: theme.textTheme.apply(fontFamily: 'Roboto'),
           ),
-          home: const _TreemapPage(),
+          home: _TreemapPage(shell: shell),
         );
       },
     );
@@ -75,41 +78,42 @@ class TreemapApp extends StatelessWidget {
 }
 
 class _TreemapPage extends StatefulWidget {
-  const _TreemapPage();
+  const _TreemapPage({required this.shell});
+
+  final ViewShell shell;
 
   @override
   State<_TreemapPage> createState() => _TreemapPageState();
 }
 
 class _TreemapPageState extends State<_TreemapPage> {
-  FlutterViewSession? _session;
   CoverageSnapshot? _snapshot;
   List<CoverageNode> _path = const [];
   CoverageNode? _selectedFile;
   Object? _error;
   var _loading = true;
-  StreamSubscription<VSCodeThemeSnapshot>? _themeEvents;
-  StreamSubscription<Object?>? _pushEvents;
 
   @override
   void initState() {
     super.initState();
-    _themeEvents = watchVSCodeTheme().listen(
-      (snapshot) => unawaited(_reportTheme(snapshot)),
-    );
+    // The shell owns these subscriptions: disposing it ends both streams,
+    // so nothing here holds a StreamSubscription to cancel by hand.
+    widget.shell.themeChanges
+        .listen((snapshot) => unawaited(_reportTheme(snapshot)));
+    widget.shell.events(snapshotPushStreamName).listen(_applyPushedSnapshot);
+    unawaited(_reportTheme(widget.shell.theme));
     unawaited(_load());
   }
 
   @override
   void dispose() {
-    unawaited(_themeEvents?.cancel());
-    unawaited(_pushEvents?.cancel());
+    unawaited(widget.shell.dispose());
     super.dispose();
   }
 
   /// Applies a host-pushed snapshot and acknowledges it, so the panel
   /// refreshes without polling whenever the coverage file changes.
-  void _applyPushedSnapshot(FlutterViewSession session, Object? payload) {
+  void _applyPushedSnapshot(Object? payload) {
     final CoverageSnapshot snapshot;
     try {
       snapshot = decodeCoverageSnapshot(payload);
@@ -128,7 +132,7 @@ class _TreemapPageState extends State<_TreemapPage> {
     });
     unawaited(
       pushReceivedOperation
-          .call(session, snapshot.root.linesFound)
+          .call(widget.shell.session, snapshot.root.linesFound)
           .catchError((Object _) {}),
     );
   }
@@ -139,17 +143,7 @@ class _TreemapPageState extends State<_TreemapPage> {
       _error = null;
     });
     try {
-      var session = _session;
-      if (session == null) {
-        session = await VSCodeViewBootstrap.acquire().connect();
-        _session = session;
-        unawaited(_reportTheme(readVSCodeTheme()));
-        final connected = session;
-        _pushEvents = connected.events(snapshotPushStreamName).listen(
-              (payload) => _applyPushedSnapshot(connected, payload),
-            );
-      }
-      final snapshot = await snapshotOperation.call(session, null);
+      final snapshot = await snapshotOperation.call(widget.shell.session, null);
       if (!mounted) {
         return;
       }
@@ -172,13 +166,9 @@ class _TreemapPageState extends State<_TreemapPage> {
 
   /// Reports the resolved theme to Host Dart for gate verification.
   Future<void> _reportTheme(VSCodeThemeSnapshot snapshot) async {
-    final session = _session;
-    if (session == null) {
-      return;
-    }
     try {
       await themeReportOperation.call(
-        session,
+        widget.shell.session,
         ThemeReport(
           kind: snapshot.kind.name,
           editorBackground: snapshot.editorBackground,

@@ -31,11 +31,6 @@ end_of_record
       expect(src.coverage, 0.5);
     });
 
-    test('the request codec accepts only the empty payload', () {
-      expect(encodeSnapshotRequest(null), isNull);
-      expect(() => decodeSnapshotRequest('extra'), throwsFormatException);
-    });
-
     test('decode rejects payloads with missing or extra keys', () {
       expect(
         () => decodeCoverageSnapshot(<Object?, Object?>{'lcovPath': 'x'}),
@@ -101,9 +96,13 @@ end_of_record
       );
     });
 
-    test('the ack codec accepts only the empty payload', () {
-      expect(encodeThemeReportAck(null), isNull);
-      expect(() => decodeThemeReportAck('extra'), throwsFormatException);
+  });
+
+  group('void payload codec', () {
+    test('accepts only the empty payload', () {
+      expect(encodeNoValue(null), isNull);
+      expect(() => decodeNoValue(null), returnsNormally);
+      expect(() => decodeNoValue('extra'), throwsFormatException);
     });
   });
 }

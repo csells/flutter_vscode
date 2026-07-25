@@ -2,6 +2,7 @@
 library;
 
 export 'src/view_protocol.dart';
+export 'src/view_shell.dart';
 export 'src/view_theme_parser.dart';
 export 'src/view_theme_stub.dart'
     if (dart.library.html) 'src/view_theme_web.dart';

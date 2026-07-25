@@ -17,6 +17,17 @@ const snapshotPushStreamName = 'coverageTreemap.snapshotPush';
 /// Operation name the view calls after applying a pushed snapshot.
 const pushReceivedOperationName = 'coverageTreemap.pushReceived';
 
+/// Encodes the empty payload of every void operation side: the
+/// snapshot request and the report acknowledgements.
+Object? encodeNoValue(void value) => null;
+
+/// Decodes the empty payload of every void operation side.
+void decodeNoValue(Object? value) {
+  if (value != null) {
+    throw const FormatException('A void operation payload must be null.');
+  }
+}
+
 /// Encodes the applied snapshot's total instrumented lines.
 Object? encodePushReceived(int linesFound) => linesFound;
 
@@ -98,16 +109,6 @@ final class CoverageSnapshot {
   final CoverageNode root;
 }
 
-/// Encodes a snapshot request; the operation takes no arguments.
-Object? encodeSnapshotRequest(void request) => null;
-
-/// Decodes a snapshot request; the operation takes no arguments.
-void decodeSnapshotRequest(Object? value) {
-  if (value != null) {
-    throw const FormatException('The snapshot request carries no arguments.');
-  }
-}
-
 /// Encodes [snapshot] as a protocol-safe value.
 Object? encodeCoverageSnapshot(CoverageSnapshot snapshot) => <String, Object?>{
       'lcovPath': snapshot.lcovPath,
@@ -181,16 +182,4 @@ ThemeReport decodeThemeReport(Object? value) {
     return ThemeReport(kind: kind, editorBackground: editorBackground);
   }
   throw const FormatException('Malformed theme report.');
-}
-
-/// Encodes a theme-report acknowledgement; the operation returns
-/// nothing.
-Object? encodeThemeReportAck(void ack) => null;
-
-/// Decodes a theme-report acknowledgement; the operation returns
-/// nothing.
-void decodeThemeReportAck(Object? value) {
-  if (value != null) {
-    throw const FormatException('The theme report returns no result.');
-  }
 }

@@ -61,11 +61,18 @@ final class VSCodeViewBootstrap {
   int get receivingSubscriptionCount => _transport.receivingSubscriptionCount;
 
   /// Connects the Flutter View using Host-provided metadata.
-  Future<FlutterViewSession> connect() {
+  ///
+  /// [operations] are the typed operations this view allows Host Dart to
+  /// call; the connection is created once, so only the first call's
+  /// operations take effect.
+  Future<FlutterViewSession> connect({
+    Iterable<ViewOperationBinding> operations = const [],
+  }) {
     return _connection ??= FlutterViewSession.connect(
       transport: _transport,
       sessionId: _sessionId,
       bootstrapNonce: _bootstrapNonce,
+      operations: operations,
     );
   }
 

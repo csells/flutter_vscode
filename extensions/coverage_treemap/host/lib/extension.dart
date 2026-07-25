@@ -14,8 +14,8 @@ import 'package:coverage_treemap_shared/view_contract.dart';
 
 const _snapshotOperation = ViewOperation<void, CoverageSnapshot>(
   name: coverageSnapshotOperationName,
-  encodeArguments: encodeSnapshotRequest,
-  decodeArguments: decodeSnapshotRequest,
+  encodeArguments: encodeNoValue,
+  decodeArguments: decodeNoValue,
   encodeResult: encodeCoverageSnapshot,
   decodeResult: decodeCoverageSnapshot,
 );
@@ -24,8 +24,8 @@ const _themeReportOperation = ViewOperation<ThemeReport, void>(
   name: themeReportOperationName,
   encodeArguments: encodeThemeReport,
   decodeArguments: decodeThemeReport,
-  encodeResult: encodeThemeReportAck,
-  decodeResult: decodeThemeReportAck,
+  encodeResult: encodeNoValue,
+  decodeResult: decodeNoValue,
 );
 
 const _lcovRelativePath = 'coverage/lcov.info';
@@ -34,8 +34,8 @@ const _pushReceivedOperation = ViewOperation<int, void>(
   name: pushReceivedOperationName,
   encodeArguments: encodePushReceived,
   decodeArguments: decodePushReceived,
-  encodeResult: encodeThemeReportAck,
-  decodeResult: decodeThemeReportAck,
+  encodeResult: encodeNoValue,
+  decodeResult: decodeNoValue,
 );
 
 @JSExport()

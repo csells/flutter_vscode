@@ -165,6 +165,50 @@ final class ViewOperation<Request, Result> {
     this._decodeResult,
   );
 
+  /// A typed operation whose request side carries no value.
+  ///
+  /// The supplied void codecs encode `null` and reject any non-null
+  /// payload, replacing the hand-written encode-null/decode-guard pair
+  /// every no-argument operation otherwise repeats.
+  static ViewOperation<void, Result> noArgs<Result>(
+    String name, {
+    required ViewValueEncoder<Result> encodeResult,
+    required ViewValueDecoder<Result> decodeResult,
+  }) =>
+      ViewOperation<void, Result>._(
+        name,
+        _encodeVoidValue,
+        _decodeVoidValue,
+        encodeResult,
+        decodeResult,
+      );
+
+  /// A typed operation whose result side carries no value.
+  ///
+  /// The supplied void codecs encode `null` and reject any non-null
+  /// payload, replacing the hand-written encode-null/decode-guard pair
+  /// every acknowledgement-style operation otherwise repeats.
+  static ViewOperation<Request, void> noResult<Request>(
+    String name, {
+    required ViewValueEncoder<Request> encodeArguments,
+    required ViewValueDecoder<Request> decodeArguments,
+  }) =>
+      ViewOperation<Request, void>._(
+        name,
+        encodeArguments,
+        decodeArguments,
+        _encodeVoidValue,
+        _decodeVoidValue,
+      );
+
+  static Object? _encodeVoidValue(void value) => null;
+
+  static void _decodeVoidValue(Object? value) {
+    if (value != null) {
+      throw _invalidMessage('A void operation value must be null.');
+    }
+  }
+
   final String _name;
   final ViewValueEncoder<Request> _encodeArguments;
   final ViewValueDecoder<Request> _decodeArguments;
