@@ -23,6 +23,7 @@
 /CLAUDE.md
 /CONTEXT.md
 /GEMINI.md
+/tool/bindings/dart-layer-ledger.json
 /tool/bindings/parity-ledger.json
 
 # Shipped example extensions are repository surfaces, not package assets.

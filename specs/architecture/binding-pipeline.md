@@ -5,6 +5,15 @@ inputs plus reviewed Semantic Overrides. No LLM, probabilistic mapping,
 silent omission, or guessed `dynamic` types participate; anything the
 pipeline cannot express fails closed.
 
+Multiple pinned stable baselines ship in-tree (1.129.1 and 1.130.0). A
+baseline counts only when its pinned inputs, imported IR, and
+same-version Semantic Override file all exist; an Extension Project's
+descriptor `apiTarget` selects one, and an unknown target fails with an
+actionable error naming every shipped target
+(`test/cli_multi_baseline_test.dart`). Onboarding a new release is
+documented in `docs/guides/new-baseline.md`, recorded as executed for
+the second baseline.
+
 ## Stages
 
 1. **Pins** — `tool/bindings/inputs/vscode/<version>/pins.json` pins six
@@ -48,10 +57,26 @@ pipeline cannot express fails closed.
    same layer into every Extension Project, and the real-host gate
    executes it (`test/parity_layer_test.dart`, the fixture parity
    smoke). Constructs without a Total Mapping Rule fail generation.
+7. **Dart-ergonomics layer** — `tool/binding_generator/dart_layer.dart`
+   (`generate.dart --dart-layer .`) emits the mechanical, judgment-free
+   Dart-first layer over the Parity Layer — not the hand-reviewed
+   Idiomatic Facade — as `lib/src/generated/vscode_dart_layer.g.dart`,
+   exported as `package:flutter_vscode/vscode_dart.dart`: scalar
+   boundaries de-JS'd, `Future`s from `JSPromise` returns, broadcast
+   `Stream` accessors beside `Event` members, `lit$` factories
+   flattened across the declared interface hierarchy. It carries its
+   own totality ledger (`tool/bindings/dart-layer-ledger.json`) in
+   which every parity declaration receives a disposition — emitted,
+   passthrough-identical, or carried parity erasure — and a construct
+   without a total rule fails generation (`test/dart_layer_test.dart`,
+   `test/dart_layer_emitter_unit_test.dart`). `flutter_vscode build`
+   emits the same layer into every Extension Project.
 
 ## Regeneration commands
 
-Run from the repository root, in this order when in doubt:
+Run from the repository root, in this order when in doubt. The
+examples name the 1.129.1 seed; substitute any pinned baseline —
+each has its own pins, IR, and overrides:
 
 ```sh
 # IR from pinned inputs (maintainer, after pin/importer changes):
@@ -69,8 +94,8 @@ dart tool/binding_generator/generate.dart \
 # CLI-owned fixture artifacts (view protocol copy, bundle):
 bash scripts/build_host_fixture.sh
 
-# Durable Host Contract artifact + overrides pin (after any receipted
-# source changes):
+# Durable Host Contract artifact + per-baseline overrides pins (after
+# any receipted source changes; repins every checked-in baseline):
 dart tool/binding_generator/generate.dart --contract .
 
 # Generated parity report (after coverage changes):

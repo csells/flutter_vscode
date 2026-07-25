@@ -10,8 +10,8 @@ sequence or schedule. Rough dependency order below.
 
 - **Idiomatic Facade** over the Parity Layer: Dart-first ergonomics,
   Semantic Overrides, reviewed design — built up incrementally after the
-  Parity Layer ships. The mechanical Dart layer (developer-experience
-  D-2) now covers the judgment-free half; the facade adds the reviewed
+  Parity Layer ships. The mechanical Dart layer (archived
+  developer-experience round, D-2) now covers the judgment-free half; the facade adds the reviewed
   half, including a broader options-to-named-parameters surface beyond
   the flattened `lit$` factories.
 - **Behavioral verification burn-down**: real-host evidence for parity
@@ -24,19 +24,20 @@ sequence or schedule. Rough dependency order below.
   `docs/reference/parity.md` into mechanically observed dispositions
   (family-level and construct-class-level accounting shipped in the
   live-coverage round).
-- Runtime semantics for the View protocol: cancellation, host-to-view
-  requests, events/streams, handles, backpressure (protocol v1 today has
-  none of these; disposal is session-level only). Graduated to
-  [developer-experience.md](developer-experience.md) D-4.
-- Product workflow: `doctor` and `test` graduated to
-  [developer-experience.md](developer-experience.md) D-7; `upgrade`
-  depends on multi-baseline support (D-8). Generated-file ownership and
-  repair, plus v0 migration after real usage, remain here (the legacy
+- Runtime semantics for the View protocol: handles and backpressure
+  (cancellation, host-to-view requests, and event streams shipped in
+  the archived developer-experience round's D-4; disposal is now
+  per-request).
+- Product workflow: `upgrade` — now unblocked, since `doctor`/`test`
+  and multi-baseline support both shipped in the archived
+  developer-experience round. Generated-file ownership and repair,
+  plus v0 migration after real usage, remain here (the legacy
   `generate_vscode_extension` executable still ships with a legacy
   notice until then).
 - Hardening: two extensions in one host, failure injection, protocol
-  abuse, breakpoint/source-map behavior, startup/memory,
-  Windows/macOS/Linux, remote-host harness.
+  abuse, memory profiling, Windows/macOS/Linux, remote-host harness
+  (breakpoint/source-map behavior and startup measurement shipped in
+  the archived developer-experience round).
 - Platform reach: Web Extension Host before 1.0 (ADR 0009).
 - Documentation from executable behavior; support policy last, from
   measurements.
@@ -45,16 +46,18 @@ sequence or schedule. Rough dependency order below.
   rest-param surface (rest params erase to `List<JSAny?>`). (Narrowing,
   string-literal wrappers, stable typedefs, per-family live probes, and
   the emitter unit suite shipped in the parity-runtime round.)
-- The generated parity ledger and layer add ~530 KB to the pub archive;
-  revisit placement if package size matters.
+- The two generated layers (parity ~350 KB, Dart ergonomics ~370 KB)
+  ship in the pub archive; both totality ledgers are pubignored.
+  Revisit placement if package size matters.
 
 ## Engineering debt (from the audits)
 
 - The CLI (`bin/flutter_vscode.dart`) and the generator
   (`tool/binding_generator/generator.dart`) remain monoliths; named as a
   maintainability follow-up.
-- Webview CSP content is not gate-asserted: only `Webview.cspSource`
-  usage is proven.
+- The CSP served into a live webview is not parsed by any real-host
+  gate; the policy itself is framework-owned and byte-asserted via the
+  emitted view-host module template.
 - `scripts/check_round5_exit.sh` cannot itself verify the two
   consecutive `test_all.sh` runs its R5-13 item names; those remain
   procedural evidence.
@@ -62,14 +65,11 @@ sequence or schedule. Rough dependency order below.
   parsing the staging pipeline.
 - The ECMAScript whitespace predicate exists in two implementations held
   together by mirrored tests.
-- The host-side view transport lives in the test fixture rather than as
-  a framework module — and the first shipped extension had to carry its
-  own copy. Graduated to
-  [developer-experience.md](developer-experience.md) D-1.
 - A registered-shape hash is key-order sensitive (bounded: child
   cross-checks still bind content).
-- The only Extension Host proof platform is Linux-in-Docker; every gate
-  re-downloads VS Code.
+- The only committed Extension Host proof platform is Linux-in-Docker;
+  most gates re-download VS Code each run (the coverage-extension gate
+  accepts a persistent cache via FLUTTER_VSCODE_TEST_CACHE).
 - The only real extension so far ships in-repo under `extensions/`
   (Coverage Treemap); a framework-external extension still does not
   exist.

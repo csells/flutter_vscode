@@ -15,13 +15,23 @@ authoritative list, not any count in prose), and the attributed
 binding IDs. It is written only by the
 mechanical regenerator (`tool/binding_generator/contract.dart`, invoked
 as `generate.dart --contract .`); hand-editing evidence is not a
-supported workflow. `test/binding_evidence_test.dart` proves the
-checked-in artifact byte-equals regeneration and that the overrides pin
-matches its bytes; the real-host launcher verifies all receipts before
-VS Code starts and again before accepting evidence
-(`tool/extension_host_test/run.cjs`, `host_contract.cjs`). Observed
-binding IDs must exactly match the attributed set — recorded only by
-generated operations after native success.
+supported workflow. Overrides pins are per-baseline: every checked-in
+baseline cites the same checkpoint-4 contract, and the contract writer
+surgically repins the `artifactSha256` in each
+`tool/bindings/overrides/vscode-*.json` on every write.
+`test/binding_evidence_test.dart` proves the checked-in artifact
+byte-equals regeneration and that the overrides pin matches its bytes;
+the real-host launcher verifies all receipts before VS Code starts and
+again before accepting evidence (`tool/extension_host_test/run.cjs`,
+`host_contract.cjs`). Observed binding IDs must exactly match the
+attributed set — recorded only by generated operations after native
+success.
+
+The machine-checked totality artifacts are ledgers, not prose: the
+Parity Layer's `tool/bindings/parity-ledger.json` and the dart layer's
+`tool/bindings/dart-layer-ledger.json` must each byte-equal
+regeneration and cover exactly the IR (`test/parity_layer_test.dart`,
+`test/dart_layer_test.dart`).
 
 ## Gate hierarchy
 
@@ -41,9 +51,16 @@ generated operations after native success.
    workspace with a known tracefile; asserts the parsed coverage
    snapshot and that the Flutter View boots and serves it over the
    view protocol in a real webview.
-5. `./scripts/test_all.sh` — everything above plus build_runner, builder
-   checks, and example tests.
-6. `./scripts/check_round5_exit.sh` — the archived
+5. `./scripts/test_breakpoints.sh` — proof that breakpoints bind to
+   Dart source lines through the emitted source maps in the pinned
+   host: the driver decodes the fixture's source map, arms every
+   mapped generated position over `--inspect-extensions`, and the
+   Extension Host pauses on a location that maps back to the same
+   Dart line (`tool/extension_host_test/run_breakpoint.cjs`).
+6. `./scripts/test_all.sh` — the focused suites, importer and builder
+   checks, build_runner, example tests, and the host, packaged, and
+   coverage gates; the breakpoint gate runs standalone.
+7. `./scripts/check_round5_exit.sh` — the archived
    first-working-extension plan's closure authority: evaluates that
    plan's exit bar, including executing the packaged gate and the
    regenerator no-op check.

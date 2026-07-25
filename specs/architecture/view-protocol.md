@@ -1,20 +1,38 @@
-# View Protocol (v1)
+# View Protocol (v2)
 
 Each optional Flutter View runs in its own webview runtime. The only
-thing that crosses between Host Dart and a View is protocol v1
-(`lib/src/view_protocol.dart`); view DTOs are protocol-safe snapshots,
-never live host objects. Host commands and providers work when no view
-exists.
+thing that crosses between Host Dart and a View is the version-2
+protocol (`lib/src/view_protocol.dart`); view DTOs are protocol-safe
+snapshots, never live host objects. Host commands and providers work
+when no view exists. Both protocol halves always ship from one build,
+so the wire version is 2 wholesale: a frame carrying any other version
+fails closed as `unsupported_version` and is never executed or
+answered.
 
-## What v1 provides
+## What v2 provides
 
 - Versioned session + nonce handshake: `ready` → `readyAck` carrying a
   newly generated active nonce, installed before it is advertised
   (including on reload) so a synchronous peer cannot lose its first
   valid frame.
-- View-to-Host typed calls against an explicit operation allowlist, with
-  results and structured errors (eight stable codes); exact per-kind
-  frame schemas; session and nonce mismatches fail closed.
+- Typed calls in both directions, each against an explicit allowlist.
+  View-to-Host `call`/`result`/`error` frames dispatch on the
+  operation bindings given to `HostViewSession.connect`; Host-to-View
+  `hostCall`/`hostResult`/`hostError` frames dispatch on the bindings
+  the view passes to `FlutterViewSession.connect`. Both directions
+  return results or structured errors (nine stable codes); every
+  frame kind has an exact schema; session and nonce mismatches fail
+  closed.
+- One-way host events on named streams: `HostViewSession.emitEvent`
+  sends an `event` frame, and `FlutterViewSession.events(stream)`
+  exposes its payloads as a broadcast stream in delivery order.
+- Protocol-level cancellation with per-request disposal:
+  `HostViewSession.callWithHandle` returns a `HostViewCall` whose
+  `cancel()` completes the caller with the `cancelled` code and sends
+  a `cancel` frame; a cancelled request loses response eligibility on
+  the receiving side, so a late result or error is discarded
+  fail-closed, never delivered. Cancellation drops responses; it does
+  not abort a running handler.
 - One idempotent terminal cleanup path shared by close, shutdown, peer
   close, stream completion/error, and delivery failure; concurrent
   closes join the same future; measured close reports count live
@@ -38,6 +56,14 @@ exists.
   the view's pubspec: Flutter web fetches its default Roboto and Noto
   fallbacks from `fonts.gstatic.com` at runtime, the CSP blocks those
   requests, and missing-glyph frames retry forever.
+- Theme bridge: views derive their look from the host theme instead of
+  hardcoding one. `parseCssColor` and `VSCodeThemeSnapshot` are pure
+  Dart (`lib/src/view_theme_parser.dart`); `readVSCodeTheme`,
+  `watchVSCodeTheme` (a `MutationObserver` on the webview body's
+  class/style attributes, deduped by snapshot equality), and
+  `vsCodeThemeData` (a Material theme with VS Code dark-palette
+  fallbacks) are web-side (`lib/src/view_theme_web.dart`). All of it
+  is exported via `package:flutter_vscode/view.dart`.
 - Host-side hosting is generated, not hand-copied: view-bearing
   projects receive `flutter_view_host.g.dart`
   (`lib/src/cli/flutter_view_host_source.dart`) carrying
@@ -46,12 +72,14 @@ exists.
 
 Proven by `test/view_protocol_test.dart` (in-memory pair that
 JSON-round-trips payloads), `test/host_webview_transport_test.dart`
-(real dart2js/Node seam), and the real-host adversarial probes
-(frames corrupted before native `postMessage`, reload with live work,
-independent render observation).
+(real dart2js/Node seam), the real-host adversarial probes (frames
+corrupted before native `postMessage`, unsupported-version frames
+injected and never executed, reload with live work, independent render
+observation), and the coverage-extension gate, where the host watcher
+pushes a fresh snapshot to the open panel and the view applies and
+acknowledges it (`scripts/test_coverage_extension.sh`).
 
 ## Explicitly deferred (backlog)
 
-Host-to-View requests, protocol-level cancellation, events/streams,
-handles, backpressure, and general handler cancellation. CSP *content*
-is not yet gate-asserted (only that `cspSource` is exercised).
+Handles and backpressure. CSP *content* is not yet gate-asserted (only
+that `cspSource` is exercised).
