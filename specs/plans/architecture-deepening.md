@@ -46,7 +46,7 @@ discoveries go to [`futures.md`](futures.md).
   unchanged; the `_projectFile` twin, the triple '1.129.1' default,
   the doubled regex, the validate-directories/file-targets wrappers,
   and the `_stringListsEqual`/`_bytesEqual` twins are gone.
-- [ ] A-2 One session core behind both View Protocol roles: the
+- [x] A-2 One session core behind both View Protocol roles: the
   mirrored machinery (envelope send, parse+dispatch, pending-completer
   registry, seen-id dedup, cancellation sets, structured-error send,
   idempotent close/terminate) moves into a shared core; Host and View
