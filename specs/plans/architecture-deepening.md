@@ -49,13 +49,25 @@ discoveries go to [`futures.md`](futures.md).
   and dart-layer byte-compares green (outputs unchanged); a new
   mapper unit suite; the dart-layer emitter no longer touches parity
   mutable state (grep gate).
-- [ ] A-4 generator.dart unjailed: the IR validation/canonicalization
+- [x] A-4 generator.dart unjailed: the IR validation/canonicalization
   projection, the coverage ledger, the manifest/contribution
   projection, and the four embedded source templates move to sibling
   modules under `tool/binding_generator/`; `generator.dart` keeps the
   entangled walking-slice orchestration band. Check: walking-slice
   byte-compare and full binding_generator suite green (outputs
   unchanged); generator.dart line count under 2,500.
+  Closed: `ir_validator.dart` (IR validation/canonicalization plus the
+  declaration fingerprint, re-exported for existing importers),
+  `coverage_ledger.dart`, `manifest_projection.dart` (including the
+  project descriptor checks), `validators.dart` (the shared leaf
+  scalars), and `templates.dart` (the five embedded source templates —
+  host exports, bootstrap.cjs, walking-slice parity/facade/runtime —
+  as literal-preserving functions) now sit beside a 2,373-line
+  `generator.dart` holding the orchestration and walking-slice band;
+  cross-file entry points kept their names minus the underscore;
+  outputs stayed byte-identical under the cli byte-compare pin; the
+  three contract source maps receipt the new modules, with the durable
+  artifact awaiting mechanical `--contract` regeneration at merge.
 - [ ] A-5 A view shell module: `ViewShell` (or equivalent) in
   `package:flutter_vscode/view.dart` owns session connect, the theme
   stream, host-event subscriptions, and rendered-reporting behind one
@@ -84,3 +96,18 @@ the three real-host gates (`test_host_extension.sh`,
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **Red A-4** (commit b67d475): `binding_generator_layout_test`
+   landed against the promised module layout — all six cases failed:
+   no `ir_validator.dart`, `coverage_ledger.dart`,
+   `manifest_projection.dart`, `templates.dart`, or `validators.dart`
+   beside the generator, and `generator.dart` at 6,057 lines.
+2. **Green A-4** (commit 82088b2): pure motion along the mapped seams
+   moved the IR projection, the coverage ledger, the manifest
+   projection, the shared leaf validators, and the five embedded
+   templates out of `generator.dart` (now 2,373 lines); the pins held
+   — the walking-slice byte-for-byte regeneration and the 202-test
+   generator suite ran unchanged, 259 tests green across the affected
+   suites with `flutter analyze` clean. `binding_evidence_test`'s
+   hash pins await the mechanical `--contract` regeneration when this
+   branch merges.
