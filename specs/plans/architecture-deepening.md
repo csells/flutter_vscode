@@ -150,7 +150,7 @@ discoveries go to [`futures.md`](futures.md).
   lines) consumed by the host role. The Host fixture protocol mirror
   was refreshed verbatim; the durable contract artifact awaits the
   mechanical `--contract` regeneration.
-- [ ] A-6 The fixture composes `FlutterViewHost`: the template's
+- [x] A-6 The fixture composes `FlutterViewHost`: the template's
   interface grows the injection points the adversity harness needs
   (extra HTML metas, script hooks — the incoming-frame observer
   already exists), the fixture consumes the composed skeleton, and
@@ -161,6 +161,29 @@ discoveries go to [`futures.md`](futures.md).
   composed cleanly. Check: `./scripts/test_host_extension.sh` green;
   the fixture no longer re-implements panel/session/CSP-HTML
   wholesale.
+  Closed (red ae013c7, green bc661ad): `FlutterViewHost.open` grew
+  four production-sane seams — `extraHead` (trusted fragments written
+  before `</head>`: config metas and nonce-carrying inline scripts),
+  `scriptNonce` (joins `script-src` and stamps the bootstrap script
+  tag), `onIncomingMessage` (pass-through to the transport's existing
+  observer), and a `loadStartedAt` timestamp starting the documented
+  cold-start measurement — plus `reload()`, which regenerates the
+  same-session HTML under a bumped `flutter-vscode-reload-generation`
+  meta so an in-place document reload always applies (this subsumed
+  the fixture's precomputed `reloadedViewHtml` swap and its private
+  generation meta; the plan's flagged reload judgment resolved to a
+  production API, so the escape hatch never fired). The fixture's
+  `_openView` composes `FlutterViewHost.open`; its hand-rolled panel
+  creation, `HostViewSession.connect` wiring, 111-line CSP `_viewHtml`
+  twin, and duplicate session-token generator are gone
+  (extension.dart 1,080 → 1,020 lines). Fixture-owned adversity
+  machinery remains: the protocol probe, the fault-injection and
+  render-observer scripts (now `extraHead` fragments), the fixture
+  metas, and a slimmed `_ViewResources` keeping the gate's
+  teardown-order and resource-count assertions. Recording-time
+  caveat: only compile-level pins ran locally — the Docker real-host
+  gates (`test_host_extension.sh`, `test_coverage_extension.sh`,
+  `test_breakpoints.sh`) must run at merge.
 
 Final gate for the plan: fast suites + `flutter analyze` clean, and
 the three real-host gates (`test_host_extension.sh`,
@@ -231,7 +254,25 @@ Tallies are recording-time values. Entries appended as items close.
    selection over the real pinned inputs, and a doctor sharing the
    validator's required-paths list — and failed to load: every deep
    CLI module existed only as a bin/-private function.
-7. **Green A-1** (commit 2227225): the modules moved with behavior
+8. **A-6** (red ae013c7, green bc661ad): the red landed a template
+   suite against the promised seams (`extraHead`, `scriptNonce`,
+   `onIncomingMessage`, `loadStartedAt`, `reload()`, the
+   reload-generation meta, the nonce'd CSP) plus a repository-gate
+   case pinning the fixture to `FlutterViewHost.open` and banning the
+   hand-rolled panel/session/CSP skeleton — 4 cases failed. Green
+   grew the template (288 → 361 lines), rebuilt the fixture and the
+   Coverage Treemap extension from it (both generated modules
+   byte-identical to the template; the coverage extension's
+   `open` call site compiled unchanged against the additive
+   interface), rewrote the fixture's view block as composition, and
+   regenerated the Host Contract to convergence (artifact, both
+   overrides pins, and both build-receipted `coverage.json` files
+   agree). Locally green: template suite 4, repository gate 15,
+   binding evidence 4, protocol 67, transport probes 2, cli_build 9
+   (including the emitted==template byte pin), `flutter analyze` and
+   the fixture host's strict `dart analyze` clean. The wire report
+   run.cjs asserts is untouched; the three real-host gates remain the
+   merge-time proof.
    pinned — 17/17 in-process cases green, all nine subprocess
    cli suites green unchanged (create, doctor, security, package,
    build, multi-baseline, view, watch, global-activation), analyze
