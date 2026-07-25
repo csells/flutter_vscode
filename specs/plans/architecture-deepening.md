@@ -88,7 +88,7 @@ discoveries go to [`futures.md`](futures.md).
   outputs stayed byte-identical under the cli byte-compare pin; the
   three contract source maps receipt the new modules, with the durable
   artifact awaiting mechanical `--contract` regeneration at merge.
-- [ ] A-5 A view shell module: `ViewShell` (or equivalent) in
+- [x] A-5 A view shell module: `ViewShell` (or equivalent) in
   `package:flutter_vscode/view.dart` owns session connect, the theme
   stream, host-event subscriptions, and rendered-reporting behind one
   interface with one disposal; void-codec helpers erase the repeated
@@ -97,6 +97,26 @@ discoveries go to [`futures.md`](futures.md).
   suite over the in-memory transport; treemap view analyze + tests
   green; the extension's main.dart no longer cancels protocol
   subscriptions by hand.
+  Closed (red 1528ffc, green 9ce3843): `ViewShell` in the new
+  `lib/src/view_shell.dart` (158 lines, exported from `view.dart`)
+  owns session connect, the current-theme snapshot plus a deduplicated
+  broadcast theme stream behind one upstream subscription, shell-owned
+  event forwards behind `events()`, rendered reporting, and a single
+  idempotent `dispose()` that returns transport subscriptions to zero.
+  Injectable `ViewShellSessionSource`/`ViewShellThemeSource` seams
+  keep the core widget-free and unit-testable over the in-memory
+  transport; 22-line conditional web/stub defaults acquire the live
+  webview transport and document (the bootstrap `connect` gained an
+  `operations` pass-through). `ViewOperation.noArgs`/`noResult` supply
+  the void codec sides. Coverage Treemap's view adopts the shell:
+  `main.dart` (440 → 430 lines) holds no `StreamSubscription` fields
+  and cancels nothing by hand — one `dispose()` replaces the
+  hand-wired session, two hand-cancelled subscriptions, and the
+  second theme stream. The shared contract folds its duplicate void
+  pairs into one `encodeNoValue`/`decodeNoValue` pair (196 → 185
+  lines) consumed by the host role. The Host fixture protocol mirror
+  was refreshed verbatim; the durable contract artifact awaits the
+  mechanical `--contract` regeneration.
 - [ ] A-6 The fixture composes `FlutterViewHost`: the template's
   interface grows the injection points the adversity harness needs
   (extra HTML metas, script hooks — the incoming-frame observer
@@ -142,3 +162,17 @@ Tallies are recording-time values. Entries appended as items close.
   `'flutter-vscode.view'` 21 → 1 — all inside the frame region. Role
   classes: Host 644 → 469 lines, View 582 → 382, atop a 310-line
   shared core and a 583-line frame module in the same single file.
+4. **A-5** (red 1528ffc, green 9ce3843): the red `view_shell_test.dart`
+   landed against the promised interface and failed to compile — no
+   `ViewShell`, no source seams, no `ViewOperation.noArgs`/`noResult`.
+   Green passes its 9 tests over the in-memory transport with an
+   injected theme source: connect exposes the session and initial
+   theme and passes view operations through; the theme stream dedupes
+   behind one shared upstream subscription; `events()` round-trips a
+   host `emitEvent` and `reportRendered` reaches the host future; one
+   `dispose()` cancels everything (view subscriptions 0, upstream
+   released, transport release invoked once, host closes clean); both
+   void codec sides round-trip and the decode guard rejects non-null.
+   The 67-test protocol and 15-test core suites ran unmodified and
+   green; treemap view `dart analyze` + `flutter test` and shared
+   `dart test` green; `flutter analyze` clean at the root.
