@@ -1,7 +1,8 @@
 # Docs Truth Plan
 
-Status: Proposed — awaiting owner approval to edit (the improve-docs
-gate); the audit is complete and read-only
+Status: Proposed — queued behind [single-layer.md](single-layer.md)
+by owner direction (the docs will document ONE generated layer);
+DT items describing three layers re-scope at execution time
 Date: 2026-07-25
 
 Brings the documentation corpus to truth at HEAD. A four-auditor
