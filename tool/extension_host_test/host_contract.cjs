@@ -7,7 +7,13 @@ const path = require('node:path');
 const CANONICAL_SOURCE_PATHS = Object.freeze({
   activationFailureTest:
     'test/fixtures/host_extension/test/activation_failure.cjs',
+  bindingCoverageLedger: 'tool/binding_generator/coverage_ledger.dart',
   bindingGenerator: 'tool/binding_generator/generator.dart',
+  bindingIrValidator: 'tool/binding_generator/ir_validator.dart',
+  bindingManifestProjection:
+    'tool/binding_generator/manifest_projection.dart',
+  bindingTemplates: 'tool/binding_generator/templates.dart',
+  bindingValidators: 'tool/binding_generator/validators.dart',
   bindingWriter: 'tool/binding_generator/writer.dart',
   bootstrapLifecycleTest:
     'tool/extension_host_test/bootstrap_lifecycle.test.cjs',
