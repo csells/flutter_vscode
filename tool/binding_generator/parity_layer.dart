@@ -16,22 +16,9 @@ library;
 
 import 'dart:convert';
 
-import 'package:crypto/crypto.dart';
+import 'ir_type_mapper.dart';
 
-/// A construct reached the emitter without a Total Mapping Rule.
-final class ParityGenerationException implements Exception {
-  /// Creates an actionable totality failure.
-  ParityGenerationException(this.declarationId, this.message);
-
-  /// The IR declaration that could not be mapped.
-  final String declarationId;
-
-  /// What rule is missing.
-  final String message;
-
-  @override
-  String toString() => 'PARITY_TOTALITY_ERROR: $declarationId: $message';
-}
+export 'ir_type_mapper.dart' show ParityGenerationException;
 
 /// The generated artifacts: the Dart library and the disposition ledger.
 typedef ParityArtifacts = ({String library, String ledger});
@@ -76,93 +63,36 @@ const parityLiveExemptions = {
           'stable behavior to observe',
 };
 
-const _reservedWords = {
-  'assert', 'break', 'case', 'catch', 'class', 'const', 'continue',
-  'default', 'do', 'else', 'enum', 'extends', 'false', 'final', 'finally',
-  'for', 'if', 'in', 'is', 'new', 'null', 'rethrow', 'return', 'super',
-  'switch', 'this', 'throw', 'true', 'try', 'var', 'void', 'while', 'with',
-  // Object core members that extension types may not redeclare compatibly.
-  'toString', 'hashCode', 'runtimeType', 'noSuchMethod',
-};
-
 /// Builds the Parity Layer library and its totality ledger from IR JSON.
 ParityArtifacts emitParityLayer(Map<String, Object?> inventory) {
-  return ParityEmitter(inventory).emit();
+  return ParityEmitter(IrTypeMapper(inventory)).emit();
 }
 
 /// The Parity Layer emitter.
 ///
-/// Public so that the dart-layer emitter (`dart_layer.dart`) can reuse the
-/// exact same IR walk, registries, and Total Mapping Rules when it layers
-/// Dart-first ergonomics over the parity surface; the parity output itself
-/// is produced only through [emitParityLayer].
+/// Owns declaration emission and the disposition ledger over a shared
+/// [IrTypeMapper] (the IR indexes, the Total Mapping Rules for types, and
+/// the helper-type registries). Public so that the dart-layer emitter
+/// (`dart_layer.dart`) can consume the same mapper plus this emitter's
+/// dispositions when it layers Dart-first ergonomics over the parity
+/// surface; the parity output itself is produced only through
+/// [emitParityLayer].
 final class ParityEmitter {
-  /// Indexes the IR declarations for emission.
-  ParityEmitter(Map<String, Object?> inventory)
-      : declarations = [
-          for (final declaration in inventory['declarations']! as List<Object?>)
-            (declaration! as Map<Object?, Object?>).cast<String, Object?>(),
-        ] {
-    for (final declaration in declarations) {
-      byId[declaration['id']! as String] = declaration;
-      childrenByParent
-          .putIfAbsent(declaration['parentId']! as String, () => [])
-          .add(declaration);
-    }
-    for (final declaration in declarations) {
-      final parent = declaration['parentId']! as String;
-      if (parent == 'module:vscode' || parent == 'global:global') {
-        topLevelByName[declaration['name']! as String] = declaration;
-      }
-    }
-  }
+  /// Emits over the given mapper's indexes and registries.
+  ParityEmitter(this.mapper);
 
-  /// The IR declarations in pinned order.
-  final List<Map<String, Object?>> declarations;
-
-  /// Declarations indexed by IR id.
-  final byId = <String, Map<String, Object?>>{};
-
-  /// Child declarations indexed by their parent id.
-  final childrenByParent = <String, List<Map<String, Object?>>>{};
-
-  /// Module- and global-rooted declarations indexed by name.
-  final topLevelByName = <String, Map<String, Object?>>{};
-
-  /// Generated tuple extension types by name.
-  final tupleTypes = <String, String>{};
-
-  /// Mapped element types of each generated tuple, by tuple name.
-  final tupleElements = <String, List<String>>{};
-
-  /// Generated string-literal wrapper types by name.
-  final literalWrappers = <String, String>{};
+  /// The shared IR index and type-mapping module.
+  final IrTypeMapper mapper;
 
   /// Generated anonymous-shape extension types by name.
-  final anonTypes = <String, String>{};
+  final _anonTypes = <String, String>{};
 
-  /// Whether scoped type-parameter references currently erase to `JSAny?`
-  /// (active inside registered helper types, which hoist to the top level
-  /// where no type parameters are in scope).
-  bool eraseScopeReferences = false;
-
-  /// Generated intersection extension types by name.
-  final intersectionTypes = <String, String>{};
+  /// Generated intersection extension types by name, built from the
+  /// mapper's registered operand sets.
+  final _intersectionTypes = <String, String>{};
 
   /// The per-declaration disposition ledger.
   final dispositions = <String, String>{};
-
-  static const _externalReferenceMap = {
-    'Uint8Array': 'JSUint8Array',
-    'Uint32Array': 'JSUint32Array',
-    'Record': 'JSObject',
-    'RegExp': 'JSObject',
-    'Error': 'JSObject',
-    'Iterable': 'JSObject',
-    'AsyncIterable': 'JSObject',
-    'IterableIterator': 'JSObject',
-    'Date': 'JSObject',
-  };
 
   /// Emits the parity library and ledger, populating every registry.
   ParityArtifacts emit() {
@@ -171,7 +101,7 @@ final class ParityEmitter {
     final namespaces = StringBuffer();
     // Thenable itself is mapped to JSPromise (its ledger disposition);
     // the typedef ships so author code can keep the upstream name.
-    if (topLevelByName.containsKey('Thenable')) {
+    if (mapper.topLevelByName.containsKey('Thenable')) {
       namespaces
         ..writeln('typedef Thenable<T extends JSAny?> = JSPromise<T>;')
         ..writeln();
@@ -183,7 +113,7 @@ final class ParityEmitter {
     final anonTypes = StringBuffer();
     final root = StringBuffer();
 
-    for (final declaration in declarations) {
+    for (final declaration in mapper.declarations) {
       if (dispositions[declaration['id']! as String] != 'emitted') {
         continue;
       }
@@ -224,7 +154,7 @@ final class ParityEmitter {
 
     final stableTypedefs = StringBuffer();
     final typedefCounters = <String, int>{};
-    for (final declaration in declarations) {
+    for (final declaration in mapper.declarations) {
       if (declaration['kind'] != 'typeLiteral' || !isEmitted(declaration)) {
         continue;
       }
@@ -234,7 +164,7 @@ final class ParityEmitter {
         (value) => value + 1,
         ifAbsent: () => 1,
       );
-      final target = hashName('JSAnon', declaration['shapeHash']);
+      final target = mapper.hashName('JSAnon', declaration['shapeHash']);
       stableTypedefs.writeln('typedef $base\$$ordinal = $target;');
     }
     if (stableTypedefs.isNotEmpty) {
@@ -242,6 +172,7 @@ final class ParityEmitter {
     }
 
     _emitRoot(root);
+    _buildIntersectionBodies();
 
     final library = StringBuffer()
       ..writeln('// GENERATED CODE - DO NOT MODIFY BY HAND.')
@@ -259,9 +190,9 @@ final class ParityEmitter {
       ..writeln()
       ..write(typedefs)
       ..write(stableTypedefs)
-      ..write(_sortedValues(tupleTypes))
-      ..write(_sortedValues(literalWrappers))
-      ..write(_sortedValues(intersectionTypes))
+      ..write(_sortedValues(mapper.tupleTypes))
+      ..write(_sortedValues(mapper.literalWrappers))
+      ..write(_sortedValues(_intersectionTypes))
       ..write(anonTypes)
       ..write(enums)
       ..write(namespaces)
@@ -284,14 +215,14 @@ final class ParityEmitter {
   // ---------------------------------------------------------------- ledger
 
   void _computeDispositions() {
-    final thenable = topLevelByName['Thenable'];
+    final thenable = mapper.topLevelByName['Thenable'];
     bool underThenable(Map<String, Object?> declaration) {
       var parent = declaration['parentId'] as String?;
       while (parent != null) {
         if (thenable != null && parent == thenable['id']) {
           return true;
         }
-        parent = byId[parent]?['parentId'] as String?;
+        parent = mapper.byId[parent]?['parentId'] as String?;
       }
       return false;
     }
@@ -303,12 +234,12 @@ final class ParityEmitter {
         if (name is String && name.startsWith('[')) {
           return true;
         }
-        cursor = byId[cursor['parentId']];
+        cursor = mapper.byId[cursor['parentId']];
       }
       return false;
     }
 
-    for (final declaration in declarations) {
+    for (final declaration in mapper.declarations) {
       final id = declaration['id']! as String;
       if (declaration['visibility'] != 'public') {
         dispositions[id] = 'non-public';
@@ -329,43 +260,17 @@ final class ParityEmitter {
 
   // ----------------------------------------------------------------- names
 
-  /// Maps a JS name to its mangled Dart name (reserved words, underscores).
-  String dartName(String jsName) {
-    var name = jsName;
-    if (name.startsWith('_')) {
-      name = '\$$name';
-    }
-    if (_reservedWords.contains(name)) {
-      name = '$name\$';
-    }
-    return name;
-  }
-
-  /// The Dart member name for [declaration], including overload suffixes.
-  String memberName(Map<String, Object?> declaration) {
-    final base = dartName(declaration['name']! as String);
-    final ordinal = declaration['overloadOrdinal'];
-    if (ordinal is int && ordinal > 0) {
-      return '$base\$${ordinal + 1}';
-    }
-    return base;
-  }
-
   String? _jsRename(Map<String, Object?> declaration, String dartName) {
     final jsName = declaration['name']! as String;
     return dartName == jsName ? null : jsName;
   }
-
-  /// The generated extension-type name for a namespace.
-  String namespaceTypeName(String name) =>
-      '${name[0].toUpperCase()}${name.substring(1)}Ns';
 
   /// A readable, deterministic alias base from the literal's named
   /// ancestor chain (e.g. class Position, member `with` ->
   /// `PositionWith`); occurrence ordinals disambiguate siblings.
   String _stableLiteralBase(Map<String, Object?> declaration) {
     final segments = <String>[];
-    var cursor = byId[declaration['parentId']];
+    var cursor = mapper.byId[declaration['parentId']];
     while (cursor != null) {
       final name = cursor['name'];
       if (name is String && cursor['kind'] != 'typeLiteral') {
@@ -376,7 +281,7 @@ final class ParityEmitter {
           );
         }
       }
-      cursor = byId[cursor['parentId']];
+      cursor = mapper.byId[cursor['parentId']];
     }
     final base = segments.reversed.join();
     if (base.isEmpty || RegExp('^[0-9]').hasMatch(base)) {
@@ -385,614 +290,39 @@ final class ParityEmitter {
     return base;
   }
 
-  /// A deterministic hash-derived type name for a canonical shape.
-  String hashName(String prefix, Object? shape) {
-    final digest = sha256.convert(utf8.encode(jsonEncode(shape))).toString();
-    return '${prefix}_${digest.substring(0, 12)}';
-  }
+  // --------------------------------------------------------- intersections
 
-  /// The type-parameter scopes visible from [declaration].
-  List<Set<String>> scopesFor(Map<String, Object?> declaration) {
-    final scopes = <Set<String>>[];
-    Map<String, Object?>? cursor = declaration;
-    while (cursor != null) {
-      final parameters = cursor['typeParameters'];
-      if (parameters is List<Object?>) {
-        scopes.add({
-          for (final parameter in parameters)
-            (parameter! as Map<Object?, Object?>)['name']! as String,
-        });
+  /// Builds the hoisted intersection extension types for every operand
+  /// set the mapper registered, including sets first reached while an
+  /// earlier body was being built.
+  void _buildIntersectionBodies() {
+    while (true) {
+      final pending = [
+        for (final name in mapper.intersectionOperands.keys)
+          if (!_intersectionTypes.containsKey(name)) name,
+      ];
+      if (pending.isEmpty) {
+        return;
       }
-      cursor = byId[cursor['parentId']];
-    }
-    return scopes;
-  }
-
-  /// The Dart type-parameter clause for [declaration], or the empty string.
-  String typeParameterClause(Map<String, Object?> declaration) {
-    final parameters = declaration['typeParameters'];
-    if (parameters is! List<Object?> || parameters.isEmpty) {
-      return '';
-    }
-    final names = [
-      for (final parameter in parameters)
-        (parameter! as Map<Object?, Object?>)['name']! as String,
-    ];
-    return '<${names.map((name) => '$name extends JSAny?').join(', ')}>';
-  }
-
-  // ----------------------------------------------------------------- types
-
-  /// Maps one IR type node to a Dart type.
-  ///
-  /// [generic] selects JS-typed form (valid inside generics and helpers)
-  /// over the primitive-friendly external form.
-  String mapType(
-    Object? node, {
-    required bool generic,
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    if (node is! Map<Object?, Object?>) {
-      throw ParityGenerationException(context, 'non-object type node');
-    }
-    final type = node.cast<String, Object?>();
-    switch (type['kind']) {
-      case 'primitive':
-        return _mapPrimitive(type['name']! as String, generic, context);
-      case 'literal':
-        final value = type['value'];
-        if (value is String) {
-          return generic ? 'JSString' : 'String';
-        }
-        if (value is num) {
-          return generic ? 'JSNumber' : 'num';
-        }
-        if (value is bool) {
-          return generic ? 'JSBoolean' : 'bool';
-        }
-        return 'JSAny?';
-      case 'reference':
-        return _mapReference(
-          type,
-          generic: generic,
-          scopes: scopes,
-          context: context,
-        );
-      case 'array':
-        final element = mapType(
-          type['elementType'],
-          generic: true,
-          scopes: scopes,
-          context: context,
-        );
-        return 'JSArray<${nullableForGeneric(element)}>';
-      case 'union':
-        return _mapUnion(
-          type,
-          generic: generic,
-          scopes: scopes,
-          context: context,
-        );
-      case 'intersection':
-        return _registerIntersection(type, scopes: scopes, context: context);
-      case 'tuple':
-        return _registerTuple(type, scopes: scopes, context: context);
-      case 'typeLiteral':
-        final id = type['id'];
-        if (id is String) {
-          final declaration = byId[id];
-          if (declaration == null) {
-            throw ParityGenerationException(
-              context,
-              'reference to unregistered type literal $id',
-            );
-          }
-          return hashName('JSAnon', declaration['shapeHash']);
-        }
-        return 'JSObject';
-      case 'function':
-        return 'JSFunction';
-      case 'operator':
-        if (type['operator'] == 'readonly') {
-          return mapType(
-            type['type'],
-            generic: generic,
-            scopes: scopes,
-            context: context,
-          );
-        }
-        throw ParityGenerationException(
-          context,
-          'no Total Mapping Rule for type operator ${type['operator']}',
-        );
-      default:
-        throw ParityGenerationException(
-          context,
-          'no Total Mapping Rule for type kind ${type['kind']}',
-        );
-    }
-  }
-
-  String _mapPrimitive(String name, bool generic, String context) {
-    switch (name) {
-      case 'string':
-        return generic ? 'JSString' : 'String';
-      case 'number':
-        return generic ? 'JSNumber' : 'num';
-      case 'boolean':
-        return generic ? 'JSBoolean' : 'bool';
-      case 'void':
-        return generic ? 'JSAny?' : 'void';
-      case 'any' || 'unknown' || 'null' || 'undefined' || 'never':
-        return 'JSAny?';
-      case 'object':
-        return 'JSObject';
-      case 'symbol':
-        return 'JSSymbol';
-      case 'bigint':
-        return 'JSBigInt';
-      default:
-        throw ParityGenerationException(
-          context,
-          'no Total Mapping Rule for primitive $name',
-        );
-    }
-  }
-
-  String _mapReference(
-    Map<String, Object?> type, {
-    required bool generic,
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    final name = type['name']! as String;
-    final arguments = (type['typeArguments'] as List<Object?>?) ?? const [];
-
-    for (final scope in scopes) {
-      if (scope.contains(name)) {
-        return eraseScopeReferences ? 'JSAny?' : name;
+      for (final name in pending) {
+        _intersectionTypes[name] =
+            _buildIntersection(name, mapper.intersectionOperands[name]!);
       }
     }
-    if (name.contains('.')) {
-      final prefix = name.split('.').first;
-      final target = topLevelByName[prefix];
-      if (target != null && target['kind'] == 'enum') {
-        return generic ? 'JSNumber' : 'int';
-      }
-      throw ParityGenerationException(
-        context,
-        'no Total Mapping Rule for dotted reference $name',
-      );
-    }
-    if (name == 'Thenable' || name == 'PromiseLike' || name == 'Promise') {
-      final argument = arguments.isEmpty
-          ? 'JSAny?'
-          : mapType(
-              arguments.first,
-              generic: true,
-              scopes: scopes,
-              context: context,
-            );
-      return 'JSPromise<${nullableForGeneric(argument)}>';
-    }
-    if (name == 'Array' || name == 'ReadonlyArray') {
-      final argument = arguments.isEmpty
-          ? 'JSAny?'
-          : mapType(
-              arguments.first,
-              generic: true,
-              scopes: scopes,
-              context: context,
-            );
-      return 'JSArray<${nullableForGeneric(argument)}>';
-    }
-    if (name == 'Readonly' && arguments.isNotEmpty) {
-      return mapType(
-        arguments.first,
-        generic: generic,
-        scopes: scopes,
-        context: context,
-      );
-    }
-    final external = _externalReferenceMap[name];
-    if (external != null) {
-      return external;
-    }
-
-    final target = topLevelByName[name];
-    if (target == null) {
-      throw ParityGenerationException(
-        context,
-        'no Total Mapping Rule for reference $name',
-      );
-    }
-    switch (target['kind']) {
-      case 'enum':
-        return generic ? 'JSNumber' : 'int';
-      case 'typeAlias':
-        return _mapAliasReference(
-          target,
-          arguments,
-          generic: generic,
-          scopes: scopes,
-          context: context,
-        );
-      case 'interface' || 'class':
-        final parameters =
-            (target['typeParameters'] as List<Object?>?) ?? const [];
-        if (parameters.isEmpty) {
-          return name;
-        }
-        final mappedArguments = <String>[
-          for (var index = 0; index < parameters.length; index += 1)
-            index < arguments.length
-                ? nullableForGeneric(
-                    mapType(
-                      arguments[index],
-                      generic: true,
-                      scopes: scopes,
-                      context: context,
-                    ),
-                  )
-                : 'JSAny?',
-        ];
-        return '$name<${mappedArguments.join(', ')}>';
-      default:
-        throw ParityGenerationException(
-          context,
-          'no Total Mapping Rule for reference to ${target['kind']} $name',
-        );
-    }
-  }
-
-  /// Alias references are expanded position-correctly by substitution; the
-  /// emitted typedef exists for Extension Authors, not for internal use.
-  ///
-  /// The one exception is an alias whose body is a union consisting only
-  /// of string literals: its zero-cost wrapper is named after the alias
-  /// (parity-runtime ledger entry 6), so non-generic positions keep the
-  /// upstream name instead of a shape-hash name.
-  String _mapAliasReference(
-    Map<String, Object?> alias,
-    List<Object?> arguments, {
-    required bool generic,
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    final literalUnion = _stringLiteralUnion(alias['type']);
-    if (literalUnion != null && !generic) {
-      final name = _registerLiteralWrapper(
-        literalUnion.members,
-        name: alias['name']! as String,
-      );
-      return literalUnion.nullable ? '$name?' : name;
-    }
-    final parameters = (alias['typeParameters'] as List<Object?>?) ?? const [];
-    var body = alias['type'];
-    if (parameters.isNotEmpty) {
-      final substitutions = <String, Object?>{
-        for (var index = 0; index < parameters.length; index += 1)
-          (parameters[index]! as Map<Object?, Object?>)['name']! as String:
-              index < arguments.length
-                  ? arguments[index]
-                  : {'kind': 'primitive', 'name': 'any'},
-      };
-      body = substitute(body, substitutions);
-    }
-    return mapType(body, generic: generic, scopes: scopes, context: context);
-  }
-
-  /// Substitutes type-parameter references in an IR type node.
-  Object? substitute(Object? node, Map<String, Object?> substitutions) {
-    if (node is List<Object?>) {
-      return [for (final item in node) substitute(item, substitutions)];
-    }
-    if (node is! Map<Object?, Object?>) {
-      return node;
-    }
-    final map = node.cast<String, Object?>();
-    if (map['kind'] == 'reference' &&
-        substitutions.containsKey(map['name']) &&
-        ((map['typeArguments'] as List<Object?>?) ?? const []).isEmpty) {
-      return substitutions[map['name']];
-    }
-    return {
-      for (final entry in map.entries)
-        entry.key: substitute(entry.value, substitutions),
-    };
-  }
-
-  String _mapUnion(
-    Map<String, Object?> type, {
-    required bool generic,
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    final members = (type['types']! as List<Object?>)
-        .map(
-          (member) =>
-              (member! as Map<Object?, Object?>).cast<String, Object?>(),
-        )
-        .toList();
-    var nullable = false;
-    final rest = <Map<String, Object?>>[];
-    for (final member in members) {
-      if (member['kind'] == 'primitive' &&
-          (member['name'] == 'null' || member['name'] == 'undefined')) {
-        nullable = true;
-      } else {
-        rest.add(member);
-      }
-    }
-    if (rest.isEmpty) {
-      return 'JSAny?';
-    }
-    final allStringLiterals = rest.length > 1 &&
-        rest.every(
-          (member) =>
-              member['kind'] == 'literal' && member['value'] is String,
-        );
-    if (allStringLiterals && !generic) {
-      final name = _registerLiteralWrapper(rest);
-      return nullable ? '$name?' : name;
-    }
-    String base;
-    if (rest.length == 1) {
-      base = mapType(
-        rest.single,
-        generic: generic,
-        scopes: scopes,
-        context: context,
-      );
-    } else {
-      final categories = {
-        for (final member in rest)
-          _lubCategory(member, scopes: scopes, context: context),
-      };
-      if (categories.length == 1) {
-        base = switch (categories.single) {
-          'S' => generic ? 'JSString' : 'String',
-          'N' => generic ? 'JSNumber' : 'num',
-          'B' => generic ? 'JSBoolean' : 'bool',
-          'O' => 'JSObject',
-          _ => 'JSAny?',
-        };
-      } else {
-        base = 'JSAny';
-      }
-    }
-    if (nullable && !base.endsWith('?') && base != 'void') {
-      base = '$base?';
-    }
-    return base;
-  }
-
-  String _lubCategory(
-    Map<String, Object?> member, {
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    switch (member['kind']) {
-      case 'primitive':
-        return switch (member['name']) {
-          'string' => 'S',
-          'number' => 'N',
-          'boolean' => 'B',
-          'object' => 'O',
-          _ => 'A',
-        };
-      case 'literal':
-        final value = member['value'];
-        if (value is String) return 'S';
-        if (value is num) return 'N';
-        if (value is bool) return 'B';
-        return 'A';
-      case 'reference':
-        final name = member['name']! as String;
-        for (final scope in scopes) {
-          if (scope.contains(name)) {
-            return 'A';
-          }
-        }
-        if (name.contains('.')) {
-          return 'N';
-        }
-        final target = topLevelByName[name];
-        if (target != null && target['kind'] == 'enum') {
-          return 'N';
-        }
-        if (target != null && target['kind'] == 'typeAlias') {
-          final mapped = _mapAliasReference(
-            target,
-            (member['typeArguments'] as List<Object?>?) ?? const [],
-            generic: true,
-            scopes: scopes,
-            context: context,
-          );
-          return _categoryOfMapped(mapped);
-        }
-        return 'O';
-      case 'array' || 'tuple' || 'typeLiteral' || 'function' ||
-            'intersection':
-        return 'O';
-      case 'union':
-        final mapped = _mapUnion(
-          member.cast<String, Object?>(),
-          generic: true,
-          scopes: scopes,
-          context: context,
-        );
-        return _categoryOfMapped(mapped);
-      case 'operator':
-        return _lubCategory(
-          (member['type']! as Map<Object?, Object?>).cast<String, Object?>(),
-          scopes: scopes,
-          context: context,
-        );
-      default:
-        return 'A';
-    }
-  }
-
-  String _categoryOfMapped(String mapped) {
-    final bare = mapped.endsWith('?')
-        ? mapped.substring(0, mapped.length - 1)
-        : mapped;
-    if (bare == 'JSString' || bare == 'String') return 'S';
-    if (bare == 'JSNumber' || bare == 'num' || bare == 'int') return 'N';
-    if (bare == 'JSBoolean' || bare == 'bool') return 'B';
-    if (bare == 'JSAny') return 'A';
-    return 'O';
-  }
-
-  /// Rewrites `void` to `JSAny?` so a type is valid in generic positions.
-  String nullableForGeneric(String type) => type == 'void' ? 'JSAny?' : type;
-
-  // ------------------------------------------------------------ registries
-
-  /// Detects a union type consisting only of string literals (plus an
-  /// optional `null`/`undefined` member), the construct behind zero-cost
-  /// literal wrappers; returns `null` for every other type node.
-  ({List<Map<String, Object?>> members, bool nullable})? _stringLiteralUnion(
-    Object? node,
-  ) {
-    if (node is! Map<Object?, Object?>) {
-      return null;
-    }
-    final type = node.cast<String, Object?>();
-    if (type['kind'] != 'union') {
-      return null;
-    }
-    var nullable = false;
-    final rest = <Map<String, Object?>>[];
-    for (final rawMember in type['types']! as List<Object?>) {
-      final member =
-          (rawMember! as Map<Object?, Object?>).cast<String, Object?>();
-      if (member['kind'] == 'primitive' &&
-          (member['name'] == 'null' || member['name'] == 'undefined')) {
-        nullable = true;
-      } else {
-        rest.add(member);
-      }
-    }
-    final allStringLiterals = rest.length > 1 &&
-        rest.every(
-          (member) => member['kind'] == 'literal' && member['value'] is String,
-        );
-    if (!allStringLiterals) {
-      return null;
-    }
-    return (members: rest, nullable: nullable);
-  }
-
-  /// Zero-cost typed wrapper for a union of string literals: the value
-  /// IS the string; one generated constant per literal. Anonymous unions
-  /// take a shape-hash name; an all-string-literal alias passes its own
-  /// [name] so the wrapper keeps the upstream name.
-  String _registerLiteralWrapper(
-    List<Map<String, Object?>> members, {
-    String? name,
-  }) {
-    final values = [for (final member in members) member['value']! as String]
-      ..sort();
-    final wrapperName = name ?? hashName('JSLit', values);
-    literalWrappers.putIfAbsent(wrapperName, () {
-      final buffer = StringBuffer()
-        ..writeln('extension type const $wrapperName(String value) {');
-      for (var index = 0; index < values.length; index += 1) {
-        final literal = values[index];
-        final identifier =
-            RegExp(r'^[A-Za-z_$][A-Za-z0-9_$]*$').hasMatch(literal) &&
-                    dartName(literal) == literal
-                ? literal
-                : 'value\$${index + 1}';
-        buffer.writeln(
-          "  static const $identifier = $wrapperName('$literal');",
-        );
-      }
-      buffer
-        ..writeln('}')
-        ..writeln();
-      return buffer.toString();
-    });
-    return wrapperName;
-  }
-
-  String _registerTuple(
-    Map<String, Object?> type, {
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    final elements = type['elements']! as List<Object?>;
-    final previousErase = eraseScopeReferences;
-    eraseScopeReferences = true;
-    final mapped = <String>[
-      for (final element in elements)
-        nullableForGeneric(
-          mapType(
-            element is Map<Object?, Object?> && element['type'] != null
-                ? element['type']
-                : element,
-            generic: true,
-            scopes: scopes,
-            context: context,
-          ),
-        ),
-    ];
-    eraseScopeReferences = previousErase;
-    final name = hashName('JSTuple', mapped);
-    tupleElements.putIfAbsent(name, () => mapped);
-    tupleTypes.putIfAbsent(name, () {
-      final buffer = StringBuffer()
-        ..writeln('extension type $name(JSArray<JSAny?> _self) '
-            'implements JSObject {');
-      for (var index = 0; index < mapped.length; index += 1) {
-        final cast = mapped[index] == 'JSAny?' ? '' : ' as ${mapped[index]}';
-        buffer.writeln(
-          '  ${mapped[index]} get \$${index + 1} => _self[$index]$cast;',
-        );
-      }
-      buffer
-        ..writeln('}')
-        ..writeln();
-      return buffer.toString();
-    });
-    return name;
-  }
-
-  String _registerIntersection(
-    Map<String, Object?> type, {
-    required List<Set<String>> scopes,
-    required String context,
-  }) {
-    final operands = type['types']! as List<Object?>;
-    final previousErase = eraseScopeReferences;
-    eraseScopeReferences = true;
-    final mapped = <String>[
-      for (final operand in operands)
-        mapType(operand, generic: true, scopes: scopes, context: context),
-    ];
-    eraseScopeReferences = previousErase;
-    final name = hashName('JSIntersection', mapped);
-    intersectionTypes.putIfAbsent(
-      name,
-      () => _buildIntersection(name, mapped, context),
-    );
-    return name;
   }
 
   Map<String, Object?>? _operandDeclaration(String mappedName) {
     if (mappedName.startsWith('JSAnon_')) {
-      for (final declaration in declarations) {
+      for (final declaration in mapper.declarations) {
         if (declaration['kind'] == 'typeLiteral' &&
-            hashName('JSAnon', declaration['shapeHash']) == mappedName) {
+            mapper.hashName('JSAnon', declaration['shapeHash']) ==
+                mappedName) {
           return declaration;
         }
       }
       return null;
     }
-    final target = topLevelByName[mappedName];
+    final target = mapper.topLevelByName[mappedName];
     if (target != null &&
         (target['kind'] == 'interface' || target['kind'] == 'class')) {
       return target;
@@ -1003,7 +333,7 @@ final class ParityEmitter {
   /// Implements every operand; members two or more operands declare are
   /// redeclared from the first declaring operand to resolve the conflict
   /// deterministically.
-  String _buildIntersection(String name, List<String> mapped, String context) {
+  String _buildIntersection(String name, List<String> mapped) {
     final bases = {...mapped.where((m) => !m.endsWith('?')), 'JSObject'};
     final memberOwners = <String, List<Map<String, Object?>>>{};
     for (final operand in mapped) {
@@ -1011,7 +341,7 @@ final class ParityEmitter {
       if (declaration == null) {
         continue;
       }
-      final children = childrenByParent[declaration['id']] ??
+      final children = mapper.childrenByParent[declaration['id']] ??
           const <Map<String, Object?>>[];
       for (final child in children) {
         final childName = child['name'];
@@ -1023,15 +353,17 @@ final class ParityEmitter {
     final body = StringBuffer()
       ..writeln('extension type $name(JSObject _self) '
           'implements ${bases.join(', ')} {');
-    final previousErase = eraseScopeReferences;
-    eraseScopeReferences = true;
     for (final owners in memberOwners.values) {
       if (owners.length < 2) {
         continue;
       }
-      _emitMembers([owners.first], body, receiver: '_self');
+      _emitMembers(
+        [owners.first],
+        body,
+        receiver: '_self',
+        eraseScopeReferences: true,
+      );
     }
-    eraseScopeReferences = previousErase;
     body
       ..writeln('}')
       ..writeln();
@@ -1042,27 +374,29 @@ final class ParityEmitter {
 
   void _emitAlias(Map<String, Object?> declaration, StringBuffer out) {
     final name = declaration['name']! as String;
-    final clause = typeParameterClause(declaration);
+    final clause = mapper.typeParameterClause(declaration);
     if (name == 'Thenable') {
       out.writeln('typedef Thenable<T extends JSAny?> = JSPromise<T>;');
       return;
     }
-    final literalUnion = _stringLiteralUnion(declaration['type']);
+    final literalUnion = mapper.stringLiteralUnion(declaration['type']);
     if (literalUnion != null) {
       // The alias IS its wrapper (parity-runtime ledger entry 6): the
       // wrapper is registered under the alias name and hoists with the
       // other literal wrappers; no typedef is emitted.
-      _registerLiteralWrapper(literalUnion.members, name: name);
+      mapper.registerLiteralWrapper(literalUnion.members, name: name);
       return;
     }
-    final mapped = mapType(
+    final mapped = mapper.mapType(
       declaration['type'],
       generic: true,
-      scopes: scopesFor(declaration),
+      scopes: mapper.scopesFor(declaration),
       context: declaration['id']! as String,
     );
     out
-      ..writeln('typedef $name$clause = ${nullableForGeneric(mapped)};')
+      ..writeln(
+        'typedef $name$clause = ${mapper.nullableForGeneric(mapped)};',
+      )
       ..writeln();
   }
 
@@ -1073,11 +407,12 @@ final class ParityEmitter {
   ) {
     final name = declaration['name']! as String;
     typedefs.writeln('typedef $name = int;');
-    final members = childrenByParent[declaration['id']] ?? const <Map<String, Object?>>[];
+    final members = mapper.childrenByParent[declaration['id']] ??
+        const <Map<String, Object?>>[];
     out.writeln('extension type ${name}Values(JSObject _self) '
         'implements JSObject {');
     for (final member in members.where(isEmitted)) {
-      final dartName = this.dartName(member['name']! as String);
+      final dartName = mapper.dartName(member['name']! as String);
       final rename = _jsRename(member, dartName);
       if (rename != null) {
         out.writeln("  @JS('$rename')");
@@ -1090,10 +425,11 @@ final class ParityEmitter {
   }
 
   void _emitNamespace(Map<String, Object?> declaration, StringBuffer out) {
-    final typeName = namespaceTypeName(declaration['name']! as String);
+    final typeName = mapper.namespaceTypeName(declaration['name']! as String);
     out.writeln('extension type $typeName(JSObject _self) '
         'implements JSObject {');
-    for (final child in childrenByParent[declaration['id']] ?? const <Map<String, Object?>>[]) {
+    for (final child in mapper.childrenByParent[declaration['id']] ??
+        const <Map<String, Object?>>[]) {
       if (!isEmitted(child)) {
         continue;
       }
@@ -1116,11 +452,11 @@ final class ParityEmitter {
   }
 
   void _emitVariable(Map<String, Object?> declaration, StringBuffer out) {
-    final dartName = this.dartName(declaration['name']! as String);
+    final dartName = mapper.dartName(declaration['name']! as String);
     final rename = _jsRename(declaration, dartName);
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
-    final type = mapType(
+    final type = mapper.mapType(
       declaration['type'],
       generic: false,
       scopes: scopes,
@@ -1144,15 +480,15 @@ final class ParityEmitter {
   void _emitInterface(Map<String, Object?> declaration, StringBuffer out) {
     final name = declaration['name']! as String;
     final id = declaration['id']! as String;
-    final clause = typeParameterClause(declaration);
-    final scopes = scopesFor(declaration);
-    final children = childrenByParent[id] ?? const [];
+    final clause = mapper.typeParameterClause(declaration);
+    final scopes = mapper.scopesFor(declaration);
+    final children = mapper.childrenByParent[id] ?? const [];
     final hasCallSignature =
         children.any((child) => child['kind'] == 'callSignature');
     final representation = hasCallSignature ? 'JSFunction' : 'JSObject';
     final bases = <String>{
       for (final base in (declaration['extends'] as List<Object?>?) ?? const [])
-        mapType(base, generic: true, scopes: scopes, context: id),
+        mapper.mapType(base, generic: true, scopes: scopes, context: id),
       'JSObject',
     };
     out.writeln('extension type $name$clause($representation _self) '
@@ -1173,24 +509,26 @@ final class ParityEmitter {
   void _emitLiteralFactory(
     String name,
     List<Map<String, Object?>> children,
-    StringBuffer out,
-  ) {
+    StringBuffer out, {
+    bool eraseScopeReferences = false,
+  }) {
     final parameters = <String>[];
     for (final child in children) {
       if (!isEmitted(child)) {
         continue;
       }
       final childName = child['name'];
-      if (childName is! String || dartName(childName) != childName) {
+      if (childName is! String || mapper.dartName(childName) != childName) {
         continue;
       }
       if (child['kind'] == 'property') {
-        var type = nullableForGeneric(
-          mapType(
+        var type = mapper.nullableForGeneric(
+          mapper.mapType(
             child['type'],
             generic: true,
-            scopes: scopesFor(child),
+            scopes: mapper.scopesFor(child),
             context: child['id']! as String,
+            eraseScopeReferences: eraseScopeReferences,
           ),
         );
         if (!type.endsWith('?')) {
@@ -1213,15 +551,15 @@ final class ParityEmitter {
   void _emitClass(Map<String, Object?> declaration, StringBuffer out) {
     final name = declaration['name']! as String;
     final id = declaration['id']! as String;
-    final clause = typeParameterClause(declaration);
-    final scopes = scopesFor(declaration);
-    final children = childrenByParent[id] ?? const [];
+    final clause = mapper.typeParameterClause(declaration);
+    final scopes = mapper.scopesFor(declaration);
+    final children = mapper.childrenByParent[id] ?? const [];
     final bases = <String>{
       for (final base in [
         ...(declaration['extends'] as List<Object?>?) ?? const <Object?>[],
         ...(declaration['implements'] as List<Object?>?) ?? const <Object?>[],
       ])
-        mapType(base, generic: true, scopes: scopes, context: id),
+        mapper.mapType(base, generic: true, scopes: scopes, context: id),
       'JSObject',
     };
     out.writeln('extension type $name$clause(JSObject _self) '
@@ -1239,7 +577,7 @@ final class ParityEmitter {
       ..writeln(
         'extension type ${name}Ctor(JSFunction _self) implements JSObject {',
       );
-    final ownerClause = typeParameterClause(declaration);
+    final ownerClause = mapper.typeParameterClause(declaration);
     final ownerParameters =
         (declaration['typeParameters'] as List<Object?>?) ?? const [];
     final instantiated = ownerParameters.isEmpty
@@ -1294,12 +632,12 @@ final class ParityEmitter {
   ) {
     final ordinal = declaration['overloadOrdinal'];
     final suffix = ordinal is int && ordinal > 0 ? '\$${ordinal + 1}' : '';
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
     final parameters =
         (declaration['parameters'] as List<Object?>?) ?? const [];
-    final owner = byId[declaration['parentId']]!;
-    final ownerClause = typeParameterClause(owner);
+    final owner = mapper.byId[declaration['parentId']]!;
+    final ownerClause = mapper.typeParameterClause(owner);
     final ownerParameters =
         (owner['typeParameters'] as List<Object?>?) ?? const [];
     final instantiated = ownerParameters.isEmpty
@@ -1324,36 +662,34 @@ final class ParityEmitter {
   }
 
   void _emitTypeLiteral(Map<String, Object?> declaration, StringBuffer out) {
-    final name = hashName('JSAnon', declaration['shapeHash']);
-    if (anonTypes.containsKey(name)) {
+    final name = mapper.hashName('JSAnon', declaration['shapeHash']);
+    if (_anonTypes.containsKey(name)) {
       return;
     }
-    final children =
-        childrenByParent[declaration['id']] ?? const <Map<String, Object?>>[];
+    final children = mapper.childrenByParent[declaration['id']] ??
+        const <Map<String, Object?>>[];
     final hasCallSignature =
         children.any((child) => child['kind'] == 'callSignature');
     final representation = hasCallSignature ? 'JSFunction' : 'JSObject';
     final body = StringBuffer()
       ..writeln('extension type $name($representation _self) '
           'implements JSObject {');
-    final previousErase = eraseScopeReferences;
-    eraseScopeReferences = true;
     if (representation == 'JSObject') {
-      _emitLiteralFactory(name, children, body);
+      _emitLiteralFactory(name, children, body, eraseScopeReferences: true);
     }
-    _emitMembers(children, body, receiver: '_self');
-    eraseScopeReferences = previousErase;
+    _emitMembers(children, body, receiver: '_self', eraseScopeReferences: true);
     body
       ..writeln('}')
       ..writeln();
-    anonTypes[name] = body.toString();
-    out.write(anonTypes[name]);
+    _anonTypes[name] = body.toString();
+    out.write(_anonTypes[name]);
   }
 
   void _emitMembers(
     List<Map<String, Object?>> children,
     StringBuffer out, {
     required String receiver,
+    bool eraseScopeReferences = false,
   }) {
     var indexSignatures = 0;
     for (final child in children) {
@@ -1362,14 +698,29 @@ final class ParityEmitter {
       }
       switch (child['kind']) {
         case 'property':
-          _emitProperty(child, out);
+          _emitProperty(child, out, eraseScopeReferences: eraseScopeReferences);
         case 'method' || 'function':
-          _emitCallable(child, out, receiver: receiver);
+          _emitCallable(
+            child,
+            out,
+            receiver: receiver,
+            eraseScopeReferences: eraseScopeReferences,
+          );
         case 'indexSignature':
           indexSignatures += 1;
-          _emitIndexSignature(child, out, ordinal: indexSignatures);
+          _emitIndexSignature(
+            child,
+            out,
+            ordinal: indexSignatures,
+            eraseScopeReferences: eraseScopeReferences,
+          );
         case 'callSignature':
-          _emitCallSignature(child, out, receiver: receiver);
+          _emitCallSignature(
+            child,
+            out,
+            receiver: receiver,
+            eraseScopeReferences: eraseScopeReferences,
+          );
         case 'constructor':
           break; // Emitted on the Ctor type.
         case 'typeLiteral':
@@ -1383,16 +734,21 @@ final class ParityEmitter {
     }
   }
 
-  void _emitProperty(Map<String, Object?> declaration, StringBuffer out) {
-    final dartName = this.dartName(declaration['name']! as String);
+  void _emitProperty(
+    Map<String, Object?> declaration,
+    StringBuffer out, {
+    bool eraseScopeReferences = false,
+  }) {
+    final dartName = mapper.dartName(declaration['name']! as String);
     final rename = _jsRename(declaration, dartName);
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
-    var type = mapType(
+    var type = mapper.mapType(
       declaration['type'],
       generic: false,
       scopes: scopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
     if (declaration['optional'] == true &&
         !type.endsWith('?') &&
@@ -1418,12 +774,13 @@ final class ParityEmitter {
     Map<String, Object?> declaration,
     StringBuffer out, {
     required String receiver,
+    bool eraseScopeReferences = false,
   }) {
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
-    final dartName = memberName(declaration);
+    final dartName = mapper.memberName(declaration);
     final jsName = declaration['name']! as String;
-    final clause = typeParameterClause(declaration);
+    final clause = mapper.typeParameterClause(declaration);
     final parameters =
         (declaration['parameters'] as List<Object?>?) ?? const [];
     final hasRest = parameters.any(
@@ -1441,15 +798,21 @@ final class ParityEmitter {
     ];
 
     if (hasRest) {
-      final returnType = nullableForGeneric(
-        mapType(
+      final returnType = mapper.nullableForGeneric(
+        mapper.mapType(
           declaration['returnType'],
           generic: true,
           scopes: ownScopes,
           context: id,
+          eraseScopeReferences: eraseScopeReferences,
         ),
       );
-      final signature = _helperParameters(parameters, ownScopes, id);
+      final signature = _helperParameters(
+        parameters,
+        ownScopes,
+        id,
+        eraseScopeReferences: eraseScopeReferences,
+      );
       final trimmed =
           '${signature.local}.sublist(0, ${signature.trimExpression})';
       final call =
@@ -1464,27 +827,29 @@ final class ParityEmitter {
       return;
     }
 
-    final returnType = mapType(
+    final returnType = mapper.mapType(
       declaration['returnType'],
       generic: false,
       scopes: ownScopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
     final required = <String>[];
     final optional = <String>[];
     for (final rawParameter in parameters) {
       final parameter =
           (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
-      var type = mapType(
+      var type = mapper.mapType(
         parameter['type'],
         generic: false,
         scopes: ownScopes,
         context: id,
+        eraseScopeReferences: eraseScopeReferences,
       );
       if (type == 'void') {
         type = 'JSAny?';
       }
-      final parameterName = this.dartName(parameter['name']! as String);
+      final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['optional'] == true) {
         if (!type.endsWith('?')) {
           type = '$type?';
@@ -1509,21 +874,24 @@ final class ParityEmitter {
     Map<String, Object?> declaration,
     StringBuffer out, {
     required int ordinal,
+    bool eraseScopeReferences = false,
   }) {
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
     final parameters = declaration['parameters']! as List<Object?>;
-    final keyType = mapType(
+    final keyType = mapper.mapType(
       (parameters.first! as Map<Object?, Object?>)['type'],
       generic: false,
       scopes: scopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
-    var valueType = mapType(
+    var valueType = mapper.mapType(
       declaration['returnType'],
       generic: false,
       scopes: scopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
     if (valueType == 'void') {
       valueType = 'JSAny?';
@@ -1559,18 +927,25 @@ final class ParityEmitter {
     Map<String, Object?> declaration,
     StringBuffer out, {
     required String receiver,
+    bool eraseScopeReferences = false,
   }) {
-    final scopes = scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final id = declaration['id']! as String;
     final parameters =
         (declaration['parameters'] as List<Object?>?) ?? const [];
-    final signature = _helperParameters(parameters, scopes, id);
-    final returnType = nullableForGeneric(
-      mapType(
+    final signature = _helperParameters(
+      parameters,
+      scopes,
+      id,
+      eraseScopeReferences: eraseScopeReferences,
+    );
+    final returnType = mapper.nullableForGeneric(
+      mapper.mapType(
         declaration['returnType'],
         generic: true,
         scopes: scopes,
         context: id,
+        eraseScopeReferences: eraseScopeReferences,
       ),
     );
 
@@ -1598,8 +973,9 @@ final class ParityEmitter {
       _helperParameters(
     List<Object?> parameters,
     List<Set<String>> scopes,
-    String context,
-  ) {
+    String context, {
+    bool eraseScopeReferences = false,
+  }) {
     var dollars = 1;
     bool collides(int count) => parameters.any(
           (parameter) =>
@@ -1618,18 +994,19 @@ final class ParityEmitter {
     for (final rawParameter in parameters) {
       final parameter =
           (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
-      final parameterName = dartName(parameter['name']! as String);
+      final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['rest'] == true) {
         optionalParts.add('List<JSAny?> $parameterName = const []');
         restValues = '...$parameterName';
         continue;
       }
-      var type = nullableForGeneric(
-        mapType(
+      var type = mapper.nullableForGeneric(
+        mapper.mapType(
           parameter['type'],
           generic: true,
           scopes: scopes,
           context: context,
+          eraseScopeReferences: eraseScopeReferences,
         ),
       );
       if (parameter['optional'] == true) {
@@ -1668,7 +1045,7 @@ final class ParityEmitter {
       ..writeln('/// generated code resolves names through JS scope.')
       ..writeln('extension type VscodeApi(JSObject _self) '
           'implements JSObject {');
-    for (final declaration in declarations) {
+    for (final declaration in mapper.declarations) {
       if (declaration['parentId'] != 'module:vscode' ||
           !isEmitted(declaration)) {
         continue;
@@ -1677,7 +1054,7 @@ final class ParityEmitter {
       switch (declaration['kind']) {
         case 'namespace':
           out.writeln(
-            '  external ${namespaceTypeName(name)} get $name;',
+            '  external ${mapper.namespaceTypeName(name)} get $name;',
           );
         case 'class':
           out.writeln('  external ${name}Ctor get $name;');

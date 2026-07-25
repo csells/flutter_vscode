@@ -9,6 +9,7 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
     'test/fixtures/host_extension/test/activation_failure.cjs',
   bindingCoverageLedger: 'tool/binding_generator/coverage_ledger.dart',
   bindingGenerator: 'tool/binding_generator/generator.dart',
+  bindingIrTypeMapper: 'tool/binding_generator/ir_type_mapper.dart',
   bindingIrValidator: 'tool/binding_generator/ir_validator.dart',
   bindingManifestProjection:
     'tool/binding_generator/manifest_projection.dart',

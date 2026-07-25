@@ -60,7 +60,7 @@ discoveries go to [`futures.md`](futures.md).
   passed unmodified; the checked-in Host fixture mirror was refreshed
   verbatim; the durable contract artifact awaits the mechanical
   `--contract` regeneration.
-- [ ] A-3 An `IrTypeMapper` module extracted from the parity emitter:
+- [x] A-3 An `IrTypeMapper` module extracted from the parity emitter:
   the IR index + type mapping (byId/childrenByParent/mapType/
   substitute/scopesFor/dartName/memberName/hashName/
   nullableForGeneric/tupleElements) becomes a standalone module both
@@ -69,6 +69,23 @@ discoveries go to [`futures.md`](futures.md).
   and dart-layer byte-compares green (outputs unchanged); a new
   mapper unit suite; the dart-layer emitter no longer touches parity
   mutable state (grep gate).
+  Closed (red 4fc4e94, green 0744a1b): `ir_type_mapper.dart` (759
+  lines) owns the ctor-built indexes, `mapType` with its union/alias/
+  LUB helpers, substitution, scope collection, name mangling, and the
+  tuple/literal-wrapper registries plus intersection operand sets;
+  erasure is a per-call `mapType` parameter threaded through both
+  emitters (required-named in the dart layer), so the mutable flag and
+  the save/restore dance are gone. One judgment call the item
+  anticipated: intersection bodies stay emitter-built — from the
+  mapper's registered operand sets, deferred to just before assembly —
+  because they redeclare conflict members with the emitter's member
+  rules and read dispositions. `emitParityLayer`/`emitDartLayer` are
+  unchanged; ParityEmitter shrank from 1,709 to 1,086 lines and the
+  dart layer now consumes the mapper plus only emit/dispositions/
+  isEmitted from the parity emitter instead of the 18-member
+  whole-object seam. Both byte-compares held unchanged; the three
+  contract source maps receipt the module, with the durable artifact
+  awaiting mechanical `--contract` regeneration at merge.
 - [x] A-4 generator.dart unjailed: the IR validation/canonicalization
   projection, the coverage ledger, the manifest/contribution
   projection, and the four embedded source templates move to sibling
@@ -176,3 +193,17 @@ Tallies are recording-time values. Entries appended as items close.
    The 67-test protocol and 15-test core suites ran unmodified and
    green; treemap view `dart analyze` + `flutter test` and shared
    `dart test` green; `flutter analyze` clean at the root.
+5. **A-3** (red 4fc4e94, green 0744a1b): the 15-test
+  `ir_type_mapper_test` landed against the promised module and failed
+  to compile — no `ir_type_mapper.dart` beside the emitters — with the
+  grep gate over the dart layer's `eraseScopeReferences =`
+  save/restore committed in the same red. Green moved the indexes,
+  type rules, name mangling, and registries into the 759-line mapper
+  and threaded erasure as a call parameter through both emitters. The
+  pins held: parity and dart-layer byte-compares ran unchanged, 99
+  tests green across the five affected suites plus the 202-test
+  generator suite and the 4-test cli byte-compare, `flutter analyze`
+  clean. Line moves: parity_layer.dart 1,709 → 1,086; dart_layer.dart
+  1,034 → 1,103 (+69, the price of explicit per-call erasure over
+  ambient mutable state). `binding_evidence_test`'s hash pins await
+  the mechanical `--contract` regeneration when this branch merges.
