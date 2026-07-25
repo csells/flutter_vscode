@@ -502,8 +502,9 @@ void main() {
       transport.deliver(_canonicalFrames['readyAck']);
       final view = await connection;
 
-      transport.deliver(_canonicalFrames['hostCall']);
-      transport.deliver(_canonicalFrames['hostCall']);
+      transport
+        ..deliver(_canonicalFrames['hostCall'])
+        ..deliver(_canonicalFrames['hostCall']);
       await pumpEventQueue();
 
       expect(invocationCount, 1);
