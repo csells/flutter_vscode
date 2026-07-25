@@ -15,6 +15,7 @@ This file is the root index for AI and contributor documentation.
 
 - [Project Vision](specs/vision/vision.md)
 - [Architecture (living)](specs/architecture/index.md)
+- [Architecture Deepening Plan (active)](specs/plans/architecture-deepening.md)
 - [Futures (deferred-work inbox)](specs/plans/futures.md)
 - [Futures](specs/plans/futures.md)
 - [Archived Plans](specs/plans/archive/)
