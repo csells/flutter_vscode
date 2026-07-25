@@ -111,4 +111,75 @@ void main() {
       reason: 'build must emit only the merged artifact',
     );
   });
+
+  /// SL-2: the walking-slice facade and its parity-slice sibling retire.
+  ///
+  /// The generator stops emitting `vscode_facade.g.dart` and
+  /// `vscode_parity.g.dart`; every consumer (fixture host, example host,
+  /// scaffold, FlutterViewHost template) speaks the single layer plus the
+  /// runtime and host-exports modules.
+  group('SL-2: the walking-slice facade and parity sibling retire', () {
+    test('built project trees carry no facade or walking-slice parity', () {
+      for (final generatedRoot in [
+        'test/fixtures/host_extension/host/lib/generated',
+        'extensions/coverage_treemap/host/lib/generated',
+      ]) {
+        final names = Directory(generatedRoot)
+            .listSync()
+            .whereType<File>()
+            .map((file) => p.basename(file.path))
+            .toList();
+        expect(
+          names,
+          isNot(contains('vscode_facade.g.dart')),
+          reason: '$generatedRoot must not carry the retired facade',
+        );
+        expect(
+          names,
+          isNot(contains('vscode_parity.g.dart')),
+          reason:
+              '$generatedRoot must not carry the retired walking-slice parity',
+        );
+        expect(
+          names,
+          containsAll(['host_exports.g.dart', 'vscode_runtime.g.dart']),
+          reason: '$generatedRoot keeps the runtime and host-exports modules',
+        );
+      }
+    });
+
+    test('the generator no longer emits the retired artifacts', () {
+      expect(
+        File('tool/binding_generator/generator.dart').readAsStringSync(),
+        allOf(
+          isNot(contains('vscode_facade.g.dart')),
+          isNot(contains('vscode_parity.g.dart')),
+        ),
+        reason: 'the emit dispatch must not name the retired artifacts',
+      );
+      expect(
+        File('tool/binding_generator/templates.dart').readAsStringSync(),
+        allOf(
+          isNot(contains('walkingSliceFacadeTemplate')),
+          isNot(contains('walkingSliceParityTemplate')),
+        ),
+        reason: 'the facade and walking-slice parity templates retire',
+      );
+    });
+
+    test('hosts, scaffold, and view-host template import no facade', () {
+      for (final source in [
+        'test/fixtures/host_extension/host/lib/extension.dart',
+        'extensions/coverage_treemap/host/lib/extension.dart',
+        'lib/src/cli/create_command.dart',
+        'lib/src/cli/flutter_view_host_source.dart',
+      ]) {
+        expect(
+          File(source).readAsStringSync(),
+          isNot(contains('vscode_facade')),
+          reason: '$source must consume the single layer, not the facade',
+        );
+      }
+    });
+  });
 }
