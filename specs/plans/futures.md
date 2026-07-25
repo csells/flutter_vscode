@@ -73,11 +73,3 @@ sequence or schedule. Rough dependency order below.
 - The only real extension so far ships in-repo under `extensions/`
   (Coverage Treemap); a framework-external extension still does not
   exist.
-
-## Upstream contribution (owner's call)
-
-When the owner decides to engage upstream, open a pull request from
-`csells:project-hardening` to `SlowGen/flutter_vscode`. How that
-contribution is validated is entirely SlowGen's choice; this project's
-deliverable is a branch whose gates pass locally
-(`scripts/test_all.sh`, `scripts/check_round5_exit.sh`).
