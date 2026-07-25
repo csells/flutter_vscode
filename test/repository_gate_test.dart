@@ -40,6 +40,31 @@ void main() {
     );
   });
 
+  test('the Host fixture composes the framework view-host skeleton', () {
+    final fixture = File(
+      'test/fixtures/host_extension/host/lib/extension.dart',
+    ).readAsStringSync();
+
+    expect(
+      fixture,
+      contains('FlutterViewHost.open('),
+      reason: 'the fixture must compose the framework-owned view host',
+    );
+    for (final skeleton in [
+      'String _viewHtml(',
+      'createFlutterViewPanel(',
+      'HostViewSession.connect(',
+      'Content-Security-Policy',
+    ]) {
+      expect(
+        fixture,
+        isNot(contains(skeleton)),
+        reason: 'only adversity machinery may stay fixture-owned; '
+            '"$skeleton" belongs to FlutterViewHost',
+      );
+    }
+  });
+
   test('published package excludes repository-only hardening fixtures', () {
     final pubIgnore = File('.pubignore').readAsLinesSync().toSet();
 
