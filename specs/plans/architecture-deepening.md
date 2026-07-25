@@ -1,6 +1,7 @@
 # Architecture Deepening Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the fast suites
+and the three real-host gates are green at HEAD
 Date: 2026-07-24
 
 Implements all six candidates from the 2026-07-24 architecture review
@@ -188,6 +189,8 @@ discoveries go to [`futures.md`](futures.md).
 Final gate for the plan: fast suites + `flutter analyze` clean, and
 the three real-host gates (`test_host_extension.sh`,
 `test_coverage_extension.sh`, `test_breakpoints.sh`) green at HEAD.
+Ran 2026-07-25 after the A-6 merge: all three exited 0 (cold start
+255ms; watcher push applied; breakpoint paused on the Dart line).
 
 ## TDD Ledger
 
