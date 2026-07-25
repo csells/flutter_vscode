@@ -64,11 +64,25 @@ answered.
   `vsCodeThemeData` (a Material theme with VS Code dark-palette
   fallbacks) are web-side (`lib/src/view_theme_web.dart`). All of it
   is exported via `package:flutter_vscode/view.dart`.
+- The view side has one composition seam: `ViewShell`
+  (`lib/src/view_shell.dart`, platform pair
+  `view_shell_platform_web.dart`/`_stub.dart`) owns session connect,
+  a deduplicated shared theme stream, host-event forwards, rendered
+  reporting, and a single idempotent `dispose()`; injectable
+  session/theme sources make it unit-testable over the in-memory
+  transport. `ViewOperation.noArgs`/`noResult` erase the void-codec
+  ceremony for operations with no arguments or no result.
 - Host-side hosting is generated, not hand-copied: view-bearing
   projects receive `flutter_view_host.g.dart`
   (`lib/src/cli/flutter_view_host_source.dart`) carrying
-  `HostWebviewTransport`, `FlutterViewHost.open`, and the CSP-correct
-  webview HTML.
+  `HostWebviewTransport` and `FlutterViewHost.open` with the
+  CSP-correct webview HTML plus its production seams — `extraHead`
+  fragments, an optional `scriptNonce` (joined into `script-src` and
+  stamped on the bootstrap tag), an `onIncomingMessage` observer
+  pass-through, a `loadStartedAt` timestamp for cold-start
+  measurement, and `reload()` regenerating same-session HTML under a
+  bumped reload-generation meta. The host-extension fixture composes
+  this skeleton and keeps only its adversity machinery.
 
 Proven by `test/view_protocol_test.dart` (in-memory pair that
 JSON-round-trips payloads), `test/host_webview_transport_test.dart`

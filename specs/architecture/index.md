@@ -35,8 +35,10 @@ plan; later closed plans carry their own validity checks (the parity
 suite, the coverage-extension gate) rather than that one script, and
 the archived
 [developer-experience plan](../plans/archive/developer-experience.md)
-holds while the fast suites and the real-host gates — including
-`scripts/test_breakpoints.sh` — are green at HEAD.
+and the archived
+[architecture-deepening plan](../plans/archive/architecture-deepening.md)
+each hold while the fast suites and the three real-host gates —
+including `scripts/test_breakpoints.sh` — are green at HEAD.
 Forward work is tracked in [futures](../plans/futures.md); API
 coverage is measured in the generated
 [parity report](../../docs/reference/parity.md).

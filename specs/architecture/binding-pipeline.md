@@ -37,20 +37,30 @@ the second baseline.
    classification (`src/baseline*.cjs`, seed-validated by
    `npm run check:baseline-series`); ADR 0008 blocks releases on
    unclassified public symbols.
-4. **Generator** — `tool/binding_generator/generator.dart` consumes IR +
-   overrides and accepts only IR the producer could emit: it recomputes
-   identities and hashes (including every registered type-literal shape
-   hash, cross-validated member-by-member against child declarations),
+4. **Generator** — the walking-slice orchestration in
+   `tool/binding_generator/generator.dart` consumes IR + overrides and
+   accepts only IR the producer could emit; the acceptance band itself
+   lives in sibling modules: `ir_validator.dart` recomputes identities
+   and hashes (including every registered type-literal shape hash,
+   cross-validated member-by-member against child declarations),
    preserves graph relationships, correlates raw and canonical fields,
-   and rejects impossible combinations. The walking slice is derived
-   entirely from IR + override strategies — no shadow name/count profile
-   in generator source (`test/binding_generator_test.dart`).
+   and rejects impossible combinations, while `templates.dart` holds
+   the five embedded source templates, `manifest_projection.dart` the
+   manifest/contribution pins, `coverage_ledger.dart` the ledger
+   emission, and `validators.dart` the shared leaf scalars. The
+   walking slice is derived entirely from IR + override strategies —
+   no shadow name/count profile in generator source
+   (`test/binding_generator_test.dart`,
+   `test/binding_generator_layout_test.dart`).
 5. **Outputs** — walking-slice parity/runtime/facade, bootstrap,
    manifest, and coverage ledger into the extension project;
    byte-identical on regeneration
    (`test/binding_generator_cli_test.dart`).
 6. **Complete Parity Layer** — `tool/binding_generator/parity_layer.dart`
-   (`generate.dart --parity-layer .`) emits the total typed mapping of
+   (`generate.dart --parity-layer .`), built on the shared
+   `ir_type_mapper.dart` (IR indexes, type mapping with union/alias/LUB
+   rules, substitution, name mangling, erasure as a per-call
+   parameter), emits the total typed mapping of
    every public declaration (ADR 0012) as
    `lib/src/generated/vscode_parity_layer.g.dart`, with a totality
    ledger covering all IR declarations; `flutter_vscode build` emits the
@@ -58,7 +68,9 @@ the second baseline.
    executes it (`test/parity_layer_test.dart`, the fixture parity
    smoke). Constructs without a Total Mapping Rule fail generation.
 7. **Dart-ergonomics layer** — `tool/binding_generator/dart_layer.dart`
-   (`generate.dart --dart-layer .`) emits the mechanical, judgment-free
+   (`generate.dart --dart-layer .`), consuming the same shared
+   `ir_type_mapper.dart` as the parity emitter rather than parity
+   internals, emits the mechanical, judgment-free
    Dart-first layer over the Parity Layer — not the hand-reviewed
    Idiomatic Facade — as `lib/src/generated/vscode_dart_layer.g.dart`,
    exported as `package:flutter_vscode/vscode_dart.dart`: scalar

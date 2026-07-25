@@ -52,9 +52,14 @@ sequence or schedule. Rough dependency order below.
 
 ## Engineering debt (from the audits)
 
-- The CLI (`bin/flutter_vscode.dart`) and the generator
-  (`tool/binding_generator/generator.dart`) remain monoliths; named as a
-  maintainability follow-up.
+- `VSCodeViewBootstrap` memoizes a failed connect future, so a view
+  retrying after a connect failure never actually reconnects;
+  `ViewShell.connect` runs once before `runApp` today, which masks it.
+
+- `generator.dart` keeps a ~2,400-line entangled walking-slice band
+  (selection model, emit dispatch, relation validation) after the
+  architecture-deepening round dismantled the CLI and generator
+  monoliths; deepening that band further is possible but unforced.
 - The CSP served into a live webview is not parsed by any real-host
   gate; the policy itself is framework-owned and byte-asserted via the
   emitted view-host module template.
