@@ -17,7 +17,7 @@ discoveries go to [`futures.md`](futures.md).
 
 ## Exit bar
 
-- [ ] A-1 The Author Toolchain gains an in-process interface: the deep
+- [x] A-1 The Author Toolchain gains an in-process interface: the deep
   CLI modules (packaging/VSIX validation, safe layout walks, baseline
   selection, build orchestration, doctor, test) move to
   `lib/src/cli/`, and `bin/flutter_vscode.dart` shrinks to a process
@@ -29,6 +29,21 @@ discoveries go to [`futures.md`](futures.md).
   default collapse. A reduced subprocess suite still proves the
   adapter end to end. Check: new unit suites green in-process; all
   existing cli_*_test suites green; bin/ line count materially down.
+  Closed: twelve modules land under `lib/src/cli/` (red 73484bb) —
+  project_layout owns the safe walks, symlink-refusing validation,
+  and the `requiredProjectPaths` list doctor now reports from;
+  packaging owns the OPC/VSIX island; baselines owns the single
+  `defaultApiTarget`, the one version regex, and pinned-target
+  selection; build_inputs shares input/artifact enumeration and the
+  framework identity between build and package; the five commands
+  take a directory plus collaborators (`BindingToolchain` injects the
+  tool/-area generator, emitters, and boundary checker; doctor's tool
+  probe and package root inject for in-process runs). bin/ fell
+  1,706 to 121 lines. cli_modules_test exercises the moved modules
+  17/17 in-process; all nine subprocess cli suites ran green
+  unchanged; the `_projectFile` twin, the triple '1.129.1' default,
+  the doubled regex, the validate-directories/file-targets wrappers,
+  and the `_stringListsEqual`/`_bytesEqual` twins are gone.
 - [ ] A-2 One session core behind both View Protocol roles: the
   mirrored machinery (envelope send, parse+dispatch, pending-completer
   registry, seen-id dedup, cancellation sets, structured-error send,
@@ -84,3 +99,25 @@ the three real-host gates (`test_host_extension.sh`,
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **Red A-1** (commit 73484bb): cli_modules_test imported the
+   promised `lib/src/cli/` interfaces — packaging content types and
+   exact VSIX validation against a synthetic archive (tampered bytes,
+   smuggled entry, deflated entry, malformed XML), scaffold-accepting
+   and symlink-refusing layout validation, safe walks, baseline
+   selection over the real pinned inputs, and a doctor sharing the
+   validator's required-paths list — and failed to load: every deep
+   CLI module existed only as a bin/-private function.
+2. **Green A-1** (commit 2227225): the modules moved with behavior
+   pinned — 17/17 in-process cases green, all nine subprocess
+   cli suites green unchanged (create, doctor, security, package,
+   build, multi-baseline, view, watch, global-activation), analyze
+   clean. bin/flutter_vscode.dart is a 121-line adapter: dispatch,
+   BindingToolchain wiring over tool/, and catch arms. One interface
+   refinement surfaced in green: flutter_tester cannot resolve
+   package URIs, so doctor's package root became an injectable
+   collaborator beside its tool probe. Expected casualty: the Host
+   Contract receipts `bin/flutter_vscode.dart` and
+   `lib/src/cli/build_receipt.dart`, so binding_evidence_test fails
+   on those two hashes until the contract is regenerated at merge
+   (recording-time observation).
