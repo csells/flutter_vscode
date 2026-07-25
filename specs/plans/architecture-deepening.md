@@ -29,7 +29,7 @@ discoveries go to [`futures.md`](futures.md).
   default collapse. A reduced subprocess suite still proves the
   adapter end to end. Check: new unit suites green in-process; all
   existing cli_*_test suites green; bin/ line count materially down.
-- [ ] A-2 One session core behind both View Protocol roles: the
+- [x] A-2 One session core behind both View Protocol roles: the
   mirrored machinery (envelope send, parse+dispatch, pending-completer
   registry, seen-id dedup, cancellation sets, structured-error send,
   idempotent close/terminate) moves into a shared core; Host and View
@@ -40,6 +40,26 @@ discoveries go to [`futures.md`](futures.md).
   the full protocol suite green unchanged; a new core-focused suite;
   grep gates: no hand-written `'nonce'` map literals outside the frame
   module.
+  Closed (red 7407aca, green 4e9d669): a sealed `ViewProtocolFrame`
+  hierarchy owns parse (sole home of the exact-schema validation,
+  codes and messages preserved) and `toWire()` (sole producer of wire
+  maps) inside a marker-delimited region of the still-single
+  `lib/src/view_protocol.dart` (the CLI copies that one file verbatim
+  into projects); the locality gate holds every envelope key literal
+  inside it. `_ViewSessionCore` owns subscription/receive lifecycle,
+  typed-frame send, the pending-response registry, inbound dedup and
+  cancel marks, the shared inbound-operation skeleton with
+  structured-error framing, and the idempotent close/terminate
+  scaffolds; the roles keep handshake direction, exposed futures,
+  allowlist placement, role vocabulary, and their genuinely different
+  close choreography. The predicate exists once, on the frame. One
+  deliberate tightening: the v2-only kinds (hostCall/hostResult/
+  hostError/cancel/event) now validate their fields at parse like
+  their v1 counterparts, so malformed ones fail closed instead of
+  surfacing as untyped cast failures at dispatch. The 67-test suite
+  passed unmodified; the checked-in Host fixture mirror was refreshed
+  verbatim; the durable contract artifact awaits the mechanical
+  `--contract` regeneration.
 - [ ] A-3 An `IrTypeMapper` module extracted from the parity emitter:
   the IR index + type mapping (byId/childrenByParent/mapType/
   substitute/scopesFor/dartName/memberName/hashName/
@@ -111,3 +131,14 @@ Tallies are recording-time values. Entries appended as items close.
    suites with `flutter analyze` clean. `binding_evidence_test`'s
    hash pins await the mechanical `--contract` regeneration when this
    branch merges.
+3. **A-2** (red 7407aca, green 4e9d669): the 67-test protocol suite ran
+  unmodified and green through the migration; the new
+  `view_protocol_core_test.dart` adds 15 tests (per-kind parse/
+  serialize round-trips in exact key order, the pinned validation
+  codes and messages, the active-frame predicate, a view-side
+  duplicate-inbound-ID path through the shared core, and the wire-key
+  locality gate). Literal tallies in `lib/src/view_protocol.dart`:
+  `'nonce'` 39 → 4 lines, `'version'` 36 → 3, `'session'` 36 → 4,
+  `'flutter-vscode.view'` 21 → 1 — all inside the frame region. Role
+  classes: Host 644 → 469 lines, View 582 → 382, atop a 310-line
+  shared core and a 583-line frame module in the same single file.
