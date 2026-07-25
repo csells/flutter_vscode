@@ -76,7 +76,7 @@
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "4d6756fc84aae4133b717ccda1ccf92947fa9952022800c246142762d45ffab3"
+      "sha256": "0375aca735b538da93f449e87ef02dea6912c04acfdf87417db1c83dc8f06252"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -84,7 +84,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "9369910b23c9d19060d0f622fcd4e54c0a36d4431bc7e29bc42be1222ee92b1d"
+      "sha256": "ac37bc52d970fc26350d087aecb6e7ebac0ad6ee6e98723cc925ab0a6e639bd3"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -92,11 +92,11 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "f7c49508bf5db128fdba1853c48a1190c767f263c5488eff6aa9e04e089fc8e5"
+      "sha256": "eeabe813cd05ba99af55fafaf0fefa6ca6771fa464916f627447c8e29b6f73ba"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "ea7d63c23ebbf9335c3eface27a1c8d51abd6b456f5947c57dbab6deb88ec9f4"
+      "sha256": "a56edde57a0cb4a351476f7806c52c78216ea8c214ef87ef10ca1d10a20ea242"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -158,6 +158,10 @@
       "path": "test/fixtures/host_extension/host/bootstrap.cjs",
       "sha256": "1e3a120e234f8d1b82562f1115f86f435164ca71276c2ba665e6f2b01897c54b"
     },
+    "generatedDartLayer": {
+      "path": "test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart",
+      "sha256": "a7d1aa1210f395dd349e0d6334ab7d2ea98ddebd9c2247e7bf403bfa37067a50"
+    },
     "generatedFacade": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart",
       "sha256": "09b749d1fb2694b43a07234a0970d8b79d01dbaa6f3ce25c04c9b1d26e81c647"
@@ -169,10 +173,6 @@
     "generatedParity": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart",
       "sha256": "5f98c060e2bfeec73b7f9301edd7647187bdc3ca60e29ed438cd08f3cfa33845"
-    },
-    "generatedParityLayer": {
-      "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity_layer.g.dart",
-      "sha256": "18c042a3349f722e4d140a2ab1b9506f4c518047c3dfb0c73f47e79ca0744e7f"
     },
     "generatedRuntime": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
@@ -212,7 +212,7 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "8b308adb8d4c2a813b6ef99c7e77271939290506f76fb82a216db03b52410004"
+      "sha256": "66a6aea70ffed6f16a3b98335f71e6d80acba1f9d419caa44c71c0ad1e33656b"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",

@@ -5,10 +5,10 @@ import 'dart:js_interop';
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
 import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
+    as parity;
+import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
     as vs;
 import 'package:coverage_treemap_host/generated/vscode_facade.g.dart';
-import 'package:coverage_treemap_host/generated/vscode_parity_layer.g.dart'
-    as parity;
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 

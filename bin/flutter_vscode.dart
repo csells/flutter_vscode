@@ -12,7 +12,6 @@ import 'package:path/path.dart' as p;
 
 import '../tool/binding_generator/dart_layer.dart';
 import '../tool/binding_generator/generator.dart';
-import '../tool/binding_generator/parity_layer.dart';
 import '../tool/binding_generator/writer.dart';
 import '../tool/check_host_imports.dart';
 
@@ -93,7 +92,6 @@ final _toolchain = BindingToolchain(
           .files,
   writeBindings: (files, outputRoot) =>
       writeGeneratedBindings(VSCodeGeneratedBindings(files), outputRoot),
-  emitParityLibrary: (inventory) => emitParityLayer(inventory).library,
   emitDartLayerLibrary: (inventory) => emitDartLayer(inventory).library,
   checkHostImports: _guardedCheckHostImports,
   formatImportViolations: formatHostImportViolations,

@@ -62,8 +62,6 @@ Future<void> buildProject(
     await generatedRoot.delete(recursive: true);
   }
   await toolchain.writeBindings(generated, root);
-  await File(p.join(generatedRoot.path, 'vscode_parity_layer.g.dart'))
-      .writeAsString(toolchain.emitParityLibrary(bindingInputs.inventory));
   await File(p.join(generatedRoot.path, 'vscode_dart_layer.g.dart'))
       .writeAsString(toolchain.emitDartLayerLibrary(bindingInputs.inventory));
   if (views.isNotEmpty) {

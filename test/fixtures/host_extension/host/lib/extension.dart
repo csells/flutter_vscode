@@ -4,9 +4,9 @@ import 'dart:math';
 
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
-import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
-import 'package:flutter_vscode_host_fixture/generated/vscode_parity_layer.g.dart'
+import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart'
     as parity;
+import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
 
 const _pingCommand = 'flutter-vscode.host-test.ping';

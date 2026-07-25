@@ -76,13 +76,12 @@ void main() {
       'host/lib/generated/flutter_view_host.g.dart',
       'host/lib/generated/view_protocol.g.dart',
       'host/lib/generated/vscode_dart_layer.g.dart',
-      'host/lib/generated/vscode_parity_layer.g.dart',
     };
     expect(
       nonBindingFiles.difference(cliOwnedArtifacts),
       isEmpty,
-      reason: 'Only the CLI-owned shared view protocol and Parity Layer may '
-          'live beside the binding generator outputs.',
+      reason: 'Only the CLI-owned shared view protocol and the one API '
+          'layer may live beside the binding generator outputs.',
     );
     for (final entry in firstFiles.entries) {
       if (!_bytesEqual(checkedInFiles[entry.key]!, entry.value)) {

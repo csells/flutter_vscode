@@ -110,11 +110,10 @@ import 'dart:js_interop';
 
 import 'package:${projectName}_host/generated/vscode_facade.g.dart';
 // The complete typed VS Code API is also generated into this project:
-//   import 'package:${projectName}_host/generated/vscode_parity_layer.g.dart';
-// Wrap the raw activation module with VscodeApi(rawVscode) to use it, or
-// import the Dart-first ergonomics layer over it and enter with
-// VscodeApi(rawVscode).dart:
 //   import 'package:${projectName}_host/generated/vscode_dart_layer.g.dart';
+// Wrap the raw activation module with VscodeApi(rawVscode) for the parity
+// surface, or enter the Dart-first ergonomics layer over it with
+// VscodeApi(rawVscode).dart.
 import 'package:${projectName}_shared/shared.dart';
 
 const _helloCommand = '$manifestName.hello';

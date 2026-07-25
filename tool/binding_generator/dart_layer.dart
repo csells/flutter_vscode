@@ -1,9 +1,13 @@
-/// Emits the mechanical Dart-ergonomics layer over the Parity Layer
+/// Emits the self-contained generated API layer: the Parity Layer
+/// substrate inlined beneath the mechanical Dart-ergonomics layer
 /// (developer-experience D-2).
 ///
-/// A second generated, total, judgment-free rule set layered on the parity
-/// surface — NOT the hand-reviewed Idiomatic Facade. Every rule is
-/// deterministic over its construct class and applied to every occurrence:
+/// The emitted library carries the substrate declarations (what
+/// [ParityEmitter] emits) directly, so one artifact is the whole
+/// generated API surface. The dart-layer rules are a second generated,
+/// total, judgment-free rule set layered on the parity surface — NOT a
+/// hand-reviewed facade. Every rule is deterministic over its construct
+/// class and applied to every occurrence:
 ///
 /// * boundary-de-js — generated helpers (constructors, rest calls, call
 ///   signatures, tuple accessors, `lit$` factories) whose parameters or
@@ -55,8 +59,13 @@ final class DartLayerGenerationException implements Exception {
   String toString() => 'DART_LAYER_TOTALITY_ERROR: $declarationId: $message';
 }
 
-/// The generated artifacts: the Dart library and the disposition ledger.
-typedef DartLayerArtifacts = ({String library, String ledger});
+/// The generated artifacts: the self-contained Dart library, its
+/// disposition ledger, and the substrate (parity) totality ledger.
+typedef DartLayerArtifacts = ({
+  String library,
+  String ledger,
+  String parityLedger,
+});
 
 /// The dart-layer rule classes: one per total rule. Each requires an
 /// emitter unit case tagged `dc:<class>` in the dart-layer unit suite.
@@ -87,7 +96,7 @@ final class _DartLayerEmitter {
   var _needsStreamHelper = false;
 
   DartLayerArtifacts emit() {
-    parity.emit();
+    final parityArtifacts = parity.emit();
 
     final anonTypes = StringBuffer();
     final namespaces = StringBuffer();
@@ -140,16 +149,22 @@ final class _DartLayerEmitter {
     final library = StringBuffer()
       ..writeln('// GENERATED CODE - DO NOT MODIFY BY HAND.')
       ..writeln('//')
-      ..writeln('// The mechanical Dart-ergonomics layer over the VS Code')
-      ..writeln('// Parity Layer (developer-experience D-2), produced only')
-      ..writeln('// by total, judgment-free rules: helper boundaries take')
-      ..writeln('// ordinary String/num/bool, JSPromise returns become')
-      ..writeln('// Futures, Event members gain broadcast Stream accessors')
-      ..writeln(r'// (onDidX gains onDidXStream), and lit$ factories')
-      ..writeln('// flatten inherited interface members.')
+      ..writeln('// The self-contained generated VS Code API layer. It')
+      ..writeln('// carries the complete typed Parity Layer substrate')
+      ..writeln('// (ADR 0012, produced only by Total Mapping Rules) and,')
+      ..writeln('// on top of it, the mechanical Dart-ergonomics layer')
+      ..writeln('// (developer-experience D-2), produced only by total,')
+      ..writeln('// judgment-free rules: helper boundaries take ordinary')
+      ..writeln('// String/num/bool, JSPromise returns become Futures,')
+      ..writeln('// Event members gain broadcast Stream accessors (onDidX')
+      ..writeln(r'// gains onDidXStream), and lit$ factories flatten')
+      ..writeln('// inherited interface members.')
       ..writeln('// Regenerate with:')
       ..writeln('//   dart tool/binding_generator/generate.dart '
           '--dart-layer .')
+      ..writeln('//')
+      ..writeln('// JS `undefined` and `null` both surface as Dart `null`')
+      ..writeln('// (documented platform-wide conflation).')
       ..writeln('//')
       ..writeln('// Enter the layer with VscodeApi(rawVscode).dart; every')
       ..writeln('// XDart type wraps and implements its parity type X, so')
@@ -161,7 +176,7 @@ final class _DartLayerEmitter {
       ..writeln("import 'dart:js_interop';")
       ..writeln("import 'dart:js_interop_unsafe';")
       ..writeln()
-      ..writeln("import 'vscode_parity_layer.g.dart';")
+      ..write(parity.body)
       ..writeln()
       ..write(tuples)
       ..write(anonTypes)
@@ -185,7 +200,11 @@ final class _DartLayerEmitter {
       'schemaVersion': 1,
       'dispositions': ledgerEntries,
     });
-    return (library: library.toString(), ledger: '$ledger\n');
+    return (
+      library: library.toString(),
+      ledger: '$ledger\n',
+      parityLedger: parityArtifacts.ledger,
+    );
   }
 
   // ------------------------------------------------------------ conversions

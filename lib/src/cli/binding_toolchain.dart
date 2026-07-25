@@ -42,7 +42,6 @@ final class BindingToolchain {
   const BindingToolchain({
     required this.generateBindings,
     required this.writeBindings,
-    required this.emitParityLibrary,
     required this.emitDartLayerLibrary,
     required this.checkHostImports,
     required this.formatImportViolations,
@@ -54,10 +53,8 @@ final class BindingToolchain {
   /// Writes generated files beneath an output root.
   final WriteBindings writeBindings;
 
-  /// Emits the Complete Parity Layer library.
-  final EmitLibrary emitParityLibrary;
-
-  /// Emits the mechanical Dart-ergonomics layer library.
+  /// Emits the self-contained generated API layer library (the Parity
+  /// Layer substrate inlined beneath the Dart-ergonomics layer).
   final EmitLibrary emitDartLayerLibrary;
 
   /// Checks Host Dart dependency boundaries.

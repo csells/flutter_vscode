@@ -94,6 +94,14 @@ final class ParityEmitter {
   /// The per-declaration disposition ledger.
   final dispositions = <String, String>{};
 
+  String? _body;
+
+  /// The declaration body of the last [emit] — the library without its
+  /// header comment or imports — for inlining as the substrate of the
+  /// self-contained dart-layer artifact.
+  String get body =>
+      _body ?? (throw StateError('emit() has not run on this emitter'));
+
   /// Emits the parity library and ledger, populating every registry.
   ParityArtifacts emit() {
     _computeDispositions();
@@ -174,13 +182,28 @@ final class ParityEmitter {
     _emitRoot(root);
     _buildIntersectionBodies();
 
+    _body = (StringBuffer()
+          ..write(typedefs)
+          ..write(stableTypedefs)
+          ..write(_sortedValues(mapper.tupleTypes))
+          ..write(_sortedValues(mapper.literalWrappers))
+          ..write(_sortedValues(_intersectionTypes))
+          ..write(anonTypes)
+          ..write(enums)
+          ..write(namespaces)
+          ..write(interfaces)
+          ..write(classes)
+          ..write(root))
+        .toString();
     final library = StringBuffer()
       ..writeln('// GENERATED CODE - DO NOT MODIFY BY HAND.')
       ..writeln('//')
-      ..writeln('// The complete typed VS Code Parity Layer (ADR 0012),')
-      ..writeln('// produced only by Total Mapping Rules. Regenerate with:')
+      ..writeln('// The complete typed VS Code Parity Layer substrate')
+      ..writeln('// (ADR 0012), produced only by Total Mapping Rules. It')
+      ..writeln('// ships inlined inside vscode_dart_layer.g.dart;')
+      ..writeln('// regenerate that artifact with:')
       ..writeln('//   dart tool/binding_generator/generate.dart '
-          '--parity-layer .')
+          '--dart-layer .')
       ..writeln('//')
       ..writeln('// JS `undefined` and `null` both surface as Dart `null`')
       ..writeln('// (documented platform-wide conflation).')
@@ -188,17 +211,7 @@ final class ParityEmitter {
       ..writeln("import 'dart:js_interop';")
       ..writeln("import 'dart:js_interop_unsafe';")
       ..writeln()
-      ..write(typedefs)
-      ..write(stableTypedefs)
-      ..write(_sortedValues(mapper.tupleTypes))
-      ..write(_sortedValues(mapper.literalWrappers))
-      ..write(_sortedValues(_intersectionTypes))
-      ..write(anonTypes)
-      ..write(enums)
-      ..write(namespaces)
-      ..write(interfaces)
-      ..write(classes)
-      ..write(root);
+      ..write(_body);
 
     final ledger = const JsonEncoder.withIndent('  ').convert({
       'schemaVersion': 1,

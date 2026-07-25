@@ -51,14 +51,14 @@ const canonicalHostContractSourcePaths = <String, String>{
   'frameworkPackage': 'pubspec.yaml',
   'frameworkPackageLock': 'pubspec.lock',
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
+  'generatedDartLayer':
+      'test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart',
   'generatedFacade':
       'test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart',
   'generatedHostExports':
       'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
   'generatedParity':
       'test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart',
-  'generatedParityLayer':
-      'test/fixtures/host_extension/host/lib/generated/vscode_parity_layer.g.dart',
   'generatedRuntime':
       'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
   'generatedViewProtocol':

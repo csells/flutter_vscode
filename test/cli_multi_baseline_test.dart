@@ -206,7 +206,7 @@ void main() {
         );
         for (final artifact in [
           p.join('host', 'lib', 'generated', 'vscode_facade.g.dart'),
-          p.join('host', 'lib', 'generated', 'vscode_parity_layer.g.dart'),
+          p.join('host', 'lib', 'generated', 'vscode_dart_layer.g.dart'),
           p.join('out', 'extension.dart.js'),
         ]) {
           expect(

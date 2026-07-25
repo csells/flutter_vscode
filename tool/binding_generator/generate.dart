@@ -4,7 +4,6 @@ import 'dart:io';
 import 'contract.dart';
 import 'dart_layer.dart';
 import 'generator.dart';
-import 'parity_layer.dart';
 import 'parity_report.dart';
 import 'writer.dart';
 
@@ -26,24 +25,8 @@ Future<void> main(List<String> arguments) async {
           .then((file) => file.writeAsString(artifacts.library));
       await File('$root/tool/bindings/dart-layer-ledger.json')
           .writeAsString(artifacts.ledger);
-      return;
-    }
-    if (arguments.isNotEmpty && arguments.first == '--parity-layer') {
-      if (arguments.length != 2) {
-        throw const VSCodeBindingGenerationException(
-          'INVALID_ARGUMENTS',
-          '--parity-layer requires exactly the repository root.',
-        );
-      }
-      final root = arguments[1];
-      final artifacts = emitParityLayer(
-        await _readJson('$root/tool/bindings/ir/vscode-1.129.1.json'),
-      );
-      await File('$root/lib/src/generated/vscode_parity_layer.g.dart')
-          .create(recursive: true)
-          .then((file) => file.writeAsString(artifacts.library));
       await File('$root/tool/bindings/parity-ledger.json')
-          .writeAsString(artifacts.ledger);
+          .writeAsString(artifacts.parityLedger);
       return;
     }
     if (arguments.isNotEmpty && arguments.first == '--parity') {

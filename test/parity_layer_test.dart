@@ -5,7 +5,6 @@ import 'package:test/test.dart';
 
 import '../tool/binding_generator/parity_layer.dart' as parity;
 
-const _libraryPath = 'lib/src/generated/vscode_parity_layer.g.dart';
 const _ledgerPath = 'tool/bindings/parity-ledger.json';
 
 Map<String, Object?> _readJson(String path) =>
@@ -35,19 +34,16 @@ String _typeBlock(String source, String name) {
 void main() {
   final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
 
-  test('P-1/P-3 checked-in parity layer matches mechanical regeneration', () {
+  test('P-1 checked-in substrate ledger matches mechanical regeneration', () {
+    // The standalone parity artifact retired into the self-contained
+    // dart-layer artifact (SL-1); the substrate emission survives
+    // in-memory and its totality ledger stays checked in.
     final artifacts = parity.emitParityLayer(inventory);
     expect(
-      File(_libraryPath).readAsStringSync(),
-      artifacts.library,
+      File(_ledgerPath).readAsStringSync(),
+      artifacts.ledger,
       reason: 'Regenerate with: dart tool/binding_generator/generate.dart '
-          '--parity-layer .',
-    );
-    expect(File(_ledgerPath).readAsStringSync(), artifacts.ledger);
-    expect(
-      File('lib/vscode_parity.dart').readAsStringSync(),
-      contains('src/generated/vscode_parity_layer.g.dart'),
-      reason: 'the layer must be exported for Extension Authors',
+          '--dart-layer .',
     );
   });
 
@@ -88,22 +84,15 @@ void main() {
     );
   });
 
-  test('P-3 the generated layer analyzes cleanly', () {
-    final result = Process.runSync(
-      'dart',
-      ['analyze', '--fatal-infos', _libraryPath],
-    );
-    expect(
-      result.exitCode,
-      0,
-      reason: '${result.stdout}\n${result.stderr}',
-    );
-  });
+  // P-3 (artifact byte-compare and analyze) retired with the standalone
+  // artifact: the substrate now ships inside vscode_dart_layer.g.dart,
+  // whose byte-compare and analyze gates live in test/dart_layer_test.dart
+  // (D-1/D-3, frozen).
 
-  group('P-4 structural rules on the real output', () {
+  group('P-4 structural rules on the real substrate emission', () {
     late final String source;
     setUpAll(() {
-      source = File(_libraryPath).readAsStringSync();
+      source = parity.emitParityLayer(inventory).library;
     });
 
     test('reserved words are mangled and JS-bound', () {
