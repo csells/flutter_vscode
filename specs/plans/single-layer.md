@@ -26,7 +26,7 @@ amended, never rewritten; discoveries go to
 
 ## Exit bar
 
-- [ ] SL-1 One self-contained artifact: `emitDartLayer` inlines the
+- [x] SL-1 One self-contained artifact: `emitDartLayer` inlines the
   substrate (current parity emission) into
   `vscode_dart_layer.g.dart` — no `import 'vscode_parity_layer...'`
   — with `tool/bindings/parity-ledger.json` retained as the substrate
@@ -41,6 +41,24 @@ amended, never rewritten; discoveries go to
   two-axis live-coverage completeness checks (C-3/C-4/V-4) survive
   intact. Check: L3 suites green unmodified; moved L2 suites green;
   analyze clean.
+  Closed (red 95e3bc0, green 8047cca): `emitDartLayer` captures the
+  substrate emission's declaration body and writes it between the
+  imports and the dart-layer sections of `vscode_dart_layer.g.dart`
+  (735,407 bytes — within 202 bytes of the two artifacts it replaces,
+  the delta being the merged header and retired import);
+  `--dart-layer` writes both totality ledgers byte-identically and
+  `--parity-layer` retires. `lib/vscode_parity.dart` and the
+  standalone artifact are deleted; `vscode_dart.dart` exports only the
+  merged artifact; build emits one API artifact and the fixture and
+  example hosts compile against it through their unchanged `parity`
+  alias. The contract chain receipts the merged fixture artifact as
+  `generatedDartLayer` in all three synchronized copies and
+  regenerated to convergence. `parity_layer_test` retargets P-4 and
+  P-1 to the in-memory substrate emission (byte-compare/analyze duty
+  now lives in frozen D-1/D-3); `parity_emitter_unit_test` passed
+  unmodified. L3 suites verified byte-unmodified via git diff; 333
+  tests green across the affected suites plus the 9-case build suite;
+  `flutter analyze` clean.
 - [ ] SL-2 Facade retirement: the walking-slice facade and its
   parity-slice sibling stop being emitted (runtime and host-exports
   templates remain — they are runtime, not API). The fixture host,
@@ -79,3 +97,19 @@ amended, never rewritten; discoveries go to
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **SL-1** (red 95e3bc0, green 8047cca): the red
+   `single_layer_test.dart` landed against the promised end state —
+   substrate types inside the dart-layer artifact, no parity import,
+   `lib/vscode_parity.dart` gone, one artifact under
+   `lib/src/generated`, no `vscode_parity_layer.g.dart` in built
+   project trees — and failed 4 of its 5 cases. Green: the frozen L3
+   suites (`dart_layer_test`, `dart_layer_emitter_unit_test`) passed
+   with zero edits (verified via `git diff` against the branch base);
+   the retargeted `parity_layer_test` keeps P-1 (substrate ledger
+   regeneration), P-2, all P-4 structural rules, C-3/C-4/V-4, and P-5
+   at full strength over the in-memory emission, retiring only the
+   standalone-artifact byte-compare, analyze, and export cases whose
+   subject died; 333 tests green across the twelve affected suites,
+   the 9-case `cli_build_test` green, contract chain converged,
+   `flutter analyze` clean.
