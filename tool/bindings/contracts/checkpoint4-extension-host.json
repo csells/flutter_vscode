@@ -22,9 +22,33 @@
       "path": "test/fixtures/host_extension/test/activation_failure.cjs",
       "sha256": "8902c1980a930eb6e59c2c571c3ee53d81d38078a73c4b5e53a8e5fb4e92e011"
     },
+    "bindingCoverageLedger": {
+      "path": "tool/binding_generator/coverage_ledger.dart",
+      "sha256": "da21a04b6e7d0f3f9b652194006790a235f72023f45b57f892d0e037e521ccfc"
+    },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "e522d619fabdb05d1e856735d3d3f135a73f52fa619e2655aba9cb0e471186a3"
+      "sha256": "663abe0451020fcdf0ff668a3eb975018ad39def503f515f263380dd44fe92bb"
+    },
+    "bindingIrTypeMapper": {
+      "path": "tool/binding_generator/ir_type_mapper.dart",
+      "sha256": "dc0b906a939254fc5bb9c0d7ed594a56ccae2610cf0dc74608c0276591ee8207"
+    },
+    "bindingIrValidator": {
+      "path": "tool/binding_generator/ir_validator.dart",
+      "sha256": "335648d378162a1c0bc2133f664ebe3baba852c3898f21fb1ded41dcf96ee446"
+    },
+    "bindingManifestProjection": {
+      "path": "tool/binding_generator/manifest_projection.dart",
+      "sha256": "105b71d372034e87fd54ac42ae93e492f9b406a5d371beff06e24499c33f9fa6"
+    },
+    "bindingTemplates": {
+      "path": "tool/binding_generator/templates.dart",
+      "sha256": "a06f443666bbd2697acfc92cdb01f7add8eecc84f4be2ddb6453c02c3595d819"
+    },
+    "bindingValidators": {
+      "path": "tool/binding_generator/validators.dart",
+      "sha256": "dea168de97271453e59ecc9d0a71facb84d5d752d6158b49f7ac73e49204bafb"
     },
     "bindingWriter": {
       "path": "tool/binding_generator/writer.dart",
@@ -36,7 +60,7 @@
     },
     "buildReceipt": {
       "path": "lib/src/cli/build_receipt.dart",
-      "sha256": "21c0dcc0efc7a5e960c2531dd524d109d870a147b70da38bc4787e45c6fdd5ac"
+      "sha256": "c201df2e36f9446ac0f2a7c31d390a0acd36be1d7b39b68b1e55d7ee191448e7"
     },
     "builder": {
       "path": "scripts/build_host_fixture.sh",
@@ -48,11 +72,11 @@
     },
     "canonicalViewProtocol": {
       "path": "lib/src/view_protocol.dart",
-      "sha256": "203deb2aa89e83509fe73bb84b1460bdafca51232a236440b4bb046a5f5f7830"
+      "sha256": "4c9c88ac1a0793b5a8c78a4a852b3be7ce944816aaa192cf2df37dff582eb713"
     },
     "cli": {
       "path": "bin/flutter_vscode.dart",
-      "sha256": "2a02c6811672671c0d3f24be228bf81e40d539c030e00f7cf60e9553847ffa89"
+      "sha256": "4d6756fc84aae4133b717ccda1ccf92947fa9952022800c246142762d45ffab3"
     },
     "container": {
       "path": "tool/extension_host_test/Dockerfile",
@@ -60,7 +84,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "5f311e53520d17550bf6d30a95eeba9dce8273017b4f1866ca5f82afbf5688fa"
+      "sha256": "9369910b23c9d19060d0f622fcd4e54c0a36d4431bc7e29bc42be1222ee92b1d"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -68,7 +92,7 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "9277c9f4d20076a2386610057fd3ac35a27ae37471985defd3a01600ffb312b6"
+      "sha256": "f7c49508bf5db128fdba1853c48a1190c767f263c5488eff6aa9e04e089fc8e5"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
@@ -156,7 +180,7 @@
     },
     "generatedViewProtocol": {
       "path": "test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart",
-      "sha256": "203deb2aa89e83509fe73bb84b1460bdafca51232a236440b4bb046a5f5f7830"
+      "sha256": "4c9c88ac1a0793b5a8c78a4a852b3be7ce944816aaa192cf2df37dff582eb713"
     },
     "harnessPackage": {
       "path": "tool/extension_host_test/package.json",
@@ -188,7 +212,7 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "77b9e502521ba3a7b54bc6271a554f977f24f62c4c0530ff05f7f337cd73c395"
+      "sha256": "8b308adb8d4c2a813b6ef99c7e77271939290506f76fb82a216db03b52410004"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",
@@ -196,11 +220,11 @@
     },
     "viewLibrary": {
       "path": "lib/view.dart",
-      "sha256": "b52cb4498b6a8cf3dd086d99ee0b3a6139bf2334efb2184741256d81e5a9bec6"
+      "sha256": "27d3092c75cbaed83982904866f5cb7fd4703d320e49df79393476c764fbbabe"
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
-      "sha256": "7dd695818cf0fc43f0b78adfbc7197823f42cccb664783e04b4da0efb76734e5"
+      "sha256": "61d2846e08926b2230e800205850c89a7091002ec846768a93d062ef5de1bf71"
     }
   },
   "evidence": {
