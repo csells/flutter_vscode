@@ -90,7 +90,7 @@ Future<void> writeBuildReceipt({
     'artifacts': await _digests(projectRoot, artifactPaths),
   };
   const encoder = JsonEncoder.withIndent('  ');
-  final output = _projectFile(projectRoot, buildReceiptPath);
+  final output = projectFile(projectRoot, buildReceiptPath);
   await output.parent.create(recursive: true);
   await output.writeAsString('${encoder.convert(receipt)}\n', flush: true);
 }
@@ -103,7 +103,7 @@ Future<List<String>> validateBuildReceipt({
   required List<String> inputPaths,
   required List<String> artifactPaths,
 }) async {
-  final receiptFile = _projectFile(projectRoot, buildReceiptPath);
+  final receiptFile = projectFile(projectRoot, buildReceiptPath);
   if (!receiptFile.existsSync()) {
     return const ['$buildReceiptPath is missing'];
   }
@@ -167,7 +167,7 @@ Future<Map<String, Object?>> _digests(
 ) async {
   final result = <String, Object?>{};
   for (final path in paths.toSet().toList()..sort()) {
-    final file = _projectFile(projectRoot, path);
+    final file = projectFile(projectRoot, path);
     if (!file.existsSync()) {
       throw FileSystemException('Build receipt input is missing', file.path);
     }
@@ -197,7 +197,7 @@ Future<void> _validateGroup({
       problems.add('$label $path has an invalid recorded digest');
       continue;
     }
-    final actual = await _digest(_projectFile(projectRoot, path));
+    final actual = await _digest(projectFile(projectRoot, path));
     if (actual != expected) {
       problems.add('$label $path changed after build');
     }
@@ -207,7 +207,8 @@ Future<void> _validateGroup({
 Future<String> _digest(File file) async =>
     sha256.convert(await file.readAsBytes()).toString();
 
-File _projectFile(Directory root, String relativePath) => File(
+/// Resolves the project-relative POSIX path [relativePath] beneath [root].
+File projectFile(Directory root, String relativePath) => File(
       p.joinAll([root.path, ...p.posix.split(relativePath)]),
     );
 
