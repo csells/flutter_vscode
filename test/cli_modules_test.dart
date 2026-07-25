@@ -136,8 +136,8 @@ void main() {
       final root = await _scaffoldProject(workspace: workspace);
       final outside = Directory(p.join(workspace.path, 'outside_lib'))
         ..createSync();
-      final hostLib = Directory(p.join(root.path, 'host', 'lib'));
-      hostLib.deleteSync(recursive: true);
+      final hostLib = Directory(p.join(root.path, 'host', 'lib'))
+        ..deleteSync(recursive: true);
       await Link(hostLib.path).create(outside.path);
 
       expect(
@@ -275,6 +275,7 @@ void main() {
           root,
           out: out,
           probeTool: (executable) async => (true, 'stubbed $executable'),
+          packageRoot: Directory.current,
         );
         final report = out.toString();
         expect(failures, greaterThan(0), reason: broken);
@@ -294,8 +295,7 @@ void main() {
       final root = await _scaffoldProject(workspace: workspace);
       final outside = Directory(p.join(workspace.path, 'outside_views'))
         ..createSync();
-      final views = Directory(p.join(root.path, 'views'));
-      views.deleteSync();
+      final views = Directory(p.join(root.path, 'views'))..deleteSync();
       await Link(views.path).create(outside.path);
 
       final out = StringBuffer();
@@ -303,6 +303,7 @@ void main() {
         root,
         out: out,
         probeTool: (executable) async => (true, 'stubbed $executable'),
+        packageRoot: Directory.current,
       );
 
       expect(failures, greaterThan(0));
@@ -319,6 +320,7 @@ void main() {
         root,
         out: out,
         probeTool: (executable) async => (true, 'stubbed $executable'),
+        packageRoot: Directory.current,
       );
 
       expect(failures, 0, reason: out.toString());
