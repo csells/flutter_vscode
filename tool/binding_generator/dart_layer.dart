@@ -37,6 +37,7 @@ library;
 
 import 'dart:convert';
 
+import 'ir_type_mapper.dart';
 import 'parity_layer.dart';
 
 /// A construct reached the dart-layer emitter without a total rule.
@@ -69,12 +70,15 @@ const dartLayerRuleClasses = [
 ];
 
 /// Builds the dart-layer library and its totality ledger from IR JSON.
-DartLayerArtifacts emitDartLayer(Map<String, Object?> inventory) =>
-    _DartLayerEmitter(ParityEmitter(inventory)).emit();
+DartLayerArtifacts emitDartLayer(Map<String, Object?> inventory) {
+  final mapper = IrTypeMapper(inventory);
+  return _DartLayerEmitter(mapper, ParityEmitter(mapper)).emit();
+}
 
 final class _DartLayerEmitter {
-  _DartLayerEmitter(this.parity);
+  _DartLayerEmitter(this.mapper, this.parity);
 
+  final IrTypeMapper mapper;
   final ParityEmitter parity;
   final dispositions = <String, String>{};
   final _typeIdsWithDart = <String>{};
@@ -90,7 +94,7 @@ final class _DartLayerEmitter {
     final interfaces = StringBuffer();
     final classes = StringBuffer();
 
-    for (final declaration in parity.declarations) {
+    for (final declaration in mapper.declarations) {
       if (!parity.isEmitted(declaration)) {
         continue;
       }
@@ -170,7 +174,7 @@ final class _DartLayerEmitter {
     }
 
     final ledgerEntries = <String, String>{};
-    for (final declaration in parity.declarations) {
+    for (final declaration in mapper.declarations) {
       final id = declaration['id']! as String;
       final parityDisposition = parity.dispositions[id]!;
       ledgerEntries[id] = parityDisposition != 'emitted'
@@ -271,20 +275,35 @@ final class _DartLayerEmitter {
 
   /// The converted dart-layer counterpart of one parity member, or `null`
   /// when the parity member is already Dart-first (passthrough-identical).
-  String? _convertedMember(Map<String, Object?> child) {
+  String? _convertedMember(
+    Map<String, Object?> child, {
+    required bool eraseScopeReferences,
+  }) {
     switch (child['kind']) {
       case 'property' || 'variable':
-        return _convertedReadable(child);
+        return _convertedReadable(
+          child,
+          eraseScopeReferences: eraseScopeReferences,
+        );
       case 'method' || 'function':
         final parameters = (child['parameters'] as List<Object?>?) ?? const [];
         final hasRest = parameters.any(
           (parameter) => (parameter! as Map<Object?, Object?>)['rest'] == true,
         );
         return hasRest
-            ? _convertedHelperCallable(child)
-            : _convertedExternalCallable(child);
+            ? _convertedHelperCallable(
+                child,
+                eraseScopeReferences: eraseScopeReferences,
+              )
+            : _convertedExternalCallable(
+                child,
+                eraseScopeReferences: eraseScopeReferences,
+              );
       case 'callSignature':
-        return _convertedCallSignature(child);
+        return _convertedCallSignature(
+          child,
+          eraseScopeReferences: eraseScopeReferences,
+        );
       case 'indexSignature':
         return null; // The blessed operators stay parity-shaped.
       case 'constructor':
@@ -299,14 +318,18 @@ final class _DartLayerEmitter {
     }
   }
 
-  String? _convertedReadable(Map<String, Object?> declaration) {
+  String? _convertedReadable(
+    Map<String, Object?> declaration, {
+    required bool eraseScopeReferences,
+  }) {
     final id = declaration['id']! as String;
-    final scopes = parity.scopesFor(declaration);
-    var mapped = parity.mapType(
+    final scopes = mapper.scopesFor(declaration);
+    var mapped = mapper.mapType(
       declaration['type'],
       generic: false,
       scopes: scopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
     if (declaration['optional'] == true &&
         !mapped.endsWith('?') &&
@@ -316,7 +339,7 @@ final class _DartLayerEmitter {
     if (mapped == 'void') {
       mapped = 'JSAny?';
     }
-    final name = parity.dartName(declaration['name']! as String);
+    final name = mapper.dartName(declaration['name']! as String);
     final event = _instanceOf(mapped, 'Event');
     if (event != null) {
       _requireSubscribableEvent(id);
@@ -363,14 +386,18 @@ final class _DartLayerEmitter {
     return null;
   }
 
-  String? _convertedExternalCallable(Map<String, Object?> declaration) {
+  String? _convertedExternalCallable(
+    Map<String, Object?> declaration, {
+    required bool eraseScopeReferences,
+  }) {
     final id = declaration['id']! as String;
-    final scopes = parity.scopesFor(declaration);
-    final returnType = parity.mapType(
+    final scopes = mapper.scopesFor(declaration);
+    final returnType = mapper.mapType(
       declaration['returnType'],
       generic: false,
       scopes: scopes,
       context: id,
+      eraseScopeReferences: eraseScopeReferences,
     );
     final promise = _instanceOf(returnType, 'JSPromise');
     if (promise == null) {
@@ -378,8 +405,8 @@ final class _DartLayerEmitter {
       // only a promise return leaves anything to convert.
       return null;
     }
-    final dartName = parity.memberName(declaration);
-    final clause = parity.typeParameterClause(declaration);
+    final dartName = mapper.memberName(declaration);
+    final clause = mapper.typeParameterClause(declaration);
     final typeArguments = _typeArguments(declaration);
     final required = <String>[];
     final optional = <String>[];
@@ -389,16 +416,17 @@ final class _DartLayerEmitter {
         in (declaration['parameters'] as List<Object?>?) ?? const <Object?>[]) {
       final parameter =
           (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
-      var type = parity.mapType(
+      var type = mapper.mapType(
         parameter['type'],
         generic: false,
         scopes: scopes,
         context: id,
+        eraseScopeReferences: eraseScopeReferences,
       );
       if (type == 'void') {
         type = 'JSAny?';
       }
-      final parameterName = parity.dartName(parameter['name']! as String);
+      final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['optional'] == true) {
         if (!type.endsWith('?')) {
           type = '$type?';
@@ -446,20 +474,25 @@ final class _DartLayerEmitter {
         '$chain$question.toDart$then;\n';
   }
 
-  String? _convertedHelperCallable(Map<String, Object?> declaration) {
+  String? _convertedHelperCallable(
+    Map<String, Object?> declaration, {
+    required bool eraseScopeReferences,
+  }) {
     final id = declaration['id']! as String;
-    final scopes = parity.scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final signature = _helperSignature(
       (declaration['parameters'] as List<Object?>?) ?? const [],
       scopes,
       id,
+      eraseScopeReferences: eraseScopeReferences,
     );
-    final returnType = parity.nullableForGeneric(
-      parity.mapType(
+    final returnType = mapper.nullableForGeneric(
+      mapper.mapType(
         declaration['returnType'],
         generic: true,
         scopes: scopes,
         context: id,
+        eraseScopeReferences: eraseScopeReferences,
       ),
     );
     final promise = _instanceOf(returnType, 'JSPromise');
@@ -467,8 +500,8 @@ final class _DartLayerEmitter {
     if (!signature.converted && promise == null && scalar == null) {
       return null;
     }
-    final dartName = parity.memberName(declaration);
-    final clause = parity.typeParameterClause(declaration);
+    final dartName = mapper.memberName(declaration);
+    final clause = mapper.typeParameterClause(declaration);
     final typeArguments = _typeArguments(declaration);
     final call = '\$js.$dartName$typeArguments(${signature.forwards})';
     if (promise != null) {
@@ -485,20 +518,25 @@ final class _DartLayerEmitter {
     return '  $returnType $dartName$clause(${signature.clause}) => $call;\n';
   }
 
-  String? _convertedCallSignature(Map<String, Object?> declaration) {
+  String? _convertedCallSignature(
+    Map<String, Object?> declaration, {
+    required bool eraseScopeReferences,
+  }) {
     final id = declaration['id']! as String;
-    final scopes = parity.scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final signature = _helperSignature(
       (declaration['parameters'] as List<Object?>?) ?? const [],
       scopes,
       id,
+      eraseScopeReferences: eraseScopeReferences,
     );
-    final returnType = parity.nullableForGeneric(
-      parity.mapType(
+    final returnType = mapper.nullableForGeneric(
+      mapper.mapType(
         declaration['returnType'],
         generic: true,
         scopes: scopes,
         context: id,
+        eraseScopeReferences: eraseScopeReferences,
       ),
     );
     final promise = _instanceOf(returnType, 'JSPromise');
@@ -528,17 +566,18 @@ final class _DartLayerEmitter {
     final id = declaration['id']! as String;
     final ordinal = declaration['overloadOrdinal'];
     final suffix = ordinal is int && ordinal > 0 ? '\$${ordinal + 1}' : '';
-    final scopes = parity.scopesFor(declaration);
+    final scopes = mapper.scopesFor(declaration);
     final signature = _helperSignature(
       (declaration['parameters'] as List<Object?>?) ?? const [],
       scopes,
       id,
+      eraseScopeReferences: false,
     );
     if (!signature.converted) {
       return null;
     }
-    final owner = parity.byId[declaration['parentId']]!;
-    final ownerClause = parity.typeParameterClause(owner);
+    final owner = mapper.byId[declaration['parentId']]!;
+    final ownerClause = mapper.typeParameterClause(owner);
     final ownerArguments = _typeArguments(owner);
     final instantiated = '$className$ownerArguments';
     return '  $instantiated new\$$suffix$ownerClause(${signature.clause}) => '
@@ -551,8 +590,9 @@ final class _DartLayerEmitter {
   ({String clause, String forwards, bool converted}) _helperSignature(
     List<Object?> parameters,
     List<Set<String>> scopes,
-    String context,
-  ) {
+    String context, {
+    required bool eraseScopeReferences,
+  }) {
     final requiredParts = <String>[];
     final optionalParts = <String>[];
     final forwards = <String>[];
@@ -560,18 +600,19 @@ final class _DartLayerEmitter {
     for (final rawParameter in parameters) {
       final parameter =
           (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
-      final parameterName = parity.dartName(parameter['name']! as String);
+      final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['rest'] == true) {
         optionalParts.add('List<JSAny?> $parameterName = const []');
         forwards.add(parameterName);
         continue;
       }
-      var type = parity.nullableForGeneric(
-        parity.mapType(
+      var type = mapper.nullableForGeneric(
+        mapper.mapType(
           parameter['type'],
           generic: true,
           scopes: scopes,
           context: context,
+          eraseScopeReferences: eraseScopeReferences,
         ),
       );
       if (parameter['optional'] == true && !type.endsWith('?')) {
@@ -600,10 +641,10 @@ final class _DartLayerEmitter {
   }
 
   void _requireSubscribableEvent(String consumerId) {
-    final event = parity.topLevelByName['Event'];
+    final event = mapper.topLevelByName['Event'];
     final children = event == null
         ? const <Map<String, Object?>>[]
-        : (parity.childrenByParent[event['id']! as String] ??
+        : (mapper.childrenByParent[event['id']! as String] ??
             const <Map<String, Object?>>[]);
     final hasSubscribe = children.any(
       (child) =>
@@ -629,20 +670,28 @@ final class _DartLayerEmitter {
     final id = declaration['id']! as String;
     final name = declaration['name']! as String;
     final children =
-        parity.childrenByParent[id] ?? const <Map<String, Object?>>[];
+        mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
     final hasCallSignature =
         children.any((child) => child['kind'] == 'callSignature');
-    final members = _convertedMembers(children.where(parity.isEmitted));
+    final members = _convertedMembers(
+      children.where(parity.isEmitted),
+      eraseScopeReferences: false,
+    );
     final dartTypeName = '${name}Dart';
     final literal = hasCallSignature
         ? null
-        : _flattenedLiteralFactory(declaration, dartTypeName, name);
+        : _flattenedLiteralFactory(
+            declaration,
+            dartTypeName,
+            name,
+            eraseScopeReferences: false,
+          );
     if (members.isEmpty && literal == null) {
       return;
     }
     dispositions[id] = 'emitted';
     _typeIdsWithDart.add(id);
-    final clause = parity.typeParameterClause(declaration);
+    final clause = mapper.typeParameterClause(declaration);
     final arguments = _typeArguments(declaration);
     out.writeln(
       'extension type $dartTypeName$clause($name$arguments \$js) '
@@ -660,19 +709,24 @@ final class _DartLayerEmitter {
 
   void _emitAnonDart(Map<String, Object?> declaration, StringBuffer out) {
     final id = declaration['id']! as String;
-    final name = parity.hashName('JSAnon', declaration['shapeHash']);
+    final name = mapper.hashName('JSAnon', declaration['shapeHash']);
     final children =
-        parity.childrenByParent[id] ?? const <Map<String, Object?>>[];
+        mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
     final hasCallSignature =
         children.any((child) => child['kind'] == 'callSignature');
-    final previousErase = parity.eraseScopeReferences;
-    parity.eraseScopeReferences = true;
-    final members = _convertedMembers(children.where(parity.isEmitted));
+    final members = _convertedMembers(
+      children.where(parity.isEmitted),
+      eraseScopeReferences: true,
+    );
     final dartTypeName = '${name}Dart';
     final literal = hasCallSignature
         ? null
-        : _flattenedLiteralFactory(declaration, dartTypeName, name);
-    parity.eraseScopeReferences = previousErase;
+        : _flattenedLiteralFactory(
+            declaration,
+            dartTypeName,
+            name,
+            eraseScopeReferences: true,
+          );
     if (members.isEmpty && literal == null) {
       return;
     }
@@ -698,10 +752,13 @@ final class _DartLayerEmitter {
     StringBuffer out,
   ) {
     final id = declaration['id']! as String;
-    final typeName = parity.namespaceTypeName(declaration['name']! as String);
+    final typeName = mapper.namespaceTypeName(declaration['name']! as String);
     final children =
-        parity.childrenByParent[id] ?? const <Map<String, Object?>>[];
-    final members = _convertedMembers(children.where(parity.isEmitted));
+        mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
+    final members = _convertedMembers(
+      children.where(parity.isEmitted),
+      eraseScopeReferences: false,
+    );
     if (members.isEmpty) {
       return;
     }
@@ -722,8 +779,8 @@ final class _DartLayerEmitter {
     final id = declaration['id']! as String;
     final name = declaration['name']! as String;
     final children =
-        parity.childrenByParent[id] ?? const <Map<String, Object?>>[];
-    final clause = parity.typeParameterClause(declaration);
+        mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
+    final clause = mapper.typeParameterClause(declaration);
     final arguments = _typeArguments(declaration);
 
     final instanceMembers = _convertedMembers(
@@ -733,6 +790,7 @@ final class _DartLayerEmitter {
             child['static'] != true &&
             child['kind'] != 'constructor',
       ),
+      eraseScopeReferences: false,
     );
     if (instanceMembers.isNotEmpty) {
       dispositions[id] = 'emitted';
@@ -754,7 +812,7 @@ final class _DartLayerEmitter {
       if (child['kind'] == 'constructor') {
         converted = _convertedConstructor(child, name);
       } else if (child['static'] == true) {
-        converted = _convertedMember(child);
+        converted = _convertedMember(child, eraseScopeReferences: false);
       }
       if (converted != null) {
         ctorMembers.add(converted);
@@ -776,10 +834,16 @@ final class _DartLayerEmitter {
     }
   }
 
-  List<String> _convertedMembers(Iterable<Map<String, Object?>> children) {
+  List<String> _convertedMembers(
+    Iterable<Map<String, Object?>> children, {
+    required bool eraseScopeReferences,
+  }) {
     final members = <String>[];
     for (final child in children) {
-      final converted = _convertedMember(child);
+      final converted = _convertedMember(
+        child,
+        eraseScopeReferences: eraseScopeReferences,
+      );
       if (converted != null) {
         members.add(converted);
         dispositions[child['id']! as String] = 'emitted';
@@ -797,9 +861,10 @@ final class _DartLayerEmitter {
   String? _flattenedLiteralFactory(
     Map<String, Object?> declaration,
     String dartTypeName,
-    String parityTypeName,
-  ) {
-    final scopes = parity.scopesFor(declaration);
+    String parityTypeName, {
+    required bool eraseScopeReferences,
+  }) {
+    final scopes = mapper.scopesFor(declaration);
     final parameters = <String>[];
     final assignments = <String>[];
     final seen = <String>{};
@@ -813,13 +878,13 @@ final class _DartLayerEmitter {
       if (!visited.add(ownerId)) {
         return;
       }
-      for (final child in parity.childrenByParent[ownerId] ??
+      for (final child in mapper.childrenByParent[ownerId] ??
           const <Map<String, Object?>>[]) {
         if (!parity.isEmitted(child) || child['static'] == true) {
           continue;
         }
         final childName = child['name'];
-        if (childName is! String || parity.dartName(childName) != childName) {
+        if (childName is! String || mapper.dartName(childName) != childName) {
           continue;
         }
         if (child['kind'] == 'property') {
@@ -828,13 +893,14 @@ final class _DartLayerEmitter {
           }
           final type = substitution.isEmpty
               ? child['type']
-              : parity.substitute(child['type'], substitution);
-          final mapped = parity.nullableForGeneric(
-            parity.mapType(
+              : mapper.substitute(child['type'], substitution);
+          final mapped = mapper.nullableForGeneric(
+            mapper.mapType(
               type,
               generic: true,
               scopes: scopes,
               context: child['id']! as String,
+              eraseScopeReferences: eraseScopeReferences,
             ),
           );
           final de = _deJs(mapped);
@@ -871,7 +937,7 @@ final class _DartLayerEmitter {
         if (base['kind'] != 'reference') {
           continue;
         }
-        final target = parity.topLevelByName[base['name']];
+        final target = mapper.topLevelByName[base['name']];
         if (target == null) {
           continue; // External references declare no members in the IR.
         }
@@ -892,7 +958,7 @@ final class _DartLayerEmitter {
                 as String: index < baseArguments.length
                 ? (substitution.isEmpty
                     ? baseArguments[index]
-                    : parity.substitute(baseArguments[index], substitution))
+                    : mapper.substitute(baseArguments[index], substitution))
                 : {'kind': 'primitive', 'name': 'any'},
         };
         visit(target, composed);
@@ -933,9 +999,9 @@ final class _DartLayerEmitter {
   }
 
   void _emitTupleDarts(StringBuffer out) {
-    final names = parity.tupleElements.keys.toList()..sort();
+    final names = mapper.tupleElements.keys.toList()..sort();
     for (final name in names) {
-      final elements = parity.tupleElements[name]!;
+      final elements = mapper.tupleElements[name]!;
       final members = <String>[];
       for (var index = 0; index < elements.length; index += 1) {
         final de = _deJs(elements[index]);
@@ -968,7 +1034,7 @@ final class _DartLayerEmitter {
       ..writeln(
         r'extension type VscodeApiDart(VscodeApi $js) implements VscodeApi {',
       );
-    for (final declaration in parity.declarations) {
+    for (final declaration in mapper.declarations) {
       if (declaration['parentId'] != 'module:vscode' ||
           !parity.isEmitted(declaration)) {
         continue;
@@ -978,7 +1044,7 @@ final class _DartLayerEmitter {
       switch (declaration['kind']) {
         case 'namespace':
           if (_typeIdsWithDart.contains(id)) {
-            final typeName = parity.namespaceTypeName(name);
+            final typeName = mapper.namespaceTypeName(name);
             out.writeln(
               '  ${typeName}Dart get $name => ${typeName}Dart(\$js.$name);',
             );
@@ -990,7 +1056,10 @@ final class _DartLayerEmitter {
             );
           }
         case 'variable':
-          final converted = _convertedReadable(declaration);
+          final converted = _convertedReadable(
+            declaration,
+            eraseScopeReferences: false,
+          );
           if (converted != null) {
             out.write(converted);
             dispositions[id] = 'emitted';

@@ -237,6 +237,8 @@ void main() {
           generic: true,
           scopes: scopes,
           context: 'spec',
+          // The explicit default is the point: erasure is per-call.
+          // ignore: avoid_redundant_argument_values
           eraseScopeReferences: false,
         ),
         'T',
