@@ -1,6 +1,7 @@
 # Authoring DX Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the fast suites
+and the three real-host gates are green at HEAD
 Date: 2026-07-26
 
 Closes the three authored-surface gaps the coverage-treemap file
@@ -114,7 +115,7 @@ compatibility surface — the branch is the product; discoveries to
   and the contract chain reconverged with the shared copy receipted
   as `generatedSharedViewProtocol`; the extension rebuilds and
   packages on the shared declarations.
-- [ ] AD-4 Final bar: coverage extension rebuilt and packaged on all
+- [x] AD-4 Final bar: coverage extension rebuilt and packaged on all
   three improvements; fast suites + analyze green; the real-host
   gates green at HEAD (host fixture, coverage extension,
   breakpoints).
@@ -170,3 +171,14 @@ Tallies are recording-time values. Entries appended as items close.
    the three operations declared once (shared 185 -> 188, host
    327 -> 304, view 430 -> 409; shared suite 16 and view suite 7
    green; extension rebuilt and packaged).
+4. **AD-4** (2026-07-26): the merged round rebuilt and packaged the
+   coverage extension on all three improvements; the full fast suite
+   is 554 green plus the known cli_watch contention flake (green
+   standalone in 8s, as first recorded in the A-1 round) with analyze
+   clean, and the three real-host gates
+   exited 0 at HEAD (cold start 223ms; watcher push applied;
+   breakpoint paused on the Dart line). The merge dropped one
+   allowlist entry (restored red-green style with the suite), and the
+   round also fixed the pre-existing doctor defect AD-1 surfaced:
+   json descriptors now route through the json reader, proven by a
+   new red-first doctor case.
