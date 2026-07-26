@@ -136,6 +136,20 @@ typedef ViewValueEncoder<T> = Object? Function(T value);
 /// Decodes and validates a protocol snapshot as a typed value.
 typedef ViewValueDecoder<T> = T Function(Object? value);
 
+/// A structural call seam over one connected Flutter View session.
+///
+/// Function-typed on purpose: an Extension Project's shared package
+/// assembles its [ViewOperation]s against one generated copy of this
+/// protocol while the Flutter View's session may come from another
+/// (`package:flutter_vscode/view.dart`), and two copies of a library
+/// never share nominal types. [FlutterViewSession.operationCaller]
+/// and [ViewOperation.callThrough] meet at this plain function type,
+/// so one shared operation declaration serves both runtimes.
+typedef ViewOperationCaller = Future<Object?> Function(
+  String operation,
+  Object? arguments,
+);
+
 /// A typed, allowlistable operation shared by Host Dart and a Flutter View.
 ///
 /// The codecs are deterministic application code. This contract adds no
@@ -243,6 +257,21 @@ final class ViewOperation<Request, Result> {
     return _decode(_decodeResult, value, 'result');
   }
 
+  /// Calls this operation through [caller] — the cross-copy twin of
+  /// [call].
+  ///
+  /// Use it when this operation value and the connected session come
+  /// from two generated copies of this protocol; see
+  /// [ViewOperationCaller] for the seam.
+  Future<Result> callThrough(
+    ViewOperationCaller caller,
+    Request arguments,
+  ) async {
+    _requireNonEmptyProtocolIdentifier(_name, 'operation name');
+    final value = await caller(_name, _encodeArguments(arguments));
+    return _decode(_decodeResult, value, 'result');
+  }
+
   T _decode<T>(ViewValueDecoder<T> decoder, Object? value, String role) {
     try {
       return decoder(value);
@@ -267,6 +296,233 @@ final class ViewOperationBinding {
 
   final String _name;
   final _HostViewOperation _handler;
+}
+
+/// A total codec for one field kind of a declared view-value schema.
+///
+/// Kinds compose: [orNull] admits `null`, [listOf] repeats a kind, and
+/// [nested] embeds another [ViewValueSchema] — lazily, so a schema can
+/// reference itself for recursive trees. Scalar kinds are also usable
+/// directly as operation payload codecs via [encode] and [decode].
+final class ViewValueKind<F> {
+  const ViewValueKind._(this._encode, this._decode);
+
+  /// String values.
+  static const ViewValueKind<String> string =
+      ViewValueKind._(_passValue, _decodeString);
+
+  /// Integer values.
+  static const ViewValueKind<int> integer =
+      ViewValueKind._(_passValue, _decodeInt);
+
+  /// Boolean values.
+  static const ViewValueKind<bool> boolean =
+      ViewValueKind._(_passValue, _decodeBool);
+
+  /// Double values.
+  ///
+  /// Decoding accepts any wire `num`: compiled JavaScript does not
+  /// preserve the int/double distinction for whole numbers.
+  static const ViewValueKind<double> doubleNumber =
+      ViewValueKind._(_passValue, _decodeDouble);
+
+  /// This kind, additionally admitting `null`.
+  ViewValueKind<F?> get orNull => ViewValueKind<F?>._(
+        (value) => value == null ? null : _encode(value),
+        (value) => value == null ? null : _decode(value),
+      );
+
+  /// A list whose items all match [of].
+  ///
+  /// A failing item is rejected naming its index.
+  static ViewValueKind<List<F>> listOf<F>(ViewValueKind<F> of) =>
+      ViewValueKind<List<F>>._(
+        (value) => [for (final item in value) of._encode(item)],
+        (value) {
+          if (value is! List<Object?>) {
+            throw const FormatException('Expected a list value.');
+          }
+          final items = <F>[];
+          for (var index = 0; index < value.length; index += 1) {
+            try {
+              items.add(of._decode(value[index]));
+            } on FormatException catch (error) {
+              throw FormatException(
+                'The item at index $index: ${error.message}',
+              );
+            }
+          }
+          return List.unmodifiable(items);
+        },
+      );
+
+  /// A nested value declared by [schema].
+  ///
+  /// The schema is supplied lazily so a declaration can reference
+  /// itself (directly or through [listOf]) for recursive trees.
+  static ViewValueKind<F> nested<F>(ViewValueSchema<F> Function() schema) =>
+      ViewValueKind<F>._(
+        (value) => schema().encode(value),
+        (value) => schema().decode(value),
+      );
+
+  static Object? _passValue(Object? value) => value;
+
+  static String _decodeString(Object? value) => value is String
+      ? value
+      : throw const FormatException('Expected a string value.');
+
+  static int _decodeInt(Object? value) => value is int
+      ? value
+      : throw const FormatException('Expected an int value.');
+
+  static bool _decodeBool(Object? value) => value is bool
+      ? value
+      : throw const FormatException('Expected a bool value.');
+
+  static double _decodeDouble(Object? value) => value is num
+      ? value.toDouble()
+      : throw const FormatException('Expected a double value.');
+
+  final Object? Function(F value) _encode;
+  final F Function(Object? value) _decode;
+
+  /// Encodes [value] as a protocol-safe snapshot.
+  Object? encode(F value) => _encode(value);
+
+  /// Decodes and validates a protocol snapshot as this kind.
+  F decode(Object? value) => _decode(value);
+}
+
+/// Reads one declared field's decoded value inside constructor wiring.
+///
+/// Returned by a schema's [ViewFieldDeclarator]; call it with the
+/// [ViewDecodedFields] the constructor wiring receives.
+typedef ViewFieldReader<F> = F Function(ViewDecodedFields fields);
+
+/// Declares one schema field — wire [key], value [kind], and the
+/// getter [read] — and returns the field's typed reader.
+typedef ViewFieldDeclarator<T> = ViewFieldReader<F> Function<F>(
+  String key,
+  ViewValueKind<F> kind,
+  F Function(T value) read,
+);
+
+/// Decoded field values handed to a schema's constructor wiring.
+final class ViewDecodedFields {
+  const ViewDecodedFields._(this._values);
+
+  final Map<String, Object?> _values;
+}
+
+/// The exact wire schema of one view-contract value type, declared
+/// once.
+///
+/// [ViewValueSchema.new]'s callback runs once at construction: it
+/// declares each field on the supplied declarator — wire key, value
+/// kind, getter — and returns the constructor wiring that rebuilds a
+/// [T] from decoded fields. From that single declaration the schema
+/// derives [encode], [decode], and the exact-schema guard: a missing
+/// key, an unexpected key, or a wrong-typed value throws a
+/// [FormatException] naming the key. [encode] and [decode] tear off
+/// as [ViewValueEncoder] and [ViewValueDecoder], composing directly
+/// into [ViewOperation] codecs.
+final class ViewValueSchema<T> {
+  /// Declares a schema; see the class for the declaration contract.
+  factory ViewValueSchema(
+    T Function(ViewDecodedFields fields) Function(
+      ViewFieldDeclarator<T> field,
+    ) declare,
+  ) {
+    final builder = _ViewSchemaBuilder<T>();
+    final construct = declare(builder.declareField);
+    builder.sealed = true;
+    return ViewValueSchema._(List.unmodifiable(builder.fields), construct);
+  }
+
+  const ViewValueSchema._(this._fields, this._construct);
+
+  final List<_ViewSchemaField<T>> _fields;
+  final T Function(ViewDecodedFields fields) _construct;
+
+  /// Encodes [value] as a protocol-safe snapshot of exactly the
+  /// declared keys.
+  Object? encode(T value) => <String, Object?>{
+        for (final field in _fields) field.key: field.encodeFrom(value),
+      };
+
+  /// Decodes and validates a protocol snapshot against the exact
+  /// declared schema.
+  T decode(Object? value) {
+    if (value is! Map<Object?, Object?>) {
+      throw const FormatException(
+        'Expected a map value carrying exactly the declared keys.',
+      );
+    }
+    for (final field in _fields) {
+      if (!value.containsKey(field.key)) {
+        throw FormatException('The "${field.key}" key is missing.');
+      }
+    }
+    if (value.length != _fields.length) {
+      final declared = <Object?>{for (final field in _fields) field.key};
+      final unexpected = [
+        for (final key in value.keys)
+          if (!declared.contains(key)) '"$key"',
+      ].join(', ');
+      throw FormatException('Unexpected keys: $unexpected.');
+    }
+    final decoded = <String, Object?>{};
+    for (final field in _fields) {
+      try {
+        decoded[field.key] = field.decodeRaw(value[field.key]);
+      } on FormatException catch (error) {
+        throw FormatException('The "${field.key}" key: ${error.message}');
+      }
+    }
+    return _construct(ViewDecodedFields._(decoded));
+  }
+}
+
+final class _ViewSchemaField<T> {
+  const _ViewSchemaField(this.key, this.encodeFrom, this.decodeRaw);
+
+  final String key;
+  final Object? Function(T value) encodeFrom;
+  final Object? Function(Object? value) decodeRaw;
+}
+
+final class _ViewSchemaBuilder<T> {
+  final List<_ViewSchemaField<T>> fields = [];
+  bool sealed = false;
+
+  ViewFieldReader<F> declareField<F>(
+    String key,
+    ViewValueKind<F> kind,
+    F Function(T value) read,
+  ) {
+    if (sealed) {
+      throw StateError(
+        'Schema fields may be declared only inside the declaration '
+        'callback.',
+      );
+    }
+    if (fields.any((field) => field.key == key)) {
+      throw ArgumentError.value(
+        key,
+        'key',
+        'A schema field key may be declared only once.',
+      );
+    }
+    fields.add(
+      _ViewSchemaField<T>(
+        key,
+        (value) => kind._encode(read(value)),
+        kind._decode,
+      ),
+    );
+    return (decoded) => decoded._values[key] as F;
+  }
 }
 
 /// Final protocol resource counts reported by a closing runtime.
@@ -900,8 +1156,7 @@ abstract base class _ViewSessionCore {
   /// response-eligible IDs; the view role stores cancelled IDs.
   final Set<String> _inboundCancellationMarks = {};
 
-  final Completer<ViewCloseReport> _closedSignal =
-      Completer<ViewCloseReport>();
+  final Completer<ViewCloseReport> _closedSignal = Completer<ViewCloseReport>();
 
   // The session cancels its owned subscription during every terminal path.
   // ignore: cancel_subscriptions
@@ -1507,9 +1762,7 @@ final class HostViewSession extends _ViewSessionCore {
 
   @override
   bool _mayDeliverInboundResponse(String id, Object? token) =>
-      !_closed &&
-      token == _generation &&
-      _inboundCancellationMarks.remove(id);
+      !_closed && token == _generation && _inboundCancellationMarks.remove(id);
 
   @override
   ViewProtocolFrame _inboundResultFrame(String id, Object? result) =>
@@ -1533,8 +1786,7 @@ final class HostViewSession extends _ViewSessionCore {
       );
 
   @override
-  Future<void> _handleResponseDeliveryFailure() =>
-      _closeAfterDeliveryFailure();
+  Future<void> _handleResponseDeliveryFailure() => _closeAfterDeliveryFailure();
 
   Future<void> _closeAfterDeliveryFailure() async {
     try {
@@ -1872,6 +2124,11 @@ final class FlutterViewSession extends _ViewSessionCore {
         .putIfAbsent(stream, StreamController<Object?>.broadcast)
         .stream;
   }
+
+  /// This session's structural call seam; see [ViewOperationCaller]
+  /// for why it is a plain function type.
+  ViewOperationCaller get operationCaller =>
+      (operation, arguments) => _call(operation, arguments: arguments);
 
   /// Calls one operation explicitly allowlisted by Host Dart.
   Future<Object?> _call(String operation, {Object? arguments}) async {
