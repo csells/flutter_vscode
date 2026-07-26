@@ -52,6 +52,26 @@ Every identifier above is generated into the project: `ExtensionContext`,
 `vscode_dart_layer.g.dart`; `toHostCallback` comes from the runtime module;
 `registerHostExports` from the host-exports module.
 
+## Commands as ordinary Dart
+
+For command registration, `host/lib/generated/host_commands.g.dart` erases
+the interop ceremony above. `ExtensionCommands` holds the context/api seam
+once; each `register` call takes a command name and an ordinary-Dart
+handler — dartified `List<Object?>` arguments in, a protocol-safe value
+(`null`, `bool`, `num`, `String`, or a `List`/`Map` of those, or a `Future`
+of one) out. The module owns argument dartification, result conversion,
+`toHostCallback`/`toHostPromise` stack mapping, and the
+`context.subscriptions` push, and returns the native registration for
+callers that dispose early:
+
+```dart
+final commands = ExtensionCommands(
+  context: context,
+  api: vscode.dart,
+);
+commands.register('my-extension.hello', (arguments) async => 'Hello');
+```
+
 ## One artifact, two surfaces
 
 `VscodeApi(rawVscode)` wraps the raw activation module with the substrate

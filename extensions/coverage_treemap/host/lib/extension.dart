@@ -5,7 +5,6 @@ import 'dart:js_interop';
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
 import 'package:coverage_treemap_host/generated/host_commands.g.dart';
 import 'package:coverage_treemap_host/generated/host_exports.g.dart';
-import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
     as parity;
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
@@ -14,31 +13,7 @@ import 'package:coverage_treemap_host/generated/vscode_runtime.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 
-const _snapshotOperation = ViewOperation<void, CoverageSnapshot>(
-  name: coverageSnapshotOperationName,
-  encodeArguments: encodeNoValue,
-  decodeArguments: decodeNoValue,
-  encodeResult: encodeCoverageSnapshot,
-  decodeResult: decodeCoverageSnapshot,
-);
-
-const _themeReportOperation = ViewOperation<ThemeReport, void>(
-  name: themeReportOperationName,
-  encodeArguments: encodeThemeReport,
-  decodeArguments: decodeThemeReport,
-  encodeResult: encodeNoValue,
-  decodeResult: decodeNoValue,
-);
-
 const _lcovRelativePath = 'coverage/lcov.info';
-
-const _pushReceivedOperation = ViewOperation<int, void>(
-  name: pushReceivedOperationName,
-  encodeArguments: encodePushReceived,
-  decodeArguments: decodePushReceived,
-  encodeResult: encodeNoValue,
-  decodeResult: decodeNoValue,
-);
 
 @JSExport()
 class _Extension {
@@ -123,7 +98,9 @@ final class _CoverageController {
     });
     commands.register('coverage-treemap.themeSmoke', (_) {
       final report = _lastThemeReport;
-      return jsonEncode(report == null ? null : encodeThemeReport(report));
+      return jsonEncode(
+        report == null ? null : themeReportSchema.encode(report),
+      );
     });
     commands.register('coverage-treemap.pushSmoke', (_) {
       return jsonEncode(<String, Object?>{
@@ -137,7 +114,7 @@ final class _CoverageController {
       final report = _report;
       final payload = report == null
           ? null
-          : encodeCoverageSnapshot(
+          : coverageSnapshotSchema.encode(
               CoverageSnapshot.fromReport(_lcovRelativePath, report),
             );
       return jsonEncode(payload);
@@ -214,7 +191,7 @@ final class _CoverageController {
           viewHost.session
               .emitEvent(
                 snapshotPushStreamName,
-                encodeCoverageSnapshot(
+                coverageSnapshotSchema.encode(
                   CoverageSnapshot.fromReport(_lcovRelativePath, report),
                 ),
               )
@@ -285,11 +262,11 @@ final class _CoverageController {
       title: 'Coverage Treemap',
       onClosed: () => _viewHost = null,
       operations: [
-        _pushReceivedOperation.bind((linesFound) {
+        pushReceivedOperation.bind((linesFound) {
           _pushesApplied += 1;
           _lastAppliedLinesFound = linesFound;
         }),
-        _snapshotOperation.bind((_) async {
+        snapshotOperation.bind((_) async {
           await _refresh();
           final report = _report;
           if (report == null) {
@@ -305,7 +282,7 @@ final class _CoverageController {
           }
           return snapshot;
         }),
-        _themeReportOperation.bind((report) {
+        themeReportOperation.bind((report) {
           _lastThemeReport = report;
         }),
       ],

@@ -1,8 +1,10 @@
 /// The typed view-protocol contract between Host Dart and the treemap
-/// Flutter View: one operation returning a coverage snapshot and one
-/// through which the view reports its resolved theme.
+/// Flutter View, declared once: each contract type carries a
+/// [ViewValueSchema] that derives its codecs, and the assembled
+/// [ViewOperation]s live here so host and view import one declaration.
 library;
 
+import 'package:coverage_treemap_shared/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 
 /// Operation name for requesting the current coverage snapshot.
@@ -16,28 +18,6 @@ const snapshotPushStreamName = 'coverageTreemap.snapshotPush';
 
 /// Operation name the view calls after applying a pushed snapshot.
 const pushReceivedOperationName = 'coverageTreemap.pushReceived';
-
-/// Encodes the empty payload of every void operation side: the
-/// snapshot request and the report acknowledgements.
-Object? encodeNoValue(void value) => null;
-
-/// Decodes the empty payload of every void operation side.
-void decodeNoValue(Object? value) {
-  if (value != null) {
-    throw const FormatException('A void operation payload must be null.');
-  }
-}
-
-/// Encodes the applied snapshot's total instrumented lines.
-Object? encodePushReceived(int linesFound) => linesFound;
-
-/// Decodes the applied snapshot's total instrumented lines.
-int decodePushReceived(Object? value) {
-  if (value is int) {
-    return value;
-  }
-  throw const FormatException('Expected the applied linesFound count.');
-}
 
 /// One node of the protocol-safe coverage tree.
 ///
@@ -90,6 +70,32 @@ final class CoverageNode {
   double get coverage => linesFound == 0 ? 0 : linesHit / linesFound;
 }
 
+/// The exact wire schema of [CoverageNode]; recursive through
+/// [ViewValueKind.nested]'s lazy reference.
+final ViewValueSchema<CoverageNode> coverageNodeSchema =
+    ViewValueSchema((field) {
+  final name =
+      field('name', ViewValueKind.string, (CoverageNode node) => node.name);
+  final linesFound =
+      field('linesFound', ViewValueKind.integer, (node) => node.linesFound);
+  final linesHit =
+      field('linesHit', ViewValueKind.integer, (node) => node.linesHit);
+  final isFile =
+      field('isFile', ViewValueKind.boolean, (node) => node.isFile);
+  final children = field(
+    'children',
+    ViewValueKind.listOf(ViewValueKind.nested(() => coverageNodeSchema)),
+    (node) => node.children,
+  );
+  return (fields) => CoverageNode(
+        name: name(fields),
+        linesFound: linesFound(fields),
+        linesHit: linesHit(fields),
+        isFile: isFile(fields),
+        children: children(fields),
+      );
+});
+
 /// The full snapshot the host serves to the view.
 final class CoverageSnapshot {
   /// Creates a snapshot.
@@ -109,49 +115,22 @@ final class CoverageSnapshot {
   final CoverageNode root;
 }
 
-/// Encodes [snapshot] as a protocol-safe value.
-Object? encodeCoverageSnapshot(CoverageSnapshot snapshot) => <String, Object?>{
-      'lcovPath': snapshot.lcovPath,
-      'root': _encodeNode(snapshot.root),
-    };
-
-Object? _encodeNode(CoverageNode node) => <String, Object?>{
-      'name': node.name,
-      'linesFound': node.linesFound,
-      'linesHit': node.linesHit,
-      'isFile': node.isFile,
-      'children': [for (final child in node.children) _encodeNode(child)],
-    };
-
-/// Validates and decodes the exact snapshot schema.
-CoverageSnapshot decodeCoverageSnapshot(Object? value) {
-  if (value case <Object?, Object?>{
-    'lcovPath': final String lcovPath,
-    'root': final Object? root,
-  } when value.length == 2) {
-    return CoverageSnapshot(lcovPath: lcovPath, root: _decodeNode(root));
-  }
-  throw const FormatException('Malformed coverage snapshot.');
-}
-
-CoverageNode _decodeNode(Object? value) {
-  if (value case <Object?, Object?>{
-    'name': final String name,
-    'linesFound': final int linesFound,
-    'linesHit': final int linesHit,
-    'isFile': final bool isFile,
-    'children': final List<Object?> children,
-  } when value.length == 5) {
-    return CoverageNode(
-      name: name,
-      linesFound: linesFound,
-      linesHit: linesHit,
-      isFile: isFile,
-      children: [for (final child in children) _decodeNode(child)],
-    );
-  }
-  throw const FormatException('Malformed coverage node.');
-}
+/// The exact wire schema of [CoverageSnapshot].
+final ViewValueSchema<CoverageSnapshot> coverageSnapshotSchema =
+    ViewValueSchema((field) {
+  final lcovPath = field(
+    'lcovPath',
+    ViewValueKind.string,
+    (CoverageSnapshot snapshot) => snapshot.lcovPath,
+  );
+  final root = field(
+    'root',
+    ViewValueKind.nested(() => coverageNodeSchema),
+    (snapshot) => snapshot.root,
+  );
+  return (fields) =>
+      CoverageSnapshot(lcovPath: lcovPath(fields), root: root(fields));
+});
 
 /// The view's resolved theme, reported to Host Dart so gates can verify
 /// that live VS Code colors reached the Flutter View.
@@ -167,19 +146,43 @@ final class ThemeReport {
   final int? editorBackground;
 }
 
-/// Encodes [report] as a protocol-safe value.
-Object? encodeThemeReport(ThemeReport report) => <String, Object?>{
-      'kind': report.kind,
-      'editorBackground': report.editorBackground,
-    };
+/// The exact wire schema of [ThemeReport].
+final ViewValueSchema<ThemeReport> themeReportSchema =
+    ViewValueSchema((field) {
+  final kind =
+      field('kind', ViewValueKind.string, (ThemeReport report) => report.kind);
+  final editorBackground = field(
+    'editorBackground',
+    ViewValueKind.integer.orNull,
+    (report) => report.editorBackground,
+  );
+  return (fields) => ThemeReport(
+        kind: kind(fields),
+        editorBackground: editorBackground(fields),
+      );
+});
 
-/// Validates and decodes the exact theme report schema.
-ThemeReport decodeThemeReport(Object? value) {
-  if (value case <Object?, Object?>{
-    'kind': final String kind,
-    'editorBackground': final int? editorBackground,
-  } when value.length == 2) {
-    return ThemeReport(kind: kind, editorBackground: editorBackground);
-  }
-  throw const FormatException('Malformed theme report.');
-}
+/// Fetches the current coverage snapshot from Host Dart.
+final ViewOperation<void, CoverageSnapshot> snapshotOperation =
+    ViewOperation.noArgs(
+  coverageSnapshotOperationName,
+  encodeResult: coverageSnapshotSchema.encode,
+  decodeResult: coverageSnapshotSchema.decode,
+);
+
+/// Reports the view's resolved theme to Host Dart.
+final ViewOperation<ThemeReport, void> themeReportOperation =
+    ViewOperation.noResult(
+  themeReportOperationName,
+  encodeArguments: themeReportSchema.encode,
+  decodeArguments: themeReportSchema.decode,
+);
+
+/// Acknowledges a host-pushed snapshot with its total instrumented
+/// lines.
+final ViewOperation<int, void> pushReceivedOperation =
+    ViewOperation.noResult(
+  pushReceivedOperationName,
+  encodeArguments: ViewValueKind.integer.encode,
+  decodeArguments: ViewValueKind.integer.decode,
+);

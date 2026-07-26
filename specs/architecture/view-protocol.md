@@ -72,6 +72,18 @@ answered.
   session/theme sources make it unit-testable over the in-memory
   transport. `ViewOperation.noArgs`/`noResult` erase the void-codec
   ceremony for operations with no arguments or no result.
+- Declare-once codecs: `ViewValueSchema` declares each contract field
+  a single time (wire key, `ViewValueKind`, getter) and derives
+  encode, decode, and the exact-schema guard — missing, extra, and
+  wrong-typed keys throw `FormatException` naming the key; kinds
+  compose via `orNull`, `listOf`, and a lazy `nested` reference for
+  recursive trees. A view-bearing build emits the verbatim protocol
+  copy into `shared/lib/generated/view_protocol.g.dart` and re-exports
+  it from the host's `view_protocol.g.dart`, so the shared package
+  assembles each `ViewOperation` once for host and view; the view,
+  whose session comes from `package:flutter_vscode/view.dart` (a
+  distinct generated copy), calls through the structural
+  `operationCaller`/`callThrough` function seam.
 - Host-side hosting is generated, not hand-copied: view-bearing
   projects receive `flutter_view_host.g.dart`
   (`lib/src/cli/flutter_view_host_source.dart`) carrying

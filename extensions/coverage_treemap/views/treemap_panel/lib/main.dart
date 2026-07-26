@@ -10,33 +10,6 @@ import 'package:treemap_panel/drilldown.dart';
 import 'package:treemap_panel/summary_charts.dart';
 import 'package:treemap_panel/treemap.dart';
 
-/// The typed view-protocol operation that fetches the coverage snapshot
-/// from Host Dart.
-final ViewOperation<void, CoverageSnapshot> snapshotOperation =
-    ViewOperation.noArgs(
-  coverageSnapshotOperationName,
-  encodeResult: encodeCoverageSnapshot,
-  decodeResult: decodeCoverageSnapshot,
-);
-
-/// The typed view-protocol operation that reports the view's resolved
-/// theme to Host Dart.
-final ViewOperation<ThemeReport, void> themeReportOperation =
-    ViewOperation.noResult(
-  themeReportOperationName,
-  encodeArguments: encodeThemeReport,
-  decodeArguments: decodeThemeReport,
-);
-
-/// The typed view-protocol operation acknowledging host-pushed
-/// snapshots back to Host Dart.
-final ViewOperation<int, void> pushReceivedOperation =
-    ViewOperation.noResult(
-  pushReceivedOperationName,
-  encodeArguments: encodePushReceived,
-  decodeArguments: decodePushReceived,
-);
-
 /// Runs the coverage treemap view over one connected [ViewShell], which
 /// owns the session, the live VS Code theme, and every protocol
 /// subscription for the lifetime of the view.
@@ -116,7 +89,7 @@ class _TreemapPageState extends State<_TreemapPage> {
   void _applyPushedSnapshot(Object? payload) {
     final CoverageSnapshot snapshot;
     try {
-      snapshot = decodeCoverageSnapshot(payload);
+      snapshot = coverageSnapshotSchema.decode(payload);
     } on FormatException {
       // A malformed push is ignored; pull refresh remains available.
       return;
@@ -132,7 +105,10 @@ class _TreemapPageState extends State<_TreemapPage> {
     });
     unawaited(
       pushReceivedOperation
-          .call(widget.shell.session, snapshot.root.linesFound)
+          .callThrough(
+            widget.shell.session.operationCaller,
+            snapshot.root.linesFound,
+          )
           .catchError((Object _) {}),
     );
   }
@@ -143,7 +119,10 @@ class _TreemapPageState extends State<_TreemapPage> {
       _error = null;
     });
     try {
-      final snapshot = await snapshotOperation.call(widget.shell.session, null);
+      final snapshot = await snapshotOperation.callThrough(
+        widget.shell.session.operationCaller,
+        null,
+      );
       if (!mounted) {
         return;
       }
@@ -167,8 +146,8 @@ class _TreemapPageState extends State<_TreemapPage> {
   /// Reports the resolved theme to Host Dart for gate verification.
   Future<void> _reportTheme(VSCodeThemeSnapshot snapshot) async {
     try {
-      await themeReportOperation.call(
-        widget.shell.session,
+      await themeReportOperation.callThrough(
+        widget.shell.session.operationCaller,
         ThemeReport(
           kind: snapshot.kind.name,
           editorBackground: snapshot.editorBackground,

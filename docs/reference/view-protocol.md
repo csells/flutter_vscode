@@ -127,16 +127,48 @@ explicit allowlist; there is no reflection and no generic dispatcher.
 `ViewOperation.noArgs` and `ViewOperation.noResult` supply the void
 codec pair for the request or result side, replacing the
 encode-null/decode-guard ceremony every acknowledgement-style
-operation otherwise repeats:
+operation otherwise repeats.
+
+Contract types declare their wire shape once with a `ViewValueSchema`:
+each field is declared a single time — wire key, `ViewValueKind`,
+getter — and the schema derives `encode`, `decode`, and the
+exact-schema guard (missing, extra, and wrong-typed keys throw
+`FormatException` naming the key). Kinds compose through `orNull`,
+`listOf`, and a lazily referenced `nested` schema for recursive
+trees; scalar kinds double as bare payload codecs:
 
 ```dart
+final ViewValueSchema<CoverageSnapshot> coverageSnapshotSchema =
+    ViewValueSchema((field) {
+  final lcovPath = field(
+    'lcovPath',
+    ViewValueKind.string,
+    (CoverageSnapshot snapshot) => snapshot.lcovPath,
+  );
+  final root = field(
+    'root',
+    ViewValueKind.nested(() => coverageNodeSchema),
+    (snapshot) => snapshot.root,
+  );
+  return (fields) =>
+      CoverageSnapshot(lcovPath: lcovPath(fields), root: root(fields));
+});
+
 final ViewOperation<void, CoverageSnapshot> snapshotOperation =
     ViewOperation.noArgs(
   coverageSnapshotOperationName,
-  encodeResult: encodeCoverageSnapshot,
-  decodeResult: decodeCoverageSnapshot,
+  encodeResult: coverageSnapshotSchema.encode,
+  decodeResult: coverageSnapshotSchema.decode,
 );
 ```
+
+Assembled operations live in the project's shared package, whose
+generated `view_protocol.g.dart` copy the host module re-exports, so
+host and view import one declaration. On the view side, where the
+session comes from `package:flutter_vscode/view.dart` (a different
+generated copy of the protocol), calls ride the structural seam:
+`operation.callThrough(shell.session.operationCaller, arguments)` —
+a plain function type, so no nominal session type crosses the copies.
 
 Calls run in both directions, typed end to end:
 
@@ -166,7 +198,7 @@ on a named stream — one-way, with no response frame:
 ```dart
 await viewHost.session.emitEvent(
   snapshotPushStreamName,
-  encodeCoverageSnapshot(snapshot),
+  coverageSnapshotSchema.encode(snapshot),
 );
 ```
 
