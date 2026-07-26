@@ -56,13 +56,32 @@ no history rewrites in ADRs — amendments only; discoveries go to
   reference/index.md (de-orphan). generated-host-api.md is already
   current. Check: claims verified against lib/src/view_protocol.dart;
   link-check clean.
-- [ ] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
+- [x] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
   with `flutter_vscode doctor`, and replaces the pre-totality
   missing-API remedy (the generated layer is total; "pending" means
   unverified, not unsupported); agent-assisted-development.md's
   working model reflects the total generated layer and the full CLI
   (test/doctor in the run loop). Check: every named error code and
   remedy matches the CLI at HEAD.
+  Closed (2026-07-25): troubleshooting.md now opens with a `doctor`
+  first step (its real `[ok]`/`[!!]` shape), describes the version-2
+  `ready`/`readyAck` session/nonce handshake in the blank-view entry,
+  and replaces the missing-API remedy with the totality rule — a
+  `pending` `coverage.json` entry is unverified, not unsupported; a
+  construct the generator cannot map fails as
+  `ParityGenerationException` and is a framework defect to report.
+  The two error codes the page now names
+  (`HOST_IMPORT_BOUNDARY_VIOLATION`, `STALE_BUILD_ARTIFACTS`) both
+  exist in `lib/src/cli/` at HEAD. agent-assisted-development.md's
+  working model became
+  edit -> doctor -> build [--watch] -> test -> package, its coverage
+  paragraph teaches absent-from-coverage != unsupported, and its
+  checklist adds doctor/test; surgical edits, length and voice kept.
+  Both pages gained DT-7 openers. Per the same owner directive as
+  DT-1, troubleshooting.md's "Legacy v0 projects" section and
+  agent-assisted-development.md's closing legacy-mapping pointer were
+  deleted; vscode-api-mapping.md stays linked from
+  `docs/reference/index.md` and `AGENTS.md`, so no orphan results.
 - [ ] DT-4 Agent surface: project-structure.md teaches the current
   CLI and layout (extensions/, skills/, lib/src/cli/);
   consumer-agents.md mandates doctor/test in validation; the build,
@@ -110,3 +129,14 @@ Tallies are recording-time values. Entries appended as items close.
    ground-truthed against `bin/flutter_vscode.dart` and
    `lib/src/cli/` at HEAD; repository_gate_test green at recording
    time.
+3. **DT-3** (2026-07-25): the guides shed their pre-totality residue —
+   troubleshooting.md leads with `doctor`, names the version-2
+   `ready`/`readyAck` handshake, and treats a `pending` coverage
+   entry as unverified rather than unsupported (an unmappable
+   construct is a `ParityGenerationException`, a framework defect);
+   agent-assisted-development.md's loop is now
+   doctor -> build [--watch] -> test -> package over the total
+   generated layer; per the DT-1 owner directive, both pages' legacy
+   sections were deleted outright. Error codes named on the pages
+   verified against `lib/src/cli/`; repository_gate_test and
+   plan_truth_test green at recording time.
