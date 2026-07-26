@@ -373,15 +373,17 @@ Future<Directory> _scaffoldProject({Directory? workspace}) async {
   Directory(p.join(root.path, 'shared', 'lib')).createSync(recursive: true);
   Directory(p.join(root.path, 'views')).createSync();
   File(p.join(root.path, 'extension.dart')).writeAsStringSync('''
-const extension = <String, Object?>{
-  'schemaVersion': 1,
-  'apiTarget': '$defaultApiTarget',
-  'name': 'my-extension',
-  'displayName': 'My Extension',
-  'description': 'A VS Code extension written in Dart.',
-  'version': '0.0.1',
-  'publisher': 'local',
-};
+import 'package:flutter_vscode/manifest.dart';
+
+const extension = ExtensionManifest(
+  apiTarget: '$defaultApiTarget',
+  name: 'my-extension',
+  displayName: 'My Extension',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: [],
+);
 ''');
   File(p.join(root.path, 'host', 'lib', 'extension.dart'))
       .writeAsStringSync('void main() {}\n');

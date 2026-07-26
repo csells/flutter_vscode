@@ -30,6 +30,7 @@ void main() {
         p.join('shared', 'lib', 'shared.dart'),
         p.join('shared', 'pubspec.yaml'),
         'extension.dart',
+        'pubspec.yaml',
       ],
       everyElement(
         predicate<String>(
@@ -92,11 +93,28 @@ void main() {
     final source = File(
       p.join(workspace.path, 'my_extension', 'extension.dart'),
     ).readAsStringSync();
-    expect(source, contains('const extension = <String, Object?>{'));
-    expect(source, contains("'apiTarget': '1.129.1'"));
-    expect(source, contains("'name': 'my-extension'"));
-    expect(source, contains("'publisher': 'local'"));
-    expect(source, contains("'activationEvents': <String>['onLanguage:json']"));
+    expect(
+      source,
+      contains("import 'package:flutter_vscode/manifest.dart';"),
+    );
+    expect(source, contains('const extension = ExtensionManifest('));
+    expect(source, contains("apiTarget: '1.129.1'"));
+    expect(source, contains("name: 'my-extension'"));
+    expect(source, contains("publisher: 'local'"));
+    expect(source, contains("activationEvents: ['onLanguage:json']"));
+    expect(source, contains('ExtensionCommand('));
+    expect(source, isNot(contains('<String, Object?>{')));
+
+    final rootPubspec = File(
+      p.join(workspace.path, 'my_extension', 'pubspec.yaml'),
+    );
+    expect(
+      rootPubspec.existsSync(),
+      isTrue,
+      reason: 'The project root needs a pubspec so the typed descriptor '
+          'resolves package:flutter_vscode/manifest.dart in the editor.',
+    );
+    expect(rootPubspec.readAsStringSync(), contains('flutter_vscode:'));
   });
 
   test('create puts command and hover behavior in Host Dart', () async {
@@ -169,6 +187,16 @@ void main() {
       );
       expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
       final project = Directory(p.join(workspace.path, 'my_extension'));
+      final rootGet = await Process.run(
+        'dart',
+        const ['pub', 'get'],
+        workingDirectory: project.path,
+      );
+      expect(
+        rootGet.exitCode,
+        0,
+        reason: '${rootGet.stdout}\n${rootGet.stderr}',
+      );
       final host = Directory(p.join(project.path, 'host'));
       final get = await Process.run(
         'dart',

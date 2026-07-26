@@ -101,7 +101,7 @@ void main() {
       descriptor.writeAsStringSync(
         descriptor
             .readAsStringSync()
-            .replaceFirst("'apiTarget': '1.129.1'", "'apiTarget': '9.9.9'"),
+            .replaceFirst("apiTarget: '1.129.1'", "apiTarget: '9.9.9'"),
       );
 
       final build = await Process.run(
@@ -252,7 +252,7 @@ Map<String, Object?> _createExtension() {
       expect(marker.existsSync(), isFalse);
       expect(
         build.stderr,
-        contains('extension.dart must contain only a const literal map'),
+        contains('package:flutter_vscode/manifest.dart'),
       );
     },
     timeout: const Timeout(Duration(minutes: 2)),

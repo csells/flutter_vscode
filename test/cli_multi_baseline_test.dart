@@ -126,7 +126,7 @@ void main() {
       descriptor.writeAsStringSync(
         descriptor
             .readAsStringSync()
-            .replaceFirst("'apiTarget': '1.129.1'", "'apiTarget': '9.9.9'"),
+            .replaceFirst("apiTarget: '1.129.1'", "apiTarget: '9.9.9'"),
       );
 
       final build = await Process.run(
@@ -182,8 +182,8 @@ void main() {
         final descriptor = File(p.join(project.path, 'extension.dart'));
         descriptor.writeAsStringSync(
           descriptor.readAsStringSync().replaceFirst(
-                "'apiTarget': '1.129.1'",
-                "'apiTarget': '$version'",
+                "apiTarget: '1.129.1'",
+                "apiTarget: '$version'",
               ),
         );
 
