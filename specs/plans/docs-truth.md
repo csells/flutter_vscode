@@ -1,7 +1,8 @@
 # Docs Truth Plan
 
-Status: Proposed — re-scoped 2026-07-25 against the single-layer
-world; awaiting owner approval to edit (the improve-docs gate)
+Status: In progress — owner approved 2026-07-25; DT-2 resolved as a
+new view-protocol reference page with message-contract.md kept as the
+linked legacy record
 Date: 2026-07-25
 
 Brings the documentation corpus to truth at HEAD. The original
@@ -18,7 +19,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
 
 ## Exit bar
 
-- [ ] DT-0 Fresh baseline: re-run the census and polish/drift scoring
+- [x] DT-0 Fresh baseline: re-run the census and polish/drift scoring
   over the corpus at HEAD into `.improve-docs/baseline.json` before
   any edit, so per-dimension deltas attribute honestly. Check: the
   report's deltas reference the new baseline date.
@@ -78,3 +79,7 @@ baseline and remaining distance to the bar.
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **DT-0** (2026-07-25): baseline re-snapshotted at HEAD b3081d8
+   (38 docs pages) into `.improve-docs/baseline.json`, superseding the
+   pre-single-layer snapshot so this round's deltas attribute honestly.
