@@ -318,10 +318,30 @@ runtime inside the panel.
 ## Shipped example extensions
 
 Complete, working extensions built with this workflow live in
-[`extensions/`](extensions/README.md) — starting with
-**Coverage Treemap**, which paints `lcov.info` line coverage into the
-editor and renders an interactive coverage treemap in a Flutter View.
-They double as reference implementations for the patterns above.
+[`extensions/`](extensions/README.md). They double as reference
+implementations for the patterns above and are held to the same bar
+as the framework: built only through the CLI, proven in a real
+Extension Host by `scripts/test_coverage_extension.sh`.
+
+### Coverage Treemap
+
+Test coverage for any project that produces an `lcov.info` — Host
+Dart parses the tracefile, paints covered and uncovered lines into
+the editor, keeps a live percentage in the status bar (click it to
+run `flutter test --coverage` in a terminal), and pushes fresh
+snapshots to an interactive Flutter-rendered panel over the view
+protocol whenever coverage changes: a squarified treemap (tile area =
+lines of code, color = coverage) with drill-down navigation, plus
+donut and per-child bar charts built with the pub.dev package
+`fl_chart` — Flutter-ecosystem code reuse running inside a VS Code
+webview, themed with VS Code's own colors.
+
+![The Coverage Treemap extension: covered and uncovered lines
+highlighted in the editor, a live status-bar percentage, and the
+Flutter-rendered treemap panel with donut and bar-chart
+summaries](docs/assets/coverage-treemap.png)
+
+A Dart-only (host-only) example extension is planned to follow.
 
 ## Legacy v0 webview workflow
 
