@@ -72,6 +72,40 @@ void main() {
   );
 
   test(
+    'doctor accepts a json-descriptor project',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_doctor_json_',
+      );
+      addTearDown(() => workspace.delete(recursive: true));
+      final project = await _createProject(workspace);
+      // Convert the scaffold to the json descriptor form.
+      File(p.join(project.path, 'extension.dart')).deleteSync();
+      File(p.join(project.path, 'extension.json')).writeAsStringSync('''
+{
+  "schemaVersion": 1,
+  "apiTarget": "1.129.1",
+  "name": "my-extension",
+  "displayName": "My Extension",
+  "description": "A VS Code extension written in Dart.",
+  "version": "0.0.1",
+  "publisher": "local",
+  "activationEvents": ["onLanguage:json"],
+  "commands": [
+    {"command": "my-extension.hello", "title": "Say Hello from Dart"}
+  ]
+}
+''');
+
+      final doctor = await _cli(['doctor'], workingDirectory: project.path);
+
+      expect(doctor.exitCode, 0, reason: '${doctor.stdout}\n${doctor.stderr}');
+      expect('${doctor.stdout}', contains('[ok] API target 1.129.1'));
+    },
+    timeout: const Timeout(Duration(minutes: 5)),
+  );
+
+  test(
     'doctor outside a project checks the toolchain only',
     () async {
       final workspace = await Directory.systemTemp.createTemp(
