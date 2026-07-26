@@ -1,8 +1,12 @@
 # Agent-Assisted Development
 
-Use an agent to translate product intent into Dart-owned extension metadata,
-Host Dart behavior, and optional Flutter UI without introducing an author-side
-Node or TypeScript layer.
+How an Extension Author points a coding agent at an Extension Project: the
+agent translates product intent into Dart-owned extension metadata, Host Dart
+behavior, and optional Flutter UI without introducing an author-side Node or
+TypeScript layer. The rules below keep the agent inside the author-owned
+surface and the full CLI loop of the [quickstart](quickstart.md); the
+[Generated Host API](../reference/generated-host-api.md) is its API ground
+truth.
 
 ## Setup
 
@@ -22,16 +26,18 @@ and the repository `skills/` tree.
 ## Working model
 
 ```text
-intent -> check pinned API coverage -> edit author-owned Dart -> build -> test
+intent -> edit author-owned Dart -> doctor -> build [--watch] -> test -> package
 ```
 
-An agent should first verify that the requested VS Code symbols exist in the
-generated bindings and `coverage.json`. Start with the
-[Generated Host API](../reference/generated-host-api.md). It must not infer a
-likely binding, handwrite a shadow API, or edit generated interop to make an
-unsupported symbol compile. Expanding the API is a framework contribution:
-update pinned official inputs, IR, reviewed Semantic Overrides, generation,
-and host tests.
+The generated layer is total: `vscode_dart_layer.g.dart` maps every public
+declaration of the pinned baseline, so the agent never needs to check whether
+a stable symbol is supported — a symbol absent from `coverage.json`'s
+host-verified accounting is unverified, not unsupported. Start with the
+[Generated Host API](../reference/generated-host-api.md). The agent must not
+handwrite a shadow API or edit generated interop; if `flutter_vscode build`
+fails on a construct the generator cannot map, that is a framework defect to
+report — the [parity report](../reference/parity.md) states the rule — never
+something to work around.
 
 For a supported feature, the agent edits:
 
@@ -44,24 +50,28 @@ For a supported feature, the agent edits:
 It then runs:
 
 ```sh
+flutter_vscode doctor
 flutter_vscode build
+flutter_vscode test
 ```
 
-The agent must not edit `package.json`, generated host bindings, the CommonJS
-bootstrap, JavaScript bundles, source maps, or VSIX contents.
+`build --watch` keeps the rebuild running during longer editing sessions, and
+`flutter_vscode package` validates the VSIX at the end. The agent must not
+edit `package.json`, generated host bindings, the CommonJS bootstrap,
+JavaScript bundles, source maps, or VSIX contents.
 
 ## Example prompts
 
 > Add a contributed command named “Show Greeting,” register it in Host Dart,
-> and return the selected editor language when the currently generated API
-> supports that operation.
+> and return the selected editor language.
 
 > Add an optional Flutter view. Keep provider logic in Host Dart, expose one
 > allowlisted value operation to the view, and verify protocol cleanup when the
 > panel closes.
 
-> Check whether the pinned API target supports a tree data provider. If it does
-> not, report the missing IR entries instead of inventing bindings.
+> Register a tree data provider through the generated layer. If the build
+> fails to map a construct it needs, report the generation failure as a
+> framework defect instead of inventing bindings.
 
 ## Review checklist
 
@@ -70,9 +80,6 @@ bootstrap, JavaScript bundles, source maps, or VSIX contents.
 3. Cross-runtime messages use typed protocol operations and value snapshots.
 4. Host/shared dependency checks pass.
 5. A second `flutter_vscode build` reproduces managed artifacts.
-6. `flutter_vscode package` validates the VSIX.
-7. No author-owned `.js`, `.ts`, or `package.json` was added.
-
-The original annotation/TypeScript agent workflow remains documented in the
-[legacy API mapping](../reference/vscode-api-mapping.md) for existing v0
-projects only.
+6. `flutter_vscode doctor` and `flutter_vscode test` pass.
+7. `flutter_vscode package` validates the VSIX.
+8. No author-owned `.js`, `.ts`, or `package.json` was added.

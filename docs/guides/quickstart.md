@@ -1,5 +1,13 @@
 # Quickstart
 
+The end-to-end path for an Extension Author's first Dart-owned VS Code
+extension: install the `flutter_vscode` CLI, scaffold an Extension
+Project, then build, test, and package it — with no author-maintained
+TypeScript anywhere. Each numbered step names the command that owns
+it; the [README](../../README.md) walks the same path with full code,
+and the [Generated Host API](../reference/generated-host-api.md)
+covers the API surface in depth.
+
 ## 1. Install the CLI
 
 The Dart-host workflow is currently unreleased. Activate the CLI from its
@@ -34,8 +42,10 @@ Dart package. It contains no author-maintained JavaScript, TypeScript, or
 
 `extension.dart` is the source of truth for metadata and contributions. Its
 `apiTarget` selects the exact pinned VS Code API and controls the generated
-`engines.vscode` value. Change that target only as an explicit compatibility
-decision.
+`engines.vscode` value. Two pinned baselines ship today — 1.129.1 (the
+scaffold default) and 1.130.0 — and
+[new baselines are added beside them](new-baseline.md), never swapped in
+place. Change that target only as an explicit compatibility decision.
 
 ## 3. Implement host behavior
 
@@ -56,7 +66,9 @@ flutter_vscode build
 
 This deterministically regenerates the manifest, bindings, bootstrap, host
 JavaScript, source map, and `.vscode/launch.json`. Open the project in VS Code
-and press F5 to launch the generated debug configuration.
+and press F5 to launch the generated debug configuration. While iterating,
+`flutter_vscode build --watch` reruns the same build whenever author-owned
+sources change; press Ctrl+C to stop.
 
 ## 5. Test
 
@@ -82,12 +94,6 @@ The behavioral proof runs against the pinned VS Code baselines (the
 `apiTarget` values shipped in-tree). Do not infer or handwrite bindings:
 the generated API layer already maps every public declaration of the
 pinned API.
-
-## Legacy webview scaffold
-
-`dart run flutter_vscode:generate_vscode_extension` remains for existing v0
-projects. It uses the older Node/TypeScript bridge and is not the canonical
-Dart-host workflow above.
 
 ## Reaching the full VS Code API
 

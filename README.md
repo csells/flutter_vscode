@@ -7,8 +7,8 @@ objects and callbacks. You never write, read, or repair TypeScript.
 
 One generated layer reaches the VS Code API: a mechanically generated,
 complete typed Dart mapping of every public declaration in the pinned
-VS Code API (currently 1.129.1), with a Dart-first ergonomic surface in
-the same artifact.
+VS Code baseline your project selects (1.129.1 and 1.130.0 ship today),
+with a Dart-first ergonomic surface in the same artifact.
 
 ## Getting started
 
@@ -62,6 +62,12 @@ const extension = <String, Object?>{
 };
 ```
 
+`apiTarget` selects which pinned VS Code baseline the build generates
+against and controls the generated `engines.vscode` value. Baselines
+are added beside each other, never replaced —
+[Onboarding a New VS Code Baseline](docs/guides/new-baseline.md)
+documents how a maintainer pins the next one.
+
 Behavior lives in `host/lib/extension.dart`. The scaffold already uses the
 VS Code API through the generated layer — it registers the contributed
 command and a hover provider, and parks both registrations in
@@ -88,6 +94,17 @@ context.subscriptions.toDart.add(
 );
 ```
 
+Check the toolchain and the project before building:
+
+```sh
+flutter_vscode doctor
+```
+
+`doctor` writes one `[ok]` or `[!!]` line per check — the Dart and
+Flutter SDK probes, plus (inside an Extension Project) the layout, the
+descriptor, and whether the declared `apiTarget` is pinned in this
+framework version — and exits nonzero when any check fails.
+
 Build it:
 
 ```sh
@@ -100,6 +117,10 @@ with its source map, and `.vscode/launch.json`. It also fails closed: syntax
 errors, layout violations, and host-forbidden imports (`dart:io`, Flutter,
 browser-only libraries in `host/` or `shared/`) are reported with actionable
 error codes.
+
+`flutter_vscode build --watch` keeps that loop running: it rebuilds
+whenever `extension.dart`, `host/lib`, `shared/lib`, or a view's `lib`
+changes, reporting failures without exiting. Press Ctrl+C to stop.
 
 ### Debug it in a dedicated VS Code instance
 
@@ -175,6 +196,17 @@ returns, broadcast `Stream` event accessors, plain `String`/`num`/`bool`
 boundaries. See the
 [Generated Host API](docs/reference/generated-host-api.md) and the
 [parity report](docs/reference/parity.md).
+
+### Test it
+
+```sh
+flutter_vscode test
+```
+
+`test` runs every suite the project has — `shared/test` and `host/test`
+with `dart test`, each `views/<name>/test` with `flutter test` — and
+fails if any suite fails. A fresh scaffold has none yet; the command
+tells you where to add them.
 
 ### Package it
 
@@ -298,7 +330,11 @@ context.subscriptions.toDart.add(
 Typed view-to-host requests plug into the same call: pass
 `operations: [myOperation.bind(handler)]` and the view invokes them
 over the versioned protocol (`ViewOperation` in
-`package:flutter_vscode/view.dart`).
+`package:flutter_vscode/view.dart`). On the view side,
+`ViewShell.connect` (same library) owns the connected session — typed
+operation calls, the current VS Code theme with its change stream,
+host-pushed event streams, and one `dispose` releasing everything the
+shell created.
 
 `FlutterViewHost` builds on `window.createWebviewPanel` with scripts
 enabled and resource roots scoped to your built view — VS Code's own
@@ -342,13 +378,6 @@ Flutter-rendered treemap panel with donut and bar-chart
 summaries](docs/assets/coverage-treemap.png)
 
 A Dart-only (host-only) example extension is planned to follow.
-
-## Legacy v0 webview workflow
-
-The original `generate_vscode_extension` command, annotation generator, and
-TypeScript request/response bridge remain available while the Dart-host path
-is built out. That compatibility workflow requires Node/npm and should not be
-used as the architecture for new host callbacks or provider logic.
 
 ## Repository validation
 

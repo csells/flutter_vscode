@@ -24,7 +24,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
   over the corpus at HEAD into `.improve-docs/baseline.json` before
   any edit, so per-dimension deltas attribute honestly. Check: the
   report's deltas reference the new baseline date.
-- [ ] DT-1 Front door: README and quickstart document the full CLI
+- [x] DT-1 Front door: README and quickstart document the full CLI
   surface (`doctor`, `test`, `build --watch` — all absent from the
   README today), both pinned baselines with `apiTarget` selection
   (1.130.0 appears only in the new-baseline guide today), and name
@@ -32,6 +32,24 @@ no history rewrites in ADRs — amendments only; discoveries go to
   example section are already true — do not re-litigate. Check:
   repository_gate_test green; fresh-eyes pass records no stale claim.
 - [x] DT-2 Reference: wire-v2 protocol documentation exists — either
+  Closed (2026-07-25): the README walkthrough gained `doctor` (with
+  its real `[ok]`/`[!!]` output shape) before the build step,
+  `build --watch` with the exact watched roots, and a Test it section
+  matching `flutter_vscode test`'s suite discovery; both pages now
+  name the two pinned baselines (1.129.1 default, 1.130.0) with
+  `apiTarget` selection and link the new-baseline guide; the README
+  view walkthrough names `ViewShell.connect` (session, theme stream,
+  host-pushed events, one `dispose`). The quickstart gained a DT-7
+  opener and `--watch` in its build step; it has no view walkthrough,
+  so ViewShell naming lives in the README's. Per owner directive (no
+  legacy framing — the docs describe only the current workflow), the
+  README's "Legacy v0 webview workflow" section and the quickstart's
+  "Legacy webview scaffold" section were deleted; the repository
+  gate's labeled-or-gone rule is satisfied by gone, so no test
+  expectation changed. Every command, flag, and output shape was
+  verified against `bin/flutter_vscode.dart` and `lib/src/cli/` at
+  HEAD; repository_gate_test green.
+- [ ] DT-2 Reference: wire-v2 protocol documentation exists — either
   message-contract.md is rewritten from its v0/legacy-bridge content
   or a new view-protocol reference page lands beside it with the
   legacy page linked as historical (owner's call at approval);
@@ -58,6 +76,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
   inline paths, so link-check reports zero broken links; DT-6's new
   docs/adr/index.md is where ADR navigation returns as links.
 - [ ] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
+- [x] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
   with `flutter_vscode doctor`, and replaces the pre-totality
   missing-API remedy (the generated layer is total; "pending" means
   unverified, not unsupported); agent-assisted-development.md's
@@ -65,6 +84,26 @@ no history rewrites in ADRs — amendments only; discoveries go to
   (test/doctor in the run loop). Check: every named error code and
   remedy matches the CLI at HEAD.
 - [x] DT-4 Agent surface: project-structure.md teaches the current
+  Closed (2026-07-25): troubleshooting.md now opens with a `doctor`
+  first step (its real `[ok]`/`[!!]` shape), describes the version-2
+  `ready`/`readyAck` session/nonce handshake in the blank-view entry,
+  and replaces the missing-API remedy with the totality rule — a
+  `pending` `coverage.json` entry is unverified, not unsupported; a
+  construct the generator cannot map fails as
+  `ParityGenerationException` and is a framework defect to report.
+  The two error codes the page now names
+  (`HOST_IMPORT_BOUNDARY_VIOLATION`, `STALE_BUILD_ARTIFACTS`) both
+  exist in `lib/src/cli/` at HEAD. agent-assisted-development.md's
+  working model became
+  edit -> doctor -> build [--watch] -> test -> package, its coverage
+  paragraph teaches absent-from-coverage != unsupported, and its
+  checklist adds doctor/test; surgical edits, length and voice kept.
+  Both pages gained DT-7 openers. Per the same owner directive as
+  DT-1, troubleshooting.md's "Legacy v0 projects" section and
+  agent-assisted-development.md's closing legacy-mapping pointer were
+  deleted; vscode-api-mapping.md stays linked from
+  `docs/reference/index.md` and `AGENTS.md`, so no orphan results.
+- [ ] DT-4 Agent surface: project-structure.md teaches the current
   CLI and layout (extensions/, skills/, lib/src/cli/);
   consumer-agents.md mandates doctor/test in validation; the build,
   test, and troubleshoot skills teach the shipped surface (the
@@ -135,7 +174,7 @@ Tallies are recording-time values. Entries appended as items close.
    example-extension packages needed only local dependency
    resolution, no source change).
 
-2. **DT-5/DT-6** (2026-07-25): the 0012 release-gate-composition and
+3. **DT-5/DT-6** (2026-07-25): the 0012 release-gate-composition and
    0011 apiTarget-fallback amendments landed append-only; the
    architecture index reduced to a pointer, the thirteen-ADR index
    landed and is linked from the docs root — and mid-round the owner
@@ -143,10 +182,31 @@ Tallies are recording-time values. Entries appended as items close.
    vscode-api-mapping.md and consumer-agents-v0.md are deleted with
    referrers cleaned, and DT-2's resolution amends from
    keep-as-legacy-record to delete message-contract.md outright.
-2. **DT-2** (2026-07-25): `docs/reference/view-protocol.md` lands as
+4. **DT-2** (2026-07-25): `docs/reference/view-protocol.md` lands as
    the one protocol reference; an owner directive during execution
    superseded the approval-time resolution, so message-contract.md is
    deleted rather than kept as a linked legacy record and
    reference/index.md drops its legacy-flagged entries while gaining
    the new page and startup.md; link-check reports zero broken links
    and neither page is an orphan.
+5. **DT-1** (2026-07-25): the front door now teaches the full CLI —
+   README gained doctor-before-build, `build --watch`, and a Test it
+   section; README and quickstart both name the two pinned baselines
+   with `apiTarget` selection and link the new-baseline guide; the
+   README view walkthrough names ViewShell
+   (connect/theme/events/dispose); per owner directive both pages'
+   legacy-workflow sections were deleted outright. All claims
+   ground-truthed against `bin/flutter_vscode.dart` and
+   `lib/src/cli/` at HEAD; repository_gate_test green at recording
+   time.
+6. **DT-3** (2026-07-25): the guides shed their pre-totality residue —
+   troubleshooting.md leads with `doctor`, names the version-2
+   `ready`/`readyAck` handshake, and treats a `pending` coverage
+   entry as unverified rather than unsupported (an unmappable
+   construct is a `ParityGenerationException`, a framework defect);
+   agent-assisted-development.md's loop is now
+   doctor -> build [--watch] -> test -> package over the total
+   generated layer; per the DT-1 owner directive, both pages' legacy
+   sections were deleted outright. Error codes named on the pages
+   verified against `lib/src/cli/`; repository_gate_test and
+   plan_truth_test green at recording time.
