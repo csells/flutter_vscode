@@ -32,6 +32,10 @@ sequence or schedule. Rough dependency order below.
   (cancellation, host-to-view requests, and event streams shipped in
   the archived developer-experience round's D-4; disposal is now
   per-request).
+- The `create` scaffold's hello command still demonstrates raw
+  `toHostCallback`; adopting the generated `ExtensionCommands` helper
+  there (and in the README snippet that mirrors it) is a cheap DX
+  follow-up from the authoring-dx round.
 - Generated-file ownership and repair (doctor detects; repair is the
   follow-up). The v0-removal round deleted the legacy pipeline;
   `test/v0_removal_test.dart` keeps it deleted.
