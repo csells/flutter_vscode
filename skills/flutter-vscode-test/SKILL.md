@@ -7,10 +7,24 @@ description: >-
 
 # Test a flutter_vscode Extension
 
-Test at the narrowest real seam that owns the behavior:
+Run every author suite with one command from the Extension Project root:
 
-- Pure Dart tests for shared logic and protocol validation.
-- Flutter tests for view rendering and typed protocol calls.
+```sh
+flutter_vscode test
+```
+
+It discovers `shared/test` and `host/test` (run with `dart test`) and each
+`views/<name>/test` (run with `flutter test`), resolves dependencies per
+suite, and fails if any suite fails. A project with no test directories
+reports "No test suites found" and exits cleanly — add suites under those
+three roots and they are picked up without configuration.
+
+Write tests at the narrowest real seam that owns the behavior:
+
+- Pure Dart tests in `shared/test` for shared logic and protocol validation.
+- Dart tests in `host/test` for host-side logic that needs no live VS Code.
+- Flutter tests in `views/<name>/test` for view rendering and typed protocol
+  calls.
 - A pinned VS Code Extension Host test for activation, commands, providers,
   native object identity, events, and disposal.
 - An installed-VSIX test for packaging and auto-activation.
@@ -27,6 +41,7 @@ Always finish with:
 
 ```sh
 flutter_vscode build
+flutter_vscode test
 flutter_vscode package
 ```
 
