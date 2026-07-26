@@ -238,4 +238,112 @@ require(process.argv[2]);
       expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
     },
   );
+  test(
+    'an unobserved delivery failure never escapes as an uncaught error',
+    () async {
+      final temporary = await Directory.systemTemp.createTemp(
+        'flutter_vscode_transport_unobserved_probe_',
+      );
+      addTearDown(() => temporary.delete(recursive: true));
+      final probeSource = File(p.join(temporary.path, 'probe.dart'));
+      final compiledProbe = File(p.join(temporary.path, 'probe.js'));
+      final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
+      final hostPackageConfig = p.join(
+        'test',
+        'fixtures',
+        'host_extension',
+        'host',
+        '.dart_tool',
+        'package_config.json',
+      );
+
+      await probeSource.writeAsString('''
+import 'dart:async';
+import 'dart:js_interop';
+
+import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
+
+@JS('transportUnobservedProbe')
+external set _transportUnobservedProbe(JSFunction value);
+
+void main() {
+  _transportUnobservedProbe = ((JSObject rawWebview) =>
+      _runProbe(Webview(rawWebview)).toJS).toJS;
+}
+
+Future<JSAny?> _runProbe(Webview webview) async {
+  // The FlutterViewHost composition never listens to transport.failure;
+  // a rejected push must not surface as an uncaught zone error.
+  var uncaughtErrors = 0;
+  var sendRejected = false;
+  await runZonedGuarded(() async {
+    final transport = HostWebviewTransport(webview);
+    try {
+      await transport.send(const <String, Object?>{'kind': 'probe'});
+    } on StateError {
+      sendRejected = true;
+    }
+    await Future<void>.delayed(const Duration(milliseconds: 50));
+  }, (error, stackTrace) {
+    uncaughtErrors += 1;
+  })!;
+  return <String, Object?>{
+    'sendRejected': sendRejected,
+    'uncaughtErrors': uncaughtErrors,
+  }.jsify();
+}
+''');
+      await nodeHarness.writeAsString('''
+const assert = require('node:assert/strict');
+globalThis.self = globalThis;
+require(process.argv[2]);
+(async () => {
+  const report = await globalThis.transportUnobservedProbe({
+    onDidReceiveMessage() {
+      return {
+        dispose() {},
+      };
+    },
+    postMessage() {
+      return Promise.resolve(false);
+    },
+  });
+
+  assert.equal(report.sendRejected, true);
+  assert.equal(report.uncaughtErrors, 0);
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
+''');
+
+      final compile = await Process.run(
+        'dart',
+        [
+          'compile',
+          'js',
+          '--packages=$hostPackageConfig',
+          probeSource.path,
+          '-o',
+          compiledProbe.path,
+        ],
+        workingDirectory: Directory.current.path,
+      );
+      expect(
+        compile.exitCode,
+        0,
+        reason: '${compile.stdout}\n${compile.stderr}',
+      );
+
+      final probe = await Process.run(
+        'node',
+        [nodeHarness.path, compiledProbe.path],
+        workingDirectory: Directory.current.path,
+      );
+      expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
+    },
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
+
 }
