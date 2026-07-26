@@ -119,4 +119,3 @@ Project. Live coverage is measured on two axes — API Family and Construct
 Class — in the generated [parity report](parity.md).
 
 The older annotation and TypeScript bridge is documented separately in the
-[legacy mapping](vscode-api-mapping.md) and does not describe new projects.

@@ -70,18 +70,21 @@ no history rewrites in ADRs — amendments only; discoveries go to
   and the shipped treemap_panel view; skills/README.md registers it.
   plan_truth (5) and repository_gate (14) green; flutter analyze
   clean.
-- [ ] DT-5 ADR residue: ADR 0012's amendment gains the release-gate
+- [x] DT-5 ADR residue: ADR 0012's amendment gains the release-gate
   correction (per-symbol reviewed classification survives at baseline
   import per ADR 0008 as amended; the no-rule block applies at layer
   generation); ADR 0011 gains the missing-apiTarget fallback caveat.
   The 0006/0012 one-layer amendments already landed in SL-4. Check:
   originals untouched below amendment lines.
-- [ ] DT-6 Structure: docs/architecture/index.md becomes a true
-  pointer to specs/architecture/ (still a full narrative page today);
-  a new docs/adr/index.md lists all thirteen ADRs and is linked from
-  docs/index.md; consumer-agents-v0.md is linked as the legacy
-  variant. Structural moves in their own commits. Check: link-check
-  reports zero orphans among these pages.
+- [x] DT-6 Structure (amended by owner directive: no legacy content
+  survives — we build on a branch): docs/architecture/index.md is a
+  true pointer to specs/architecture/; docs/adr/index.md lists all
+  thirteen ADRs and is linked from docs/index.md; the legacy pages
+  (consumer-agents-v0.md, vscode-api-mapping.md, and — via DT-2's
+  amended resolution — message-contract.md) are deleted outright with
+  their referrers cleaned, not linked as variants. Structural moves
+  landed in their own commits. Check: link-check clean, zero legacy
+  orphans.
 - [ ] DT-7 Polish on touched pages: openers 40–80 words naming thing,
   audience, and place; motivation and cross-links; no reflow of
   untouched pages. Check: fresh-eyes review; per-dimension deltas vs
@@ -113,3 +116,12 @@ Tallies are recording-time values. Entries appended as items close.
    recording time; flutter analyze clean (the nested fixture and
    example-extension packages needed only local dependency
    resolution, no source change).
+
+2. **DT-5/DT-6** (2026-07-25): the 0012 release-gate-composition and
+   0011 apiTarget-fallback amendments landed append-only; the
+   architecture index reduced to a pointer, the thirteen-ADR index
+   landed and is linked from the docs root — and mid-round the owner
+   directed the legacy purge: no legacy framing anywhere, so
+   vscode-api-mapping.md and consumer-agents-v0.md are deleted with
+   referrers cleaned, and DT-2's resolution amends from
+   keep-as-legacy-record to delete message-contract.md outright.
