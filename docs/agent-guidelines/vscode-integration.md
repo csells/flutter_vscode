@@ -22,11 +22,6 @@
 - Close/reload must fail pending work, cancel listeners, rotate session state,
   and ignore late frames.
 
-## Legacy v0 bridge
-
-The unversioned annotation/TypeScript request-response bridge remains for
-existing projects. Do not extend it to implement new host runtime semantics.
-
 ## Related
 
 - [Architecture Index](../architecture/index.md)

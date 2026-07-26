@@ -29,8 +29,6 @@
   version and commit in addition to its own checksum, source URL, and license.
 - Generate identical bytes for identical inputs and tool versions; never use
   locale-dependent ordering, clocks, environment values, or inferred types.
-- Keep legacy annotation generators on `GeneratorForAnnotation<T>` and legacy
-  file generators on `Builder` while v0 remains supported.
 - Use actionable, stable error codes at every generator boundary.
 
 ## Analyzer API Usage

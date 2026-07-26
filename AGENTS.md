@@ -26,13 +26,11 @@ This file is the root index for AI and contributor documentation.
 - [Architecture](docs/architecture/index.md)
 - [Guides](docs/guides/index.md)
 - [Reference](docs/reference/index.md)
-- [Roadmap](docs/reference/roadmap.md)
 - [Contributing](docs/contributing/index.md)
 
 ## Root Project Documents
 
 - [README](README.md)
-- [PRD](PRD.md)
 - [CHANGELOG](CHANGELOG.md)
 
 ## Mandatory Baseline Rules

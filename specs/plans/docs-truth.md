@@ -1,9 +1,8 @@
 # Docs Truth Plan
 
-Status: In progress — owner approved 2026-07-25; DT-2 re-resolved by
-owner directive during execution: the view-protocol reference page is
-the only protocol reference and message-contract.md is deleted (no
-legacy framing on this branch)
+Status: Implemented and verified — valid only while the docs gates
+(plan_truth, repository_gate, the single-layer docs grep, link-check)
+are green at HEAD
 Date: 2026-07-25
 
 Brings the documentation corpus to truth at HEAD. The original
@@ -49,33 +48,6 @@ no history rewrites in ADRs — amendments only; discoveries go to
   expectation changed. Every command, flag, and output shape was
   verified against `bin/flutter_vscode.dart` and `lib/src/cli/` at
   HEAD; repository_gate_test green.
-- [ ] DT-2 Reference: wire-v2 protocol documentation exists — either
-  message-contract.md is rewritten from its v0/legacy-bridge content
-  or a new view-protocol reference page lands beside it with the
-  legacy page linked as historical (owner's call at approval);
-  version-2 envelope, hostCall/hostResult/hostError/cancel/event,
-  `noArgs`/`noResult`, ViewShell. startup.md gains a link from
-  reference/index.md (de-orphan). generated-host-api.md is already
-  current. Check: claims verified against lib/src/view_protocol.dart;
-  link-check clean.
-  Closed: `docs/reference/view-protocol.md` lands as the
-  author-facing wire-v2 contract — envelope, handshake, typed calls
-  both directions, `noArgs`/`noResult`, events, cancellation,
-  rendered, shutdown/closing, and the per-role fail-closed rules —
-  with every claim read out of `lib/src/view_protocol.dart` and the
-  snippets trimmed from the shipped coverage_treemap wiring. An owner
-  directive during execution superseded the approval-time resolution:
-  the branch carries no legacy framing, so message-contract.md is
-  deleted outright rather than kept as a linked legacy record, and
-  reference/index.md drops its legacy-flagged entries (roadmap,
-  prd-traceability, message-contract, vscode-api-mapping — the pages
-  other than message-contract.md still exist and keep inbound links
-  elsewhere) while gaining the new page and startup.md (both
-  de-orphaned). Two directory links the checker could not vouch for
-  (architecture/index.md's ADR link, roadmap.md's plans link) became
-  inline paths, so link-check reports zero broken links; DT-6's new
-  docs/adr/index.md is where ADR navigation returns as links.
-- [ ] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
 - [x] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
   with `flutter_vscode doctor`, and replaces the pre-totality
   missing-API remedy (the generated layer is total; "pending" means
@@ -103,30 +75,6 @@ no history rewrites in ADRs — amendments only; discoveries go to
   agent-assisted-development.md's closing legacy-mapping pointer were
   deleted; vscode-api-mapping.md stays linked from
   `docs/reference/index.md` and `AGENTS.md`, so no orphan results.
-- [ ] DT-4 Agent surface: project-structure.md teaches the current
-  CLI and layout (extensions/, skills/, lib/src/cli/);
-  consumer-agents.md mandates doctor/test in validation; the build,
-  test, and troubleshoot skills teach the shipped surface (the
-  extension-host skill is already current); a new
-  flutter-vscode-view skill covers ViewShell.connect, runFlutterView,
-  the theme bridge, and host push events. Check: every command/API
-  named in skills exists at HEAD.
-  Closed (cb7c8ac, a4e713f): project-structure.md carries the five
-  CLI commands as bin/flutter_vscode.dart dispatches them and the
-  lib/src/cli/, extensions/, and skills/ layout entries;
-  consumer-agents.md mandates the doctor/build/test/package ladder,
-  names the total vscode_dart_layer.g.dart in place of the
-  implemented-symbol framing, and drops the stale v1-call wording.
-  The build skill gains the doctor preflight and --watch, the test
-  skill teaches flutter_vscode test's real discovery (shared/test and
-  host/test via dart test, views/<name>/test via flutter test), and
-  the troubleshoot skill leads with doctor while naming only error
-  codes grep-verified against lib/src/cli/ and the CLI adapter. The
-  new flutter-vscode-view skill grounds every identifier in
-  lib/src/view_shell.dart, view_theme_web.dart, view_protocol.dart,
-  and the shipped treemap_panel view; skills/README.md registers it.
-  plan_truth (5) and repository_gate (14) green; flutter analyze
-  clean.
 - [x] DT-5 ADR residue: ADR 0012's amendment gains the release-gate
   correction (per-symbol reviewed classification survives at baseline
   import per ADR 0008 as amended; the no-rule block applies at layer
@@ -142,7 +90,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
   their referrers cleaned, not linked as variants. Structural moves
   landed in their own commits. Check: link-check clean, zero legacy
   orphans.
-- [ ] DT-7 Polish on touched pages: openers 40–80 words naming thing,
+- [x] DT-7 Polish on touched pages: openers 40–80 words naming thing,
   audience, and place; motivation and cross-links; no reflow of
   untouched pages. Check: fresh-eyes review; per-dimension deltas vs
   the DT-0 baseline.
@@ -210,3 +158,12 @@ Tallies are recording-time values. Entries appended as items close.
    sections were deleted outright. Error codes named on the pages
    verified against `lib/src/cli/`; repository_gate_test and
    plan_truth_test green at recording time.
+7. **Round close** (2026-07-25): all seven DT items landed; the
+   owner's mid-round no-legacy directive expanded the purge to every
+   living page — the v0-era reference pages (message-contract,
+   vscode-api-mapping, roadmap, prd-traceability, consumer-agents-v0)
+   are deleted with referrers cleaned, and every legacy/v0 section on
+   surviving pages is gone (zero mentions in living docs). Final
+   state: 0 broken links, 0 orphans (the ADR index cured ten),
+   repository_gate + plan_truth + analyze green. The v0 pipeline CODE
+   deletion is recorded in futures as the next round.

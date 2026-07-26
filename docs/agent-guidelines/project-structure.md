@@ -11,7 +11,7 @@ of a generated Extension Project is its concern, not this page's.
 
 This repository is a Flutter package, not a standalone app. It provides the
 Extension Project CLI, deterministic VS Code binding generation, pure-Dart
-host utilities, an optional Flutter View protocol, and legacy v0 generators.
+host utilities, and an optional Flutter View protocol.
 
 ## Expected Layout
 
@@ -28,8 +28,6 @@ host utilities, an optional Flutter View protocol, and legacy v0 generators.
   way an Extension Author would ([guardrails](../../extensions/README.md)).
 - `skills/` consumer agent skills, copied into Extension Projects as
   `agent-skills/` ([index](../../skills/README.md)).
-- `example/` legacy v0 integration fixture.
-- `bin/generate_vscode_extension.dart` and TypeScript templates: legacy v0.
 
 ## Dependency Guidance
 

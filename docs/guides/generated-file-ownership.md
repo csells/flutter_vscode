@@ -30,8 +30,3 @@ Repeated builds from unchanged source must produce byte-identical managed
 content. `flutter_vscode package` validates the current managed artifacts and
 the exact VSIX entry set before reporting success.
 
-## Legacy generated files
-
-Existing v0 projects may also contain `*.vscode.g.part`, `*.handlers.ts`, and a
-scaffolded `src/` tree. Continue using `build_runner` and the legacy compile
-script for those projects until a migration workflow is provided.

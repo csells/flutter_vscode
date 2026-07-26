@@ -4,9 +4,6 @@ These portable guides describe the current Dart-owned Extension Project
 workflow created by `flutter_vscode create`. Each directory contains one plain
 Markdown `SKILL.md` that can be used by any coding agent.
 
-They do not apply to the legacy annotation/TypeScript scaffold. The legacy
-`generate_vscode_extension` command owns a separate, maintainer-controlled
-snapshot under `tool/legacy-agent-skills/`.
 
 ## Install in an Extension Project
 

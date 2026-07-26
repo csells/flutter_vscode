@@ -401,5 +401,3 @@ isolated VS Code profile.
 - [API Parity Report](docs/reference/parity.md)
 - [Generated File Ownership](docs/guides/generated-file-ownership.md)
 - [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
-- [Roadmap](docs/reference/roadmap.md)
-- [PRD](PRD.md)

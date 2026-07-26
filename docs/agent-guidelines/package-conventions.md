@@ -5,8 +5,6 @@
 - Keep the canonical CLI exposed as `flutter_vscode` in `pubspec.yaml`.
 - Treat `package.json`, host bindings/bootstrap, bundles, source maps, launch
   configuration, view build output, coverage, and VSIX files as managed.
-- Keep `.g.part` and `.handlers.ts` conventions only for the supported v0
-  annotation pipeline.
 
 ## API Design
 
@@ -14,7 +12,6 @@
 - Expose native host behavior through generated parity and idiomatic layers.
 - Expose a small typed view protocol rather than raw envelopes or arbitrary
   host API dispatch.
-- Preserve legacy annotation APIs without making them the new host architecture.
 
 ## Documentation Standards
 
