@@ -9,6 +9,7 @@ This folder contains project documentation organized by topic.
 - [Guides](guides/index.md)
 - [Reference](reference/index.md)
 - [Contributing](contributing/index.md)
+- [Architecture Decisions (ADRs)](adr/index.md)
 
 ## Root Documents
 
