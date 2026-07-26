@@ -10,8 +10,8 @@ because this project's history shows that unenforced prose rots.
   Extension Host, including the Development reload carve-out and the
   `hostFetch` network path.
 - [Binding Pipeline](binding-pipeline.md) — pinned multi-baseline
-  inputs to the generated layers (walking slice, Parity Layer,
-  Dart-ergonomics layer), and every regeneration command.
+  inputs to the one Generated API Layer plus the runtime and
+  host-exports modules, and every regeneration command.
 - [Evidence Chain](evidence-chain.md) — receipts, gates, the exit-bar
   methodology, and what "verified" is allowed to mean.
 - [View Protocol](view-protocol.md) — the versioned Host/Flutter View

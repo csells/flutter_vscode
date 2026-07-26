@@ -52,10 +52,11 @@
   published package. The artifact records exact binding IDs, the source
   repository, and SHA-256 hashes of excluded executable test sources; the real
   Extension Host launcher rejects missing, extra, or duplicate IDs.
-- Derive Host Contract observation IDs from the active Semantic Overrides and
-  emit probes inside generated facade operations and callback wrappers. Tests
-  and author-owned Host Dart must never report binding IDs themselves; an ID
-  counts only when its generated operation executes in the real host.
+- Attribute Host Contract binding IDs mechanically from the active Semantic
+  Overrides to the receipted real-host contract; there is no per-member
+  observation mechanism. Tests and author-owned Host Dart must never report
+  binding IDs themselves, and neither the ledger nor the contract may claim
+  independent behavioral contracts.
 - Regenerate twice in CI and compare bytes.
 
 ## Related

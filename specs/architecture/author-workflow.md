@@ -12,8 +12,8 @@ flutter_vscode test                       # shared/host/view suites
 flutter_vscode package                    # installable VSIX
 ```
 
-- `create` writes an analyzable project immediately (the generated facade
-  exists before the first build); a host-only extension simply has no
+- `create` writes an analyzable project immediately (the Generated API
+  Layer exists before the first build); a host-only extension simply has no
   `views/`. Extension metadata and contributions are Dart-owned in
   `extension.dart` — a single const Dart literal map parsed as data,
   never executed (`lib/src/cli/project_descriptor.dart`).
@@ -21,9 +21,10 @@ flutter_vscode package                    # installable VSIX
   exist.
 - `build` generates every Framework-Managed Artifact — `package.json`,
   bootstrap, launch configuration, host bundle, source maps, the
-  complete typed Parity Layer (`vscode_parity_layer.g.dart`), the
-  mechanical Dart-ergonomics layer (`vscode_dart_layer.g.dart`, every
-  project), and, for view-bearing projects, the Flutter View host
+  runtime and host-exports modules, the one Generated API Layer
+  (`vscode_dart_layer.g.dart`: the complete typed Parity Layer
+  substrate plus the Dart-ergonomics surface, every project), and,
+  for view-bearing projects, the Flutter View host
   module (`flutter_view_host.g.dart`) — enforces the host import
   boundary (deliberately skipping package `test/` directories: author
   tests may depend on `package:test` and never execute in the

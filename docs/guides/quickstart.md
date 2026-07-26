@@ -42,8 +42,9 @@ decision.
 Edit `host/lib/extension.dart`. Host code runs when the extension activates,
 even if no Flutter view exists. Keep Flutter, browser-only libraries, `dart:io`,
 and other unsupported platform APIs out of `host/` and `shared/`; `build` checks
-these boundaries. The generated facade is present immediately after `create`,
-so `dart pub get && dart analyze` succeeds in `host/` before the first build.
+these boundaries. The generated API layer is present immediately after
+`create`, so `dart pub get && dart analyze` succeeds in `host/` before the
+first build.
 Use the [Generated Host API](../reference/generated-host-api.md) for supported
 Dart patterns and consult `coverage.json` after building for exact coverage.
 
@@ -77,8 +78,10 @@ The command validates framework-managed artifacts and writes the VSIX beneath
 `build/`. Install that file with VS Code's **Extensions: Install from VSIX…**
 command.
 
-The current proof targets VS Code 1.129.1 and a reviewed command/hover slice.
-Do not infer or handwrite bindings for APIs absent from the generated facade.
+The behavioral proof runs against the pinned VS Code baselines (the
+`apiTarget` values shipped in-tree). Do not infer or handwrite bindings:
+the generated API layer already maps every public declaration of the
+pinned API.
 
 ## Legacy webview scaffold
 
@@ -88,9 +91,10 @@ Dart-host workflow above.
 
 ## Reaching the full VS Code API
 
-The generated facade covers the reviewed slice. For everything else, the
-build also emits the complete typed Parity Layer into
-`host/lib/generated/vscode_parity_layer.g.dart` — see the
+The build emits one generated API layer into
+`host/lib/generated/vscode_dart_layer.g.dart` — the complete typed
+mapping of the pinned VS Code API with a Dart-first ergonomic surface in
+the same artifact. See the
 [Generated Host API reference](../reference/generated-host-api.md) for
-how to wrap the activation module with `VscodeApi` and construct values
-with `new$` and `lit$`.
+how to wrap the activation module with `VscodeApi`, construct values
+with `new$` and `lit$`, and enter the ergonomic surface with `.dart`.

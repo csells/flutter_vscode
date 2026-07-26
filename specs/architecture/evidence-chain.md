@@ -8,8 +8,8 @@ keep "verified" meaning something.
 
 `tool/bindings/contracts/checkpoint4-extension-host.json` attests the
 real-host evidence run: API and runtime targets, one source receipt
-per load-bearing file (exact SHA-256 — generator, writer, CLI,
-generated parity layer, fixtures, lockfiles, the verifier, its test,
+per load-bearing file (exact SHA-256 — generator, writer, CLI, the
+generated API layer, fixtures, lockfiles, the verifier, its test,
 and the contract writer itself; the artifact's `sources` block is the
 authoritative list, not any count in prose), and the attributed
 binding IDs. It is written only by the
@@ -23,15 +23,19 @@ surgically repins the `artifactSha256` in each
 byte-equals regeneration and that the overrides pin matches its bytes;
 the real-host launcher verifies all receipts before VS Code starts and
 again before accepting evidence (`tool/extension_host_test/run.cjs`,
-`host_contract.cjs`). Observed binding IDs must exactly match the
-attributed set — recorded only by generated operations after native
-success.
+`host_contract.cjs`). Attribution is mechanical and says so: binding
+IDs cite the one receipted contract whose gate passed its surrounding
+native behavior — there is no per-member observation mechanism, and
+neither the ledger nor the contract claims independent behavioral
+contracts (the `evidence.meaning` field states this in the artifact
+itself).
 
 The machine-checked totality artifacts are ledgers, not prose: the
-Parity Layer's `tool/bindings/parity-ledger.json` and the dart layer's
-`tool/bindings/dart-layer-ledger.json` must each byte-equal
-regeneration and cover exactly the IR (`test/parity_layer_test.dart`,
-`test/dart_layer_test.dart`).
+substrate's `tool/bindings/parity-ledger.json` and the ergonomic
+surface's `tool/bindings/dart-layer-ledger.json` — both written by
+one `--dart-layer` run for the one generated API artifact — must each
+byte-equal regeneration and cover exactly the IR
+(`test/parity_layer_test.dart`, `test/dart_layer_test.dart`).
 
 ## Gate hierarchy
 

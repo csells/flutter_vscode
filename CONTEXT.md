@@ -54,19 +54,30 @@ The pinned stable VS Code release whose public Extension Capabilities must all
 have a classified Dart representation.
 _Avoid_: Latest API, full API
 
-**Parity Layer**:
-The complete, mechanically generated Dart representation of an API Parity
-Baseline.
-_Avoid_: Raw API, low-level API
+**Generated API Layer**:
+The one mechanically generated Dart artifact
+(`vscode_dart_layer.g.dart`) that Extension Authors use: the complete
+typed Parity Layer substrate and the Dart-first ergonomic surface in a
+single self-contained file.
+_Avoid_: Idiomatic Facade, binding layers, wrapper API
 
-**Idiomatic Facade**:
-The Dart-first API that Extension Authors normally use, generated over the
-Parity Layer with Dart types and conventions.
-_Avoid_: Wrapper API, convenience API
+**Parity Layer**:
+The complete, mechanically generated typed substrate of an API Parity
+Baseline, carried inside the Generated API Layer rather than shipped as
+a separate artifact.
+_Avoid_: Raw API, low-level API, standalone parity artifact
+
+**Framework Module**:
+A hand-written, judgment-shaped Dart module the framework ships over
+the Generated API Layer, in the `FlutterViewHost`/`ViewShell` mold;
+the home for curated ergonomics that a total mechanical rule cannot
+express.
+_Avoid_: Idiomatic Facade, second generated layer, helper library
 
 **Binding Pipeline**:
 The deterministic transformation from pinned VS Code API sources into the
-Parity Layer, Idiomatic Facade, host interop, and coverage ledger.
+Generated API Layer, runtime and host-exports modules, manifest
+contributions, and coverage ledger.
 _Avoid_: Translation model, inference step
 
 **Total Mapping Rule**:
@@ -98,10 +109,11 @@ tuple access.
 _Avoid_: Convenience wrapper, sugar
 
 **Semantic Override**:
-A reviewed, versioned rule that resolves an API mapping not derivable from the
-pinned upstream sources while keeping the Binding Pipeline deterministic. The
-Parity Layer uses none — it is produced entirely by Total Mapping Rules;
-Semantic Overrides apply to the Idiomatic Facade.
+A reviewed, versioned classification that resolves an API mapping question
+not derivable from the pinned upstream sources while keeping the Binding
+Pipeline deterministic. The Generated API Layer uses none — it is produced
+entirely by Total Mapping Rules; Semantic Overrides remain the release-gate
+classification for baseline changes (ADR 0008).
 _Avoid_: Manual binding, exception, guess
 
 **Host Target**:

@@ -356,8 +356,11 @@ void main() {
     expect(guide, isNot(contains('Future<JSAny?>(()')));
     expect(guide, contains('Future<JSAny?>.value(null).toJS'));
     expect(
-      guide.indexOf('registerCommandCallback'),
+      guide.indexOf('registerCommand'),
       lessThan(guide.indexOf('Future<JSAny?>.value(null).toJS')),
+      reason: 'the activation example must register through the single '
+          "layer's registerCommand before returning its settled future",
     );
+    expect(guide, contains('toHostCallback'));
   });
 }

@@ -37,52 +37,51 @@ the second baseline.
    classification (`src/baseline*.cjs`, seed-validated by
    `npm run check:baseline-series`); ADR 0008 blocks releases on
    unclassified public symbols.
-4. **Generator** — the walking-slice orchestration in
+4. **Generator** — the orchestration in
    `tool/binding_generator/generator.dart` consumes IR + overrides and
-   accepts only IR the producer could emit; the acceptance band itself
+   accepts only IR the producer could emit; the walking-slice strategy
+   and relation validation still runs on every generate, so the
+   reviewed override classifications keep their ADR-0008 gate without
+   any generated-code backing of their own. The acceptance band itself
    lives in sibling modules: `ir_validator.dart` recomputes identities
    and hashes (including every registered type-literal shape hash,
    cross-validated member-by-member against child declarations),
    preserves graph relationships, correlates raw and canonical fields,
    and rejects impossible combinations, while `templates.dart` holds
-   the five embedded source templates, `manifest_projection.dart` the
-   manifest/contribution pins, `coverage_ledger.dart` the ledger
-   emission, and `validators.dart` the shared leaf scalars. The
-   walking slice is derived entirely from IR + override strategies —
-   no shadow name/count profile in generator source
+   the three embedded source templates (runtime, host exports,
+   bootstrap), `manifest_projection.dart` the manifest/contribution
+   pins, `coverage_ledger.dart` the ledger emission, and
+   `validators.dart` the shared leaf scalars. The validated slice is
+   derived entirely from IR + override strategies — no shadow
+   name/count profile in generator source
    (`test/binding_generator_test.dart`,
    `test/binding_generator_layout_test.dart`).
-5. **Outputs** — walking-slice parity/runtime/facade, bootstrap,
-   manifest, and coverage ledger into the extension project;
-   byte-identical on regeneration
-   (`test/binding_generator_cli_test.dart`).
-6. **Complete Parity Layer** — `tool/binding_generator/parity_layer.dart`
-   (`generate.dart --parity-layer .`), built on the shared
-   `ir_type_mapper.dart` (IR indexes, type mapping with union/alias/LUB
-   rules, substitution, name mangling, erasure as a per-call
-   parameter), emits the total typed mapping of
-   every public declaration (ADR 0012) as
-   `lib/src/generated/vscode_parity_layer.g.dart`, with a totality
-   ledger covering all IR declarations; `flutter_vscode build` emits the
-   same layer into every Extension Project, and the real-host gate
-   executes it (`test/parity_layer_test.dart`, the fixture parity
-   smoke). Constructs without a Total Mapping Rule fail generation.
-7. **Dart-ergonomics layer** — `tool/binding_generator/dart_layer.dart`
-   (`generate.dart --dart-layer .`), consuming the same shared
-   `ir_type_mapper.dart` as the parity emitter rather than parity
-   internals, emits the mechanical, judgment-free
-   Dart-first layer over the Parity Layer — not the hand-reviewed
-   Idiomatic Facade — as `lib/src/generated/vscode_dart_layer.g.dart`,
-   exported as `package:flutter_vscode/vscode_dart.dart`: scalar
+5. **Outputs** — runtime module, host exports, bootstrap, manifest,
+   and coverage ledger into the extension project; byte-identical on
+   regeneration (`test/binding_generator_cli_test.dart`).
+6. **Generated API Layer** — `tool/binding_generator/dart_layer.dart`
+   (`generate.dart --dart-layer .`) emits the one self-contained API
+   artifact, `lib/src/generated/vscode_dart_layer.g.dart`, exported
+   as `package:flutter_vscode/vscode_dart.dart`: the complete typed
+   Parity Layer substrate (ADR 0012, emitted in-memory by
+   `parity_layer.dart` and inlined into the artifact) with the
+   mechanical, judgment-free Dart-first surface over it — scalar
    boundaries de-JS'd, `Future`s from `JSPromise` returns, broadcast
    `Stream` accessors beside `Event` members, `lit$` factories
-   flattened across the declared interface hierarchy. It carries its
-   own totality ledger (`tool/bindings/dart-layer-ledger.json`) in
-   which every parity declaration receives a disposition — emitted,
-   passthrough-identical, or carried parity erasure — and a construct
-   without a total rule fails generation (`test/dart_layer_test.dart`,
+   flattened across the declared interface hierarchy. Both emitters
+   consume the shared `ir_type_mapper.dart` (IR indexes, type mapping
+   with union/alias/LUB rules, substitution, name mangling, erasure as
+   a per-call parameter). One `--dart-layer` run writes two totality
+   ledgers — `tool/bindings/parity-ledger.json` covering every IR
+   declaration in the substrate, and
+   `tool/bindings/dart-layer-ledger.json`, in which every substrate
+   declaration receives a disposition (emitted,
+   passthrough-identical, or carried parity erasure) — and a
+   construct without a total rule fails generation
+   (`test/parity_layer_test.dart`, `test/dart_layer_test.dart`,
    `test/dart_layer_emitter_unit_test.dart`). `flutter_vscode build`
-   emits the same layer into every Extension Project.
+   emits the same artifact into every Extension Project, and the
+   real-host gate executes it (the fixture parity smoke).
 
 ## Regeneration commands
 
@@ -96,12 +95,17 @@ each has its own pins, IR, and overrides:
   --pins ../bindings/inputs/vscode/1.129.1/pins.json \
   --output ../bindings/ir/vscode-1.129.1.json)
 
-# Walking slice + coverage into the fixture:
+# Runtime, host exports, bootstrap, manifest, and coverage into the
+# fixture:
 dart tool/binding_generator/generate.dart \
   --inventory tool/bindings/ir/vscode-1.129.1.json \
   --overrides tool/bindings/overrides/vscode-1.129.1.json \
   --project test/fixtures/host_extension/extension.json \
   --output-root test/fixtures/host_extension
+
+# The Generated API Layer and both totality ledgers (after emitter or
+# IR changes):
+dart tool/binding_generator/generate.dart --dart-layer .
 
 # CLI-owned fixture artifacts (view protocol copy, bundle):
 bash scripts/build_host_fixture.sh

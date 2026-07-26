@@ -31,9 +31,9 @@ field and engine predicates used by generated manifests; it integrity-pins the
 remaining function body. The imported `semver.valid` implementation is not yet
 projected, so this milestone makes no mechanical-equivalence claim for it.
 The Dart generator combines the IR with reviewed Semantic Overrides to produce
-parity bindings, an idiomatic facade, manifest contributions, and a coverage
-ledger. New, changed, removed, or incoherently pinned projected semantics fail
-closed; generation does not use inference.
+one generated API layer, the runtime and host-exports modules, manifest
+contributions, and a coverage ledger. New, changed, removed, or incoherently
+pinned projected semantics fail closed; generation does not use inference.
 
 ```text
 pinned VS Code inputs -> canonical IR + Semantic Overrides -> generated host API

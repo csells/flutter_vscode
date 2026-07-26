@@ -5,11 +5,10 @@ plus optional Flutter webviews. Host Dart compiles to JavaScript that runs
 inside VS Code's Extension Host; generated bindings preserve native VS Code
 objects and callbacks. You never write, read, or repair TypeScript.
 
-Two generated layers reach the VS Code API:
-
-- an **idiomatic facade** covering a reviewed, host-verified slice, and
-- the complete typed **Parity Layer**: a mechanically generated Dart mapping
-  of every public declaration in the pinned VS Code API (currently 1.129.1).
+One generated layer reaches the VS Code API: a mechanically generated,
+complete typed Dart mapping of every public declaration in the pinned
+VS Code API (currently 1.129.1), with a Dart-first ergonomic surface in
+the same artifact.
 
 ## Getting started
 
@@ -64,22 +63,28 @@ const extension = <String, Object?>{
 ```
 
 Behavior lives in `host/lib/extension.dart`. The scaffold already uses the
-VS Code API through the generated facade — it registers the contributed
+VS Code API through the generated layer — it registers the contributed
 command and a hover provider, and parks both registrations in
 `context.subscriptions` so VS Code disposes them:
 
 ```dart
-final context = ExtensionContext.fromJS(rawContext);
-final vscode = VSCode.fromJS(rawVscode);
+final context = ExtensionContext(rawContext);
+final vscode = VscodeApi(rawVscode);
 
 final hello = (() => helloMessage.toJS).toJS;
 context.subscriptions.toDart.add(
-  vscode.commands.registerCommandCallback(_helloCommand.toJS, hello),
+  JSAnon_ffa2e03c40a2(
+    vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
+  ),
 );
 
-final provider = HoverProvider(provideHover: provideHover);
+final provider = HoverProvider.lit$(
+  provideHover: toHostCallback(provideHover),
+);
 context.subscriptions.toDart.add(
-  vscode.languages.registerHoverProvider('json'.toJS, provider),
+  JSAnon_ffa2e03c40a2(
+    vscode.languages.registerHoverProvider('json'.toJS, provider),
+  ),
 );
 ```
 
@@ -130,14 +135,14 @@ development host while you test.
 
 ### Reaching the rest of the VS Code API
 
-The facade covers the reviewed slice; the complete typed Parity Layer covers
-everything else. `build` generates it into your project as
-`host/lib/generated/vscode_parity_layer.g.dart`. Wrap the raw activation
+The scaffold registers a command and a hover provider, but the generated
+layer is complete: `build` generates it into your project as
+`host/lib/generated/vscode_dart_layer.g.dart`. Wrap the raw activation
 module, and every namespace, class, enum, and callback in VS Code 1.129.1
 is available with types:
 
 ```dart
-import 'package:my_extension_host/generated/vscode_parity_layer.g.dart'
+import 'package:my_extension_host/generated/vscode_dart_layer.g.dart'
     as parity;
 
 final api = parity.VscodeApi(rawVscode);
@@ -165,7 +170,10 @@ Conventions: classes construct through `new$` (statics live on the same
 object), enums are `int` typedefs with values on `api.<EnumName>`, JS
 `undefined` and `null` both surface as Dart `null`, and unions erase to
 their least upper bound with typed `isInstance`/`cast` narrowing helpers.
-See the [Generated Host API](docs/reference/generated-host-api.md) and the
+`api.dart` enters the Dart-first surface of the same artifact — `Future`
+returns, broadcast `Stream` event accessors, plain `String`/`num`/`bool`
+boundaries. See the
+[Generated Host API](docs/reference/generated-host-api.md) and the
 [parity report](docs/reference/parity.md).
 
 ### Package it
@@ -278,9 +286,11 @@ final showPanel = (() {
   );
 }).toJS;
 context.subscriptions.toDart.add(
-  vscode.commands.registerCommandCallback(
-    'my-extension.showPanel'.toJS,
-    showPanel,
+  JSAnon_ffa2e03c40a2(
+    vscode.commands.registerCommand(
+      'my-extension.showPanel',
+      toHostCallback(showPanel),
+    ),
   ),
 );
 ```

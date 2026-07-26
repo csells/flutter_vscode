@@ -4,13 +4,15 @@
 <!-- Regenerate: dart tool/binding_generator/generate.dart
      --parity . -->
 
-Typed parity is total by construction (ADR 0012): the
-complete Parity Layer at
-`package:flutter_vscode/vscode_parity.dart` maps every public
-declaration of the pinned API via Total Mapping Rules, with
-its own totality ledger gated by the parity suite. A
-capability the generator cannot map is a defect that fails
-the build (the vision rule, mechanized).
+Typed parity is total by construction (ADR 0012, ADR 0013):
+the one generated API artifact, exported as
+`package:flutter_vscode/vscode_dart.dart`, maps every public
+declaration of the pinned API via Total Mapping Rules — the
+Parity Layer substrate and the Dart-ergonomics surface in one
+file, each with its own totality ledger gated by the parity
+and dart-layer suites. A capability the generator cannot map
+is a defect that fails the build (the vision rule,
+mechanized).
 
 Live coverage is measured on two axes (see CONTEXT.md:
 API Family, Construct Class), both machine-derived and
@@ -46,7 +48,7 @@ reason:
 The table below is the behavioral-verification burn-down: a
 `pending` row is public surface whose typed binding exists
 but has not yet carried real-Extension-Host evidence through
-the walking-slice facade and capability fixtures. Generated
+the receipted capability fixtures. Generated
 from the coverage ledger, regenerated and byte-compared by
 the repository gates.
 
@@ -74,8 +76,8 @@ Pinned inventory: 2982 declarations discovered; 53 emitted and host-verified; 17
 | `vscode.window` | 2 | 1 | 0 | 94 |
 | `vscode.workspace` | 2 | 0 | 0 | 73 |
 
-Behavioral evidence enters through the walking-slice facade
-and capability fixtures; a `pending` entry leaves that state
-only with executable real-host evidence. A new baseline
+Behavioral evidence enters through the receipted real-host
+gates and capability fixtures; a `pending` entry leaves that
+state only with executable real-host evidence. A new baseline
 construct with no Total Mapping Rule blocks the release
 (ADR 0008 as evolved by ADR 0012).
