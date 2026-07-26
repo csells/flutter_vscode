@@ -1,3 +1,9 @@
+- One generated API artifact (ADR 0013): `vscode_dart.dart` carries
+  the Parity Layer substrate and Dart-ergonomics surface; the
+  walking-slice facade and binding-observation mechanism retire,
+  substrate totality intact; judgment lives in framework
+  modules (`FlutterViewHost`, `ViewShell`).
+
 ## Unreleased
 
 - Support plural pinned VS Code baselines: 1.130.0 ships beside the

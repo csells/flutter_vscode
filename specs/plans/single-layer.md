@@ -1,6 +1,8 @@
 # Single Layer Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the fast suites
+(the layer-3 pair byte-unmodified) and the three real-host gates are
+green at HEAD
 Date: 2026-07-25
 
 Collapses the three generated API layers into one, per the owner's
@@ -144,7 +146,7 @@ amended, never rewritten; discoveries go to
   notes sit below the untouched original texts of 0006 and 0012 —
   verified by git diff showing only appended lines. No ADR index
   exists; creating one stays with the queued docs-truth round.
-- [ ] SL-5 Final bar: full fast suite green (with L3 suites verified
+- [x] SL-5 Final bar: full fast suite green (with L3 suites verified
   byte-unmodified via git), `flutter analyze` clean, and all three
   real-host gates green at HEAD (`test_host_extension.sh`,
   `test_coverage_extension.sh`, `test_breakpoints.sh`).
@@ -203,3 +205,11 @@ Tallies are recording-time values. Entries appended as items close.
    context, the one-artifact decision, and the retirement
    consequences; the dated amendment notes on 0006 and 0012 appended
    below their original texts without rewriting a line of them.
+5. **SL-5** (final bar, 2026-07-25): full fast suite 533 green at
+   HEAD with the frozen layer-3 suites proven byte-unmodified against
+   the round's opening commit (zero-line git diff); `flutter analyze`
+   clean; all three real-host gates exited 0 at final HEAD — host
+   fixture (cold start 279ms), coverage extension (watcher push
+   applied), breakpoints (paused on the Dart line). An early
+   post-SL-2 host-gate run (cold start 331ms) had already proven the
+   facade-less tree live before the docs wave.
