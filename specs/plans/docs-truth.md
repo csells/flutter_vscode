@@ -23,13 +23,30 @@ no history rewrites in ADRs — amendments only; discoveries go to
   over the corpus at HEAD into `.improve-docs/baseline.json` before
   any edit, so per-dimension deltas attribute honestly. Check: the
   report's deltas reference the new baseline date.
-- [ ] DT-1 Front door: README and quickstart document the full CLI
+- [x] DT-1 Front door: README and quickstart document the full CLI
   surface (`doctor`, `test`, `build --watch` — all absent from the
   README today), both pinned baselines with `apiTarget` selection
   (1.130.0 appears only in the new-baseline guide today), and name
   ViewShell in the view walkthrough. The one-layer presentation and
   example section are already true — do not re-litigate. Check:
   repository_gate_test green; fresh-eyes pass records no stale claim.
+  Closed (2026-07-25): the README walkthrough gained `doctor` (with
+  its real `[ok]`/`[!!]` output shape) before the build step,
+  `build --watch` with the exact watched roots, and a Test it section
+  matching `flutter_vscode test`'s suite discovery; both pages now
+  name the two pinned baselines (1.129.1 default, 1.130.0) with
+  `apiTarget` selection and link the new-baseline guide; the README
+  view walkthrough names `ViewShell.connect` (session, theme stream,
+  host-pushed events, one `dispose`). The quickstart gained a DT-7
+  opener and `--watch` in its build step; it has no view walkthrough,
+  so ViewShell naming lives in the README's. Per owner directive (no
+  legacy framing — the docs describe only the current workflow), the
+  README's "Legacy v0 webview workflow" section and the quickstart's
+  "Legacy webview scaffold" section were deleted; the repository
+  gate's labeled-or-gone rule is satisfied by gone, so no test
+  expectation changed. Every command, flag, and output shape was
+  verified against `bin/flutter_vscode.dart` and `lib/src/cli/` at
+  HEAD; repository_gate_test green.
 - [ ] DT-2 Reference: wire-v2 protocol documentation exists — either
   message-contract.md is rewritten from its v0/legacy-bridge content
   or a new view-protocol reference page lands beside it with the
@@ -83,3 +100,13 @@ Tallies are recording-time values. Entries appended as items close.
 1. **DT-0** (2026-07-25): baseline re-snapshotted at HEAD b3081d8
    (38 docs pages) into `.improve-docs/baseline.json`, superseding the
    pre-single-layer snapshot so this round's deltas attribute honestly.
+2. **DT-1** (2026-07-25): the front door now teaches the full CLI —
+   README gained doctor-before-build, `build --watch`, and a Test it
+   section; README and quickstart both name the two pinned baselines
+   with `apiTarget` selection and link the new-baseline guide; the
+   README view walkthrough names ViewShell
+   (connect/theme/events/dispose); per owner directive both pages'
+   legacy-workflow sections were deleted outright. All claims
+   ground-truthed against `bin/flutter_vscode.dart` and
+   `lib/src/cli/` at HEAD; repository_gate_test green at recording
+   time.
