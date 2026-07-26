@@ -38,8 +38,9 @@ cp -r agent-skills/* .cursor/skills/
 | `flutter-vscode-add-command` | Add a Dart-owned command and an optional typed view operation |
 | `flutter-vscode-contributions` | Declare generated manifest contributions in `extension.dart` |
 | `flutter-vscode-extension-host` | Implement activation and native VS Code behavior in Host Dart |
-| `flutter-vscode-build` | Run deterministic `flutter_vscode build` and `package` workflows |
-| `flutter-vscode-test` | Test pure Dart, Flutter views, Extension Host behavior, and VSIX installation |
+| `flutter-vscode-view` | Author a Flutter View: ViewShell, VS Code theming, typed operations, and host push events |
+| `flutter-vscode-build` | Run `flutter_vscode doctor`, deterministic `build [--watch]`, and `package` workflows |
+| `flutter-vscode-test` | Run `flutter_vscode test` author suites plus Extension Host and VSIX checks |
 | `flutter-vscode-troubleshoot` | Diagnose bindings, managed artifacts, packaging, or view protocol failures |
 
 ## Related
