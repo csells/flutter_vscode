@@ -55,3 +55,11 @@ artifact (`vscode_dart_layer.g.dart`), with its totality ledger
 (`tool/bindings/parity-ledger.json`) intact and still gated. Everything
 else here — Total Mapping Rules, erasure with Precision Helpers, and
 the evolved ADR 0008 release gate — stands unchanged.
+
+Amended 2026-07-25 (release-gate precision): the two gates compose
+rather than replace each other. Per-symbol reviewed classification
+survives at baseline import — a candidate baseline with a new or
+changed public symbol is rejected until its Semantic Override entry
+lands (ADR 0008 as amended) — while the no-Total-Mapping-Rule block
+described here applies at layer generation: a construct no rule can
+consume fails the build regardless of classification.
