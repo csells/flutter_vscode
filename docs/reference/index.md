@@ -12,7 +12,6 @@ Reference material for APIs, conventions, and generated outputs.
   load to first rendered frame
 - [VS Code API Parity](parity.md) — generated burn-down of emitted,
   excluded, and pending public API surface
-- Annotation and generation conventions (see [Code Generation Rules](../agent-guidelines/code-generation.md))
 - Package and build conventions (see [Package Conventions](../agent-guidelines/package-conventions.md))
 
 ## Related

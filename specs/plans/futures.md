@@ -30,7 +30,7 @@ sequence or schedule. Rough dependency order below.
   and multi-baseline support both shipped in the archived
   developer-experience round. Generated-file ownership and repair
   remain here. The owner-directed v0-pipeline deletion (2026-07-25)
-  left this inbox: the [v0-removal round](v0-removal.md) deleted the
+  left this inbox: the [v0-removal round](archive/v0-removal.md) deleted the
   code, and `test/v0_removal_test.dart` keeps it deleted.
 - Hardening: two extensions in one host, failure injection, protocol
   abuse, memory profiling, Windows/macOS/Linux, remote-host harness

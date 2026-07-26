@@ -167,3 +167,13 @@ Tallies are recording-time values. Entries appended as items close.
    state: 0 broken links, 0 orphans (the ADR index cured ten),
    repository_gate + plan_truth + analyze green. The v0 pipeline CODE
    deletion is recorded in futures as the next round.
+7. **Post-close audit (2026-07-25)**: fresh eyes found five
+   spirit-level gaps in the close — a half-deleted sentence left
+   `generated-host-api.md` truncated mid-reference, the ADR index's
+   thirteen links all carried `---` titles (the generator read
+   frontmatter as the heading), `author-workflow.md` described a
+   phantom legacy-surface gate, `code-generation.md` still taught the
+   deleted annotation pipeline's analyzer machinery, and AGENTS.md
+   carried a stale plan label plus a duplicate link. All five fixed
+   at archive time; the letter-level checks (deletions, new pages,
+   suites) had all held.

@@ -15,9 +15,7 @@ This file is the root index for AI and contributor documentation.
 
 - [Project Vision](specs/vision/vision.md)
 - [Architecture (living)](specs/architecture/index.md)
-- [Docs Truth Plan (proposed)](specs/plans/docs-truth.md)
 - [Futures (deferred-work inbox)](specs/plans/futures.md)
-- [Futures](specs/plans/futures.md)
 - [Archived Plans](specs/plans/archive/)
 - [Domain Language](CONTEXT.md)
 - [Architecture Decisions](docs/adr/)
@@ -36,7 +34,7 @@ This file is the root index for AI and contributor documentation.
 ## Mandatory Baseline Rules
 
 - Project type is a Flutter package that provides code generation and runtime utilities.
-- Keep generator code, runtime utilities, and platform-specific bridge implementations separated.
+- Keep the binding pipeline, runtime modules, and platform-conditional view implementations separated.
 - Use `very_good_analysis` and follow Effective Dart conventions.
 - Prefer `package:web` and `dart:js_interop`; do not add `dart:js_util`.
 - For generation errors, provide actionable user-facing failures.

@@ -61,6 +61,3 @@ activation → single-hover-first flow before any extension command.
 Publication readiness is `dart pub publish --dry-run --ignore-warnings`;
 publishing itself remains out of scope.
 
-Consumer-facing surfaces must present this v1 path; retained v0
-(webview/TypeScript) material must carry legacy labels — enforced by the
-legacy-surface gate in `test/repository_gate_test.dart`.

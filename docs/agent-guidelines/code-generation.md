@@ -33,10 +33,12 @@
 
 ## Analyzer API Usage
 
-- Access parameters through `FunctionTypedElement.formalParameters`.
-- Cast `MethodElement` to `FunctionTypedElement` where needed.
-- Use `TypeChecker.fromUrl()` for annotation checks.
-- Use URL form: `package:package_name/file.dart#ClassName`.
+- The only analyzer use is AST-parsing the project descriptor
+  (`lib/src/cli/project_descriptor.dart`): parse as data, never
+  execute project code.
+- The binding pipeline consumes pinned IR JSON, not analyzer
+  elements; generation stays deterministic from pinned inputs
+  (ADR 0007).
 
 ## Output Conventions
 

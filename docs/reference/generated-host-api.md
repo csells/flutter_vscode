@@ -117,5 +117,3 @@ reviewed Semantic Overrides (the ADR 0008 classification gate). Do not add
 `dynamic`, handwritten interop, or an inferred binding to an Extension
 Project. Live coverage is measured on two axes — API Family and Construct
 Class — in the generated [parity report](parity.md).
-
-The older annotation and TypeScript bridge is documented separately in the
