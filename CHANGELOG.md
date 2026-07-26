@@ -1,6 +1,13 @@
 
 ## Unreleased
 
+- Delete the legacy v0 pipeline: the `generate_vscode_extension`
+  scaffolder, the annotation/source_gen builder surface and webview
+  bridge runtime in `lib/`, `build.yaml`, `example/`,
+  `tool/legacy-agent-skills/`, and the v0-era PRD are removed along
+  with the `build`, `source_gen`, `build_runner`, and `build_test`
+  dependencies; `flutter_vscode create` is the only scaffolder.
+
 - One generated API artifact (ADR 0013): `vscode_dart.dart` carries
   the Parity Layer substrate and Dart-ergonomics surface; the
   walking-slice facade and binding-observation mechanism retire,

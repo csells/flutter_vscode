@@ -152,7 +152,7 @@ List<String> pinnedApiTargets(Directory packageRoot) {
 /// commands read all live beneath this directory.
 Future<Directory> resolvePackageRoot() async {
   final library = await Isolate.resolvePackageUri(
-    Uri.parse('package:flutter_vscode/flutter_vscode.dart'),
+    Uri.parse('package:flutter_vscode/vscode_dart.dart'),
   );
   if (library == null || library.scheme != 'file') {
     throw const CliException(

@@ -94,13 +94,15 @@ else
   fail "R5-9" "write-path tests missing or red"
 fi
 
-# R5-10: shipped-surface honesty
+# R5-10: shipped-surface honesty. The bar required v0 surfaces labeled
+# or gone; the v0-removal round (2026-07-25) deleted them outright
+# (PRD.md included), so the absence gate is now the authority.
 R510_OK=1
 [[ -f bin/init.dart ]] && { fail "R5-10" "dead bin/init.dart still ships"; R510_OK=0; }
-head -5 PRD.md | grep -qi "historical" || { fail "R5-10" "PRD.md lacks historical banner"; R510_OK=0; }
-run_quiet flutter test test/repository_gate_test.dart \
-  --plain-name "legacy" || { fail "R5-10" "legacy-surface gate missing or red"; R510_OK=0; }
-[[ "${R510_OK}" -eq 1 ]] && pass "R5-10 shipped-surface honesty"
+[[ -f PRD.md ]] && { fail "R5-10" "deleted v0 PRD.md reappeared"; R510_OK=0; }
+run_quiet flutter test test/v0_removal_test.dart \
+  || { fail "R5-10" "v0 absence gate missing or red"; R510_OK=0; }
+[[ "${R510_OK}" -eq 1 ]] && pass "R5-10 shipped-surface honesty (v0 surfaces deleted)"
 
 # R5-11: generated parity report
 if [[ -f docs/reference/parity.md ]] \

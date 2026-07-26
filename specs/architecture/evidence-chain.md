@@ -40,10 +40,10 @@ byte-equal regeneration and cover exactly the IR
 ## Gate hierarchy
 
 1. Focused suites (`flutter test`, importer `npm test`, Node harness
-   tests) — including `test/plan_truth_test.dart` (prose-truth ratchet)
-   and `test/repository_gate_test.dart` (CI-definition pins, generated
-   convergence, lockfile-in-HEAD, legacy-surface labeling, cache
-   freshness).
+   tests) — including `test/plan_truth_test.dart` (prose-truth ratchet),
+   `test/repository_gate_test.dart` (CI-definition pins, generated
+   convergence, lockfile-in-HEAD, cache freshness), and
+   `test/v0_removal_test.dart` (the deleted v0 pipeline stays deleted).
 2. `./scripts/test_host_extension.sh` — the pinned real Extension Host in
    Docker, receipt-verified, with adversarial webview probes.
 3. `./scripts/test_packaged_extension.sh` — installed-VSIX proof for both
@@ -61,9 +61,9 @@ byte-equal regeneration and cover exactly the IR
    mapped generated position over `--inspect-extensions`, and the
    Extension Host pauses on a location that maps back to the same
    Dart line (`tool/extension_host_test/run_breakpoint.cjs`).
-6. `./scripts/test_all.sh` — the focused suites, importer and builder
-   checks, build_runner, example tests, and the host, packaged, and
-   coverage gates; the breakpoint gate runs standalone.
+6. `./scripts/test_all.sh` — the focused suites, the importer checks,
+   and the host, packaged, and coverage gates; the breakpoint gate
+   runs standalone.
 7. `./scripts/check_round5_exit.sh` — the archived
    first-working-extension plan's closure authority: evaluates that
    plan's exit bar, including executing the packaged gate and the

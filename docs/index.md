@@ -14,6 +14,5 @@ This folder contains project documentation organized by topic.
 ## Root Documents
 
 - [Project README](../README.md)
-- [Product Requirements (PRD)](../PRD.md)
 - [Changelog](../CHANGELOG.md)
 - [AGENTS Index](../AGENTS.md)

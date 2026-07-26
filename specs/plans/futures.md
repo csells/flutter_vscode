@@ -29,12 +29,9 @@ sequence or schedule. Rough dependency order below.
 - Product workflow: `upgrade` — now unblocked, since `doctor`/`test`
   and multi-baseline support both shipped in the archived
   developer-experience round. Generated-file ownership and repair
-  remain here. Owner-directed 2026-07-25: the v0 pipeline (the
-  `generate_vscode_extension` executable, the annotation generator,
-  `example/`, `tool/legacy-agent-skills/`) is slated for deletion —
-  we build on a branch and carry no legacy surface; its docs died in
-  the docs-truth round and the code deletion is the natural next
-  round.
+  remain here. The owner-directed v0-pipeline deletion (2026-07-25)
+  left this inbox: the [v0-removal round](v0-removal.md) deleted the
+  code, and `test/v0_removal_test.dart` keeps it deleted.
 - Hardening: two extensions in one host, failure injection, protocol
   abuse, memory profiling, Windows/macOS/Linux, remote-host harness
   (breakpoint/source-map behavior and startup measurement shipped in

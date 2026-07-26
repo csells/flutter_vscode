@@ -17,7 +17,7 @@
 
 - Document public APIs with `///`.
 - Keep `README.md` usage examples current.
-- Maintain working examples under `example/`.
+- Maintain working example extensions under `extensions/`.
 
 ## Related
 

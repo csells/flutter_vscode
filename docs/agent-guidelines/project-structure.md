@@ -35,7 +35,6 @@ When adding dependencies, choose stable, actively maintained packages from pub.d
 
 Preferred packages for generation and analysis work:
 
-- `source_gen` and `build_runner` for code generation
 - `analyzer` for static analysis and introspection
 - `package:web` for JS interop (avoid `dart:js_util`)
 
