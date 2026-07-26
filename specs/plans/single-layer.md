@@ -95,7 +95,7 @@ amended, never rewritten; discoveries go to
   retired. 532 fast-suite tests green, `flutter analyze` clean, the
   frozen L3 suites byte-unmodified via git diff; the three real-host
   Docker gates must run at the SL-5 bar.
-- [ ] SL-3 Reports and prose truth: `docs/reference/parity.md`
+- [x] SL-3 Reports and prose truth: `docs/reference/parity.md`
   regenerates with honest accounting for the single-layer world (the
   two-axis live-coverage definition is unchanged; per-member
   host-verified framing follows the evidence that actually exists);
@@ -105,12 +105,45 @@ amended, never rewritten; discoveries go to
   index) describe one generated API layer. Check: report regen pin
   green; plan_truth green; grep gates for retired names in living
   docs.
-- [ ] SL-4 Decisions: new ADR 0013 records the single-layer decision
+  Closed (red 7a5033b, green 7424101): the docs-truth gate in
+  `single_layer_test` landed red against nine retired-artifact
+  references across seven living documents, then the prose moved. The
+  Generated Host API reference rewrote onto the merged artifact with
+  the scaffold's real activation shape (every identifier checked
+  against `create` and the fixture at HEAD); the parity-report
+  generator dropped its retired-export and walking-slice-facade prose
+  with coverage accounting semantics unchanged, and the checked-in
+  report regenerated under its byte-compare pin; CONTEXT.md gained
+  Generated API Layer and Framework Module terms, narrowed Parity
+  Layer to the substrate concept, and updated Binding Pipeline and
+  Semantic Override; the architecture specs describe the one-artifact
+  pipeline (three source templates, one `--dart-layer` run writing
+  both totality ledgers) and mechanical attribution without
+  per-member observation; the extension-host skill, README,
+  quickstart, and index pages moved onto the single layer plus
+  runtime. One repository-gate expectation changed subject with its
+  doc: the synchronous-registration pin retargeted from the retired
+  `registerCommandCallback` helper to `registerCommand` plus
+  `toHostCallback`. single_layer (9), repository_gate (14),
+  binding_generator_cli (3), plan_truth (5), and cli_create (4) are
+  green; `flutter analyze` is clean; the frozen L3 suites are
+  byte-unmodified via git diff.
+- [x] SL-4 Decisions: new ADR 0013 records the single-layer decision
   (supersedes ADR 0006's generated-facade half; the Idiomatic Facade
   future becomes hand-written framework modules over the single
   layer, in the FlutterViewHost/ViewShell mold); dated amendment
   notes on 0006 and 0012 point at 0013. Check: originals untouched
   below their amendment lines.
+  Closed (8b4dce1): ADR 0013 records the deletion-test argument, the
+  one-artifact decision (runtime and host-exports stay as plumbing;
+  judgment in hand-written framework modules; Semantic Overrides
+  remain the ADR-0008 classification gate), and the consequences
+  (observation retired; per-member evidence follows the two-axis
+  live-coverage model with member-level hooks tracked in futures.md;
+  the generated-facade half of ADR 0006 superseded). Dated amendment
+  notes sit below the untouched original texts of 0006 and 0012 —
+  verified by git diff showing only appended lines. No ADR index
+  exists; creating one stays with the queued docs-truth round.
 - [ ] SL-5 Final bar: full fast suite green (with L3 suites verified
   byte-unmodified via git), `flutter analyze` clean, and all three
   real-host gates green at HEAD (`test_host_extension.sh`,
@@ -152,3 +185,21 @@ Tallies are recording-time values. Entries appended as items close.
    migrated sources, contract chain converged, `parity.md`
    byte-stable, `flutter analyze` clean, frozen L3 suites verified
    byte-unmodified.
+3. **SL-3** (red 7a5033b, green 7424101): the red docs-truth gate
+   landed against the promised end state — no living document in
+   README, CONTEXT.md, docs/, skills/, or specs/architecture/ cites
+   `vscode_facade.g.dart`, `vscode_parity_layer.g.dart`, or the
+   retired `package:flutter_vscode/vscode_parity.dart` export, with
+   ADR text exempt as amended history — and failed on nine references
+   across seven documents. Green: the seven documents and their
+   neighbors rewrote onto the single layer (the parity report through
+   its generator, regenerated mechanically), one repository-gate
+   expectation retargeted with its changed subject, and
+   single_layer, repository_gate, binding_generator_cli, plan_truth,
+   and cli_create all pass with `flutter analyze` clean and the
+   frozen L3 suites byte-unmodified via git diff.
+4. **SL-4** (8b4dce1): a decision record has no executable red — the
+   ledger says exactly that. ADR 0013 landed with the deletion-test
+   context, the one-artifact decision, and the retirement
+   consequences; the dated amendment notes on 0006 and 0012 appended
+   below their original texts without rewriting a line of them.
