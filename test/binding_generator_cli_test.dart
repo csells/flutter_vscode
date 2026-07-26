@@ -84,6 +84,7 @@ void main() {
         checkedInFiles.keys.toSet().difference(firstFiles.keys.toSet());
     const cliOwnedArtifacts = {
       'host/lib/generated/flutter_view_host.g.dart',
+      'host/lib/generated/host_commands.g.dart',
       'host/lib/generated/view_protocol.g.dart',
       'host/lib/generated/vscode_dart_layer.g.dart',
     };
