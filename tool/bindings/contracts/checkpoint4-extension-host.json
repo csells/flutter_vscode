@@ -216,7 +216,7 @@
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
-      "sha256": "3387ee7008a7bc4d8aa733373db3c2dc48795a8147e86ef786384d4c99ff8ddd"
+      "sha256": "3001d30bd04976c4a6ce798950de7030d44bbae0fbc20f31c6283d5689f79b81"
     }
   },
   "evidence": {

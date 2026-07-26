@@ -10,10 +10,10 @@ final class VSCodeViewBootstrap {
   VSCodeViewBootstrap._({
     required String sessionId,
     required String bootstrapNonce,
-    required _VSCodeWebviewTransport transport,
+    required _VSCodeApi api,
   })  : _sessionId = sessionId,
         _bootstrapNonce = bootstrapNonce,
-        _transport = transport;
+        _api = api;
 
   factory VSCodeViewBootstrap._create() {
     final sessionId = _requiredMetadata(sessionMetaName);
@@ -30,7 +30,7 @@ final class VSCodeViewBootstrap {
     return VSCodeViewBootstrap._(
       sessionId: sessionId,
       bootstrapNonce: bootstrapNonce,
-      transport: _VSCodeWebviewTransport(api),
+      api: api,
     );
   }
 
@@ -52,33 +52,56 @@ final class VSCodeViewBootstrap {
 
   final String _sessionId;
   final String _bootstrapNonce;
-  final _VSCodeWebviewTransport _transport;
+  final _VSCodeApi _api;
+  _VSCodeWebviewTransport? _transport;
   Future<FlutterViewSession>? _connection;
 
   /// Native browser message listeners still owned by this bootstrap.
-  int get receivingSubscriptionCount => _transport.receivingSubscriptionCount;
+  int get receivingSubscriptionCount =>
+      _transport?.receivingSubscriptionCount ?? 0;
 
   /// Connects the Flutter View using Host-provided metadata.
   ///
   /// [operations] are the typed operations this view allows Host Dart to
-  /// call; the connection is created once, so only the first call's
-  /// operations take effect.
+  /// call. A successful connection is created once, so only the first
+  /// successful call's operations take effect; a failed attempt clears
+  /// the memo so a later call retries with its own operations.
   Future<FlutterViewSession> connect({
     Iterable<ViewOperationBinding> operations = const [],
   }) {
-    return _connection ??= FlutterViewSession.connect(
-      transport: _transport,
+    final existing = _connection;
+    if (existing != null) {
+      return existing;
+    }
+    // A failed attempt's session terminates its transport, so each
+    // attempt runs over a fresh transport on the once-acquired API.
+    final transport = _VSCodeWebviewTransport(_api);
+    _transport = transport;
+    late final Future<FlutterViewSession> attempt;
+    attempt = FlutterViewSession.connect(
+      transport: transport,
       sessionId: _sessionId,
       bootstrapNonce: _bootstrapNonce,
       operations: operations,
-    );
+    ).onError<Object>((error, stackTrace) {
+      if (identical(_connection, attempt)) {
+        _connection = null;
+        unawaited(transport.close());
+        if (identical(_transport, transport)) {
+          _transport = null;
+        }
+      }
+      Error.throwWithStackTrace(error, stackTrace);
+    });
+    _connection = attempt;
+    return attempt;
   }
 
   /// Removes the owned browser message listener.
   ///
   /// Await [FlutterViewSession.closed] before closing the transport during an
   /// orderly Host-requested shutdown.
-  Future<void> close() => _transport.close();
+  Future<void> close() => _transport?.close() ?? Future.value();
 }
 
 final class _VSCodeWebviewTransport
