@@ -1,6 +1,7 @@
 # V0 Removal Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the absence gate,
+the fast suites, and the real-host gates are green at HEAD
 Date: 2026-07-25
 
 Deletes the legacy v0 pipeline, per the owner's directive: we build on
@@ -83,7 +84,7 @@ Rules (inherited): exit bar frozen; reds are commits; discoveries to
   gone" bar. Full fast suite green: 519 tests (534 before the
   round; 21 cases retired with their subjects, 6 absence gates
   added).
-- [ ] V0-3 Final bar: full fast suite + analyze green; the three
+- [x] V0-3 Final bar: full fast suite + analyze green; the three
   real-host gates green at HEAD; `.pubignore`/receipts carry no dead
   entries; a repo-wide sweep finds zero references to the deleted
   surfaces outside archives and history.
@@ -105,3 +106,10 @@ Tallies are recording-time values. Entries appended as items close.
    green (down from 534: 21 cases retired with their subjects, 6
    gates added) and `flutter analyze` is clean. The heavy real-host
    gates remain V0-3's exit evidence.
+2. **V0-3** (2026-07-25): full fast suite 519 green and analyze clean
+   at HEAD; all four real-host gates exited 0 on the v0-free tree
+   (host fixture, packaged install, coverage extension, breakpoints).
+   One environmental note, per the round's caution: stray generated
+   pub state regrew an empty `example/.dart_tool` skeleton once after
+   a root `pub get`; only generated files, removed, absence gate
+   green since.
