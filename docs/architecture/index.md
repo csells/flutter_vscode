@@ -17,7 +17,8 @@ Flutter view has opened.
 
 Each optional project beneath `views/` is a separate Flutter web runtime. A
 view cannot receive live Extension Host objects. It exchanges validated value
-snapshots with Host Dart through the versioned view protocol, including a
+snapshots with Host Dart through the versioned
+[view protocol](../reference/view-protocol.md), including a
 session/nonce handshake, allowlisted calls, structured errors, and explicit
 close/reload cleanup.
 
@@ -42,6 +43,6 @@ host Dart             -> dart compile js                     -> host bundle
 Flutter view          -> flutter build web                   -> view assets
 ```
 
-See the accepted [architecture decisions](../adr/) and the
+See the accepted architecture decisions under `docs/adr/` and the
 [archived first working extension plan](../../specs/plans/archive/first-working-extension.md)
 and the living [specs/architecture](../../specs/architecture/index.md) capture.

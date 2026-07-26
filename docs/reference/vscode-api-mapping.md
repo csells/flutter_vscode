@@ -8,8 +8,6 @@
 
 This remains a cheat sheet for maintaining existing annotation-based projects.
 
-For wire format details, see [Message Contract](message-contract.md).
-
 ## Decision Tree: Where Does Code Go?
 
 ```
@@ -354,7 +352,6 @@ Use these to verify agent-assisted workflows:
 
 ## Related
 
-- [Message Contract](message-contract.md)
 - [Quickstart](../guides/quickstart.md)
 - [Troubleshooting](../guides/troubleshooting.md)
 - Package skills: `skills/` in the `flutter_vscode` repository (these now
