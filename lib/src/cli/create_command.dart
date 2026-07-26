@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
+import 'package:flutter_vscode/src/cli/host_commands_source.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 
@@ -117,6 +118,7 @@ environment:
         if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,
       'host/lib/generated/vscode_dart_layer.g.dart':
           toolchain.emitDartLayerLibrary(bindingInputs.inventory),
+      'host/lib/generated/host_commands.g.dart': hostCommandsSource,
     },
     root,
   );

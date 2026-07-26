@@ -10,6 +10,18 @@
   constant invocation as data — project code is never executed. The
   untyped map-literal descriptor is rejected with an actionable
   error; `extension.json` is unchanged.
+- Authoring DX: every project receives a generated
+  `host_commands.g.dart` whose `ExtensionCommands.register` takes an
+  ordinary-Dart command handler (dartified arguments in,
+  protocol-safe result out) and owns the interop seam; and
+  `view_protocol.dart` gains `ViewValueSchema` declare-once codecs —
+  fields declared a single time derive encode, decode, and an
+  exact-schema guard naming failing keys, with recursion support.
+  View-bearing builds emit the protocol copy into
+  `shared/lib/generated/` (re-exported by the host module) so the
+  shared package assembles each `ViewOperation` once for host and
+  view, the view calling through the structural
+  `operationCaller`/`callThrough` seam.
 
 - Delete the legacy v0 pipeline: the `generate_vscode_extension`
   scaffolder, the annotation/source_gen builder surface and webview

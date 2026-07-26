@@ -49,6 +49,7 @@ void validateProjectLayout(Directory root) {
       'host/.dart_tool',
       'shared',
       'shared/lib',
+      'shared/lib/generated',
       'shared/.dart_tool',
       'views',
       'out',

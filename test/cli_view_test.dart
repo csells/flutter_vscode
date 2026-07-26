@@ -38,7 +38,7 @@ void main() {
       final generatedProtocol = File(
         p.join(
           project.path,
-          'host',
+          'shared',
           'lib',
           'generated',
           'view_protocol.g.dart',
@@ -48,6 +48,22 @@ void main() {
       expect(
         await generatedProtocol.readAsBytes(),
         await File('lib/src/view_protocol.dart').readAsBytes(),
+      );
+      expect(
+        File(
+          p.join(
+            project.path,
+            'host',
+            'lib',
+            'generated',
+            'view_protocol.g.dart',
+          ),
+        ).readAsStringSync(),
+        contains(
+          "export 'package:my_extension_shared/generated/view_protocol.g.dart';",
+        ),
+        reason: 'the host module re-exports the shared protocol copy so '
+            'host and shared code type against one declaration',
       );
       final viewOutput = Directory(
         p.join(project.path, 'out', 'views', 'main_panel'),

@@ -30,7 +30,8 @@ List<String> buildInputPaths(Directory root) {
       description: '$sourceRoot source tree',
     )) {
       final relative = relativeProjectPath(root, entity);
-      if (!relative.startsWith('host/lib/generated/')) {
+      if (!relative.startsWith('host/lib/generated/') &&
+          !relative.startsWith('shared/lib/generated/')) {
         paths.add(relative);
       }
     }
@@ -60,7 +61,11 @@ List<String> managedArtifactPaths(Directory root) {
       paths.add(path);
     }
   }
-  for (final artifactRoot in ['host/lib/generated', 'out']) {
+  for (final artifactRoot in [
+    'host/lib/generated',
+    'out',
+    'shared/lib/generated',
+  ]) {
     final directory = Directory(projectFile(root, artifactRoot).path);
     if (!directory.existsSync()) {
       continue;

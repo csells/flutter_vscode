@@ -3,41 +3,16 @@ import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
+import 'package:coverage_treemap_host/generated/host_commands.g.dart';
 import 'package:coverage_treemap_host/generated/host_exports.g.dart';
-import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
     as parity;
-import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
-    as vs;
+import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart' as vs;
 import 'package:coverage_treemap_host/generated/vscode_runtime.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 
-const _snapshotOperation = ViewOperation<void, CoverageSnapshot>(
-  name: coverageSnapshotOperationName,
-  encodeArguments: encodeNoValue,
-  decodeArguments: decodeNoValue,
-  encodeResult: encodeCoverageSnapshot,
-  decodeResult: decodeCoverageSnapshot,
-);
-
-const _themeReportOperation = ViewOperation<ThemeReport, void>(
-  name: themeReportOperationName,
-  encodeArguments: encodeThemeReport,
-  decodeArguments: decodeThemeReport,
-  encodeResult: encodeNoValue,
-  decodeResult: decodeNoValue,
-);
-
 const _lcovRelativePath = 'coverage/lcov.info';
-
-const _pushReceivedOperation = ViewOperation<int, void>(
-  name: pushReceivedOperationName,
-  encodeArguments: encodePushReceived,
-  decodeArguments: decodePushReceived,
-  encodeResult: encodeNoValue,
-  decodeResult: decodeNoValue,
-);
 
 @JSExport()
 class _Extension {
@@ -93,61 +68,56 @@ final class _CoverageController {
           ..command = 'coverage-treemap.runTests'.toJS
           ..tooltip = 'Run tests with coverage'.toJS;
 
-    _registerCommand('coverage-treemap.refresh', () async {
-      await _refresh();
-      return null;
-    });
-    _registerCommand('coverage-treemap.toggleLineHighlights', () async {
-      _highlightsEnabled = !_highlightsEnabled;
-      _decorateActiveEditor();
-      return null;
-    });
-    _registerCommand('coverage-treemap.showTreemap', () async {
-      await _openPanel();
-      return null;
-    });
-    _registerCommand('coverage-treemap.runTests', () async {
-      (_terminal ??= _api.window.createTerminal('Coverage Treemap'))
-        ..show()
-        ..sendText('flutter test --coverage');
-      return null;
-    });
-    _registerCommand('coverage-treemap.viewSmoke', () async {
-      await _openPanel();
-      final lcovPath = await _firstSnapshotServed.future.timeout(
-        const Duration(seconds: 120),
-        onTimeout: () => throw StateError(
-          'The Flutter View did not serve a snapshot within 120s.',
-        ),
-      );
-      return jsonEncode(<String, Object?>{
-        'viewConnected': true,
-        'lcovPath': lcovPath,
-      }).toJS;
-    });
-    _registerCommand('coverage-treemap.themeSmoke', () async {
-      final report = _lastThemeReport;
-      return jsonEncode(
-        report == null ? null : encodeThemeReport(report),
-      ).toJS;
-    });
-    _registerCommand('coverage-treemap.pushSmoke', () async {
-      return jsonEncode(<String, Object?>{
-        'pushesSent': _pushesSent,
-        'pushesApplied': _pushesApplied,
-        'lastAppliedLinesFound': _lastAppliedLinesFound,
-      }).toJS;
-    });
-    _registerCommand('coverage-treemap.smoke', () async {
-      await _refresh();
-      final report = _report;
-      final payload = report == null
-          ? null
-          : encodeCoverageSnapshot(
-              CoverageSnapshot.fromReport(_lcovRelativePath, report),
-            );
-      return jsonEncode(payload).toJS;
-    });
+    ExtensionCommands(context: _context, api: _api)
+      ..register('coverage-treemap.refresh', (_) => _refresh())
+      ..register('coverage-treemap.toggleLineHighlights', (_) {
+        _highlightsEnabled = !_highlightsEnabled;
+        _decorateActiveEditor();
+        return null;
+      })
+      ..register('coverage-treemap.showTreemap', (_) => _openPanel())
+      ..register('coverage-treemap.runTests', (_) {
+        (_terminal ??= _api.window.createTerminal('Coverage Treemap'))
+          ..show()
+          ..sendText('flutter test --coverage');
+        return null;
+      })
+      ..register('coverage-treemap.viewSmoke', (_) async {
+        await _openPanel();
+        final lcovPath = await _firstSnapshotServed.future.timeout(
+          const Duration(seconds: 120),
+          onTimeout: () => throw StateError(
+            'The Flutter View did not serve a snapshot within 120s.',
+          ),
+        );
+        return jsonEncode(<String, Object?>{
+          'viewConnected': true,
+          'lcovPath': lcovPath,
+        });
+      })
+      ..register('coverage-treemap.themeSmoke', (_) {
+        final report = _lastThemeReport;
+        return jsonEncode(
+          report == null ? null : themeReportSchema.encode(report),
+        );
+      })
+      ..register('coverage-treemap.pushSmoke', (_) {
+        return jsonEncode(<String, Object?>{
+          'pushesSent': _pushesSent,
+          'pushesApplied': _pushesApplied,
+          'lastAppliedLinesFound': _lastAppliedLinesFound,
+        });
+      })
+      ..register('coverage-treemap.smoke', (_) async {
+        await _refresh();
+        final report = _report;
+        final payload = report == null
+            ? null
+            : coverageSnapshotSchema.encode(
+                CoverageSnapshot.fromReport(_lcovRelativePath, report),
+              );
+        return jsonEncode(payload);
+      });
 
     final watcher = _api.workspace
         .createFileSystemWatcher('**/$_lcovRelativePath'.toJS)
@@ -157,8 +127,9 @@ final class _CoverageController {
       watcher.onDidChangeStream.listen(_refreshOnEvent),
       watcher.onDidCreateStream.listen(_refreshOnEvent),
       watcher.onDidDeleteStream.listen(_refreshOnEvent),
-      _api.window.onDidChangeActiveTextEditorStream
-          .listen((_) => _decorateActiveEditor()),
+      _api.window.onDidChangeActiveTextEditorStream.listen(
+        (_) => _decorateActiveEditor(),
+      ),
     ]);
 
     await _refresh();
@@ -179,17 +150,6 @@ final class _CoverageController {
   final List<StreamSubscription<Object?>> _subscriptions = [];
 
   void _refreshOnEvent(Object? _) => unawaited(_refresh());
-
-  void _registerCommand(String name, Future<JSAny?> Function() body) {
-    _context.subscriptions.toDart.add(
-      parity.JSAnon_ffa2e03c40a2(
-        _vscode.commands.registerCommand(
-          name,
-          toHostCallback((() => toHostPromise(Future<JSAny?>(body))).toJS),
-        ),
-      ),
-    );
-  }
 
   void _subscribeParity(JSObject registration) {
     _context.subscriptions.toDart.add(
@@ -231,7 +191,7 @@ final class _CoverageController {
           viewHost.session
               .emitEvent(
                 snapshotPushStreamName,
-                encodeCoverageSnapshot(
+                coverageSnapshotSchema.encode(
                   CoverageSnapshot.fromReport(_lcovRelativePath, report),
                 ),
               )
@@ -302,11 +262,11 @@ final class _CoverageController {
       title: 'Coverage Treemap',
       onClosed: () => _viewHost = null,
       operations: [
-        _pushReceivedOperation.bind((linesFound) {
+        pushReceivedOperation.bind((linesFound) {
           _pushesApplied += 1;
           _lastAppliedLinesFound = linesFound;
         }),
-        _snapshotOperation.bind((_) async {
+        snapshotOperation.bind((_) async {
           await _refresh();
           final report = _report;
           if (report == null) {
@@ -315,20 +275,21 @@ final class _CoverageController {
               'with coverage first.',
             );
           }
-          final snapshot =
-              CoverageSnapshot.fromReport(_lcovRelativePath, report);
+          final snapshot = CoverageSnapshot.fromReport(
+            _lcovRelativePath,
+            report,
+          );
           if (!_firstSnapshotServed.isCompleted) {
             _firstSnapshotServed.complete(snapshot.lcovPath);
           }
           return snapshot;
         }),
-        _themeReportOperation.bind((report) {
+        themeReportOperation.bind((report) {
           _lastThemeReport = report;
         }),
       ],
     );
   }
-
 
   parity.TextEditorDecorationType _lineDecoration(String colorId) =>
       _api.window.createTextEditorDecorationType(

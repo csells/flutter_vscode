@@ -1,9 +1,10 @@
+import 'package:coverage_treemap_shared/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('coverage snapshot codec', () {
+  group('coverage snapshot schema', () {
     test('round-trips a report-derived snapshot', () {
       final report = parseLcov('''
 SF:lib/src/a.dart
@@ -16,8 +17,9 @@ end_of_record
 ''');
       final snapshot =
           CoverageSnapshot.fromReport('coverage/lcov.info', report);
-      final decoded =
-          decodeCoverageSnapshot(encodeCoverageSnapshot(snapshot));
+      final decoded = coverageSnapshotSchema.decode(
+        coverageSnapshotSchema.encode(snapshot),
+      );
       expect(decoded.lcovPath, 'coverage/lcov.info');
       expect(decoded.root.linesFound, 3);
       expect(decoded.root.linesHit, 2);
@@ -31,63 +33,77 @@ end_of_record
       expect(src.coverage, 0.5);
     });
 
-    test('decode rejects payloads with missing or extra keys', () {
+    test('decode rejects payloads with missing or extra keys by name', () {
       expect(
-        () => decodeCoverageSnapshot(<Object?, Object?>{'lcovPath': 'x'}),
-        throwsFormatException,
+        () => coverageSnapshotSchema.decode(<Object?, Object?>{
+          'lcovPath': 'x',
+        }),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('"root"'),
+          ),
+        ),
       );
-      final valid = encodeCoverageSnapshot(
+      final valid = coverageSnapshotSchema.encode(
         const CoverageSnapshot(
           lcovPath: 'coverage/lcov.info',
           root: CoverageNode(name: '', linesFound: 0, linesHit: 0),
         ),
       )! as Map<String, Object?>;
       expect(
-        () => decodeCoverageSnapshot({...valid, 'extra': 1}),
-        throwsFormatException,
+        () => coverageSnapshotSchema.decode({...valid, 'extra': 1}),
+        throwsA(
+          isA<FormatException>().having(
+            (error) => error.message,
+            'message',
+            contains('"extra"'),
+          ),
+        ),
       );
     });
   });
 
-  group('theme report codec', () {
+  group('theme report schema', () {
     test('round-trips a report with and without a background', () {
-      final full = decodeThemeReport(
-        encodeThemeReport(
+      final full = themeReportSchema.decode(
+        themeReportSchema.encode(
           const ThemeReport(kind: 'dark', editorBackground: 0xFF1E1E1E),
         ),
       );
       expect(full.kind, 'dark');
       expect(full.editorBackground, 0xFF1E1E1E);
 
-      final bare = decodeThemeReport(
-        encodeThemeReport(const ThemeReport(kind: 'highContrast')),
+      final bare = themeReportSchema.decode(
+        themeReportSchema.encode(const ThemeReport(kind: 'highContrast')),
       );
       expect(bare.kind, 'highContrast');
       expect(bare.editorBackground, isNull);
     });
 
     test('decode rejects malformed payloads', () {
-      expect(() => decodeThemeReport(null), throwsFormatException);
+      expect(() => themeReportSchema.decode(null), throwsFormatException);
       expect(
-        () => decodeThemeReport(<Object?, Object?>{'kind': 'dark'}),
+        () => themeReportSchema.decode(<Object?, Object?>{'kind': 'dark'}),
         throwsFormatException,
       );
       expect(
-        () => decodeThemeReport(<Object?, Object?>{
+        () => themeReportSchema.decode(<Object?, Object?>{
           'kind': 42,
           'editorBackground': null,
         }),
         throwsFormatException,
       );
       expect(
-        () => decodeThemeReport(<Object?, Object?>{
+        () => themeReportSchema.decode(<Object?, Object?>{
           'kind': 'dark',
           'editorBackground': 'red',
         }),
         throwsFormatException,
       );
       expect(
-        () => decodeThemeReport(<Object?, Object?>{
+        () => themeReportSchema.decode(<Object?, Object?>{
           'kind': 'dark',
           'editorBackground': null,
           'extra': true,
@@ -95,14 +111,25 @@ end_of_record
         throwsFormatException,
       );
     });
-
   });
 
-  group('void payload codec', () {
-    test('accepts only the empty payload', () {
-      expect(encodeNoValue(null), isNull);
-      expect(() => decodeNoValue(null), returnsNormally);
-      expect(() => decodeNoValue('extra'), throwsFormatException);
+  group('assembled operations', () {
+    test('the shared package owns the one declaration of each operation', () {
+      // Host and view import these instead of assembling twins; a
+      // session round trip is proven by the framework's schema suite
+      // and the real-host gate.
+      expect(snapshotOperation, isNotNull);
+      expect(themeReportOperation, isNotNull);
+      expect(pushReceivedOperation, isNotNull);
+    });
+
+    test('the push acknowledgement payload is a bare int', () {
+      expect(ViewValueKind.integer.encode(41), 41);
+      expect(ViewValueKind.integer.decode(41), 41);
+      expect(
+        () => ViewValueKind.integer.decode('41'),
+        throwsFormatException,
+      );
     });
   });
 }
