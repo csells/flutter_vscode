@@ -43,8 +43,7 @@ void main() {
         'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
       ).readAsStringSync(),
       contains(
-        "export 'package:flutter_vscode_host_fixture_shared/generated/"
-        "view_protocol.g.dart';",
+        "export 'package:flutter_vscode_host_fixture_shared/generated/view_protocol.g.dart';",
       ),
       reason: 'the host module re-exports the shared protocol copy so '
           'host and shared code type against one declaration',

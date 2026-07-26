@@ -87,11 +87,11 @@ Future<void> buildProject(
     await protocolSource.copy(
       p.join(sharedGeneratedRoot.path, 'view_protocol.g.dart'),
     );
+    final sharedPackage = _sharedPackageName(root);
     await File(p.join(generatedRoot.path, 'view_protocol.g.dart'))
         .writeAsString(
       '// GENERATED CODE - DO NOT MODIFY BY HAND.\n'
-      "export 'package:${_sharedPackageName(root)}/generated/"
-      "view_protocol.g.dart';\n",
+      "export 'package:$sharedPackage/generated/view_protocol.g.dart';\n",
     );
     await File(p.join(generatedRoot.path, 'flutter_view_host.g.dart'))
         .writeAsString(flutterViewHostSource);

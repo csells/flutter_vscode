@@ -10,7 +10,7 @@ final class _Report {
 }
 
 final ViewValueSchema<_Report> _reportSchema = ViewValueSchema((field) {
-  final kind = field('kind', ViewValueKind.string, (_Report report) => report.kind);
+  final kind = field('kind', ViewValueKind.string, (report) => report.kind);
   final editorBackground = field(
     'editorBackground',
     ViewValueKind.integer.orNull,
@@ -38,7 +38,7 @@ final class _Node {
 }
 
 final ViewValueSchema<_Node> _nodeSchema = ViewValueSchema((field) {
-  final name = field('name', ViewValueKind.string, (_Node node) => node.name);
+  final name = field('name', ViewValueKind.string, (node) => node.name);
   final linesFound =
       field('linesFound', ViewValueKind.integer, (node) => node.linesFound);
   final isFile = field('isFile', ViewValueKind.boolean, (node) => node.isFile);
@@ -67,7 +67,7 @@ final ViewValueSchema<_Snapshot> _snapshotSchema = ViewValueSchema((field) {
   final lcovPath = field(
     'lcovPath',
     ViewValueKind.string,
-    (_Snapshot snapshot) => snapshot.lcovPath,
+    (snapshot) => snapshot.lcovPath,
   );
   final root = field(
     'root',
@@ -79,8 +79,7 @@ final ViewValueSchema<_Snapshot> _snapshotSchema = ViewValueSchema((field) {
 
 void main() {
   group('ViewValueSchema round trips', () {
-    test('a flat value with an int-or-null field, both populated and null',
-        () {
+    test('a flat value with an int-or-null field, both populated and null', () {
       final full = _reportSchema.decode(
         _reportSchema.encode(
           const _Report(kind: 'dark', editorBackground: 0xFF1E1E1E),
@@ -211,7 +210,7 @@ void main() {
           ),
         ),
       )! as Map<Object?, Object?>;
-      final root = (wire['root']! as Map<Object?, Object?>);
+      final root = wire['root']! as Map<Object?, Object?>;
       final child =
           (root['children']! as List<Object?>).first! as Map<Object?, Object?>;
       child['linesFound'] = 'one';
@@ -233,8 +232,7 @@ void main() {
     test('a duplicate field declaration fails at schema construction', () {
       expect(
         () => ViewValueSchema<_Report>((field) {
-          final kind =
-              field('kind', ViewValueKind.string, (_Report r) => r.kind);
+          final kind = field('kind', ViewValueKind.string, (r) => r.kind);
           field('kind', ViewValueKind.string, (r) => r.kind);
           return (fields) => _Report(kind: kind(fields));
         }).encode(const _Report(kind: 'dark')),
@@ -328,8 +326,7 @@ void main() {
         // crosses it, which is what lets a shared package's operation
         // declarations call through `package:flutter_vscode/view.dart`'s
         // session even though the two resolve distinct protocol copies.
-        final Future<Object?> Function(String, Object?) caller =
-            view.operationCaller;
+        final caller = view.operationCaller;
         final result = await operation.callThrough(caller, 21);
 
         expect(result, 42);

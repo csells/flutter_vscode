@@ -60,8 +60,7 @@ void main() {
           ),
         ).readAsStringSync(),
         contains(
-          "export 'package:my_extension_shared/generated/"
-          "view_protocol.g.dart';",
+          "export 'package:my_extension_shared/generated/view_protocol.g.dart';",
         ),
         reason: 'the host module re-exports the shared protocol copy so '
             'host and shared code type against one declaration',

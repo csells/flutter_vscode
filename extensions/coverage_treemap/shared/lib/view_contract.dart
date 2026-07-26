@@ -35,21 +35,21 @@ final class CoverageNode {
 
   /// Builds the node tree for [directory].
   factory CoverageNode.fromDirectory(LcovDirectory directory) => CoverageNode(
-        name: directory.name,
-        linesFound: directory.linesFound,
-        linesHit: directory.linesHit,
-        children: [
-          for (final child in directory.directories)
-            CoverageNode.fromDirectory(child),
-          for (final file in directory.files)
-            CoverageNode(
-              name: file.name,
-              linesFound: file.linesFound,
-              linesHit: file.linesHit,
-              isFile: true,
-            ),
-        ],
-      );
+    name: directory.name,
+    linesFound: directory.linesFound,
+    linesHit: directory.linesHit,
+    children: [
+      for (final child in directory.directories)
+        CoverageNode.fromDirectory(child),
+      for (final file in directory.files)
+        CoverageNode(
+          name: file.name,
+          linesFound: file.linesFound,
+          linesHit: file.linesHit,
+          isFile: true,
+        ),
+    ],
+  );
 
   /// Final path segment for display.
   final String name;
@@ -72,28 +72,33 @@ final class CoverageNode {
 
 /// The exact wire schema of [CoverageNode]; recursive through
 /// [ViewValueKind.nested]'s lazy reference.
-final ViewValueSchema<CoverageNode> coverageNodeSchema =
-    ViewValueSchema((field) {
-  final name =
-      field('name', ViewValueKind.string, (CoverageNode node) => node.name);
-  final linesFound =
-      field('linesFound', ViewValueKind.integer, (node) => node.linesFound);
-  final linesHit =
-      field('linesHit', ViewValueKind.integer, (node) => node.linesHit);
-  final isFile =
-      field('isFile', ViewValueKind.boolean, (node) => node.isFile);
+final ViewValueSchema<CoverageNode> coverageNodeSchema = ViewValueSchema((
+  field,
+) {
+  final name = field('name', ViewValueKind.string, (node) => node.name);
+  final linesFound = field(
+    'linesFound',
+    ViewValueKind.integer,
+    (node) => node.linesFound,
+  );
+  final linesHit = field(
+    'linesHit',
+    ViewValueKind.integer,
+    (node) => node.linesHit,
+  );
+  final isFile = field('isFile', ViewValueKind.boolean, (node) => node.isFile);
   final children = field(
     'children',
     ViewValueKind.listOf(ViewValueKind.nested(() => coverageNodeSchema)),
     (node) => node.children,
   );
   return (fields) => CoverageNode(
-        name: name(fields),
-        linesFound: linesFound(fields),
-        linesHit: linesHit(fields),
-        isFile: isFile(fields),
-        children: children(fields),
-      );
+    name: name(fields),
+    linesFound: linesFound(fields),
+    linesHit: linesHit(fields),
+    isFile: isFile(fields),
+    children: children(fields),
+  );
 });
 
 /// The full snapshot the host serves to the view.
@@ -118,19 +123,19 @@ final class CoverageSnapshot {
 /// The exact wire schema of [CoverageSnapshot].
 final ViewValueSchema<CoverageSnapshot> coverageSnapshotSchema =
     ViewValueSchema((field) {
-  final lcovPath = field(
-    'lcovPath',
-    ViewValueKind.string,
-    (CoverageSnapshot snapshot) => snapshot.lcovPath,
-  );
-  final root = field(
-    'root',
-    ViewValueKind.nested(() => coverageNodeSchema),
-    (snapshot) => snapshot.root,
-  );
-  return (fields) =>
-      CoverageSnapshot(lcovPath: lcovPath(fields), root: root(fields));
-});
+      final lcovPath = field(
+        'lcovPath',
+        ViewValueKind.string,
+        (snapshot) => snapshot.lcovPath,
+      );
+      final root = field(
+        'root',
+        ViewValueKind.nested(() => coverageNodeSchema),
+        (snapshot) => snapshot.root,
+      );
+      return (fields) =>
+          CoverageSnapshot(lcovPath: lcovPath(fields), root: root(fields));
+    });
 
 /// The view's resolved theme, reported to Host Dart so gates can verify
 /// that live VS Code colors reached the Flutter View.
@@ -147,41 +152,38 @@ final class ThemeReport {
 }
 
 /// The exact wire schema of [ThemeReport].
-final ViewValueSchema<ThemeReport> themeReportSchema =
-    ViewValueSchema((field) {
-  final kind =
-      field('kind', ViewValueKind.string, (ThemeReport report) => report.kind);
+final ViewValueSchema<ThemeReport> themeReportSchema = ViewValueSchema((field) {
+  final kind = field('kind', ViewValueKind.string, (report) => report.kind);
   final editorBackground = field(
     'editorBackground',
     ViewValueKind.integer.orNull,
     (report) => report.editorBackground,
   );
   return (fields) => ThemeReport(
-        kind: kind(fields),
-        editorBackground: editorBackground(fields),
-      );
+    kind: kind(fields),
+    editorBackground: editorBackground(fields),
+  );
 });
 
 /// Fetches the current coverage snapshot from Host Dart.
 final ViewOperation<void, CoverageSnapshot> snapshotOperation =
     ViewOperation.noArgs(
-  coverageSnapshotOperationName,
-  encodeResult: coverageSnapshotSchema.encode,
-  decodeResult: coverageSnapshotSchema.decode,
-);
+      coverageSnapshotOperationName,
+      encodeResult: coverageSnapshotSchema.encode,
+      decodeResult: coverageSnapshotSchema.decode,
+    );
 
 /// Reports the view's resolved theme to Host Dart.
 final ViewOperation<ThemeReport, void> themeReportOperation =
     ViewOperation.noResult(
-  themeReportOperationName,
-  encodeArguments: themeReportSchema.encode,
-  decodeArguments: themeReportSchema.decode,
-);
+      themeReportOperationName,
+      encodeArguments: themeReportSchema.encode,
+      decodeArguments: themeReportSchema.decode,
+    );
 
 /// Acknowledges a host-pushed snapshot with its total instrumented
 /// lines.
-final ViewOperation<int, void> pushReceivedOperation =
-    ViewOperation.noResult(
+final ViewOperation<int, void> pushReceivedOperation = ViewOperation.noResult(
   pushReceivedOperationName,
   encodeArguments: ViewValueKind.integer.encode,
   decodeArguments: ViewValueKind.integer.decode,
