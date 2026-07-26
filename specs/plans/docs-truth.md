@@ -46,7 +46,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
   working model reflects the total generated layer and the full CLI
   (test/doctor in the run loop). Check: every named error code and
   remedy matches the CLI at HEAD.
-- [ ] DT-4 Agent surface: project-structure.md teaches the current
+- [x] DT-4 Agent surface: project-structure.md teaches the current
   CLI and layout (extensions/, skills/, lib/src/cli/);
   consumer-agents.md mandates doctor/test in validation; the build,
   test, and troubleshoot skills teach the shipped surface (the
@@ -54,6 +54,22 @@ no history rewrites in ADRs — amendments only; discoveries go to
   flutter-vscode-view skill covers ViewShell.connect, runFlutterView,
   the theme bridge, and host push events. Check: every command/API
   named in skills exists at HEAD.
+  Closed (cb7c8ac, a4e713f): project-structure.md carries the five
+  CLI commands as bin/flutter_vscode.dart dispatches them and the
+  lib/src/cli/, extensions/, and skills/ layout entries;
+  consumer-agents.md mandates the doctor/build/test/package ladder,
+  names the total vscode_dart_layer.g.dart in place of the
+  implemented-symbol framing, and drops the stale v1-call wording.
+  The build skill gains the doctor preflight and --watch, the test
+  skill teaches flutter_vscode test's real discovery (shared/test and
+  host/test via dart test, views/<name>/test via flutter test), and
+  the troubleshoot skill leads with doctor while naming only error
+  codes grep-verified against lib/src/cli/ and the CLI adapter. The
+  new flutter-vscode-view skill grounds every identifier in
+  lib/src/view_shell.dart, view_theme_web.dart, view_protocol.dart,
+  and the shipped treemap_panel view; skills/README.md registers it.
+  plan_truth (5) and repository_gate (14) green; flutter analyze
+  clean.
 - [ ] DT-5 ADR residue: ADR 0012's amendment gains the release-gate
   correction (per-symbol reviewed classification survives at baseline
   import per ADR 0008 as amended; the no-rule block applies at layer
@@ -83,3 +99,17 @@ Tallies are recording-time values. Entries appended as items close.
 1. **DT-0** (2026-07-25): baseline re-snapshotted at HEAD b3081d8
    (38 docs pages) into `.improve-docs/baseline.json`, superseding the
    pre-single-layer snapshot so this round's deltas attribute honestly.
+2. **DT-4** (cb7c8ac, a4e713f, 2026-07-25): a docs item has no
+   executable red; every claim was instead ground-truthed against
+   HEAD before writing — the CLI surface against
+   bin/flutter_vscode.dart and lib/src/cli/, suite discovery against
+   test_command.dart, watch semantics against watch_command.dart,
+   every troubleshoot error code grepped to its CliException site,
+   and the view skill's identifiers against view_shell.dart, the
+   theme bridge, view_protocol.dart, and the shipped treemap_panel
+   consumer. Two pages and four skills updated, one skill added and
+   registered; the extension-host skill was verified current and left
+   untouched. plan_truth (5) and repository_gate (14) green at
+   recording time; flutter analyze clean (the nested fixture and
+   example-extension packages needed only local dependency
+   resolution, no source change).
