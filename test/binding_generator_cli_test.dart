@@ -24,7 +24,7 @@ void main() {
     );
   });
 
-  test('CLI regenerates the walking slice byte-for-byte', () async {
+  test('CLI regenerates the binding outputs byte-for-byte', () async {
     final temporary = await Directory.systemTemp.createTemp(
       'flutter_vscode_binding_cli_',
     );
@@ -60,11 +60,21 @@ void main() {
         'coverage.json',
         'host/bootstrap.cjs',
         'host/lib/generated/host_exports.g.dart',
-        'host/lib/generated/vscode_facade.g.dart',
-        'host/lib/generated/vscode_parity.g.dart',
         'host/lib/generated/vscode_runtime.g.dart',
         'package.json',
       }),
+    );
+    expect(
+      firstFiles.keys,
+      isNot(
+        anyElement(
+          anyOf(
+            contains('vscode_facade.g.dart'),
+            contains('vscode_parity.g.dart'),
+          ),
+        ),
+      ),
+      reason: 'the retired facade and walking-slice parity must not return',
     );
 
     final checkedInFiles = await _readManagedFixtureTree(
@@ -180,89 +190,6 @@ server.listen(0, '127.0.0.1', async () => {
     expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
   });
 
-  test('rejected webview delivery records no successful bindings', () async {
-    final temporary = await Directory.systemTemp.createTemp(
-      'flutter_vscode_post_message_probe_',
-    );
-    addTearDown(() => temporary.delete(recursive: true));
-    final auditSource = File(p.join(temporary.path, 'audit.dart'));
-    final compiledAudit = File(p.join(temporary.path, 'audit.js'));
-    final nodeProbe = File(p.join(temporary.path, 'probe.cjs'));
-    final hostPackageConfig = p.join(
-      'test',
-      'fixtures',
-      'host_extension',
-      'host',
-      '.dart_tool',
-      'package_config.json',
-    );
-    final runtime = File(
-      'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
-    ).readAsStringSync();
-    final extensionKey = RegExp(
-      r"@JS\('__flutterVscode\.bindingObservers\.([^']+)'\)",
-    ).firstMatch(runtime)!.group(1)!;
-
-    await auditSource.writeAsString('''
-import 'dart:js_interop';
-
-import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
-
-@JS('auditProbe')
-external set _auditProbe(JSFunction value);
-
-void main() {
-  _auditProbe = ((JSObject rawWebview) => Webview.fromJS(rawWebview)
-      .postMessageFuture(null)
-      .then((value) => value.toJS)
-      .toJS).toJS;
-}
-''');
-    await nodeProbe.writeAsString('''
-const observed = [];
-globalThis.self = globalThis;
-globalThis.__flutterVscode = {
-  bindingObservers: {
-    ${jsonEncode(extensionKey)}: (id) => observed.push(id),
-  },
-};
-require(process.argv[2]);
-(async () => {
-  const accepted = await globalThis.auditProbe({
-    postMessage() { return Promise.resolve(false); },
-  });
-  if (accepted !== false || observed.length !== 0) {
-    console.error(JSON.stringify({accepted, observed}));
-    process.exitCode = 1;
-  }
-})();
-''');
-
-    final compile = await Process.run(
-      'dart',
-      [
-        'compile',
-        'js',
-        '--packages=$hostPackageConfig',
-        auditSource.path,
-        '-o',
-        compiledAudit.path,
-      ],
-      workingDirectory: Directory.current.path,
-    );
-    expect(
-      compile.exitCode,
-      0,
-      reason: '${compile.stdout}\n${compile.stderr}',
-    );
-
-    final probe = await Process.run(
-      'node',
-      [nodeProbe.path, compiledAudit.path],
-      workingDirectory: Directory.current.path,
-    );
-    expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
-  });
 }
 
 Future<Map<String, List<int>>> _readTree(Directory root) async {

@@ -24,11 +24,11 @@
     },
     "bindingCoverageLedger": {
       "path": "tool/binding_generator/coverage_ledger.dart",
-      "sha256": "da21a04b6e7d0f3f9b652194006790a235f72023f45b57f892d0e037e521ccfc"
+      "sha256": "59784b6de30a39a7728180fecceea6088d4c4f09731a32c44daa6585178d0a3d"
     },
     "bindingGenerator": {
       "path": "tool/binding_generator/generator.dart",
-      "sha256": "663abe0451020fcdf0ff668a3eb975018ad39def503f515f263380dd44fe92bb"
+      "sha256": "94aab933f6266721690e7c00824de8e23b39d0cdd4ce0b1f51443e1fa9492b12"
     },
     "bindingIrTypeMapper": {
       "path": "tool/binding_generator/ir_type_mapper.dart",
@@ -44,7 +44,7 @@
     },
     "bindingTemplates": {
       "path": "tool/binding_generator/templates.dart",
-      "sha256": "a06f443666bbd2697acfc92cdb01f7add8eecc84f4be2ddb6453c02c3595d819"
+      "sha256": "51bbc374365ee6e803f7734bf6b579620744ae69ca08e9bee55197795e45f5fa"
     },
     "bindingValidators": {
       "path": "tool/binding_generator/validators.dart",
@@ -84,7 +84,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "ac37bc52d970fc26350d087aecb6e7ebac0ad6ee6e98723cc925ab0a6e639bd3"
+      "sha256": "81e0674582b857c19d85552a5dcfd9d7445ce46bc955e58753c13a4673322ea4"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -92,11 +92,11 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "eeabe813cd05ba99af55fafaf0fefa6ca6771fa464916f627447c8e29b6f73ba"
+      "sha256": "fb56f6098ccc577677a8049f62364749b8fe30d1513a4a73614372aeffbb8cad"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "a56edde57a0cb4a351476f7806c52c78216ea8c214ef87ef10ca1d10a20ea242"
+      "sha256": "32050e11b5334aa9e0db8d307aab4e94a0153f1d70ddfe0e00f6fa676be784e5"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
@@ -124,7 +124,7 @@
     },
     "fixtureTransport": {
       "path": "test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart",
-      "sha256": "b0ff586e720e7c65cd40f633a20f1d5b6ddb9d1c82676e086fc888bc6a237313"
+      "sha256": "0c9b147e6cbe63dd59185a1fbafbc366940d4207a82cf1c0baa1eaa62ff6ca12"
     },
     "fixtureView": {
       "path": "test/fixtures/host_extension/views/main/lib/main.dart",
@@ -144,7 +144,7 @@
     },
     "flutterViewHostTemplate": {
       "path": "lib/src/cli/flutter_view_host_source.dart",
-      "sha256": "dfd03a0cd881a16b7dafbef05ef42e0995bf28ba86d4ac33cefdfe486158a616"
+      "sha256": "2a69d214225e427ebc64fefe02649fd581aa865b3600baf947935864b2a288cb"
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",
@@ -156,27 +156,19 @@
     },
     "generatedBootstrap": {
       "path": "test/fixtures/host_extension/host/bootstrap.cjs",
-      "sha256": "1e3a120e234f8d1b82562f1115f86f435164ca71276c2ba665e6f2b01897c54b"
+      "sha256": "9e8fba7aa0daa0f625bf867d9d625be93884de5f2dd9bb2618f23c0f52a9a34f"
     },
     "generatedDartLayer": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart",
       "sha256": "a7d1aa1210f395dd349e0d6334ab7d2ea98ddebd9c2247e7bf403bfa37067a50"
     },
-    "generatedFacade": {
-      "path": "test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart",
-      "sha256": "09b749d1fb2694b43a07234a0970d8b79d01dbaa6f3ce25c04c9b1d26e81c647"
-    },
     "generatedHostExports": {
       "path": "test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
       "sha256": "77436eecb6a0ed00c8ca39b486d231476fd377e12c98066174b33fae017603ee"
     },
-    "generatedParity": {
-      "path": "test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart",
-      "sha256": "5f98c060e2bfeec73b7f9301edd7647187bdc3ca60e29ed438cd08f3cfa33845"
-    },
     "generatedRuntime": {
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
-      "sha256": "1b6c32d185d7db28edd4287763263d64c15f15826eb6f39e3966a224712e5f77"
+      "sha256": "5902fe7bf7c3f32589bc7e85b3ead6a2a43acb569b78b1d9429cbaa67ab0c3c2"
     },
     "generatedViewProtocol": {
       "path": "test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart",
@@ -196,7 +188,7 @@
     },
     "launcher": {
       "path": "tool/extension_host_test/run.cjs",
-      "sha256": "1d5da12eac3e2e37d458699f1e0c0ba48202f74c00098f1ee1b442dafbbcf134"
+      "sha256": "c6993f162eaac3d079547b485a9721a15442bd1cb09db6fd002158ebd5bb240b"
     },
     "projectDescriptor": {
       "path": "lib/src/cli/project_descriptor.dart",
@@ -208,15 +200,15 @@
     },
     "test": {
       "path": "test/fixtures/host_extension/test/run.cjs",
-      "sha256": "73ebc99170704ee1a8f4db01016f322bfe1ee74b6d4e6f0f36a221e06731f2f4"
+      "sha256": "1efa7f1435d0aebe61793e493a62d674b366ba377986a0dc6be91c846555c9d1"
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "66a6aea70ffed6f16a3b98335f71e6d80acba1f9d419caa44c71c0ad1e33656b"
+      "sha256": "b7706d7fa78345ad26eb7e29b995fc90740f4d2e95bd0a0108d646766c2b0d6e"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",
-      "sha256": "c08b937f467b7899a09235d76cc6ffb935f6e68a99ec674d6ee9dfa0dd1f57a1"
+      "sha256": "db6ea0802569c83df947434e415eaf868d2d261502d2490f33f79d08b4c29176"
     },
     "viewLibrary": {
       "path": "lib/view.dart",
@@ -229,7 +221,7 @@
   },
   "evidence": {
     "kind": "mechanicalAttribution",
-    "meaning": "Every listed generated binding ID was exercised by this one real Extension Host Contract after its receipted repository sources and surrounding native behavior passed.",
+    "meaning": "Every listed binding ID is attributed to this one real Extension Host Contract by its reviewed Semantic Override; the gate passes only after the receipted repository sources and the surrounding native behavior pass, without per-member observation.",
     "independentBehavioralContracts": false
   },
   "attributedBindings": [

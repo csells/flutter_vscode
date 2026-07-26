@@ -176,8 +176,9 @@ async function run() {
     parityDocument.uri,
     new vscode.Position(0, 3),
   );
-  // The facade fixture also registers a json hover provider, so both
-  // providers answer; the parity one is identified by its content.
+  // The fixture also registers a json hover provider through the single
+  // layer, so both providers answer; the parity-smoke one is identified
+  // by its content.
   assert.equal(parityHovers.length, 2, 'parity-registered provider missing');
   assert.equal(
     parityHovers.filter(

@@ -12,8 +12,6 @@ globalThis.self ??= globalThis;
 const namespace = (globalThis.__flutterVscode ??= Object.create(null));
 namespace.hosts ??= Object.create(null);
 namespace.apis ??= Object.create(null);
-namespace.bindingCallbackWrappers ??= Object.create(null);
-namespace.bindingObservers ??= Object.create(null);
 namespace.callbackWrappers ??= Object.create(null);
 namespace.stackMappers ??= Object.create(null);
 const extensionId = `${manifest.publisher}.${manifest.name}`;
@@ -26,39 +24,6 @@ if (extensionKey !== emittedExtensionKey) {
   throw new Error('Generated Dart and manifest extension identities differ.');
 }
 namespace.apis[extensionKey] = vscode;
-
-const observedBindingIds = new Set();
-namespace.bindingObservers[extensionKey] = (bindingId) => {
-  if (typeof bindingId !== 'string' || bindingId.length === 0) {
-    throw new TypeError('Generated Host Contract binding ID must be a string.');
-  }
-  observedBindingIds.add(bindingId);
-};
-namespace.bindingCallbackWrappers[extensionKey] = (
-  callback,
-  bindingIds,
-) => function (...args) {
-  const callbackResult = Reflect.apply(callback, this, args);
-  for (const bindingId of bindingIds) {
-    namespace.bindingObservers[extensionKey](bindingId);
-  }
-  return callbackResult;
-};
-const evidencePath = process.env.FLUTTER_VSCODE_HOST_EVIDENCE_PATH;
-if (evidencePath) {
-  process.once('exit', () => {
-    fs.writeFileSync(
-      evidencePath,
-      `${JSON.stringify({
-        schemaVersion: 1,
-        contract: "checkpoint4ExtensionHost",
-        boundary: 'vscodeExtensionHost',
-        observedBindingIds: [...observedBindingIds].sort(),
-      }, null, 2)}
-`,
-    );
-  });
-}
 
 const hostBundlePath = path.resolve(__dirname, '../out/extension.dart.js');
 const hostSourceMap = new moduleApi.SourceMap(

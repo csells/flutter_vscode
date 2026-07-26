@@ -7,18 +7,13 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
-const {
-  verifyHostContractEvidence,
-  verifyHostContractEvidenceFiles,
-  verifyHostContractSourceFiles,
-} = require('./host_contract.cjs');
+const {verifyHostContractSourceFiles} = require('./host_contract.cjs');
 
 const contractId = 'checkpoint4ExtensionHost';
 const contract = {
   schemaVersion: 1,
   id: contractId,
   boundary: 'vscodeExtensionHost',
-  attributedBindings: ['binding:a', 'binding:b'],
 };
 const canonicalArtifactPath = path.resolve(
   __dirname,
@@ -145,106 +140,16 @@ test('launcher verifies source receipts before starting the Extension Host', () 
   assert.ok(preflight < launch);
 });
 
-test('real-host evidence must contain every emitted contract binding', () => {
-  assert.throws(
-    () => verifyHostContractEvidence({
-      contractId,
-      contract,
-      evidence: {
-        schemaVersion: 1,
-        contract: contractId,
-        boundary: 'vscodeExtensionHost',
-        observedBindingIds: ['binding:a'],
-      },
-    }),
-    /missing \[binding:b\]/,
-  );
-});
-
-test('real-host evidence cannot claim an unledgered binding', () => {
-  assert.throws(
-    () => verifyHostContractEvidence({
-      contractId,
-      contract,
-      evidence: {
-        schemaVersion: 1,
-        contract: contractId,
-        boundary: 'vscodeExtensionHost',
-        observedBindingIds: ['binding:a', 'binding:b', 'binding:extra'],
-      },
-    }),
-    /extra \[binding:extra\]/,
-  );
-});
-
-test('real-host evidence cannot satisfy the ledger with duplicate claims', () => {
-  assert.throws(
-    () => verifyHostContractEvidence({
-      contractId,
-      contract,
-      evidence: {
-        schemaVersion: 1,
-        contract: contractId,
-        boundary: 'vscodeExtensionHost',
-        observedBindingIds: ['binding:a', 'binding:a', 'binding:b'],
-      },
-    }),
-    /duplicate \[binding:a\]/,
-  );
-});
-
-test('real-host evidence is bound to its schema, contract, and boundary', () => {
-  for (const evidence of [
-    {
-      schemaVersion: 2,
-      contract: contractId,
-      boundary: 'vscodeExtensionHost',
-      observedBindingIds: ['binding:a', 'binding:b'],
-    },
-    {
-      schemaVersion: 1,
-      contract: 'someOtherContract',
-      boundary: 'vscodeExtensionHost',
-      observedBindingIds: ['binding:a', 'binding:b'],
-    },
-    {
-      schemaVersion: 1,
-      contract: contractId,
-      boundary: 'unitTest',
-      observedBindingIds: ['binding:a', 'binding:b'],
-    },
-  ]) {
-    assert.throws(
-      () => verifyHostContractEvidence({contractId, contract, evidence}),
-      /invalid metadata/,
-    );
-  }
-});
-
-test('launcher-facing verifier reads evidence files and reports exact count', () => {
+test('source verification reports the exact receipt count', () => {
   const fixture = createCanonicalRepository();
-  const contractPath = path.join(fixture.repositoryRoot, 'contract.json');
-  const evidencePath = path.join(fixture.repositoryRoot, 'evidence.json');
   try {
-    fs.writeFileSync(
-      contractPath,
-      JSON.stringify(fixture.contract),
-    );
-    fs.writeFileSync(evidencePath, JSON.stringify({
-      schemaVersion: 1,
-      contract: contractId,
-      boundary: 'vscodeExtensionHost',
-      observedBindingIds: ['binding:a', 'binding:b'],
-    }));
-
     assert.deepEqual(
-      verifyHostContractEvidenceFiles({
+      verifyHostContractSourceFiles({
         contractId,
-        contractPath,
-        evidencePath,
+        contract: fixture.contract,
         repositoryRoot: fixture.repositoryRoot,
       }),
-      {expectedCount: 2, observedCount: 2},
+      {sourceCount: Object.keys(canonicalSourcePaths).length},
     );
   } finally {
     fs.rmSync(fixture.repositoryRoot, {recursive: true, force: true});

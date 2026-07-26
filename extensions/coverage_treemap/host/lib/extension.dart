@@ -3,12 +3,13 @@ import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
+import 'package:coverage_treemap_host/generated/host_exports.g.dart';
 import 'package:coverage_treemap_host/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
     as parity;
 import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
     as vs;
-import 'package:coverage_treemap_host/generated/vscode_facade.g.dart';
+import 'package:coverage_treemap_host/generated/vscode_runtime.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 
@@ -44,8 +45,8 @@ class _Extension {
 
   JSPromise<JSAny?> activate(JSObject rawContext, JSObject rawVscode) {
     final controller = _CoverageController(
-      ExtensionContext.fromJS(rawContext),
-      VSCode.fromJS(rawVscode),
+      parity.ExtensionContext(rawContext),
+      parity.VscodeApi(rawVscode),
       parity.VscodeApi(rawVscode).dart,
     );
     _controller = controller;
@@ -67,8 +68,8 @@ class _Extension {
 final class _CoverageController {
   _CoverageController(this._context, this._vscode, this._api);
 
-  final ExtensionContext _context;
-  final VSCode _vscode;
+  final parity.ExtensionContext _context;
+  final parity.VscodeApi _vscode;
   final vs.VscodeApiDart _api;
 
   late final parity.TextEditorDecorationType _coveredType;
@@ -181,15 +182,19 @@ final class _CoverageController {
 
   void _registerCommand(String name, Future<JSAny?> Function() body) {
     _context.subscriptions.toDart.add(
-      _vscode.commands.registerCommandCallback(
-        name.toJS,
-        (() => toHostPromise(Future<JSAny?>(body))).toJS,
+      parity.JSAnon_ffa2e03c40a2(
+        _vscode.commands.registerCommand(
+          name,
+          toHostCallback((() => toHostPromise(Future<JSAny?>(body))).toJS),
+        ),
       ),
     );
   }
 
   void _subscribeParity(JSObject registration) {
-    _context.addSubscription(DisposableLike.fromJS(registration));
+    _context.subscriptions.toDart.add(
+      parity.JSAnon_ffa2e03c40a2(registration),
+    );
   }
 
   Future<void> _refresh() async {

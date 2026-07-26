@@ -100,6 +100,8 @@ environment:
     {
       for (final entry in generated.entries)
         if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,
+      'host/lib/generated/vscode_dart_layer.g.dart':
+          toolchain.emitDartLayerLibrary(bindingInputs.inventory),
     },
     root,
   );
@@ -108,12 +110,13 @@ environment:
 String _hostEntrypoint(String projectName, String manifestName) => '''
 import 'dart:js_interop';
 
-import 'package:${projectName}_host/generated/vscode_facade.g.dart';
-// The complete typed VS Code API is also generated into this project:
-//   import 'package:${projectName}_host/generated/vscode_dart_layer.g.dart';
-// Wrap the raw activation module with VscodeApi(rawVscode) for the parity
-// surface, or enter the Dart-first ergonomics layer over it with
-// VscodeApi(rawVscode).dart.
+import 'package:${projectName}_host/generated/host_exports.g.dart';
+// The complete typed VS Code API generated into this project. Wrap the
+// raw activation module with VscodeApi(rawVscode), or enter the
+// Dart-first ergonomics layer over it with VscodeApi(rawVscode).dart.
+import 'package:${projectName}_host/generated/vscode_dart_layer.g.dart';
+// Runtime helpers: toHostPromise, toHostCallback, hostFetch.
+import 'package:${projectName}_host/generated/vscode_runtime.g.dart';
 import 'package:${projectName}_shared/shared.dart';
 
 const _helloCommand = '$manifestName.hello';
@@ -124,12 +127,14 @@ class _Extension {
     JSObject rawContext,
     JSObject rawVscode,
   ) {
-    final context = ExtensionContext.fromJS(rawContext);
-    final vscode = VSCode.fromJS(rawVscode);
+    final context = ExtensionContext(rawContext);
+    final vscode = VscodeApi(rawVscode);
 
     final hello = (() => helloMessage.toJS).toJS;
     context.subscriptions.toDart.add(
-      vscode.commands.registerCommandCallback(_helloCommand.toJS, hello),
+      JSAnon_ffa2e03c40a2(
+        vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
+      ),
     );
 
     final provideHover =
@@ -138,16 +143,24 @@ class _Extension {
               Position position,
               CancellationToken token,
             ) {
-              final contents = MarkdownString(
-                'Hover from Dart at \${position.line}:\${position.character}'
+              final contents = vscode.MarkdownString.new\$(
+                'Hover from Dart at '
+                        '\${position.line.toInt()}:'
+                        '\${position.character.toInt()}'
                     .toJS,
               );
-              return Hover(contents, Range(0, 0, 0, 5));
+              final range =
+                  vscode.Range.new\$\$2(0.toJS, 0.toJS, 0.toJS, 5.toJS);
+              return vscode.Hover.new\$(contents, range);
             }
             .toJS;
-    final provider = HoverProvider(provideHover: provideHover);
+    final provider = HoverProvider.lit\$(
+      provideHover: toHostCallback(provideHover),
+    );
     context.subscriptions.toDart.add(
-      vscode.languages.registerHoverProvider('json'.toJS, provider),
+      JSAnon_ffa2e03c40a2(
+        vscode.languages.registerHoverProvider('json'.toJS, provider),
+      ),
     );
     return Future<JSAny?>.value(null).toJS;
   }

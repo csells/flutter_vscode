@@ -111,7 +111,7 @@ String emitCoverageLedger({
         'status': binding,
         if (binding == 'emitted')
           'artifacts': <String>[
-            'host/lib/generated/vscode_parity.g.dart',
+            'host/lib/generated/vscode_dart_layer.g.dart',
           ],
       },
       'host': <String, Object?>{
@@ -138,9 +138,10 @@ String emitCoverageLedger({
     'hostContracts': hostContracts,
     'hostEvidence': <String, Object?>{
       'kind': 'mechanicalAttribution',
-      'meaning': '$hostVerified generated binding IDs were exercised by one '
-          'real Extension Host Contract after its surrounding native '
-          'behavior passed.',
+      'meaning': '$hostVerified reviewed binding IDs cite one real Extension '
+          'Host Contract whose receipted gate passed its surrounding native '
+          'behavior; the retired per-member observation mechanism no longer '
+          'contributes evidence.',
       'independentBehavioralContracts': false,
     },
     'scope': <String, Object?>{

@@ -205,7 +205,7 @@ void main() {
           reason: '$version must select its own engine floor',
         );
         for (final artifact in [
-          p.join('host', 'lib', 'generated', 'vscode_facade.g.dart'),
+          p.join('host', 'lib', 'generated', 'vscode_runtime.g.dart'),
           p.join('host', 'lib', 'generated', 'vscode_dart_layer.g.dart'),
           p.join('out', 'extension.dart.js'),
         ]) {

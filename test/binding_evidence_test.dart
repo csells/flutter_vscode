@@ -50,12 +50,8 @@ const canonicalHostContractSourcePaths = <String, String>{
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
   'generatedDartLayer':
       'test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart',
-  'generatedFacade':
-      'test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart',
   'generatedHostExports':
       'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  'generatedParity':
-      'test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart',
   'generatedRuntime':
       'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
   'generatedViewProtocol':
@@ -312,9 +308,11 @@ void main() {
       expect(artifactJson['evidence'], {
         'kind': 'mechanicalAttribution',
         'meaning':
-            'Every listed generated binding ID was exercised by this one '
-                'real Extension Host Contract after its receipted repository '
-                'sources and surrounding native behavior passed.',
+            'Every listed binding ID is attributed to this one real '
+                'Extension Host Contract by its reviewed Semantic Override; '
+                'the gate passes only after the receipted repository sources '
+                'and the surrounding native behavior pass, without '
+                'per-member observation.',
         'independentBehavioralContracts': false,
       });
       expect(artifactJson, isNot(contains('verifiedBindings')));
@@ -343,19 +341,9 @@ void main() {
     }
   });
 
-  test('generated operations own binding observations, not the host test', () {
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final expectedIds = <String>{
-      for (final entry in entries.entries)
-        if ((entry.value! as Map<Object?, Object?>)['strategy'] !=
-            'reviewedExcluded')
-          entry.key,
-    };
-
+  test('the retired binding-observation mechanism leaves no residue', () {
+    // The walking-slice facade and its per-member observation plumbing
+    // retired with SL-2; the receipted gate carries the host evidence.
     final hostTest = File(
       'test/fixtures/host_extension/test/run.cjs',
     ).readAsStringSync();
@@ -366,55 +354,19 @@ void main() {
       hostTest,
       isNot(matches(RegExp('(class|interface|method):vscode'))),
     );
-    final authorHostFiles = Directory(
-      'test/fixtures/host_extension/host/lib',
-    ).listSync(recursive: true).whereType<File>().where(
-          (file) =>
-              file.path.endsWith('.dart') &&
-              !file.path.contains('${Platform.pathSeparator}generated'),
-        );
-    for (final file in authorHostFiles) {
-      final source = file.readAsStringSync();
-      expect(source, isNot(contains('observeHostBinding')), reason: file.path);
-      expect(
-        source,
-        isNot(matches(RegExp('(class|interface|method):vscode'))),
-        reason: file.path,
-      );
-    }
-
-    final facade = File(
-      'test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart',
-    ).readAsStringSync();
-    final declarations = RegExp(
-      r"const (_binding\w+) = (?:r)?'([^']+)';",
-    ).allMatches(facade).toList();
-    expect(
-      declarations.map((match) => match.group(2)).toSet(),
-      expectedIds,
-    );
-    expect(declarations, hasLength(expectedIds.length));
-    for (final declaration in declarations) {
-      final name = declaration.group(1)!;
-      expect(
-        RegExp('\\b${RegExp.escape(name)}\\b').allMatches(facade),
-        hasLength(greaterThan(1)),
-        reason: '$name must be reached by a generated operation',
-      );
-    }
 
     final runtime = File(
       'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
     ).readAsStringSync();
-    expect(runtime, contains('void observeHostBindings'));
-    expect(runtime, contains('JSFunction observeHostCallback'));
+    expect(runtime, isNot(contains('observeHostBindings')));
+    expect(runtime, isNot(contains('observeHostCallback')));
 
     final bootstrap = File(
       'test/fixtures/host_extension/host/bootstrap.cjs',
     ).readAsStringSync();
-    expect(bootstrap, contains('namespace.bindingObservers[extensionKey]'));
-    expect(bootstrap, contains("process.once('exit'"));
-    expect(bootstrap, contains('observedBindingIds:'));
+    expect(bootstrap, isNot(contains('bindingObservers')));
+    expect(bootstrap, isNot(contains('observedBindingIds')));
+    expect(bootstrap, isNot(contains('FLUTTER_VSCODE_HOST_EVIDENCE_PATH')));
   });
 }
 

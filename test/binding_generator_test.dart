@@ -1190,7 +1190,7 @@ void main() {
     );
   });
 
-  test('emits a deterministic native JS type from an opaque entry', () {
+  test('emits only the runtime modules beside the manifest outputs', () {
     final generator = VSCodeBindingGenerator();
     final generated = generator.generate(
       inventory: _inventory(['interface:vscode.Known']),
@@ -1201,16 +1201,16 @@ void main() {
     );
 
     expect(
-      generated.files['host/lib/generated/vscode_parity.g.dart'],
-      '''
-// GENERATED CODE - DO NOT MODIFY BY HAND.
-// VS Code 1.129.1 API parity slice.
-
-import 'dart:js_interop';
-
-/// Native VS Code `Known` host object.
-extension type Known.fromJS(JSObject _) implements JSObject {}
-''',
+      generated.files.keys.toSet(),
+      {
+        'host/lib/generated/vscode_runtime.g.dart',
+        'host/lib/generated/host_exports.g.dart',
+        'host/bootstrap.cjs',
+        'package.json',
+        'coverage.json',
+      },
+      reason: 'the API surface is the single dart-layer artifact; the '
+          'generator owns only runtime, exports, bootstrap, and ledgers',
     );
   });
 
@@ -1434,527 +1434,6 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
     }
   });
 
-  test('emits the reviewed Flutter View host binding slice', () {
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
-      overrides: _readJson(
-        'tool/bindings/overrides/vscode-1.129.1.json',
-      ),
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    expect(
-      parity,
-      allOf([
-        contains('external Window get window;'),
-        contains('extension type Window.fromJS(JSObject _)'),
-        contains('WebviewPanel createWebviewPanel('),
-        contains('static const int one = 1;'),
-        contains('external factory WebviewOptions({'),
-        contains('bool enableScripts,'),
-        contains('JSArray<Uri> localResourceRoots,'),
-        contains('external Uri get extensionUri;'),
-        contains('external static Uri joinPath('),
-        contains('external JSString toUriString([bool skipEncoding]);'),
-        contains('extension type WebviewPanel.fromJS(JSObject _)'),
-        contains('external Webview get webview;'),
-        contains('external VoidEvent get onDidDispose;'),
-        contains('extension type Webview.fromJS(JSObject _)'),
-        contains('external JSString get html;'),
-        contains('external set html(JSString value);'),
-        contains('external JSString get cspSource;'),
-        contains('external Uri asWebviewUri(Uri localResource);'),
-        contains('external Thenable<JSBoolean> postMessage(JSAny? message);'),
-        contains('external Event<JSAny?> get onDidReceiveMessage;'),
-      ]),
-    );
-
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-    expect(
-      facade,
-      allOf(
-        contains('WebviewPanel createFlutterViewPanel({'),
-        contains('required List<Uri> localResourceRoots,'),
-        contains('Future<bool> postMessageFuture(JSAny? message)'),
-        contains('Disposable listenOnDidReceiveMessage(JSFunction listener)'),
-        contains('Disposable listenOnDidDispose(JSFunction listener)'),
-      ),
-    );
-  });
-
-  test('derives namespace and operation names from the canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-
-    final executionId = _entryIdForStrategy(entries, 'commandExecution');
-    final registrationId = _entryIdForStrategy(entries, 'commandRegistration');
-    final commandNamespaceId = declarations.singleWhere(
-      (candidate) => candidate['id'] == executionId,
-    )['parentId']! as String;
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      executionId,
-      'runAction',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      registrationId,
-      'installAction',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      commandNamespaceId,
-      'actions',
-    );
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-
-    expect(parity, contains('external Actions get actions;'));
-    expect(parity, contains('extension type Actions.fromJS(JSObject _)'));
-    expect(parity, contains('Thenable<T> runAction<T extends JSAny?>'));
-    expect(parity, contains('Disposable installAction('));
-    expect(parity, isNot(contains('external Commands get commands;')));
-    expect(parity, isNot(contains('executeCommand<T extends JSAny?>')));
-  });
-
-  test('derives projected member names from the canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final projectedIds = entries.entries
-        .where(
-          (entry) =>
-              (entry.value! as Map<Object?, Object?>)['strategy'] ==
-              'intGetterProjection',
-        )
-        .map((entry) => entry.key)
-        .toList()
-      ..sort();
-    final replacementNames = ['column', 'row'];
-    for (var index = 0; index < projectedIds.length; index += 1) {
-      final id = projectedIds[index];
-      _renameProducerDeclaration(
-        inventory,
-        overrides,
-        id,
-        replacementNames[index],
-      );
-    }
-
-    final parity = VSCodeBindingGenerator()
-        .generate(
-          inventory: inventory,
-          overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
-        )
-        .files['host/lib/generated/vscode_parity.g.dart']!;
-
-    expect(parity, contains('external int get row;'));
-    expect(parity, contains('external int get column;'));
-    expect(parity, isNot(contains('external int get line;')));
-    expect(parity, isNot(contains('external int get character;')));
-  });
-
-  test('derives observation IDs and writable string members from IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final targets = overrides['targets']! as List<Object?>;
-    final oldId = _entryIdForStrategy(entries, 'stringGetterSetterProjection');
-    const newId = r'property:interface:vscode.Webview/$instance/markupSource';
-    final declaration = declarations.singleWhere(
-      (candidate) => candidate['id'] == oldId,
-    );
-    declaration['id'] = newId;
-    declaration['name'] = 'markupSource';
-    declaration['qualifiedName'] = 'vscode.Webview.markupSource';
-    targets[targets.indexOf(oldId)] = newId;
-    final entry = (entries.remove(oldId)! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    entry['declarationSha256'] = computeDeclarationFingerprint(
-      declaration.cast<String, Object?>(),
-    );
-    entries[newId] = entry;
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    expect(parity, contains('external JSString get markupSource;'));
-    expect(parity, contains('external set markupSource(JSString value);'));
-    expect(facade, contains("'$newId'"));
-    expect(facade, contains('final value = markupSource.toDart;'));
-    expect(facade, contains('markupSource = value.toJS;'));
-  });
-
-  test('derives Flutter View surface operation names from canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    const renames = {
-      'stringGetterProjection': 'policySource',
-      'eventValue': 'onDidReceivePayload',
-      'thenableBoolMethod': 'sendPayload',
-      'unaryUriMethod': 'toSurfaceUri',
-    };
-    for (final rename in renames.entries) {
-      final candidates = entries.entries.where(
-        (entry) =>
-            (entry.value! as Map<Object?, Object?>)['strategy'] == rename.key,
-      );
-      final id = rename.key == 'eventValue'
-          ? candidates.singleWhere((entry) {
-              final declaration = declarations.singleWhere(
-                (candidate) => candidate['id'] == entry.key,
-              );
-              return declaration['kind'] == 'property';
-            }).key
-          : candidates.single.key;
-      _renameProducerDeclaration(
-        inventory,
-        overrides,
-        id,
-        rename.value,
-      );
-    }
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    expect(parity, contains('external JSString get policySource;'));
-    expect(parity, contains('external Event<JSAny?> get onDidReceivePayload;'));
-    expect(parity, contains('sendPayload(JSAny? message);'));
-    expect(parity, contains('external Uri toSurfaceUri(Uri localResource);'));
-    expect(facade, contains('final value = policySource.toDart;'));
-    expect(facade, contains('final uri = toSurfaceUri(localResource);'));
-    expect(facade, contains('await sendPayload(message).toDart'));
-    expect(
-      facade,
-      contains('final registration = onDidReceivePayload(listener);'),
-    );
-  });
-
-  test('derives panel, option, enum, and URI names from canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-
-    final panelCreationId = _entryIdForStrategy(
-      entries,
-      'webviewPanelCreation',
-    );
-    final windowNamespaceId = declarations.singleWhere(
-      (candidate) => candidate['id'] == panelCreationId,
-    )['parentId']! as String;
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      panelCreationId,
-      'openPanel',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'boolObjectField'),
-      'allowScripts',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'uriArrayObjectField'),
-      'assetRoots',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'voidEventValue'),
-      'onClosed',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'uriJoinPath'),
-      'combinePath',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'uriToString'),
-      'formatUri',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      _entryIdForStrategy(entries, 'intEnumMember'),
-      'Primary',
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      windowNamespaceId,
-      'display',
-    );
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    expect(parity, contains('external Display get display;'));
-    expect(parity, contains('extension type Display.fromJS(JSObject _)'));
-    expect(parity, contains('WebviewPanel openPanel('));
-    expect(parity, contains('bool allowScripts,'));
-    expect(parity, contains('JSArray<Uri> assetRoots,'));
-    expect(parity, contains('external VoidEvent get onClosed;'));
-    expect(parity, contains("@JS('combinePath')"));
-    expect(parity, contains("@JS('formatUri')"));
-    expect(parity, contains('static const int primary = 1;'));
-    expect(facade, contains('final api = display;'));
-    expect(facade, contains('final panel = openPanel('));
-    expect(facade, contains('allowScripts: true,'));
-    expect(facade, contains('assetRoots: localResourceRoots.toJS,'));
-    expect(facade, contains('final registration = onClosed(listener);'));
-    expect(facade, contains('final uri = Uri.combinePath(base, pathSegment);'));
-    expect(facade, contains('final result = formatUri(skipEncoding).toDart;'));
-  });
-
-  test('derives referenced host type names from canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    _renameSelectedTypeReferences(
-      inventory,
-      overrides,
-      const {'Uri': 'ResourceUri'},
-    );
-    _renameProducerDeclaration(
-      inventory,
-      overrides,
-      'class:vscode.Uri',
-      'ResourceUri',
-    );
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    expect(parity, contains('extension type ResourceUri._(JSObject _)'));
-    expect(parity, contains('external ResourceUri get extensionUri;'));
-    expect(parity, contains('JSArray<ResourceUri> localResourceRoots,'));
-    expect(parity, contains('external ResourceUri asWebviewUri('));
-    expect(parity, isNot(contains('extension type Uri._(JSObject _)')));
-    expect(facade, contains('extension ResourceUriFacade on ResourceUri'));
-    expect(facade, contains('ResourceUri joinHostUriPath(ResourceUri base'));
-  });
-
-  test('derives every selected parity type name from canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    const renames = <String, String>{
-      'Disposable': 'ResourceHandle',
-      'Hover': 'Popup',
-      'MarkdownString': 'RichText',
-      'Range': 'Span',
-      'ViewColumn': 'PanelColumn',
-      'Thenable': 'AsyncResult',
-      'CancellationToken': 'StopToken',
-      'Event': 'Signal',
-      'ExtensionContext': 'HostContext',
-      'HoverProvider': 'PopupProvider',
-      'TextDocument': 'Document',
-      'Webview': 'Surface',
-      'WebviewOptions': 'SurfaceOptions',
-      'WebviewPanel': 'SurfacePanel',
-    };
-
-    _renameSelectedTypeReferences(inventory, overrides, renames);
-    for (final rename in renames.entries) {
-      final declaration = declarations.singleWhere(
-        (candidate) =>
-            candidate['name'] == rename.key &&
-            {'class', 'enum', 'interface'}.contains(candidate['kind']),
-      );
-      _renameProducerDeclaration(
-        inventory,
-        overrides,
-        declaration['id']! as String,
-        rename.value,
-      );
-    }
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final parity = generated.files['host/lib/generated/vscode_parity.g.dart']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    for (final name in renames.values) {
-      expect(parity, contains(name), reason: name);
-    }
-    expect(parity, contains('external AsyncResult<T> executeCommand'));
-    expect(parity, contains('external Signal<Document> get'));
-    expect(parity, contains('external factory PopupProvider'));
-    expect(parity, contains('extension type SurfacePanel.fromJS'));
-    expect(parity, contains('extension type Surface.fromJS'));
-    expect(facade, contains('extension SurfaceFacade on Surface'));
-    expect(facade, contains('Popup createHostHover(RichText contents'));
-    expect(facade, contains('Span createHostRange('));
-  });
-
-  test('derives emitted signature parameter names from canonical IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-
-    void renameParameters(String strategy, List<String> names) {
-      final id = _entryIdForStrategy(entries, strategy);
-      final declaration = declarations.singleWhere(
-        (candidate) => candidate['id'] == id,
-      );
-      final parameters = (declaration['parameters']! as List<Object?>)
-          .cast<Map<Object?, Object?>>();
-      for (var index = 0; index < names.length; index += 1) {
-        parameters[index]['name'] = names[index];
-      }
-      (entries[id]! as Map<Object?, Object?>)['declarationSha256'] =
-          computeDeclarationFingerprint(declaration.cast<String, Object?>());
-    }
-
-    renameParameters('commandExecution', ['actionId', 'arguments']);
-    renameParameters(
-      'commandRegistration',
-      ['actionId', 'handler', 'receiver'],
-    );
-    renameParameters('unaryUriMethod', ['resource']);
-
-    final parity = VSCodeBindingGenerator()
-        .generate(
-          inventory: inventory,
-          overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
-        )
-        .files['host/lib/generated/vscode_parity.g.dart']!;
-
-    expect(parity, contains('JSString actionId,'));
-    expect(parity, contains('JSFunction handler, ['));
-    expect(parity, contains('JSAny? receiver,'));
-    expect(parity, contains('asWebviewUri(Uri resource);'));
-    expect(parity, isNot(contains('JSAny? thisArg,')));
-  });
-
-  test('attributes bindings only after the native operation succeeds', () {
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
-      overrides: _readJson(
-        'tool/bindings/overrides/vscode-1.129.1.json',
-      ),
-      project: _readJson('test/fixtures/host_extension/extension.json'),
-    );
-    final bootstrap = generated.files['host/bootstrap.cjs']!;
-    final facade = generated.files['host/lib/generated/vscode_facade.g.dart']!;
-
-    expect(
-      bootstrap,
-      contains(
-        'const callbackResult = Reflect.apply(callback, this, args);\n'
-        '  for (const bindingId of bindingIds)',
-      ),
-    );
-    expect(
-      bootstrap,
-      contains('return callbackResult;'),
-    );
-    expect(
-      facade,
-      contains(
-        'final registration = registerCommand(\n'
-        '      command,\n'
-        '      toHostCallback(callback),\n'
-        '    );\n'
-        '    observeHostBindings(',
-      ),
-    );
-    expect(
-      facade,
-      contains(
-        'final result = await postMessage(message).toDart;\n'
-        '    final accepted = result.toDart;\n'
-        '    if (accepted) {\n'
-        '      observeHostBindings(',
-      ),
-    );
-    expect(
-      facade,
-      contains(
-        '        _bindingThenableInterface,\n'
-        '      ]);\n'
-        '    }\n'
-        '    return accepted;',
-      ),
-    );
-  });
-
   test('uses one extension identity hash in Dart exports and bootstrap', () {
     final generated = VSCodeBindingGenerator().generate(
       inventory: _inventory(['interface:vscode.Known']),
@@ -1980,7 +1459,7 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
     );
   });
 
-  test('emits the reviewed walking slice and an honest coverage ledger', () {
+  test('validates the reviewed slice and emits an honest coverage ledger', () {
     final inventory = _readJson(
       'tool/bindings/ir/vscode-1.129.1.json',
     );
@@ -2005,31 +1484,26 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
 
     expect(first.files, second.files);
     expect(
-      first.files.keys,
-      containsAll({
+      first.files.keys.toSet(),
+      {
         'host/lib/generated/host_exports.g.dart',
-        'host/lib/generated/vscode_facade.g.dart',
-        'host/lib/generated/vscode_parity.g.dart',
         'host/lib/generated/vscode_runtime.g.dart',
         'host/bootstrap.cjs',
         'package.json',
         'coverage.json',
-      }),
+      },
+      reason: 'the retired facade and walking-slice parity must not return',
     );
-    final parity = first.files['host/lib/generated/vscode_parity.g.dart']!;
-    expect(parity, contains('extension type TextDocument'));
-    expect(parity, contains('extension type Position'));
-    expect(parity, contains('extension type CancellationToken'));
-    expect(parity, contains('extension type Thenable'));
-    expect(parity, contains('extension type Event'));
-    final facade = first.files['host/lib/generated/vscode_facade.g.dart']!;
-    expect(facade, contains('registerCommand'));
-    expect(facade, contains('executeCommand'));
-    expect(facade, contains('registerHoverProvider'));
-    expect(facade, contains('onDidOpenTextDocument'));
     final runtime = first.files['host/lib/generated/vscode_runtime.g.dart']!;
     expect(runtime, contains('toHostPromise'));
     expect(runtime, contains('JavaScriptError'));
+    expect(runtime, contains('toHostCallback'));
+    expect(runtime, isNot(contains('observeHostBindings')));
+    expect(runtime, isNot(contains('observeHostCallback')));
+    final bootstrap = first.files['host/bootstrap.cjs']!;
+    expect(bootstrap, isNot(contains('bindingObservers')));
+    expect(bootstrap, isNot(contains('observedBindingIds')));
+    expect(bootstrap, isNot(contains('FLUTTER_VSCODE_HOST_EVIDENCE_PATH')));
 
     for (final entry in first.files.entries.where(
       (entry) => entry.key.endsWith('.dart'),
@@ -2079,8 +1553,10 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
     expect(coverage['hostEvidence'], {
       'kind': 'mechanicalAttribution',
       'meaning':
-          '53 generated binding IDs were exercised by one real Extension '
-              'Host Contract after its surrounding native behavior passed.',
+          '53 reviewed binding IDs cite one real Extension Host Contract '
+              'whose receipted gate passed its surrounding native behavior; '
+              'the retired per-member observation mechanism no longer '
+              'contributes evidence.',
       'independentBehavioralContracts': false,
     });
     expect(coverage['scope'], {
@@ -2148,7 +1624,7 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
         }),
         containsPair('binding', {
           'status': 'emitted',
-          'artifacts': ['host/lib/generated/vscode_parity.g.dart'],
+          'artifacts': ['host/lib/generated/vscode_dart_layer.g.dart'],
         }),
         containsPair('host', {
           'status': 'verified',
@@ -3512,43 +2988,6 @@ extension type Known.fromJS(JSObject _) implements JSObject {}
         reason: declarationId,
       );
     }
-  });
-
-  test('derives the shared emitted disposal member name from IR', () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final entries = (overrides['entries']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final disposeIds = <String>[
-      for (final entry in entries.entries)
-        if ((entry.value! as Map<Object?, Object?>)['strategy'] ==
-            'disposeMethod')
-          entry.key,
-    ];
-    for (final declarationId in disposeIds) {
-      _renameProducerDeclaration(
-        inventory,
-        overrides,
-        declarationId,
-        'release',
-      );
-    }
-
-    final parity = VSCodeBindingGenerator()
-        .generate(
-          inventory: inventory,
-          overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
-        )
-        .files['host/lib/generated/vscode_parity.g.dart']!;
-
-    expect(
-      RegExp(r'external JSAny\? release\(\);').allMatches(parity),
-      hasLength(3),
-    );
-    expect(parity, isNot(contains('external JSAny? dispose();')));
   });
 
   test('rejects return-type drift for emitted disposal methods', () {
@@ -7000,102 +6439,6 @@ Map<String, Object?> _fixtureCanonicalTupleElement(
     'rest': element['rest'],
     'type': _fixtureCanonicalType(element['type'], scopes),
   };
-}
-
-void _renameSelectedTypeReferences(
-  Map<String, Object?> inventory,
-  Map<String, Object?> overrides,
-  Map<String, String> replacements,
-) {
-  final declarations = (inventory['declarations']! as List<Object?>)
-      .cast<Map<Object?, Object?>>();
-  final entries = overrides['entries']! as Map<Object?, Object?>;
-  final selected = <Map<Object?, Object?>>[
-    for (final id in entries.keys)
-      declarations.singleWhere((candidate) => candidate['id'] == id),
-  ];
-  final childrenByParent = <String, List<Map<Object?, Object?>>>{};
-  for (final declaration in declarations) {
-    childrenByParent
-        .putIfAbsent(declaration['parentId']! as String, () => [])
-        .add(declaration);
-  }
-  final literalFirstChildren = <Map<Object?, Object?>>[];
-  final literalDescendants = <Map<Object?, Object?>>[];
-  for (final declaration in selected) {
-    if (declaration['kind'] != 'typeLiteral') {
-      continue;
-    }
-    final children = childrenByParent[declaration['id']] ?? const [];
-    if (children.isNotEmpty) {
-      literalFirstChildren.add(children.first);
-    }
-    final pending = [...children];
-    while (pending.isNotEmpty) {
-      final child = pending.removeAt(0);
-      literalDescendants.add(child);
-      pending.addAll(childrenByParent[child['id']] ?? const []);
-    }
-  }
-  for (final declaration in [...selected, ...literalDescendants]) {
-    _renameTypeReferences(declaration, replacements);
-  }
-  for (final declaration in selected) {
-    if (const {
-      'function',
-      'constructor',
-      'callSignature',
-      'method',
-      'indexSignature',
-    }.contains(declaration['kind'])) {
-      _refreshProducerIdentity(
-        inventory,
-        overrides,
-        declaration['id']! as String,
-      );
-    }
-  }
-  for (final child in literalFirstChildren) {
-    _resynchronizeAncestorTypeLiterals(
-      inventory,
-      overrides,
-      child['id']! as String,
-    );
-  }
-  _refreshOverrideFingerprints(inventory, overrides);
-  _sortDeclarationsLikeProducer(inventory);
-}
-
-void _renameTypeReferences(
-  Object? value,
-  Map<String, String> replacements,
-) {
-  if (value is List<Object?>) {
-    for (final item in value) {
-      _renameTypeReferences(item, replacements);
-    }
-    return;
-  }
-  if (value is! Map<Object?, Object?>) {
-    return;
-  }
-  if (value['kind'] == 'reference') {
-    final name = value['name'];
-    if (name is String && replacements[name] != null) {
-      value['name'] = replacements[name];
-    }
-  }
-  final canonicalSignature = value['canonicalSignature'];
-  if (canonicalSignature is String) {
-    final decoded = jsonDecode(canonicalSignature);
-    _renameTypeReferences(decoded, replacements);
-    value['canonicalSignature'] = jsonEncode(decoded);
-  }
-  for (final entry in value.entries) {
-    if (entry.key != 'canonicalSignature') {
-      _renameTypeReferences(entry.value, replacements);
-    }
-  }
 }
 
 void _sortDeclarationsLikeProducer(Map<String, Object?> inventory) {

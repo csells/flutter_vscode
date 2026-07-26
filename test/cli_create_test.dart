@@ -127,7 +127,8 @@ void main() {
       ),
     ).readAsStringSync();
     expect(source, contains("'my-extension.hello'"));
-    expect(source, contains('registerCommandCallback'));
+    expect(source, contains('registerCommand'));
+    expect(source, isNot(contains('vscode_facade')));
     expect(source, contains('registerHoverProvider'));
     expect(source, contains("registerHoverProvider('json'.toJS"));
     expect(source, contains('registerHostExports'));

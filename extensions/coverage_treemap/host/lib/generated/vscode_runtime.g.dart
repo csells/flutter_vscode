@@ -10,15 +10,6 @@ external JSString _mapHostStack(JSString stack);
 @JS('__flutterVscode.callbackWrappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f')
 external JSFunction _wrapHostCallback(JSFunction callback);
 
-@JS('__flutterVscode.bindingObservers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f')
-external void _observeHostBinding(JSString bindingId);
-
-@JS('__flutterVscode.bindingCallbackWrappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f')
-external JSFunction _wrapObservedHostCallback(
-  JSFunction callback,
-  JSArray<JSString> bindingIds,
-);
-
 /// Native JavaScript error used to preserve Dart failure details.
 @JS('Error')
 extension type JavaScriptError._(JSObject _) implements JSObject {
@@ -42,23 +33,6 @@ JavaScriptError toHostError(Object error, StackTrace stackTrace) {
 
 /// Wraps [callback] so synchronous throws retain mapped Dart source frames.
 JSFunction toHostCallback(JSFunction callback) => _wrapHostCallback(callback);
-
-/// Records binding IDs reached through an actual generated host operation.
-void observeHostBindings(Iterable<String> bindingIds) {
-  for (final bindingId in bindingIds) {
-    _observeHostBinding(bindingId.toJS);
-  }
-}
-
-/// Records [bindingIds] only when the native host invokes [callback].
-JSFunction observeHostCallback(
-  JSFunction callback,
-  List<String> bindingIds,
-) =>
-    _wrapObservedHostCallback(
-      callback,
-      bindingIds.map((bindingId) => bindingId.toJS).toList().toJS,
-    );
 
 /// One HTTP response snapshot from the Extension Host's global `fetch`.
 final class HostFetchResponse {

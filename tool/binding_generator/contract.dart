@@ -53,12 +53,8 @@ const canonicalHostContractSourcePaths = <String, String>{
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
   'generatedDartLayer':
       'test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart',
-  'generatedFacade':
-      'test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart',
   'generatedHostExports':
       'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  'generatedParity':
-      'test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart',
   'generatedRuntime':
       'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
   'generatedViewProtocol':
@@ -164,9 +160,11 @@ String buildHostContractArtifact(Directory repositoryRoot) {
     'evidence': <String, Object?>{
       'kind': 'mechanicalAttribution',
       'meaning':
-          'Every listed generated binding ID was exercised by this one '
-              'real Extension Host Contract after its receipted repository '
-              'sources and surrounding native behavior passed.',
+          'Every listed binding ID is attributed to this one real Extension '
+              'Host Contract by its reviewed Semantic Override; the gate '
+              'passes only after the receipted repository sources and the '
+              'surrounding native behavior pass, without per-member '
+              'observation.',
       'independentBehavioralContracts': false,
     },
     'attributedBindings': attributedBindings,

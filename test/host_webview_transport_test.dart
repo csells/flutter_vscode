@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
@@ -23,18 +22,11 @@ void main() {
         '.dart_tool',
         'package_config.json',
       );
-      final runtime = File(
-        'test/fixtures/host_extension/host/lib/generated/'
-        'vscode_runtime.g.dart',
-      ).readAsStringSync();
-      final extensionKey = RegExp(
-        r"@JS\('__flutterVscode\.bindingObservers\.([^']+)'\)",
-      ).firstMatch(runtime)!.group(1)!;
 
       await probeSource.writeAsString('''
 import 'dart:js_interop';
 
-import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportDisposeProbe')
@@ -42,7 +34,7 @@ external set _transportDisposeProbe(JSFunction value);
 
 void main() {
   _transportDisposeProbe = ((JSObject rawWebview) =>
-      _runProbe(Webview.fromJS(rawWebview)).toJS).toJS;
+      _runProbe(Webview(rawWebview)).toJS).toJS;
 }
 
 Future<JSAny?> _runProbe(Webview webview) async {
@@ -77,11 +69,6 @@ const assert = require('node:assert/strict');
 let disposeCalls = 0;
 let listenerActive = true;
 globalThis.self = globalThis;
-globalThis.__flutterVscode = {
-  bindingObservers: {
-    ${jsonEncode(extensionKey)}: () => {},
-  },
-};
 require(process.argv[2]);
 
 (async () => {
@@ -159,19 +146,12 @@ require(process.argv[2]);
         '.dart_tool',
         'package_config.json',
       );
-      final runtime = File(
-        'test/fixtures/host_extension/host/lib/generated/'
-        'vscode_runtime.g.dart',
-      ).readAsStringSync();
-      final extensionKey = RegExp(
-        r"@JS\('__flutterVscode\.bindingObservers\.([^']+)'\)",
-      ).firstMatch(runtime)!.group(1)!;
 
       await probeSource.writeAsString('''
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportRejectProbe')
@@ -179,7 +159,7 @@ external set _transportRejectProbe(JSFunction value);
 
 void main() {
   _transportRejectProbe = ((JSObject rawWebview) =>
-      _runProbe(Webview.fromJS(rawWebview)).toJS).toJS;
+      _runProbe(Webview(rawWebview)).toJS).toJS;
 }
 
 Future<JSAny?> _runProbe(Webview webview) async {
@@ -210,11 +190,6 @@ Future<JSAny?> _runProbe(Webview webview) async {
 const assert = require('node:assert/strict');
 
 globalThis.self = globalThis;
-globalThis.__flutterVscode = {
-  bindingObservers: {
-    ${jsonEncode(extensionKey)}: () => {},
-  },
-};
 require(process.argv[2]);
 
 (async () => {

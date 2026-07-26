@@ -3,10 +3,11 @@ import 'dart:js_interop';
 import 'dart:math';
 
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/host_exports.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart'
     as parity;
-import 'package:flutter_vscode_host_fixture/generated/vscode_facade.g.dart';
+import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
 
 const _pingCommand = 'flutter-vscode.host-test.ping';
@@ -98,8 +99,8 @@ final _confirmRenderObservationOperation =
 @JSExport()
 class _VSCodeHostExtension {
   var _openEventCount = 0;
-  Disposable? _openEventSubscription;
-  TextDocument? _lastOpenedDocument;
+  parity.Disposable? _openEventSubscription;
+  parity.TextDocument? _lastOpenedDocument;
   var _hoverDocumentMatchedEvent = false;
   var _hoverReceivedCancellationToken = false;
 
@@ -107,22 +108,22 @@ class _VSCodeHostExtension {
     return toHostPromise(
       Future<JSAny?>(() {
         try {
-          final context = ExtensionContext.fromJS(rawContext);
-          final vscode = VSCode.fromJS(rawVscode);
+          final context = parity.ExtensionContext(rawContext);
+          final vscode = parity.VscodeApi(rawVscode);
           final ping = (() {
             return Future<JSString>.value('pong from Dart'.toJS).toJS;
           }).toJS;
 
-          final registration = vscode.commandApi.registerCommandCallback(
-            _pingCommand.toJS,
-            ping,
+          final registration = vscode.commands.registerCommand(
+            _pingCommand,
+            toHostCallback(ping),
           );
-          context.addSubscription(registration);
+          _addSubscription(context, registration);
 
           final jsPromiseRoundTrip = (() {
-            final source = vscode.commandApi.executeCommandFuture(
-              _jsPromiseSourceCommand.toJS,
-            );
+            final source = vscode.commands
+                .executeCommand<JSAny?>(_jsPromiseSourceCommand.toJS)
+                .toDart;
             return toHostPromise(
               source.then<JSAny?>((value) {
                 final text = (value! as JSString).toDart;
@@ -130,12 +131,12 @@ class _VSCodeHostExtension {
               }),
             );
           }).toJS;
-          final jsPromiseRoundTripRegistration = vscode.commandApi
-              .registerCommandCallback(
-                _jsPromiseRoundTripCommand.toJS,
-                jsPromiseRoundTrip,
+          final jsPromiseRoundTripRegistration = vscode.commands
+              .registerCommand(
+                _jsPromiseRoundTripCommand,
+                toHostCallback(jsPromiseRoundTrip),
               );
-          context.addSubscription(jsPromiseRoundTripRegistration);
+          _addSubscription(context, jsPromiseRoundTripRegistration);
 
           parity.Disposable? parityHoverRegistration;
           final paritySmoke = (() {
@@ -388,20 +389,22 @@ class _VSCodeHostExtension {
               }),
             );
           }).toJS;
-          final paritySmokeRegistration = vscode.commandApi
-              .registerCommandCallback(_paritySmokeCommand.toJS, paritySmoke);
-          context.addSubscription(paritySmokeRegistration);
+          final paritySmokeRegistration = vscode.commands.registerCommand(
+            _paritySmokeCommand,
+            toHostCallback(paritySmoke),
+          );
+          _addSubscription(context, paritySmokeRegistration);
           final disposeParityProvider = (() {
             parityHoverRegistration?.dispose();
             parityHoverRegistration = null;
             return null;
           }).toJS;
           final disposeParityProviderRegistration =
-              vscode.commandApi.registerCommandCallback(
-            _disposeParityProviderCommand.toJS,
-            disposeParityProvider,
+              vscode.commands.registerCommand(
+            _disposeParityProviderCommand,
+            toHostCallback(disposeParityProvider),
           );
-          context.addSubscription(disposeParityProviderRegistration);
+          _addSubscription(context, disposeParityProviderRegistration);
 
           final hostFetchProbe = ((JSAny? portValue) {
             final port = (portValue! as JSNumber).toDartInt;
@@ -411,12 +414,11 @@ class _VSCodeHostExtension {
               ),
             );
           }).toJS;
-          final hostFetchProbeRegistration =
-              vscode.commandApi.registerCommandCallback(
-            'flutter-vscode.host-test.hostFetchProbe'.toJS,
-            hostFetchProbe,
+          final hostFetchProbeRegistration = vscode.commands.registerCommand(
+            'flutter-vscode.host-test.hostFetchProbe',
+            toHostCallback(hostFetchProbe),
           );
-          context.addSubscription(hostFetchProbeRegistration);
+          _addSubscription(context, hostFetchProbeRegistration);
 
           final failAsync = (() {
             return toHostPromise(
@@ -426,101 +428,116 @@ class _VSCodeHostExtension {
               ),
             );
           }).toJS;
-          final failAsyncRegistration = vscode.commandApi
-              .registerCommandCallback(_failAsyncCommand.toJS, failAsync);
-          context.addSubscription(failAsyncRegistration);
+          final failAsyncRegistration = vscode.commands.registerCommand(
+            _failAsyncCommand,
+            toHostCallback(failAsync),
+          );
+          _addSubscription(context, failAsyncRegistration);
 
           JSAny? failSyncCallback() {
             throw StateError('Dart synchronous failure');
           }
 
           final failSync = failSyncCallback.toJS;
-          final failSyncRegistration = vscode.commandApi
-              .registerCommandCallback(_failSyncCommand.toJS, failSync);
-          context.addSubscription(failSyncRegistration);
+          final failSyncRegistration = vscode.commands.registerCommand(
+            _failSyncCommand,
+            toHostCallback(failSync),
+          );
+          _addSubscription(context, failSyncRegistration);
 
           final provideHover =
               (
-                    TextDocument document,
-                    Position position,
-                    CancellationToken token,
+                    parity.TextDocument document,
+                    parity.Position position,
+                    parity.CancellationToken token,
                   ) {
                     _hoverDocumentMatchedEvent = identical(
                       _lastOpenedDocument,
                       document,
                     );
                     _hoverReceivedCancellationToken =
-                        !token.cancellationRequested;
-                    final contents = createHostMarkdownString(
+                        !token.isCancellationRequested;
+                    final contents = vscode.MarkdownString.new$(
                       'Hover from Dart at '
-                              '${position.lineNumber}:'
-                              '${position.characterOffset}'
+                              '${position.line.toInt()}:'
+                              '${position.character.toInt()}'
                           .toJS,
                     );
-                    final range = createHostRange(0, 0, 0, 5);
-                    return createHostHover(contents, range);
+                    final range =
+                        vscode.Range.new$$2(0.toJS, 0.toJS, 0.toJS, 5.toJS);
+                    return vscode.Hover.new$(contents, range);
                   }
                   .toJS;
-          final provider = createHostHoverProvider(provideHover);
-          final providerRegistration = vscode.languageApi
-              .registerHoverProviderForString('plaintext'.toJS, provider);
-          context.addSubscription(providerRegistration);
+          final provider = parity.HoverProvider.lit$(
+            provideHover: toHostCallback(provideHover),
+          );
+          final providerRegistration = vscode.languages.registerHoverProvider(
+            'plaintext'.toJS,
+            provider,
+          );
+          _addSubscription(context, providerRegistration);
           // The packaged driver activates through a JSON document because a
           // fresh harness window may already hold an untitled plaintext
           // editor, which would activate onLanguage:plaintext at startup.
-          final jsonProviderRegistration = vscode.languageApi
-              .registerHoverProviderForString('json'.toJS, provider);
-          context.addSubscription(jsonProviderRegistration);
+          final jsonProviderRegistration = vscode.languages
+              .registerHoverProvider('json'.toJS, provider);
+          _addSubscription(context, jsonProviderRegistration);
 
-          final onDidOpenDocument = ((TextDocument document) {
+          final onDidOpenDocument = ((parity.TextDocument document) {
             _openEventCount += 1;
             _lastOpenedDocument = document;
           }).toJS;
-          _openEventSubscription = vscode.workspaceApi
-              .listenOnDidOpenTextDocument(onDidOpenDocument);
+          _openEventSubscription = vscode.workspace.onDidOpenTextDocument.call(
+            onDidOpenDocument,
+          );
 
           final eventCount = (() => _openEventCount.toJS).toJS;
-          final eventCountRegistration = vscode.commandApi
-              .registerCommandCallback(_eventCountCommand.toJS, eventCount);
-          context.addSubscription(eventCountRegistration);
+          final eventCountRegistration = vscode.commands.registerCommand(
+            _eventCountCommand,
+            toHostCallback(eventCount),
+          );
+          _addSubscription(context, eventCountRegistration);
 
           final identityResult = (() => _hoverDocumentMatchedEvent.toJS).toJS;
-          final identityRegistration = vscode.commandApi
-              .registerCommandCallback(_identityCommand.toJS, identityResult);
-          context.addSubscription(identityRegistration);
+          final identityRegistration = vscode.commands.registerCommand(
+            _identityCommand,
+            toHostCallback(identityResult),
+          );
+          _addSubscription(context, identityRegistration);
 
           final cancellationTokenResult =
               (() => _hoverReceivedCancellationToken.toJS).toJS;
-          final cancellationTokenRegistration = vscode.commandApi
-              .registerCommandCallback(
-                _hoverReceivedCancellationTokenCommand.toJS,
-                cancellationTokenResult,
+          final cancellationTokenRegistration = vscode.commands
+              .registerCommand(
+                _hoverReceivedCancellationTokenCommand,
+                toHostCallback(cancellationTokenResult),
               );
-          context.addSubscription(cancellationTokenRegistration);
+          _addSubscription(context, cancellationTokenRegistration);
 
           final unsubscribe = _disposeOpenEventSubscription.toJS;
-          final unsubscribeRegistration = vscode.commandApi
-              .registerCommandCallback(_unsubscribeCommand.toJS, unsubscribe);
-          context.addSubscription(unsubscribeRegistration);
+          final unsubscribeRegistration = vscode.commands.registerCommand(
+            _unsubscribeCommand,
+            toHostCallback(unsubscribe),
+          );
+          _addSubscription(context, unsubscribeRegistration);
 
           final openFlutterView = (() => toHostPromise(
             _openView(context, vscode),
           )).toJS;
-          final openFlutterViewRegistration = vscode.commandApi
-              .registerCommandCallback(
-                _openFlutterViewCommand.toJS,
-                openFlutterView,
-              );
-          context.addSubscription(openFlutterViewRegistration);
+          final openFlutterViewRegistration = vscode.commands.registerCommand(
+            _openFlutterViewCommand,
+            toHostCallback(openFlutterView),
+          );
+          _addSubscription(context, openFlutterViewRegistration);
           final probeFlutterViewProtocol = (() => toHostPromise(
             _openView(context, vscode, fixtureMode: protocolProbeMode),
           )).toJS;
-          final probeFlutterViewProtocolRegistration = vscode.commandApi
-              .registerCommandCallback(
-                _probeFlutterViewProtocolCommand.toJS,
-                probeFlutterViewProtocol,
+          final probeFlutterViewProtocolRegistration = vscode.commands
+              .registerCommand(
+                _probeFlutterViewProtocolCommand,
+                toHostCallback(probeFlutterViewProtocol),
               );
-          context.addSubscription(probeFlutterViewProtocolRegistration);
+          _addSubscription(context, probeFlutterViewProtocolRegistration);
           if (_activationFailureFlag?.toDart == '1') {
             throw StateError('Dart host activation failed intentionally');
           }
@@ -544,13 +561,13 @@ class _VSCodeHostExtension {
   }
 
   void _disposeOpenEventSubscription() {
-    _openEventSubscription?.disposeHostResource();
+    _openEventSubscription?.dispose();
     _openEventSubscription = null;
   }
 
   Future<JSAny?> _openView(
-    ExtensionContext context,
-    VSCode vscode, {
+    parity.ExtensionContext context,
+    parity.VscodeApi vscode, {
     String fixtureMode = '',
   }) async {
     final protocolProbe = fixtureMode == protocolProbeMode
@@ -882,11 +899,15 @@ final class _ViewResources {
       () => viewHost.transport.close().timeout(const Duration(seconds: 5)),
     );
     if (!_panelAlreadyDisposed) {
-      await preserveFirstError(viewHost.panel.disposeHostPanel);
+      await preserveFirstError(_disposeHostPanel);
     }
     if (firstError != null) {
       Error.throwWithStackTrace(firstError!, firstStackTrace!);
     }
+  }
+
+  void _disposeHostPanel() {
+    viewHost.panel.dispose();
   }
 }
 
@@ -1006,6 +1027,11 @@ String _secureToken() {
     24,
     (_) => random.nextInt(256).toRadixString(16).padLeft(2, '0'),
   ).join();
+}
+
+/// Adds [registration] to the native extension subscription collection.
+void _addSubscription(parity.ExtensionContext context, JSObject registration) {
+  context.subscriptions.toDart.add(parity.JSAnon_ffa2e03c40a2(registration));
 }
 
 String _html(String value) => value

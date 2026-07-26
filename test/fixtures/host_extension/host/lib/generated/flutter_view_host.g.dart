@@ -6,7 +6,7 @@ import 'dart:js_interop';
 import 'dart:math';
 
 import 'view_protocol.g.dart';
-import 'vscode_facade.g.dart';
+import 'vscode_dart_layer.g.dart' as vs;
 
 /// Observes each parsed native webview message after it is queued for
 /// the protocol validator; harnesses use it to inspect traffic without
@@ -18,7 +18,7 @@ final class HostWebviewTransport
     implements ViewTransport, ViewTransportLifecycle {
   /// Starts listening to messages from the supplied VS Code webview.
   HostWebviewTransport(this._webview, [this._onIncomingMessage]) {
-    _messageRegistration = _webview.listenOnDidReceiveMessage(
+    _messageRegistration = _webview.onDidReceiveMessage.call(
       ((JSAny? message) {
         if (_closed || _receivingClosed) {
           return;
@@ -35,13 +35,13 @@ final class HostWebviewTransport
     );
   }
 
-  final Webview _webview;
+  final vs.Webview _webview;
   final IncomingViewMessageObserver? _onIncomingMessage;
   final StreamController<Object?> _messages =
       StreamController<Object?>.broadcast(sync: true);
   final Completer<Never> _failure = Completer<Never>();
   final Set<Future<void>> _pendingSends = {};
-  Disposable? _messageRegistration;
+  vs.Disposable? _messageRegistration;
   var _receivingClosed = false;
   var _closed = false;
   var _closeCompleted = false;
@@ -68,10 +68,10 @@ final class HostWebviewTransport
     }
     late final Future<void> delivery;
     try {
-      delivery = _webview.postMessageFuture(message.jsify()).then<void>((
+      delivery = _webview.postMessage(message.jsify()).toDart.then<void>((
         accepted,
       ) {
-        if (!accepted) {
+        if (!accepted.toDart) {
           throw StateError('VS Code rejected a Host-to-View message.');
         }
       });
@@ -144,7 +144,7 @@ final class HostWebviewTransport
     }
     final messageRegistration = _messageRegistration;
     if (messageRegistration != null) {
-      messageRegistration.disposeHostResource();
+      messageRegistration.dispose();
       _messageRegistration = null;
     }
     _receivingClosed = true;
@@ -168,8 +168,8 @@ final class FlutterViewHost {
   /// tag. [onIncomingMessage] observes each parsed native webview
   /// message without changing delivery.
   factory FlutterViewHost.open({
-    required ExtensionContext context,
-    required VSCode vscode,
+    required vs.ExtensionContext context,
+    required vs.VscodeApi vscode,
     required String viewName,
     required String viewType,
     required String title,
@@ -179,17 +179,23 @@ final class FlutterViewHost {
     IncomingViewMessageObserver? onIncomingMessage,
     void Function()? onClosed,
   }) {
-    var viewRoot = context.extensionRootUri;
+    var viewRoot = context.extensionUri;
     for (final segment in ['out', 'views', viewName]) {
-      viewRoot = joinHostUriPath(viewRoot, segment.toJS);
+      viewRoot = vscode.Uri.joinPath(viewRoot, [segment.toJS]);
     }
-    final panel = vscode.windowApi.createFlutterViewPanel(
-      viewType: viewType,
-      title: title,
-      localResourceRoots: [viewRoot],
+    final panel = vscode.window.createWebviewPanel(
+      viewType,
+      title,
+      vscode.ViewColumn.One.toJS,
+      vs.JSIntersection_9b95285c216c(
+        vs.WebviewOptions.lit$(
+          enableScripts: true.toJS,
+          localResourceRoots: [viewRoot].toJS,
+        ),
+      ),
     );
     final transport = HostWebviewTransport(
-      panel.webviewSurface,
+      panel.webview,
       onIncomingMessage,
     );
     final sessionId = _secureToken();
@@ -205,6 +211,7 @@ final class FlutterViewHost {
       session,
       transport,
       DateTime.now(),
+      vscode.Uri,
       viewRoot,
       sessionId,
       bootstrapNonce,
@@ -212,8 +219,8 @@ final class FlutterViewHost {
       List<String>.unmodifiable(extraHead),
       scriptNonce,
     );
-    panel.webviewSurface.htmlText = host._viewHtml();
-    panel.listenOnDidDispose(
+    panel.webview.html = host._viewHtml();
+    panel.onDidDispose.call(
       ((JSAny? _) {
         unawaited(host.close());
         onClosed?.call();
@@ -227,6 +234,7 @@ final class FlutterViewHost {
     this.session,
     this.transport,
     this.loadStartedAt,
+    this._uri,
     this._viewRoot,
     this._sessionId,
     this._bootstrapNonce,
@@ -236,7 +244,7 @@ final class FlutterViewHost {
   );
 
   /// The native webview panel showing the view.
-  final WebviewPanel panel;
+  final vs.WebviewPanel panel;
 
   /// The connected versioned protocol session.
   final HostViewSession session;
@@ -248,7 +256,8 @@ final class FlutterViewHost {
   /// start of a cold-start measurement ending at first render.
   final DateTime loadStartedAt;
 
-  final Uri _viewRoot;
+  final vs.UriCtor _uri;
+  final vs.Uri _viewRoot;
   final String _sessionId;
   final String _bootstrapNonce;
   final String _title;
@@ -265,11 +274,12 @@ final class FlutterViewHost {
   /// stays connected and accepts the reloaded view's handshake.
   void reload() {
     _reloadGeneration += 1;
-    panel.webviewSurface.htmlText = _viewHtml();
+    panel.webview.html = _viewHtml();
   }
 
   String _viewHtml() => flutterViewHtml(
-        webview: panel.webviewSurface,
+        webview: panel.webview,
+        uri: _uri,
         viewRoot: _viewRoot,
         sessionId: _sessionId,
         bootstrapNonce: _bootstrapNonce,
@@ -296,13 +306,16 @@ final class FlutterViewHost {
 /// CSP-correct webview HTML that boots the built Flutter View under
 /// [viewRoot] and carries the protocol bootstrap metadata.
 ///
-/// [extraHead] fragments are written verbatim before `</head>`. When
-/// [scriptNonce] is supplied it joins the `script-src` directive and
-/// is stamped on the bootstrap script tag. [reloadGeneration] stamps
-/// a document-distinguishing meta so in-place reloads always apply.
+/// [uri] is the native URI constructor object used to join the
+/// bootstrap path. [extraHead] fragments are written verbatim before
+/// `</head>`. When [scriptNonce] is supplied it joins the `script-src`
+/// directive and is stamped on the bootstrap script tag.
+/// [reloadGeneration] stamps a document-distinguishing meta so
+/// in-place reloads always apply.
 String flutterViewHtml({
-  required Webview webview,
-  required Uri viewRoot,
+  required vs.Webview webview,
+  required vs.UriCtor uri,
+  required vs.Uri viewRoot,
   required String sessionId,
   required String bootstrapNonce,
   required String title,
@@ -310,11 +323,11 @@ String flutterViewHtml({
   String? scriptNonce,
   int reloadGeneration = 0,
 }) {
-  final base = webview.asFlutterViewUri(viewRoot).toDartString();
+  final base = webview.asWebviewUri(viewRoot).toString$();
   final bootstrap = webview
-      .asFlutterViewUri(joinHostUriPath(viewRoot, 'flutter_bootstrap.js'.toJS))
-      .toDartString();
-  final csp = webview.contentSecurityPolicySource;
+      .asWebviewUri(uri.joinPath(viewRoot, ['flutter_bootstrap.js'.toJS]))
+      .toString$();
+  final csp = webview.cspSource;
   final scriptSources = scriptNonce == null ? csp : "$csp 'nonce-$scriptNonce'";
   final nonceAttribute = scriptNonce == null ? '' : ' nonce="$scriptNonce"';
   final headExtras = extraHead.map((fragment) => '\n  $fragment').join();

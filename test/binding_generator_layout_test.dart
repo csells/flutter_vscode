@@ -44,9 +44,7 @@ const _expectedModuleDeclarations = <String, List<String>>{
   'tool/binding_generator/templates.dart': [
     'String hostExportsTemplate(',
     'String bootstrapTemplate(',
-    'String walkingSliceParityTemplate(',
-    'String walkingSliceFacadeTemplate(',
-    'String walkingSliceRuntimeTemplate(',
+    'String runtimeTemplate(',
   ],
   'tool/binding_generator/validators.dart': [
     'List<Object?> objectList(',

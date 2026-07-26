@@ -54,12 +54,8 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
   generatedDartLayer:
     'test/fixtures/host_extension/host/lib/generated/' +
     'vscode_dart_layer.g.dart',
-  generatedFacade:
-    'test/fixtures/host_extension/host/lib/generated/vscode_facade.g.dart',
   generatedHostExports:
     'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  generatedParity:
-    'test/fixtures/host_extension/host/lib/generated/vscode_parity.g.dart',
   generatedRuntime:
     'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
   generatedViewProtocol:
@@ -196,64 +192,6 @@ function verifyHostContractSourceFiles({contractId, contract, repositoryRoot}) {
   return {sourceCount: Object.keys(sources).length};
 }
 
-function verifyHostContractEvidence({contractId, contract, evidence}) {
-  if (
-    contract?.schemaVersion !== 1 ||
-    contract.id !== contractId ||
-    contract.boundary !== 'vscodeExtensionHost' ||
-    !Array.isArray(contract.attributedBindings) ||
-    contract.attributedBindings.some((id) => typeof id !== 'string') ||
-    new Set(contract.attributedBindings).size !==
-      contract.attributedBindings.length
-  ) {
-    throw new Error(`Host Contract ${contractId} artifact is invalid.`);
-  }
-  if (
-    evidence?.schemaVersion !== 1 ||
-    evidence.contract !== contractId ||
-    evidence.boundary !== 'vscodeExtensionHost' ||
-    !Array.isArray(evidence.observedBindingIds) ||
-    evidence.observedBindingIds.some((id) => typeof id !== 'string')
-  ) {
-    throw new Error(
-      `Host Contract ${contractId} evidence has invalid metadata.`,
-    );
-  }
-  const expected = [...contract.attributedBindings].sort();
-  const observed = [...evidence.observedBindingIds].sort();
-  const expectedSet = new Set(expected);
-  const observedSet = new Set(observed);
-  const missing = expected.filter((id) => !observedSet.has(id));
-  const extra = observed.filter((id) => !expectedSet.has(id));
-  const duplicate = observed.filter(
-    (id, index) => index > 0 && observed[index - 1] === id,
-  );
-
-  if (missing.length > 0 || extra.length > 0 || duplicate.length > 0) {
-    throw new Error(
-      `Host Contract ${contractId} evidence mismatch: ` +
-      `missing [${missing.join(', ')}]; extra [${extra.join(', ')}]; ` +
-      `duplicate [${duplicate.join(', ')}]`,
-    );
-  }
-
-  return {expectedCount: expected.length, observedCount: observed.length};
-}
-
-function verifyHostContractEvidenceFiles({
-  contractId,
-  contractPath,
-  evidencePath,
-  repositoryRoot,
-}) {
-  const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
-  const evidence = JSON.parse(fs.readFileSync(evidencePath, 'utf8'));
-  verifyHostContractSourceFiles({contractId, contract, repositoryRoot});
-  return verifyHostContractEvidence({contractId, contract, evidence});
-}
-
 module.exports = {
-  verifyHostContractEvidence,
-  verifyHostContractEvidenceFiles,
   verifyHostContractSourceFiles,
 };
