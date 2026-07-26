@@ -46,3 +46,12 @@ deliberately: the erased boundary is less precise than hand-reviewed
 signatures, but it is total, immediately available for every capability,
 recovers precision through generated helpers, and keeps the pipeline free of
 the judgment calls that undermined verifiability.
+
+---
+
+Amended 2026-07-25: the Parity Layer no longer ships as a standalone
+artifact. Per ADR 0013 it is the substrate inside the one generated API
+artifact (`vscode_dart_layer.g.dart`), with its totality ledger
+(`tool/bindings/parity-ledger.json`) intact and still gated. Everything
+else here — Total Mapping Rules, erasure with Precision Helpers, and
+the evolved ADR 0008 release gate — stands unchanged.
