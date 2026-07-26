@@ -84,7 +84,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "81e0674582b857c19d85552a5dcfd9d7445ce46bc955e58753c13a4673322ea4"
+      "sha256": "dc02654e136299f168f04ffc28aa880627da35c391f43dec8d653115de0cdca7"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -92,7 +92,7 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "fb56f6098ccc577677a8049f62364749b8fe30d1513a4a73614372aeffbb8cad"
+      "sha256": "8c35e46716d66aed1e8f9c717772cb6f546edb6c7162db274b6bcadb440c3113"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
@@ -162,6 +162,10 @@
       "path": "test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart",
       "sha256": "a7d1aa1210f395dd349e0d6334ab7d2ea98ddebd9c2247e7bf403bfa37067a50"
     },
+    "generatedHostCommands": {
+      "path": "test/fixtures/host_extension/host/lib/generated/host_commands.g.dart",
+      "sha256": "00c1b71de7d4e1a51544b1acd62589b1b3353a38ed15dc128b42af7cde714594"
+    },
     "generatedHostExports": {
       "path": "test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
       "sha256": "77436eecb6a0ed00c8ca39b486d231476fd377e12c98066174b33fae017603ee"
@@ -181,6 +185,10 @@
     "harnessPackageLock": {
       "path": "tool/extension_host_test/package-lock.json",
       "sha256": "49110093992e26017594e551b921f29d64f626dddb4a24071657ed73fa8cfce7"
+    },
+    "hostCommandsTemplate": {
+      "path": "lib/src/cli/host_commands_source.dart",
+      "sha256": "16510033f5bdb3c1a826a6c4fb465df4073b5f267301d7d8a4435113f1be0704"
     },
     "hostImportChecker": {
       "path": "tool/check_host_imports.dart",
@@ -204,7 +212,7 @@
     },
     "verifier": {
       "path": "tool/extension_host_test/host_contract.cjs",
-      "sha256": "b7706d7fa78345ad26eb7e29b995fc90740f4d2e95bd0a0108d646766c2b0d6e"
+      "sha256": "bda156af9651e0b10a3fc82d954c5126f366eb09576bee430bdb2c375e1fb539"
     },
     "verifierTest": {
       "path": "tool/extension_host_test/host_contract.test.cjs",

@@ -53,6 +53,8 @@ const canonicalHostContractSourcePaths = <String, String>{
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
   'generatedDartLayer':
       'test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart',
+  'generatedHostCommands':
+      'test/fixtures/host_extension/host/lib/generated/host_commands.g.dart',
   'generatedHostExports':
       'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
   'generatedRuntime':
@@ -61,6 +63,7 @@ const canonicalHostContractSourcePaths = <String, String>{
       'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
   'harnessPackage': 'tool/extension_host_test/package.json',
   'harnessPackageLock': 'tool/extension_host_test/package-lock.json',
+  'hostCommandsTemplate': 'lib/src/cli/host_commands_source.dart',
   'hostImportChecker': 'tool/check_host_imports.dart',
   'launcher': 'tool/extension_host_test/run.cjs',
   'projectDescriptor': 'lib/src/cli/project_descriptor.dart',

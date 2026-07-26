@@ -7,6 +7,7 @@ import 'package:flutter_vscode/src/cli/build_inputs.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/flutter_view_host_source.dart';
+import 'package:flutter_vscode/src/cli/host_commands_source.dart';
 import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
@@ -64,6 +65,8 @@ Future<void> buildProject(
   await toolchain.writeBindings(generated, root);
   await File(p.join(generatedRoot.path, 'vscode_dart_layer.g.dart'))
       .writeAsString(toolchain.emitDartLayerLibrary(bindingInputs.inventory));
+  await File(p.join(generatedRoot.path, 'host_commands.g.dart'))
+      .writeAsString(hostCommandsSource);
   if (views.isNotEmpty) {
     final protocolSource = File(
       p.join(packageRoot.path, 'lib', 'src', 'view_protocol.dart'),
