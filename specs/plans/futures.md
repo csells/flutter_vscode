@@ -42,6 +42,13 @@ sequence or schedule. Rough dependency order below.
   remain backlog behind it.
 - Platform reach: Web Extension Host before 1.0 (ADR 0009).
 
+- Optional command-contribution fields in the typed manifest: the
+  generator's projection still validates `category`, `enablement`,
+  `shortTitle`, and `icon`, but `ExtensionCommand` carries only
+  `command` and `title` — extend the type (and its parser mirror in
+  `lib/src/cli/project_descriptor.dart`) when a real extension needs
+  one of the optional fields.
+
 ## Engineering debt (from the audits)
 
 - The CSP served into a live webview is not parsed by any real-host

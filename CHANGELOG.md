@@ -1,6 +1,16 @@
 
 ## Unreleased
 
+- Type the extension descriptor: `extension.dart` declares
+  `const extension = ExtensionManifest(...)` using
+  `package:flutter_vscode/manifest.dart` (with `ExtensionCommand` for
+  command contributions), the scaffold emits the typed form plus a
+  root `pubspec.yaml` so the declaration analyzes with completion and
+  type-checking in the author's editor, and the CLI parses the
+  constant invocation as data — project code is never executed. The
+  untyped map-literal descriptor is rejected with an actionable
+  error; `extension.json` is unchanged.
+
 - Delete the legacy v0 pipeline: the `generate_vscode_extension`
   scaffolder, the annotation/source_gen builder surface and webview
   bridge runtime in `lib/`, `build.yaml`, `example/`,

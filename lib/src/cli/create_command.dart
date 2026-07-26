@@ -36,25 +36,41 @@ Future<void> createProject(
       .split('_')
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join(' ');
+  final packageRoot = await resolvePackageRoot();
   final descriptor = File(p.join(root.path, 'extension.dart'))
     ..writeAsStringSync('''
+import 'package:flutter_vscode/manifest.dart';
+
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
-const extension = <String, Object?>{
-  'schemaVersion': 1,
-  'apiTarget': '$defaultApiTarget',
-  'name': '$manifestName',
-  'displayName': '$displayName',
-  'description': 'A VS Code extension written in Dart.',
-  'version': '0.0.1',
-  'publisher': 'local',
-  'activationEvents': <String>['onLanguage:json'],
-  'commands': <Map<String, Object?>>[
-    <String, Object?>{
-      'command': '$manifestName.hello',
-      'title': 'Say Hello from Dart',
-    },
+const extension = ExtensionManifest(
+  apiTarget: '$defaultApiTarget',
+  name: '$manifestName',
+  displayName: '$displayName',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: ['onLanguage:json'],
+  commands: [
+    ExtensionCommand(
+      command: '$manifestName.hello',
+      title: 'Say Hello from Dart',
+    ),
   ],
-};
+);
+''');
+  // The root pubspec exists solely so the typed descriptor resolves
+  // `package:flutter_vscode/manifest.dart` for the author's analyzer;
+  // the build itself never reads it.
+  File(p.join(root.path, 'pubspec.yaml')).writeAsStringSync('''
+name: $name
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
+
+dependencies:
+  flutter_vscode:
+    path: ${packageRoot.path}
 ''');
   File(p.join(root.path, 'host', 'pubspec.yaml')).writeAsStringSync('''
 name: ${name}_host
@@ -84,7 +100,6 @@ environment:
     ].join('\n'),
   );
 
-  final packageRoot = await resolvePackageRoot();
   final project = await readProjectDescriptor(descriptor);
   final bindingInputs = await selectBindingInputs(
     packageRoot: packageRoot,

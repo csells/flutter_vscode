@@ -41,26 +41,32 @@ views/               optional Flutter webviews (empty for now)
 ```
 
 `extension.dart` is the source of truth for the extension manifest — name,
-version, activation events, and contributed commands all live in Dart:
+version, activation events, and contributed commands all live in typed,
+analyzer-checked Dart:
 
 ```dart
-const extension = <String, Object?>{
-  'schemaVersion': 1,
-  'apiTarget': '1.129.1',
-  'name': 'my-extension',
-  'displayName': 'My Extension',
-  'description': 'A VS Code extension written in Dart.',
-  'version': '0.0.1',
-  'publisher': 'local',
-  'activationEvents': <String>['onLanguage:json'],
-  'commands': <Map<String, Object?>>[
-    <String, Object?>{
-      'command': 'my-extension.hello',
-      'title': 'Say Hello from Dart',
-    },
+import 'package:flutter_vscode/manifest.dart';
+
+const extension = ExtensionManifest(
+  apiTarget: '1.129.1',
+  name: 'my-extension',
+  displayName: 'My Extension',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: ['onLanguage:json'],
+  commands: [
+    ExtensionCommand(
+      command: 'my-extension.hello',
+      title: 'Say Hello from Dart',
+    ),
   ],
-};
+);
 ```
+
+The CLI parses this declaration as data — project code is never executed —
+while the scaffolded root `pubspec.yaml` gives the author's editor full
+completion and type-checking over the same constant.
 
 `apiTarget` selects which pinned VS Code baseline the build generates
 against and controls the generated `engines.vscode` value. Baselines
@@ -291,11 +297,11 @@ tooling is involved, and `package` bundles the view assets into the VSIX.
 Add a command to `extension.dart`:
 
 ```dart
-  'commands': <Map<String, Object?>>[
-    <String, Object?>{
-      'command': 'my-extension.showPanel',
-      'title': 'Show Flutter Panel',
-    },
+  commands: [
+    ExtensionCommand(
+      command: 'my-extension.showPanel',
+      title: 'Show Flutter Panel',
+    ),
   ],
 ```
 

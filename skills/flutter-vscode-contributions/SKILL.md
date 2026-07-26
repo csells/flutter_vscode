@@ -9,21 +9,24 @@ description: >-
 
 Edit `extension.dart`, never generated `package.json`.
 
-For a command:
+For a command, add an `ExtensionCommand` to the typed
+`ExtensionManifest` constant (from `package:flutter_vscode/manifest.dart`):
 
 ```dart
-'commands': <Map<String, Object?>>[
-  <String, Object?>{
-    'command': 'my-extension.refresh',
-    'title': 'Refresh',
-    'category': 'My Extension',
-  },
-],
+  commands: [
+    ExtensionCommand(
+      command: 'my-extension.refresh',
+      title: 'Refresh',
+    ),
+  ],
 ```
 
 Then register the same identifier in `host/lib/extension.dart` through the
 generated commands binding. Keep identifiers and titles nonblank; command IDs
-must be unique. If using an icon object, provide both `light` and `dark` paths.
+must be unique. `ExtensionCommand` carries exactly the fields the toolchain
+supports today — if a contribution needs a field it lacks (for example
+`category` or an icon), report the gap instead of hand-editing
+`package.json`.
 
 Run `flutter_vscode build`. The generator validates contributions against the
 mechanically projected schema for the project’s pinned API target. If a desired

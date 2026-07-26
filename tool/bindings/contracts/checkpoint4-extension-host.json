@@ -192,7 +192,7 @@
     },
     "projectDescriptor": {
       "path": "lib/src/cli/project_descriptor.dart",
-      "sha256": "0b06988d45b8f18493b87774dd6ef06ee63c5bd14cc2d9fd72c322f18603db44"
+      "sha256": "7dd585fd2930b995bc61318d6f9ac657d08bc5abb6a2407a91fb3bbebc18ce1b"
     },
     "runner": {
       "path": "scripts/test_host_extension.sh",
