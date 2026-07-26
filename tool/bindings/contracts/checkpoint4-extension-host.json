@@ -124,7 +124,7 @@
     },
     "fixtureTransport": {
       "path": "test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart",
-      "sha256": "0c9b147e6cbe63dd59185a1fbafbc366940d4207a82cf1c0baa1eaa62ff6ca12"
+      "sha256": "8cfff8add6282001fd95a5f7f51aa504ec5fc38e2bb310744296fabd7e18390d"
     },
     "fixtureView": {
       "path": "test/fixtures/host_extension/views/main/lib/main.dart",
@@ -144,7 +144,7 @@
     },
     "flutterViewHostTemplate": {
       "path": "lib/src/cli/flutter_view_host_source.dart",
-      "sha256": "2a69d214225e427ebc64fefe02649fd581aa865b3600baf947935864b2a288cb"
+      "sha256": "bec528a6f66d80052fae705823f3944b3486cc86e62591fed41fe924e0a6adaa"
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",

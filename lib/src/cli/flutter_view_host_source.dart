@@ -51,7 +51,9 @@ final class HostWebviewTransport
   final IncomingViewMessageObserver? _onIncomingMessage;
   final StreamController<Object?> _messages =
       StreamController<Object?>.broadcast(sync: true);
-  final Completer<Never> _failure = Completer<Never>();
+  // Unobserved by composed hosts; ignore() keeps a rejected delivery
+  // from escaping as an uncaught zone error when nothing listens.
+  final Completer<Never> _failure = Completer<Never>()..future.ignore();
   final Set<Future<void>> _pendingSends = {};
   vs.Disposable? _messageRegistration;
   var _receivingClosed = false;
