@@ -8,22 +8,20 @@ sequence or schedule. Rough dependency order below.
 
 ## Product
 
-- **Idiomatic Facade** over the Parity Layer: Dart-first ergonomics,
-  Semantic Overrides, reviewed design — built up incrementally after the
-  Parity Layer ships. The mechanical Dart layer (archived
-  developer-experience round, D-2) now covers the judgment-free half; the facade adds the reviewed
-  half, including a broader options-to-named-parameters surface beyond
-  the flattened `lit$` factories.
-- **Behavioral verification burn-down**: real-host evidence for parity
-  members, grouped by capability fixture (trees/filesystems,
-  terminals/tasks, language features, testing, SCM, notebooks,
-  authentication, debugging, webviews). The next burn-down instrument
-  is member-level live accounting via generated observation hooks: the
-  emitter tags each generated member so the live gate can record which
-  members actually executed, turning the per-member `pending` rows in
-  `docs/reference/parity.md` into mechanically observed dispositions
-  (family-level and construct-class-level accounting shipped in the
-  live-coverage round).
+- **Idiomatic helpers** over the Generated API Layer: per ADR 0013
+  the reviewed, judgment-shaped surface grows as hand-written
+  framework modules in the `FlutterViewHost`/`ViewShell` mold (with
+  their own tests), not as a second generated facade; candidates
+  graduate here as real extensions surface the need — a broader
+  options-to-named-parameters surface remains the largest known one.
+- **Behavioral verification burn-down**: real-host evidence for
+  generated-layer members, grouped by capability fixture
+  (trees/filesystems, terminals/tasks, language features, testing,
+  SCM, notebooks, authentication, debugging, webviews). The old
+  per-member binding-observation mechanism retired with the facade
+  (single-layer round); a future member-level instrument would be
+  designed fresh against the one artifact — until then the two-axis
+  live coverage (API Family × Construct Class) is the measured floor.
 - Runtime semantics for the View protocol: handles and backpressure
   (cancellation, host-to-view requests, and event streams shipped in
   the archived developer-experience round's D-4; disposal is now
@@ -46,9 +44,9 @@ sequence or schedule. Rough dependency order below.
   rest-param surface (rest params erase to `List<JSAny?>`). (Narrowing,
   string-literal wrappers, stable typedefs, per-family live probes, and
   the emitter unit suite shipped in the parity-runtime round.)
-- The two generated layers (parity ~350 KB, Dart ergonomics ~370 KB)
-  ship in the pub archive; both totality ledgers are pubignored.
-  Revisit placement if package size matters.
+- The one generated API artifact (~735 KB) ships in the pub archive;
+  both totality ledgers are pubignored. Revisit placement if package
+  size matters.
 
 ## Engineering debt (from the audits)
 
@@ -56,10 +54,10 @@ sequence or schedule. Rough dependency order below.
   retrying after a connect failure never actually reconnects;
   `ViewShell.connect` runs once before `runApp` today, which masks it.
 
-- `generator.dart` keeps a ~2,400-line entangled walking-slice band
-  (selection model, emit dispatch, relation validation) after the
-  architecture-deepening round dismantled the CLI and generator
-  monoliths; deepening that band further is possible but unforced.
+- `generator.dart` (1,750 lines after the facade emission left with
+  the single-layer round) keeps the entangled walking-slice band —
+  selection model and override-classification validation; deepening
+  it further is possible but unforced.
 - The CSP served into a live webview is not parsed by any real-host
   gate; the policy itself is framework-owned and byte-asserted via the
   emitted view-host module template.

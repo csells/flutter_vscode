@@ -15,8 +15,7 @@ This file is the root index for AI and contributor documentation.
 
 - [Project Vision](specs/vision/vision.md)
 - [Architecture (living)](specs/architecture/index.md)
-- [Single Layer Plan (active)](specs/plans/single-layer.md)
-- [Docs Truth Plan (proposed, queued behind single-layer)](specs/plans/docs-truth.md)
+- [Docs Truth Plan (proposed)](specs/plans/docs-truth.md)
 - [Futures (deferred-work inbox)](specs/plans/futures.md)
 - [Futures](specs/plans/futures.md)
 - [Archived Plans](specs/plans/archive/)

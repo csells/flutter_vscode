@@ -213,3 +213,11 @@ Tallies are recording-time values. Entries appended as items close.
    applied), breakpoints (paused on the Dart line). An early
    post-SL-2 host-gate run (cold start 331ms) had already proven the
    facade-less tree live before the docs wave.
+6. **Post-close audit (2026-07-25)**: a fresh-eyes audit at HEAD
+   found every SL claim satisfiable — one artifact, frozen L3 suites
+   byte-identical to the round's opening commit, contract receipts
+   converged, ADR originals append-only — with two blemishes, both
+   remedied: the CHANGELOG entry sat above the Unreleased heading
+   (moved), and the real-host attestation predated the
+   rejected-push crash fix (the host gate re-ran green at HEAD,
+   8/8 harness cases, exit 0).
