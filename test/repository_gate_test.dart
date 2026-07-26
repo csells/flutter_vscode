@@ -29,7 +29,7 @@ void main() {
     final runtimeProtocol =
         File('lib/src/view_protocol.dart').readAsBytesSync();
     final checkedInFixture = File(
-      'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
+      'test/fixtures/host_extension/shared/lib/generated/view_protocol.g.dart',
     ).readAsBytesSync();
 
     expect(
@@ -37,6 +37,17 @@ void main() {
       orderedEquals(runtimeProtocol),
       reason:
           'Regenerate the checked-in Host fixture before running its build.',
+    );
+    expect(
+      File(
+        'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
+      ).readAsStringSync(),
+      contains(
+        "export 'package:flutter_vscode_host_fixture_shared/generated/"
+        "view_protocol.g.dart';",
+      ),
+      reason: 'the host module re-exports the shared protocol copy so '
+          'host and shared code type against one declaration',
     );
   });
 

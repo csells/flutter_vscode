@@ -60,6 +60,9 @@ const CANONICAL_SOURCE_PATHS = Object.freeze({
     'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
   generatedRuntime:
     'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
+  generatedSharedViewProtocol:
+    'test/fixtures/host_extension/shared/lib/generated/' +
+    'view_protocol.g.dart',
   generatedViewProtocol:
     'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
   harnessPackage: 'tool/extension_host_test/package.json',
