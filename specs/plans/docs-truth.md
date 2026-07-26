@@ -1,8 +1,9 @@
 # Docs Truth Plan
 
-Status: In progress — owner approved 2026-07-25; DT-2 resolved as a
-new view-protocol reference page with message-contract.md kept as the
-linked legacy record
+Status: In progress — owner approved 2026-07-25; DT-2 re-resolved by
+owner directive during execution: the view-protocol reference page is
+the only protocol reference and message-contract.md is deleted (no
+legacy framing on this branch)
 Date: 2026-07-25
 
 Brings the documentation corpus to truth at HEAD. The original
@@ -30,7 +31,7 @@ no history rewrites in ADRs — amendments only; discoveries go to
   ViewShell in the view walkthrough. The one-layer presentation and
   example section are already true — do not re-litigate. Check:
   repository_gate_test green; fresh-eyes pass records no stale claim.
-- [ ] DT-2 Reference: wire-v2 protocol documentation exists — either
+- [x] DT-2 Reference: wire-v2 protocol documentation exists — either
   message-contract.md is rewritten from its v0/legacy-bridge content
   or a new view-protocol reference page lands beside it with the
   legacy page linked as historical (owner's call at approval);
@@ -39,6 +40,23 @@ no history rewrites in ADRs — amendments only; discoveries go to
   reference/index.md (de-orphan). generated-host-api.md is already
   current. Check: claims verified against lib/src/view_protocol.dart;
   link-check clean.
+  Closed: `docs/reference/view-protocol.md` lands as the
+  author-facing wire-v2 contract — envelope, handshake, typed calls
+  both directions, `noArgs`/`noResult`, events, cancellation,
+  rendered, shutdown/closing, and the per-role fail-closed rules —
+  with every claim read out of `lib/src/view_protocol.dart` and the
+  snippets trimmed from the shipped coverage_treemap wiring. An owner
+  directive during execution superseded the approval-time resolution:
+  the branch carries no legacy framing, so message-contract.md is
+  deleted outright rather than kept as a linked legacy record, and
+  reference/index.md drops its legacy-flagged entries (roadmap,
+  prd-traceability, message-contract, vscode-api-mapping — the pages
+  other than message-contract.md still exist and keep inbound links
+  elsewhere) while gaining the new page and startup.md (both
+  de-orphaned). Two directory links the checker could not vouch for
+  (architecture/index.md's ADR link, roadmap.md's plans link) became
+  inline paths, so link-check reports zero broken links; DT-6's new
+  docs/adr/index.md is where ADR navigation returns as links.
 - [ ] DT-3 Guides: troubleshooting.md names the v2 handshake, leads
   with `flutter_vscode doctor`, and replaces the pre-totality
   missing-API remedy (the generated layer is total; "pending" means
@@ -125,3 +143,10 @@ Tallies are recording-time values. Entries appended as items close.
    vscode-api-mapping.md and consumer-agents-v0.md are deleted with
    referrers cleaned, and DT-2's resolution amends from
    keep-as-legacy-record to delete message-contract.md outright.
+2. **DT-2** (2026-07-25): `docs/reference/view-protocol.md` lands as
+   the one protocol reference; an owner directive during execution
+   superseded the approval-time resolution, so message-contract.md is
+   deleted rather than kept as a linked legacy record and
+   reference/index.md drops its legacy-flagged entries while gaining
+   the new page and startup.md; link-check reports zero broken links
+   and neither page is an orphan.

@@ -3,7 +3,7 @@
 > **Historical v0 roadmap:** This page records the original annotation,
 > TypeScript, npm, and webview-first plan. The Dart-owned host workflow now has
 > an automated pinned Extension Host and installed-VSIX gate. Current work is
-> tracked in [`specs/plans/`](../../specs/plans/).
+> tracked in the active plan under `specs/plans/`.
 
 Post-MVP priorities for `flutter_vscode`. MVP (v0.1) acceptance is documented in [PRD Traceability](prd-traceability.md).
 
