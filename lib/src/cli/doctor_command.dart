@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
+import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
 import 'package:path/path.dart' as p;
@@ -59,9 +60,9 @@ Future<int> doctorProject(
       }
     }
     try {
-      final project = await readProjectDescriptor(
-        dartDescriptor.existsSync() ? dartDescriptor : jsonDescriptor,
-      );
+      final project = dartDescriptor.existsSync()
+          ? await readProjectDescriptor(dartDescriptor)
+          : await readJsonObject(jsonDescriptor);
       final target = project['apiTarget'];
       if (target is String && target.isNotEmpty) {
         final frameworkRoot = packageRoot ?? await resolvePackageRoot();
