@@ -212,11 +212,11 @@
     },
     "viewLibrary": {
       "path": "lib/view.dart",
-      "sha256": "27d3092c75cbaed83982904866f5cb7fd4703d320e49df79393476c764fbbabe"
+      "sha256": "bad4fee2d36f81ef83e5232db80b7e828d7b038eb28bdaaf560dfc2a3797bf7c"
     },
     "viewTransport": {
       "path": "lib/src/view_transport_web.dart",
-      "sha256": "61d2846e08926b2230e800205850c89a7091002ec846768a93d062ef5de1bf71"
+      "sha256": "3387ee7008a7bc4d8aa733373db3c2dc48795a8147e86ef786384d4c99ff8ddd"
     }
   },
   "evidence": {
