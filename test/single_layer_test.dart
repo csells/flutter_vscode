@@ -182,4 +182,48 @@ void main() {
       }
     });
   });
+
+  /// SL-3: living docs describe one generated API layer.
+  ///
+  /// Prose truth for the single-layer world: no living document may keep
+  /// routing readers to the retired facade artifact, the retired standalone
+  /// parity artifact, or its retired package export. ADR text is history
+  /// (amended, never rewritten) and stays exempt; so do archived plans,
+  /// which live outside the scanned roots.
+  group('SL-3: living docs describe one generated API layer', () {
+    test('no retired artifact references survive in living docs', () {
+      const retiredReferences = [
+        'vscode_facade.g.dart',
+        'vscode_parity_layer.g.dart',
+        'package:flutter_vscode/vscode_parity.dart',
+      ];
+      final livingDocs = <File>[
+        File('README.md'),
+        File('CONTEXT.md'),
+        for (final root in ['docs', 'specs/architecture', 'skills'])
+          ...Directory(root)
+              .listSync(recursive: true)
+              .whereType<File>()
+              .where((file) => file.path.endsWith('.md')),
+      ];
+      final violations = <String>[];
+      for (final doc in livingDocs) {
+        if (p.split(doc.path).contains('adr')) {
+          continue;
+        }
+        final text = doc.readAsStringSync();
+        for (final reference in retiredReferences) {
+          if (text.contains(reference)) {
+            violations.add('${doc.path}: $reference');
+          }
+        }
+      }
+      expect(
+        violations,
+        isEmpty,
+        reason: 'living docs must describe the one generated API layer, '
+            'never the retired artifacts: $violations',
+      );
+    });
+  });
 }
