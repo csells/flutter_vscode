@@ -102,12 +102,44 @@ cd extensions/pubspec_lens
 flutter_vscode build
 ```
 
-Then launch the Extension Development Host against any Dart project
-and open its `pubspec.yaml`. The real-host gate is
-`scripts/test_pubspec_lens.sh`. First-cut note: the tree view
-renders where its view id is contributed (the gate's driver does
-this); manifest views/configuration contributions are a recorded
-framework follow-up.
+Open `extensions/pubspec_lens` in VS Code and press F5 — or launch
+the Extension Development Host from a terminal against any Dart
+project:
+
+```sh
+code --new-window \
+  --extensionDevelopmentPath="$(pwd)/extensions/pubspec_lens" \
+  /path/to/any/dart/project
+```
+
+In the development host, open `pubspec.yaml` (analysis runs on open
+and queries the registry — live pub.dev by default — so give the
+first pass a second or two). To see every verdict at once, age a few
+pins first (say `path: ^1.8.0` or `http: ^0.13.0`), then:
+
+- outdated dependencies get Information-severity squiggles —
+  deliberately not warnings, since a newer release is advice, not a
+  defect — and the Problems panel reads
+  `http 1.5.0 is available (pinned ^0.13.0)`;
+- hover a dependency name for the latest version, the verdict, and
+  the package's pub.dev description;
+- a CodeLens above each outdated pin offers **Update to ^X.Y.Z**;
+  clicking it rewrites the constraint through a `WorkspaceEdit`, so
+  the edit lands in your buffer (the file goes dirty), never
+  silently on disk;
+- **Pubspec Lens: Refresh** clears the registry cache and
+  re-analyzes — useful after hand-editing a constraint;
+- offline, verdicts degrade to *unknown* with no diagnostic churn,
+  and recover on the next refresh.
+
+The real-host gate is `scripts/test_pubspec_lens.sh`: it packages
+the VSIX, installs it into the pinned Extension Host in Docker,
+serves a deterministic fake pub.dev from inside the host, and
+asserts the hover, the diagnostic, the CodeLens edit, and the tree
+snapshot. First-cut note: the dependencies tree view renders only
+where its view id is contributed (the gate's driver does this, so it
+won't appear in a plain F5 session); manifest views/configuration
+contributions are a recorded framework follow-up.
 
 Plan and status:
 [`specs/plans/pubspec-lens.md`](../specs/plans/archive/pubspec-lens.md).
