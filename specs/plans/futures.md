@@ -52,6 +52,16 @@ sequence or schedule. Rough dependency order below.
   `command` and `title` — extend the type (and its parser mirror in
   `lib/src/cli/project_descriptor.dart`) when a real extension needs
   one of the optional fields.
+- Views and configuration contributions in the typed manifest: the
+  pubspec-lens round needed both — a tree view must be contributed
+  before `registerTreeDataProvider` renders anywhere, and the
+  configuration API rejects writes to unregistered keys. The
+  contribution pipeline is schema-pinned (the inventory carries
+  exactly the commands contribution schema), so this is a real
+  binding-importer + generator + manifest-type round, not a field
+  addition. Until it lands, the PL-4 gate's driver contributes
+  `pubspecLens.registryUrl` and the `pubspecLens.dependencies` view
+  on the extension's behalf.
 
 ## Engineering debt (from the audits)
 
