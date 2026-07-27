@@ -391,6 +391,11 @@ semantics and no Flutter View at all. Together the two examples draw
 the dividing line: native surfaces for lists, text, and annotations;
 a Flutter View when you need custom drawing.
 
+![The Pubspec Lens extension: an outdated dependency underlined in
+pubspec.yaml with its diagnostic in the Problems panel and an
+"Update to ^3.4.2" CodeLens above the pinned
+constraint](docs/assets/pubspec-lens.png)
+
 ## Repository validation
 
 Contributors need Flutter, Docker, and a running Docker daemon:
