@@ -52,10 +52,10 @@ class _Extension {
         vscode.languages.registerHoverProvider('json'.toJS, provider),
       ),
     );
-    return Future<JSAny?>.value(null).toJS;
+    return Future<JSAny?>.value().toJS;
   }
 
-  JSPromise<JSAny?> deactivate() => Future<JSAny?>.value(null).toJS;
+  JSPromise<JSAny?> deactivate() => Future<JSAny?>.value().toJS;
 }
 
 void main() {

@@ -67,3 +67,37 @@ PackageInfo parsePackageInfo(String body) {
           : null;
   return PackageInfo(latest: version, description: description);
 }
+
+/// The pub API lookup URL for [packageName] against [baseUrl].
+///
+/// [baseUrl] comes from the `pubspecLens.registryUrl` setting, so a
+/// trailing slash is tolerated; gates point it at a local fake
+/// registry serving the same `GET /api/packages/<name>` path.
+String packageInfoUrl(String baseUrl, String packageName) {
+  final base = baseUrl.endsWith('/')
+      ? baseUrl.substring(0, baseUrl.length - 1)
+      : baseUrl;
+  return '$base/api/packages/${Uri.encodeComponent(packageName)}';
+}
+
+/// A pure in-memory cache of registry answers by package name.
+///
+/// Only successful answers are stored; a failed lookup stays uncached
+/// so the next refresh retries it. The refresh command clears the
+/// cache wholesale.
+final class RegistryCache {
+  final Map<String, PackageInfo> _byName = {};
+
+  /// The cached answer for [packageName], or null on a miss.
+  PackageInfo? operator [](String packageName) => _byName[packageName];
+
+  /// Whether [packageName] has a cached answer.
+  bool contains(String packageName) => _byName.containsKey(packageName);
+
+  /// Stores the successful [info] answer for [packageName].
+  void store(String packageName, PackageInfo info) =>
+      _byName[packageName] = info;
+
+  /// Forgets every stored answer.
+  void clear() => _byName.clear();
+}

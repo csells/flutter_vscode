@@ -34,12 +34,17 @@ extensions/ guardrails); discoveries to [`futures.md`](futures.md).
   skipped by design), and `parsePackageInfo` reads the pub API's
   `{"latest": {"version": ..., "pubspec": ...}}` shape — 24/24 in the
   shared suite.
-- [ ] PL-2 Registry client over `hostFetch`: fetch package metadata
+- [x] PL-2 Registry client over `hostFetch`: fetch package metadata
   from the pub.dev API with the base URL read from workspace
   configuration (so gates point it at a local fake registry), an
   in-memory cache, and graceful offline degradation (no diagnostics
   churn on network failure). Check: pure parts unit-tested; the live
-  path proven in the PL-4 gate.
+  path proven in the PL-4 gate. Closed: `packageInfoUrl` and
+  `RegistryCache` live in the shared package (29/29 with PL-1);
+  `RegistryClient` in `host/lib/registry_client.dart` rides the
+  generated `hostFetch` with the documented degradation contract —
+  any failure returns null uncached, so verdicts fall back to
+  unknown and refresh retries.
 - [ ] PL-3 Host features on the native UI surface, via the generated
   layer and `ExtensionCommands`: hover on a dependency shows the
   latest version and description; outdated pins get diagnostics; a
@@ -82,3 +87,15 @@ Tallies are recording-time values. Entries appended as items close.
    current; outside the pin is outdated with `^latest`), and the pub
    API response model with tolerated missing descriptions. `dart
    analyze` clean.
+3. **Red PL-2** (commit c20c6ff): the shared suite demanded
+   `packageInfoUrl` (pub API path, trailing-slash tolerance,
+   local-registry bases) and the `RegistryCache` store/miss/clear
+   contract; neither existed.
+4. **Green PL-2**: 29/29 in the shared package. The host-side
+   `RegistryClient` composes the pure parts over the generated
+   `hostFetch` seam with the degradation contract documented on the
+   class: failures return null and cache nothing (offline keeps
+   verdicts unknown, no churn), successes stay cached until the
+   refresh command clears them. Both extension packages analyze
+   clean; the network path itself is deferred to the PL-4 gate by
+   design.

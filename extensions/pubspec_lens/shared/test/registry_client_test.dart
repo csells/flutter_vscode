@@ -42,9 +42,8 @@ void main() {
     test('clear forgets every stored answer', () {
       final cache = RegistryCache()
         ..store('yaml', PackageInfo(latest: Version(3, 1, 3)))
-        ..store('http', PackageInfo(latest: Version(1, 5, 0)));
-
-      cache.clear();
+        ..store('http', PackageInfo(latest: Version(1, 5, 0)))
+        ..clear();
 
       expect(cache.contains('yaml'), isFalse);
       expect(cache.contains('http'), isFalse);
