@@ -383,7 +383,13 @@ highlighted in the editor, a live status-bar percentage, and the
 Flutter-rendered treemap panel with donut and bar-chart
 summaries](docs/assets/coverage-treemap.png)
 
-A Dart-only (host-only) example extension is planned to follow.
+**Pubspec Lens** is the Host-Only counterpart: dependency
+intelligence for `pubspec.yaml` — hovers, outdated-pin diagnostics,
+CodeLens constraint updates, and a dependencies tree — built entirely
+on VS Code's native UI surface with `pub_semver` and `yaml` doing the
+semantics and no Flutter View at all. Together the two examples draw
+the dividing line: native surfaces for lists, text, and annotations;
+a Flutter View when you need custom drawing.
 
 ## Repository validation
 

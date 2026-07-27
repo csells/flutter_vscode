@@ -13,9 +13,9 @@ sequence or schedule. Rough dependency order below.
   visibility step available; bundle the release-prep items (`upgrade`,
   support policy, docs-from-executable-behavior) at the same
   milestone.
-- **More real extensions**: the Dart-only sibling extension, then one
-  outside the repository — the engine for idiomatic helpers,
-  behavioral evidence, and protocol discoveries alike.
+- **More real extensions**: one outside the repository (the Dart-only
+  sibling shipped as pubspec_lens) — the engine for idiomatic
+  helpers, behavioral evidence, and protocol discoveries alike.
 
 - **Idiomatic helpers** over the Generated API Layer: per ADR 0013
   the reviewed, judgment-shaped surface grows as hand-written

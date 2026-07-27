@@ -75,5 +75,40 @@ protocol in a real webview.
 
 Plan and status: [`specs/plans/coverage-treemap.md`](../specs/plans/archive/coverage-treemap.md).
 
-A Dart-only (host-only) example extension is planned to follow once
-this one ships.
+## pubspec_lens
+
+Dependency intelligence for `pubspec.yaml`, and the first Host-Only
+Extension: no Flutter View, no webview — the whole UX rides VS Code's
+native UI surface, driven from plain Dart through the generated
+layer. Hover a dependency for the latest version and description;
+outdated pins get Information-severity diagnostics and a CodeLens
+that rewrites the constraint through a `WorkspaceEdit`; a
+dependencies tree view lists direct dependencies with verdicts; a
+refresh command re-queries. The semantics come from the Dart team's
+own packages — `pub_semver` for constraint math and `yaml` for
+span-preserving parsing — and the registry is fetched with the
+generated runtime's `hostFetch`, with the base URL configurable so
+the real-host gate serves a deterministic fake pub.dev.
+
+The dividing line the two examples draw together: use the native
+surface (trees, pickers, hovers, lenses, squiggles, status bar) when
+your UX is lists, text, and annotations; reach for a Flutter View
+only when you need custom drawing, like the treemap.
+
+Build and run it:
+
+```sh
+cd extensions/pubspec_lens
+flutter_vscode build
+```
+
+Then launch the Extension Development Host against any Dart project
+and open its `pubspec.yaml`. The real-host gate is
+`scripts/test_pubspec_lens.sh`. First-cut note: the tree view
+renders where its view id is contributed (the gate's driver does
+this); manifest views/configuration contributions are a recorded
+framework follow-up.
+
+Plan and status:
+[`specs/plans/pubspec-lens.md`](../specs/plans/pubspec-lens.md).
+
