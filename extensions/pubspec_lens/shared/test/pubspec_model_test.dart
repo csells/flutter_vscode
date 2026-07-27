@@ -194,21 +194,80 @@ dependencies:
     PubspecDependency named(String name) =>
         parsePubspec(_pubspec).singleWhere((d) => d.name == name);
 
-    test('a pin admitting the latest version is current', () {
+    PubspecDependency only(String entry) =>
+        parsePubspec('dependencies:\n  $entry\n').single;
+
+    test('a lower bound trailing the latest version is behind', () {
+      // The caret admits 3.1.3, so nothing is blocked — but the pin
+      // still trails what the registry publishes, which is the whole
+      // point of a dependency lens.
       final verdict = verdictFor(named('yaml'), Version(3, 1, 3));
 
-      expect(verdict.kind, VerdictKind.current);
+      expect(verdict.kind, VerdictKind.behind);
       expect(verdict.latest, Version(3, 1, 3));
+      expect(verdict.suggestedConstraint, '^3.1.3');
+    });
+
+    test('a lower bound at the latest version is current', () {
+      final verdict = verdictFor(named('yaml'), Version(3, 1, 0));
+
+      expect(verdict.kind, VerdictKind.current);
+      expect(verdict.latest, Version(3, 1, 0));
       expect(verdict.suggestedConstraint, isNull);
     });
 
-    test('a pin excluding the latest version is outdated with a caret fix',
-        () {
+    test('a constraint excluding the latest version is outdated', () {
       final verdict = verdictFor(named('http'), Version(2, 0, 0));
 
       expect(verdict.kind, VerdictKind.outdated);
       expect(verdict.latest, Version(2, 0, 0));
       expect(verdict.suggestedConstraint, '^2.0.0');
+    });
+
+    test('an exact pin at the latest version is current', () {
+      final verdict = verdictFor(named('http'), Version(1, 2, 0));
+
+      expect(verdict.kind, VerdictKind.current);
+      expect(verdict.suggestedConstraint, isNull);
+    });
+
+    test('a pin ahead of the registry never suggests a downgrade', () {
+      // A constraint above the registry's latest (a mirror lagging, a
+      // prerelease pin) excludes the latest version, but rewriting it
+      // to `^latest` would walk the pin backwards.
+      final verdict = verdictFor(only('ahead: ^2.0.0'), Version(1, 6, 0));
+
+      expect(verdict.kind, VerdictKind.current);
+      expect(verdict.suggestedConstraint, isNull);
+    });
+
+    test('a hand-written range trailing the latest is behind', () {
+      final verdict = verdictFor(
+        only("ranged: '>=1.5.0 <2.0.0'"),
+        Version(1, 6, 0),
+      );
+
+      expect(verdict.kind, VerdictKind.behind);
+      expect(verdict.suggestedConstraint, '^1.6.0');
+    });
+
+    test('a union constraint compares against its lowest bound', () {
+      final verdict = verdictFor(
+        only("split: '>=1.0.0 <2.0.0 || >=3.0.0 <4.0.0'"),
+        Version(3, 4, 2),
+      );
+
+      expect(verdict.kind, VerdictKind.behind);
+      expect(verdict.suggestedConstraint, '^3.4.2');
+    });
+
+    test('a constraint with no lower bound is behind', () {
+      for (final entry in ['loose: any', 'bare:']) {
+        final verdict = verdictFor(only(entry), Version(1, 6, 0));
+
+        expect(verdict.kind, VerdictKind.behind, reason: entry);
+        expect(verdict.suggestedConstraint, '^1.6.0', reason: entry);
+      }
     });
 
     test('a missing registry answer is unknown', () {
