@@ -1,6 +1,7 @@
 # Pubspec Lens Plan
 
-Status: In progress
+Status: Implemented and verified — valid only while the fast suites
+and the four real-host gates are green at HEAD
 Date: 2026-07-26
 
 The second shipped example extension and the first Host-Only
@@ -84,7 +85,7 @@ extensions/ guardrails); discoveries to [`futures.md`](futures.md).
   CodeLens `WorkspaceEdit` rewriting the pin to `^2.0.0`, and the
   post-edit tree flipping old_pkg to current. The Docker path runs
   in the aggregate gate at PL-5 close.
-- [ ] PL-5 Docs and closure: `extensions/README.md` gains the
+- [x] PL-5 Docs and closure: `extensions/README.md` gains the
   Pubspec Lens section (with the native-UI-vs-Flutter-View dividing
   line stated); the root README's examples section mentions both
   examples; futures' "Dart-only sibling" clause retires (the
@@ -142,3 +143,13 @@ Tallies are recording-time values. Entries appended as items close.
    recording time: shared suite 29/29, root `flutter test` 555/555
    (repository gate and plan truth included), root `flutter analyze`
    clean after nested pub gets.
+7. **PL-5** (2026-07-26): extensions/README gained the Pubspec Lens
+   section with the native-UI-vs-Flutter-View dividing line, the root
+   README describes both examples, and futures' Dart-only clause
+   retired. Final bar: 554 fast tests green (plus the known cli_watch
+   contention flake, green standalone) with analyze clean, and all
+   four real-host gates exited 0 at HEAD — the pubspec-lens gate's
+   first Docker run passed every assertion (hover with the fake
+   registry's latest, the Information diagnostic, the CodeLens
+   WorkspaceEdit, the tree children) alongside the host fixture,
+   coverage extension, and breakpoint gates.

@@ -110,5 +110,5 @@ this); manifest views/configuration contributions are a recorded
 framework follow-up.
 
 Plan and status:
-[`specs/plans/pubspec-lens.md`](../specs/plans/pubspec-lens.md).
+[`specs/plans/pubspec-lens.md`](../specs/plans/archive/pubspec-lens.md).
 
