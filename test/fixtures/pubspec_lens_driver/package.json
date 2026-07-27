@@ -1,0 +1,30 @@
+{
+  "name": "pubspec-lens-test-driver",
+  "displayName": "Pubspec Lens Extension Test Driver",
+  "description": "Development-only driver for the shipped pubspec-lens extension. Contributes the pubspecLens.registryUrl setting (so the configuration API accepts the fake-registry URL write) and the pubspecLens.dependencies view (so the extension's tree registration binds to a contributed view); the Extension Manifest does not project configuration or views contributions yet.",
+  "version": "0.0.0",
+  "publisher": "flutter-vscode-test",
+  "engines": {
+    "vscode": "1.129.1"
+  },
+  "contributes": {
+    "configuration": {
+      "title": "Pubspec Lens",
+      "properties": {
+        "pubspecLens.registryUrl": {
+          "type": "string",
+          "default": "https://pub.dev",
+          "description": "Base URL of the pub-compatible package registry."
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "pubspecLens.dependencies",
+          "name": "Pubspec Dependencies"
+        }
+      ]
+    }
+  }
+}

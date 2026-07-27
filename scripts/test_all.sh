@@ -38,5 +38,8 @@ echo "==> Installing and exercising a packaged Dart-owned extension..."
 echo '--- shipped extension: real-host gate'
 ./scripts/test_coverage_extension.sh
 
+echo '--- shipped extension: pubspec-lens real-host gate'
+./scripts/test_pubspec_lens.sh
+
 echo
 echo "All tests completed successfully."

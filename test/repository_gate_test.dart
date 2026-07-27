@@ -119,6 +119,11 @@ void main() {
       contains('test_coverage_extension.sh'),
       reason: 'the aggregate gate must run the example-extension gate',
     );
+    expect(
+      aggregate,
+      contains('test_pubspec_lens.sh'),
+      reason: 'the aggregate gate must run the pubspec-lens gate',
+    );
     final extensionDirs = Directory('extensions')
         .listSync()
         .whereType<Directory>();
