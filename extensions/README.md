@@ -156,5 +156,7 @@ won't appear in a plain F5 session); manifest views/configuration
 contributions are a recorded framework follow-up.
 
 Plan and status:
-[`specs/plans/pubspec-lens.md`](../specs/plans/archive/pubspec-lens.md).
+[`specs/plans/pubspec-lens.md`](../specs/plans/archive/pubspec-lens.md),
+then [`specs/plans/lens-verdicts.md`](../specs/plans/archive/lens-verdicts.md)
+for the two-tier verdict rule.
 
