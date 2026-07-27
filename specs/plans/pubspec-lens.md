@@ -21,13 +21,19 @@ extensions/ guardrails); discoveries to [`futures.md`](futures.md).
 
 ## Exit bar
 
-- [ ] PL-1 Pure-Dart analysis in the shared package: parse
+- [x] PL-1 Pure-Dart analysis in the shared package: parse
   `pubspec.yaml` (via `yaml`) into dependency models with source
   spans; compare pinned constraints against registry versions (via
   `pub_semver`) into per-dependency verdicts (current, outdated with
   the suggested `^latest`, unknown); actionable `FormatException`s on
   malformed input. Check: a red unit suite in the extension's shared
   package covering constraints, spans, verdicts, and malformed input.
+  Closed: `parsePubspec` models hosted/sdk/path/git entries with
+  zero-based name and constraint spans, `verdictFor` yields
+  current/outdated/unknown/skipped (non-hosted dependencies are
+  skipped by design), and `parsePackageInfo` reads the pub API's
+  `{"latest": {"version": ..., "pubspec": ...}}` shape — 24/24 in the
+  shared suite.
 - [ ] PL-2 Registry client over `hostFetch`: fetch package metadata
   from the pub.dev API with the base URL read from workspace
   configuration (so gates point it at a local fake registry), an
@@ -60,3 +66,19 @@ extensions/ guardrails); discoveries to [`futures.md`](futures.md).
 ## TDD Ledger
 
 Tallies are recording-time values. Entries appended as items close.
+
+1. **Red PL-1** (commit 7c52b3d): `extensions/pubspec_lens` scaffolded
+   through the CLI and shaped as the first Host-Only Extension —
+   typed descriptor targeting 1.129.1, empty `views/` root, shared
+   package depending on `yaml` and `pub_semver`. The shared suite
+   landed failing: `parsePubspec`, `verdictFor`, and
+   `parsePackageInfo` did not exist.
+2. **Green PL-1**: 24/24 in the shared package (`dart test`): hosted
+   constraints (caret, exact, bare-any, unparsable-stays-unknown),
+   sdk/path/git classification, hosted-map `version:` support,
+   zero-based name/constraint spans sized for text edits, actionable
+   `FormatException`s (invalid YAML with position, non-map root,
+   non-map section), verdict semantics (a pin admitting latest is
+   current; outside the pin is outdated with `^latest`), and the pub
+   API response model with tolerated missing descriptions. `dart
+   analyze` clean.
