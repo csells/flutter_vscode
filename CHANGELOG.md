@@ -1,6 +1,26 @@
 
 ## Unreleased
 
+- Ship two example extensions under `extensions/`, each proven by its own
+  real-host gate rather than a unit test. **Coverage Treemap** (Flutter
+  View) paints `lcov.info` coverage into the editor, keeps a live
+  status-bar percentage that runs `flutter test --coverage` on click, and
+  renders a squarified treemap with `fl_chart` summary charts in a real
+  webview, live-pushing fresh snapshots as coverage changes. **Pubspec
+  Lens** (Host-Only — no webview at all) reads `pubspec.yaml` with
+  `pub_semver` and `yaml`, and drives hovers, a constraint-bumping
+  CodeLens, diagnostics, and a dependencies tree entirely on VS Code's
+  native UI surface. Together they draw the framework's dividing line:
+  native surfaces for lists, text, and annotations; a Flutter View only
+  when you need custom drawing. Both are excluded from the pub archive.
+- Judge a dependency pin by its lower bound, not by admission: Pubspec
+  Lens now distinguishes a constraint that merely *trails* the latest
+  release (CodeLens, no diagnostic — nothing is broken) from one that
+  *excludes* it (CodeLens and an Information diagnostic — nothing will
+  resolve to the latest until the constraint moves). A pin already at or
+  above the latest version is silent, which also makes a downgrade
+  suggestion structurally impossible for constraints sitting ahead of the
+  registry.
 - Type the extension descriptor: `extension.dart` declares
   `const extension = ExtensionManifest(...)` using
   `package:flutter_vscode/manifest.dart` (with `ExtensionCommand` for

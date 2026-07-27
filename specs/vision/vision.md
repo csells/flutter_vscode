@@ -28,9 +28,11 @@ webview security, or VS Code's JavaScript object model to ship reliable tools.
   Dart and Flutter; host-side JavaScript or TypeScript is generated and managed.
 - **Complete VS Code reach:** the public extension API, contribution points,
   callbacks, events, providers, and host lifecycles have typed Dart access.
-- **Two layers of integration:** the complete typed Parity Layer covers every
-  public capability immediately; the Idiomatic Facade layers Dart-first
-  ergonomics over it incrementally.
+- **One generated layer of integration:** a single mechanically generated
+  artifact covers every public capability immediately, carrying both the typed
+  substrate and the Dart-first ergonomic surface; judgment-shaped helpers grow
+  as hand-written framework modules beside it, never as a second generated
+  facade (ADR 0013).
 - **A known-good path:** one scaffold, build, debug, test, package, and upgrade
   workflow works from a clean Flutter project through a released extension.
 - **Agent-ready by design:** portable guidance helps coding agents translate
