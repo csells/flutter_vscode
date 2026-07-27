@@ -30,6 +30,16 @@ const packages = {
       },
     },
   },
+  behind_pkg: {
+    name: 'behind_pkg',
+    latest: {
+      version: '1.2.3',
+      pubspec: {
+        name: 'behind_pkg',
+        description: 'A test package with a newer patch inside the caret.',
+      },
+    },
+  },
   old_pkg: {
     name: 'old_pkg',
     latest: {
@@ -41,6 +51,16 @@ const packages = {
     },
   },
 };
+
+function lensFor(lenses, packageName) {
+  return lenses.find(
+    (lens) =>
+      lens.command &&
+      lens.command.command === 'pubspec-lens.update' &&
+      Array.isArray(lens.command.arguments) &&
+      lens.command.arguments[1] === packageName,
+  );
+}
 
 function startFakeRegistry() {
   const server = http.createServer((request, response) => {
@@ -101,12 +121,14 @@ async function run() {
       registryUrl,
       'The extension must read pubspecLens.registryUrl from configuration',
     );
-    assert.equal(report.depsAnalyzed, 3);
-    assert.equal(report.hosted, 2);
+    assert.equal(report.depsAnalyzed, 4);
+    assert.equal(report.hosted, 3);
+    assert.equal(report.behind, 1);
     assert.equal(report.outdated, 1);
     assert.equal(report.skipped, 1);
     assert.deepEqual(report.treeChildren, [
       'current_pkg — current (latest 1.2.3)',
+      'behind_pkg — behind (^1.2.3 available)',
       'old_pkg — outdated (^2.0.0 available)',
       'local_dep — skipped (path)',
     ]);
@@ -139,6 +161,9 @@ async function run() {
       }
       await new Promise((resolve) => setTimeout(resolve, 250));
     }
+    // Exactly one: the blocking pin. A trailing pin (behind_pkg) gets
+    // a lens but never a squiggle, so the Problems panel keeps
+    // meaning "this constraint blocks the latest release".
     assert.equal(
       diagnostics.length,
       1,
@@ -155,36 +180,52 @@ async function run() {
     assert.equal(diagnostics[0].source, 'pubspec-lens');
     assert.equal(diagnostics[0].range.start.line, oldPkgLine);
 
-    console.log('[pubspec-lens-test] applying the CodeLens update');
+    console.log('[pubspec-lens-test] asserting a lens on both trailing pins');
     const lenses = await vscode.commands.executeCommand(
       'vscode.executeCodeLensProvider',
       pubspecUri,
     );
-    const updateLens = lenses.find(
-      (lens) => lens.command && lens.command.command === 'pubspec-lens.update',
+    assert.equal(
+      lensFor(lenses, 'current_pkg'),
+      undefined,
+      'A pin already at the latest version must offer no lens',
     );
-    assert.ok(updateLens, 'Expected one CodeLens on the outdated pin');
+    const behindLens = lensFor(lenses, 'behind_pkg');
+    assert.ok(behindLens, 'Expected a CodeLens on the trailing pin');
+    assert.equal(behindLens.command.title, 'Update to ^1.2.3');
+    const updateLens = lensFor(lenses, 'old_pkg');
+    assert.ok(updateLens, 'Expected a CodeLens on the outdated pin');
     assert.equal(updateLens.command.title, 'Update to ^2.0.0');
     assert.equal(updateLens.range.start.line, oldPkgLine);
-    const applied = await vscode.commands.executeCommand(
-      updateLens.command.command,
-      ...updateLens.command.arguments,
-    );
-    assert.equal(applied, true, 'The WorkspaceEdit must apply');
+
+    console.log('[pubspec-lens-test] applying both CodeLens updates');
+    for (const lens of [updateLens, behindLens]) {
+      const applied = await vscode.commands.executeCommand(
+        lens.command.command,
+        ...lens.command.arguments,
+      );
+      assert.equal(applied, true, 'The WorkspaceEdit must apply');
+    }
     const updated = await vscode.workspace.openTextDocument(pubspecUri);
     assert.ok(
       updated.getText().includes('old_pkg: ^2.0.0'),
-      'The document must carry the rewritten constraint',
+      'The document must carry the rewritten blocking constraint',
+    );
+    assert.ok(
+      updated.getText().includes('behind_pkg: ^1.2.3'),
+      'The document must carry the rewritten trailing constraint',
     );
 
-    console.log('[pubspec-lens-test] re-checking the tree after the edit');
+    console.log('[pubspec-lens-test] re-checking the tree after the edits');
     const afterJson = await vscode.commands.executeCommand(
       'pubspec-lens.smoke',
     );
     const after = JSON.parse(afterJson);
+    assert.equal(after.behind, 0);
     assert.equal(after.outdated, 0);
     assert.deepEqual(after.treeChildren, [
       'current_pkg — current (latest 1.2.3)',
+      'behind_pkg — current (latest 1.2.3)',
       'old_pkg — current (latest 2.0.0)',
       'local_dep — skipped (path)',
     ]);

@@ -251,14 +251,46 @@ dependencies:
       expect(verdict.suggestedConstraint, '^1.6.0');
     });
 
+    // Pubspec text cannot express a union (`VersionConstraint.parse`
+    // rejects `||`), but the model type can hold one, so the bound is
+    // read through the public constructor.
+    PubspecDependency holding(VersionConstraint constraint) =>
+        PubspecDependency(
+          name: 'union_pkg',
+          isDev: false,
+          source: DependencySource.hosted,
+          nameSpan: const SpanLocation(
+            startLine: 0,
+            startColumn: 2,
+            endLine: 0,
+            endColumn: 11,
+          ),
+          constraintText: constraint.toString(),
+          constraint: constraint,
+        );
+
     test('a union constraint compares against its lowest bound', () {
-      final verdict = verdictFor(
-        only("split: '>=1.0.0 <2.0.0 || >=3.0.0 <4.0.0'"),
-        Version(3, 4, 2),
-      );
+      final union = VersionConstraint.unionOf([
+        VersionConstraint.parse('^1.0.0'),
+        VersionConstraint.parse('^3.0.0'),
+      ]);
+
+      final verdict = verdictFor(holding(union), Version(3, 4, 2));
 
       expect(verdict.kind, VerdictKind.behind);
       expect(verdict.suggestedConstraint, '^3.4.2');
+    });
+
+    test('a union sitting entirely ahead of the registry suggests nothing', () {
+      final union = VersionConstraint.unionOf([
+        VersionConstraint.parse('^4.0.0'),
+        VersionConstraint.parse('^5.0.0'),
+      ]);
+
+      final verdict = verdictFor(holding(union), Version(3, 0, 0));
+
+      expect(verdict.kind, VerdictKind.current);
+      expect(verdict.suggestedConstraint, isNull);
     });
 
     test('a constraint with no lower bound is behind', () {

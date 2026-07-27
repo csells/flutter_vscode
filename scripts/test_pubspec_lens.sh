@@ -18,16 +18,19 @@ trap cleanup EXIT
 mkdir -p "${CACHE_ROOT}"
 mkdir -p "${WORKSPACE}/vendor/local_dep"
 
-# One known-current pin, one known-outdated pin, one skipped path
-# dependency. The driver's fake registry answers current_pkg with
-# 1.2.3 (admitted by ^1.2.0) and old_pkg with 2.0.0 (outside ^0.9.0).
+# One pin of each verdict, plus a skipped path dependency. The
+# driver's fake registry answers current_pkg and behind_pkg with
+# 1.2.3 and old_pkg with 2.0.0, so: current_pkg ^1.2.3 has nothing to
+# suggest (silent), behind_pkg ^1.2.0 admits 1.2.3 but trails it (lens
+# only), and old_pkg ^0.9.0 excludes 2.0.0 (lens and diagnostic).
 cat > "${WORKSPACE}/pubspec.yaml" <<'EOF'
 name: lens_workspace
 environment:
   sdk: ^3.12.0
 
 dependencies:
-  current_pkg: ^1.2.0
+  current_pkg: ^1.2.3
+  behind_pkg: ^1.2.0
   old_pkg: ^0.9.0
   local_dep:
     path: ./vendor/local_dep

@@ -97,10 +97,16 @@ final class PubspecDependency {
 
 /// The outcome of comparing one dependency against the registry.
 enum VerdictKind {
-  /// The written constraint admits the latest version.
+  /// Nothing to suggest: the constraint's lower bound already sits at
+  /// or above the latest version.
   current,
 
-  /// The latest version falls outside the written constraint.
+  /// The constraint admits the latest version, but its lower bound
+  /// trails it — advice, not a blocker.
+  behind,
+
+  /// The latest version falls outside the written constraint, so
+  /// nothing will resolve to it until the constraint moves.
   outdated,
 
   /// No registry answer, or the constraint does not parse.
@@ -121,7 +127,7 @@ final class Verdict {
   final Version? latest;
 
   /// The `^latest` constraint to write when [kind] is
-  /// [VerdictKind.outdated]; null otherwise.
+  /// [VerdictKind.behind] or [VerdictKind.outdated]; null otherwise.
   final String? suggestedConstraint;
 }
 
@@ -129,9 +135,18 @@ final class Verdict {
 ///
 /// Non-hosted dependencies are [VerdictKind.skipped]; a null [latest]
 /// (offline, unknown package) or an unparsable constraint is
-/// [VerdictKind.unknown]; otherwise the constraint either admits the
-/// latest ([VerdictKind.current]) or is [VerdictKind.outdated] with a
-/// suggested `^latest` replacement.
+/// [VerdictKind.unknown].
+///
+/// Otherwise the comparison point is the constraint's lower bound, not
+/// merely whether the latest version is admitted: a bound at or above
+/// [latest] is [VerdictKind.current] with nothing to suggest, and a
+/// trailing bound carries a `^latest` suggestion — [VerdictKind.behind]
+/// when the constraint still admits the latest version,
+/// [VerdictKind.outdated] when it excludes it.
+///
+/// Reading the bound rather than testing admission is what keeps a pin
+/// *ahead* of the registry (a lagging mirror, a prerelease pin) from
+/// being "fixed" by a rewrite that walks it backwards.
 Verdict verdictFor(PubspecDependency dependency, Version? latest) {
   if (!dependency.isHosted) {
     return const Verdict._(VerdictKind.skipped, null, null);
@@ -140,11 +155,28 @@ Verdict verdictFor(PubspecDependency dependency, Version? latest) {
   if (latest == null || constraint == null) {
     return Verdict._(VerdictKind.unknown, latest, null);
   }
-  if (constraint.allows(latest)) {
+  final lowerBound = _lowerBoundOf(constraint);
+  if (lowerBound != null && lowerBound >= latest) {
     return Verdict._(VerdictKind.current, latest, null);
   }
-  return Verdict._(VerdictKind.outdated, latest, '^$latest');
+  final kind = constraint.allows(latest)
+      ? VerdictKind.behind
+      : VerdictKind.outdated;
+  return Verdict._(kind, latest, '^$latest');
 }
+
+/// The lowest version [constraint] could resolve to, or null when it
+/// has no lower bound (`any`, a bare `name:` entry, or a shape this
+/// first cut does not decompose).
+Version? _lowerBoundOf(VersionConstraint constraint) => switch (constraint) {
+  // Version implements VersionRange with `min` returning itself, so
+  // exact pins land here too.
+  VersionRange(:final min) => min,
+  // The union's ranges are sorted, so the first carries the lowest
+  // bound.
+  VersionUnion(:final ranges) => ranges.firstOrNull?.min,
+  _ => null,
+};
 
 /// Parses [source] as `pubspec.yaml` and returns its direct
 /// dependencies in declaration order (`dependencies` first, then

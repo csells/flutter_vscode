@@ -96,12 +96,16 @@ final class _PubspecLensController {
       ..register('pubspec-lens.smoke', (_) async {
         await _enqueueAnalyzeAll();
         var hosted = 0;
+        var behind = 0;
         var outdated = 0;
         var skipped = 0;
         for (final report in _treeReports) {
           switch (report.verdict.kind) {
             case VerdictKind.current || VerdictKind.unknown:
               hosted += 1;
+            case VerdictKind.behind:
+              hosted += 1;
+              behind += 1;
             case VerdictKind.outdated:
               hosted += 1;
               outdated += 1;
@@ -113,6 +117,7 @@ final class _PubspecLensController {
           'registryUrl': _registryUrl(),
           'depsAnalyzed': _treeReports.length,
           'hosted': hosted,
+          'behind': behind,
           'outdated': outdated,
           'skipped': skipped,
           'treeChildren': _treeLabels(),
@@ -262,10 +267,17 @@ final class _PubspecLensController {
         buffer.write(' — latest `${info.latest}`');
       }
       switch (report.verdict.kind) {
+        case VerdictKind.behind:
+          buffer.write(
+            '\n\nBehind: `${report.dependency.constraintText}` already '
+            'allows ${report.verdict.latest} — bump to '
+            '`${report.verdict.suggestedConstraint}` to require it.',
+          );
         case VerdictKind.outdated:
           buffer.write(
-            '\n\nOutdated: pinned `${report.dependency.constraintText}`, '
-            '`${report.verdict.suggestedConstraint}` available.',
+            '\n\nOutdated: `${report.dependency.constraintText}` excludes '
+            'the latest release; `${report.verdict.suggestedConstraint}` '
+            'available.',
           );
         case VerdictKind.unknown:
           buffer.write('\n\nNo registry answer for this package.');
@@ -416,6 +428,9 @@ final class _PubspecLensController {
           VerdictKind.current =>
             '${report.dependency.name} — current '
                 '(latest ${report.verdict.latest})',
+          VerdictKind.behind =>
+            '${report.dependency.name} — behind '
+                '(${report.verdict.suggestedConstraint} available)',
           VerdictKind.outdated =>
             '${report.dependency.name} — outdated '
                 '(${report.verdict.suggestedConstraint} available)',

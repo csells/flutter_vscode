@@ -81,11 +81,13 @@ Dependency intelligence for `pubspec.yaml`, and the first Host-Only
 Extension: no Flutter View, no webview — the whole UX rides VS Code's
 native UI surface, driven from plain Dart through the generated
 layer. Hover a dependency for the latest version and description;
-outdated pins get Information-severity diagnostics and a CodeLens
-that rewrites the constraint through a `WorkspaceEdit`; a
-dependencies tree view lists direct dependencies with verdicts; a
-refresh command re-queries. The semantics come from the Dart team's
-own packages — `pub_semver` for constraint math and `yaml` for
+any pin whose lower bound trails the registry gets a CodeLens that
+rewrites the constraint through a `WorkspaceEdit`, and the pins that
+actually *block* the latest release also get an Information-severity
+diagnostic; a dependencies tree view lists direct dependencies with
+verdicts; a refresh command re-queries. The semantics come from the
+Dart team's own packages — `pub_semver` for constraint math and
+`yaml` for
 span-preserving parsing — and the registry is fetched with the
 generated runtime's `hostFetch`, with the base URL configurable so
 the real-host gate serves a deterministic fake pub.dev.
@@ -114,28 +116,40 @@ code --new-window \
 
 In the development host, open `pubspec.yaml` (analysis runs on open
 and queries the registry — live pub.dev by default — so give the
-first pass a second or two). To see every verdict at once, age a few
-pins first (say `path: ^1.8.0` or `http: ^0.13.0`), then:
+first pass a second or two). Any pin below the latest release is
+enough to see it work; age one to a previous major (say
+`http: ^0.13.0`) to see both tiers at once:
 
-- outdated dependencies get Information-severity squiggles —
-  deliberately not warnings, since a newer release is advice, not a
-  defect — and the Problems panel reads
-  `http 1.5.0 is available (pinned ^0.13.0)`;
-- hover a dependency name for the latest version, the verdict, and
-  the package's pub.dev description;
-- a CodeLens above each outdated pin offers **Update to ^X.Y.Z**;
+- a CodeLens above every trailing pin offers **Update to ^X.Y.Z**;
   clicking it rewrites the constraint through a `WorkspaceEdit`, so
   the edit lands in your buffer (the file goes dirty), never
   silently on disk;
+- the pins that actually *block* the latest release — where the
+  constraint excludes it, so `pub get` can never resolve to it — also
+  get an Information-severity squiggle, and the Problems panel reads
+  `http 1.6.0 is available (pinned ^0.13.0)`. Severity is Information
+  by design: a newer release is advice, not a defect;
+- a pin that merely trails the latest inside its caret
+  (`http: ^1.5.0` when 1.6.0 is out) gets the lens but no squiggle —
+  nothing is broken, so the Problems panel stays about real blockers;
+- a pin already at the latest version is silent on every surface;
+- hover a dependency name for the latest version, the verdict, and
+  the package's pub.dev description;
 - **Pubspec Lens: Refresh** clears the registry cache and
   re-analyzes — useful after hand-editing a constraint;
 - offline, verdicts degrade to *unknown* with no diagnostic churn,
   and recover on the next refresh.
 
+Constraints that sit *ahead* of the registry (a lagging mirror, a
+prerelease pin) are never "fixed" by a rewrite that walks them
+backwards: the comparison is against the constraint's lower bound,
+so there is nothing to suggest.
+
 The real-host gate is `scripts/test_pubspec_lens.sh`: it packages
 the VSIX, installs it into the pinned Extension Host in Docker,
 serves a deterministic fake pub.dev from inside the host, and
-asserts the hover, the diagnostic, the CodeLens edit, and the tree
+asserts the hover, the single diagnostic, a lens on each trailing
+pin (and none on the current one), both CodeLens edits, and the tree
 snapshot. First-cut note: the dependencies tree view renders only
 where its view id is contributed (the gate's driver does this, so it
 won't appear in a plain F5 session); manifest views/configuration
