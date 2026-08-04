@@ -60,14 +60,11 @@ byte-equal regeneration and cover exactly the IR
    host: the driver decodes the fixture's source map, arms every
    mapped generated position over `--inspect-extensions`, and the
    Extension Host pauses on a location that maps back to the same
-   Dart line (`tool/extension_host_test/run_breakpoint.cjs`).
-6. `./scripts/test_all.sh` — the focused suites, the importer checks,
-   and the host, packaged, and coverage gates; the breakpoint gate
-   runs standalone.
-7. `./scripts/check_round5_exit.sh` — the archived
-   first-working-extension plan's closure authority: evaluates that
-   plan's exit bar, including executing the packaged gate and the
-   regenerator no-op check.
+   Dart line (`packages/flutter_vscode/tool/extension_host_test/run_breakpoint.cjs`).
+6. `./scripts/test_all.sh` — every package's suite, the importer
+   checks, and all five real-host gates including the breakpoint gate.
+   Nothing in this chain runs only when someone remembers it.
+
 
 ## Methodology (inherited, binding on future rounds)
 

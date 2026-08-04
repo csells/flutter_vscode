@@ -14,6 +14,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: stable
 
       # One resolve at the workspace root covers every package in the
@@ -51,6 +52,7 @@ jobs:
 
       - uses: subosito/flutter-action@v2
         with:
+          flutter-version: 3.44.6
           channel: stable
 
       # Runs every package's test suite and then the real-host gates: the

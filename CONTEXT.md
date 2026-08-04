@@ -49,17 +49,25 @@ Build or configuration output created, validated, and upgraded by
 `flutter_vscode`; Extension Authors may inspect it but do not edit it.
 _Avoid_: Scaffold file, user file
 
+**Project-Derived Artifact**:
+The only generated code an Extension Project receives: files whose contents
+come from that project itself, such as its extension identifier and the
+collision-resistant key its JavaScript globals are named for. Framework
+code is never one of these — it ships in a package and is imported.
+_Avoid_: Generated code, framework code, emitted module
+
 **API Parity Baseline**:
 The pinned stable VS Code release whose public Extension Capabilities must all
 have a classified Dart representation.
 _Avoid_: Latest API, full API
 
 **Generated API Layer**:
-The one mechanically generated Dart artifact
-(`vscode_dart_layer.g.dart`) that Extension Authors use: the complete
-typed Parity Layer substrate and the Dart-first ergonomic surface in a
-single self-contained file.
-_Avoid_: Idiomatic Facade, binding layers, wrapper API
+The one mechanically generated Dart artifact that Extension Authors use:
+the complete typed Parity Layer substrate and the Dart-first ergonomic
+surface in a single self-contained file. It ships as
+`package:dart_vscode/dart_vscode.dart` and is imported, never copied into
+an Extension Project (ADR 0015).
+_Avoid_: Idiomatic Facade, binding layers, wrapper API, per-project copy
 
 **Parity Layer**:
 The complete, mechanically generated typed substrate of an API Parity

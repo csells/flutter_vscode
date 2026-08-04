@@ -264,7 +264,12 @@ void main() {
       ['ls-files', '--cached', '--', 'pubspec.lock'],
       workingDirectory: repositoryRoot.path,
     );
-    expect(repositoryFiles.exitCode, 0);
+    expect(
+      repositoryFiles.exitCode,
+      0,
+      reason: 'git failed in ${repositoryRoot.path}:\n'
+          '${repositoryFiles.stdout}\n${repositoryFiles.stderr}',
+    );
     expect(
       (repositoryFiles.stdout as String).trim(),
       'pubspec.lock',
@@ -277,7 +282,12 @@ void main() {
       ['ls-tree', '--name-only', 'HEAD', '--', 'pubspec.lock'],
       workingDirectory: repositoryRoot.path,
     );
-    expect(committedFiles.exitCode, 0);
+    expect(
+      committedFiles.exitCode,
+      0,
+      reason: 'git failed in ${repositoryRoot.path}:\n'
+          '${committedFiles.stdout}\n${committedFiles.stderr}',
+    );
     expect(
       (committedFiles.stdout as String).trim(),
       'pubspec.lock',

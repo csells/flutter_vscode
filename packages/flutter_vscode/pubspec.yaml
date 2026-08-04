@@ -30,6 +30,7 @@ dev_dependencies:
     sdk: flutter
   test: ^1.24.0
   very_good_analysis: ^10.0.0
+  yaml: ^3.1.3
 
 executables:
   flutter_vscode: flutter_vscode

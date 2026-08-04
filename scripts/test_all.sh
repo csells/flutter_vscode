@@ -21,7 +21,10 @@ flutter pub get
 
 echo
 echo "==> Running the framework suite..."
-(cd "${REPO_ROOT}/packages/flutter_vscode" && flutter test)
+# Excluding `gate` is load-bearing, not tidiness: the CI workflow test is
+# tagged `gate` and runs this script inside a container. Including it here
+# would make the aggregate invoke itself.
+(cd "${REPO_ROOT}/packages/flutter_vscode" && flutter test --exclude-tags gate)
 
 echo
 echo "==> Running the shipped extension package suites..."
@@ -46,6 +49,10 @@ echo '--- shipped extension: real-host gate'
 
 echo '--- shipped extension: pubspec-lens real-host gate'
 ./scripts/test_pubspec_lens.sh
+
+echo
+echo "==> Proving breakpoints bind to Dart source lines..."
+./scripts/test_breakpoints.sh
 
 echo
 echo "All tests completed successfully."
