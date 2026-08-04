@@ -69,6 +69,14 @@ void main() {
       ]);
       expect(clone.exitCode, 0, reason: clone.stderr.toString());
 
+      // The gates mount their scratch directories into sibling containers,
+      // whose `-v` paths resolve against the host daemon. A path under the
+      // container's own /tmp does not exist there, so Docker would mount an
+      // empty directory. Keeping scratch inside the checkout -- which is
+      // mounted at an identical path -- makes it visible to both.
+      final scratch = Directory(p.join(checkout, '.ci-scratch'))
+        ..createSync(recursive: true);
+
       final workflow = loadYaml(
         File(repoPath('.github/workflows/test.yml')).readAsStringSync(),
       ) as YamlMap;
@@ -120,6 +128,8 @@ void main() {
             '${pubCache.path}:${pubCache.path}',
             '--env',
             'PUB_CACHE=${pubCache.path}',
+            '--env',
+            'TMPDIR=${scratch.path}',
             '--workdir',
             if (relative == null) checkout else p.join(checkout, relative),
             image,
