@@ -54,26 +54,29 @@ final class ExtensionCommands {
   Disposable register(String name, CommandHandler handler) {
     final callback = toHostCallback(
       (([
-        JSAny? a1,
-        JSAny? a2,
-        JSAny? a3,
-        JSAny? a4,
-        JSAny? a5,
-        JSAny? a6,
-        JSAny? a7,
-        JSAny? a8,
-      ]) {
-        final raw = <JSAny?>[a1, a2, a3, a4, a5, a6, a7, a8];
-        while (raw.isNotEmpty && raw.last.isUndefinedOrNull) {
-          raw.removeLast();
-        }
-        final arguments = List<Object?>.unmodifiable(
-          raw.map((argument) => argument.dartify()),
-        );
-        return toHostPromise(
-          Future<JSAny?>(() async => _hostResult(name, await handler(arguments))),
-        );
-      }).toJS,
+            JSAny? a1,
+            JSAny? a2,
+            JSAny? a3,
+            JSAny? a4,
+            JSAny? a5,
+            JSAny? a6,
+            JSAny? a7,
+            JSAny? a8,
+          ]) {
+            final raw = <JSAny?>[a1, a2, a3, a4, a5, a6, a7, a8];
+            while (raw.isNotEmpty && raw.last.isUndefinedOrNull) {
+              raw.removeLast();
+            }
+            final arguments = List<Object?>.unmodifiable(
+              raw.map((argument) => argument.dartify()),
+            );
+            return toHostPromise(
+              Future<JSAny?>(
+                () async => _hostResult(name, await handler(arguments)),
+              ),
+            );
+          })
+          .toJS,
     );
     final registration = api.commands.registerCommand(name, callback);
     context.subscriptions.toDart.add(JSAnon_ffa2e03c40a2(registration));

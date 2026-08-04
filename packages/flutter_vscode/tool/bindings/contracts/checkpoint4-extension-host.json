@@ -56,7 +56,7 @@
     },
     "bootstrapLifecycleTest": {
       "path": "packages/flutter_vscode/tool/extension_host_test/bootstrap_lifecycle.test.cjs",
-      "sha256": "09f3ceab28f1effa3141e4b7cf9dbbb0f21cc4af5f32e9b0c3e8e413fe489ff4"
+      "sha256": "0750b5061086edfec1cf63b2e41cef3b5c3dd6fca5febac2b07b03ed0b1ea686"
     },
     "buildReceipt": {
       "path": "packages/flutter_vscode/lib/src/cli/build_receipt.dart",
@@ -80,7 +80,7 @@
     },
     "container": {
       "path": "packages/flutter_vscode/tool/extension_host_test/Dockerfile",
-      "sha256": "03988fdeac1cc471d54ee3fddea5acfc392a5269ef1023cb9c69e676d31f871b"
+      "sha256": "7b619dd4268393d12fb93acabec6751f1749c49ff1d6f5b854a8aacd0a7b0ee3"
     },
     "contractWriter": {
       "path": "packages/flutter_vscode/tool/binding_generator/contract.dart",
@@ -132,7 +132,7 @@
     },
     "flutterViewHostTemplate": {
       "path": "packages/dart_vscode/lib/src/flutter_view_host.dart",
-      "sha256": "9fc5e4feea7c26730e2cdc6bc851508079768948c488472d02a8d814ccbab699"
+      "sha256": "84a5a3a88f06577e7cbbbad09b46ef4e20bf39fca95c82ba19599d4fced5fefb"
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",
@@ -168,7 +168,7 @@
     },
     "hostCommandsTemplate": {
       "path": "packages/dart_vscode/lib/src/host_commands.dart",
-      "sha256": "9104cdfeacc105e93987ef21e777fd1163a8bc0696d0f91e2037fa4ce28427f7"
+      "sha256": "6dc0bfb5131f77ba0b832e7e243e1fe725d4b9995120b6b4f623ebcfce09034b"
     },
     "hostContractSources": {
       "path": "packages/flutter_vscode/tool/bindings/host-contract-sources.json",
@@ -180,11 +180,11 @@
     },
     "hostRuntime": {
       "path": "packages/dart_vscode/lib/src/host_runtime.dart",
-      "sha256": "8f6fe223ee1cd276a8c807fe3a0bf4d655739d9833dfbd106a6bf1929deb4042"
+      "sha256": "43f21c510064ecdc8bc696b18be249e5cc8c2b8ed63c141c7a94e48ed12e5a64"
     },
     "launcher": {
       "path": "packages/flutter_vscode/tool/extension_host_test/run.cjs",
-      "sha256": "c6993f162eaac3d079547b485a9721a15442bd1cb09db6fd002158ebd5bb240b"
+      "sha256": "4d82c3652d4b1c569b7e6ac588e7c9f135684353d18739a274840c1ba2b4d66b"
     },
     "projectDescriptor": {
       "path": "packages/flutter_vscode/lib/src/cli/project_descriptor.dart",
@@ -204,7 +204,7 @@
     },
     "verifierTest": {
       "path": "packages/flutter_vscode/tool/extension_host_test/host_contract.test.cjs",
-      "sha256": "db6ea0802569c83df947434e415eaf868d2d261502d2490f33f79d08b4c29176"
+      "sha256": "60f3b797fad2c1080d811fe5120e686bb4f6c752ba2ece397c984dd39c3a0284"
     },
     "viewLibrary": {
       "path": "packages/flutter_vscode/lib/view.dart",

@@ -43,7 +43,6 @@ JSFunction _wrapHostCallback(JSFunction callback) {
   return wrapper == null ? callback : wrapper(callback);
 }
 
-
 /// Native JavaScript error used to preserve Dart failure details.
 @JS('Error')
 extension type JavaScriptError._(JSObject _) implements JSObject {
@@ -66,8 +65,7 @@ JavaScriptError toHostError(Object error, StackTrace stackTrace) {
 }
 
 /// Wraps [callback] so synchronous throws retain mapped Dart source frames.
-JSFunction toHostCallback(JSFunction callback) =>
-    _wrapHostCallback(callback);
+JSFunction toHostCallback(JSFunction callback) => _wrapHostCallback(callback);
 
 /// One HTTP response snapshot from the Extension Host's global `fetch`.
 final class HostFetchResponse {
@@ -109,11 +107,9 @@ Future<HostFetchResponse> hostFetch(
     init.setProperty('body'.toJS, body.toJS);
   }
   final response = await _hostGlobalFetch(url.toJS, init).toDart;
-  final status =
-      (response.getProperty('status'.toJS)! as JSNumber).toDartInt;
+  final status = (response.getProperty('status'.toJS)! as JSNumber).toDartInt;
   final text =
-      await (response.callMethod('text'.toJS)! as JSPromise<JSString>)
-          .toDart;
+      await (response.callMethod('text'.toJS)! as JSPromise<JSString>).toDart;
   return HostFetchResponse(status: status, body: text.toDart);
 }
 

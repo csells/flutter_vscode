@@ -5,15 +5,15 @@ const os = require('node:os');
 const path = require('node:path');
 const {runTests} = require('@vscode/test-electron');
 
-const repositoryRoot = path.resolve(__dirname, '../..');
+const packageRoot = path.resolve(__dirname, '../..');
 const fixtureRoot = path.join(
-  repositoryRoot,
+  packageRoot,
   'test',
   'fixtures',
   'host_extension',
 );
 const driverRoot = path.join(
-  repositoryRoot,
+  packageRoot,
   'test',
   'fixtures',
   'breakpoint_driver',

@@ -14,7 +14,6 @@ import 'dart:math';
 import 'package:dart_vscode/dart_vscode.dart' as vs;
 import 'package:dart_vscode/view_protocol.dart';
 
-
 /// Observes each parsed native webview message after it is queued for
 /// the protocol validator; harnesses use it to inspect traffic without
 /// changing delivery.
@@ -287,16 +286,16 @@ final class FlutterViewHost {
   }
 
   String _viewHtml() => flutterViewHtml(
-        webview: panel.webview,
-        uri: _uri,
-        viewRoot: _viewRoot,
-        sessionId: _sessionId,
-        bootstrapNonce: _bootstrapNonce,
-        title: _title,
-        extraHead: _extraHead,
-        scriptNonce: _scriptNonce,
-        reloadGeneration: _reloadGeneration,
-      );
+    webview: panel.webview,
+    uri: _uri,
+    viewRoot: _viewRoot,
+    sessionId: _sessionId,
+    bootstrapNonce: _bootstrapNonce,
+    title: _title,
+    extraHead: _extraHead,
+    scriptNonce: _scriptNonce,
+    reloadGeneration: _reloadGeneration,
+  );
 
   /// Closes the protocol session and transport.
   ///

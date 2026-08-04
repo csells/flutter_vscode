@@ -5,9 +5,9 @@ const Module = require('node:module');
 const path = require('node:path');
 const test = require('node:test');
 
-const repositoryRoot = path.resolve(__dirname, '../..');
+const packageRoot = path.resolve(__dirname, '../..');
 const fixtureRoot = path.join(
-  repositoryRoot,
+  packageRoot,
   'test',
   'fixtures',
   'host_extension',

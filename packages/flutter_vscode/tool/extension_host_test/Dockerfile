@@ -31,8 +31,8 @@ RUN apt-get update \
 
 WORKDIR /runner
 
-COPY tool/extension_host_test/package.json \
-     tool/extension_host_test/package-lock.json ./
+COPY packages/flutter_vscode/tool/extension_host_test/package.json \
+     packages/flutter_vscode/tool/extension_host_test/package-lock.json ./
 RUN npm ci
 
 ENV NODE_PATH=/runner/node_modules

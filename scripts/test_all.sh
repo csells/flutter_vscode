@@ -20,8 +20,14 @@ echo "==> Ensuring package_config.json exists (flutter pub get)..."
 flutter pub get
 
 echo
-echo "==> Running flutter tests..."
-flutter test
+echo "==> Running the framework suite..."
+(cd "${REPO_ROOT}/packages/flutter_vscode" && flutter test)
+
+echo
+echo "==> Running the shipped extension package suites..."
+(cd "${REPO_ROOT}/extensions/pubspec_lens/shared" && dart test)
+(cd "${REPO_ROOT}/extensions/coverage_treemap/shared" && dart test)
+(cd "${REPO_ROOT}/extensions/coverage_treemap/views/treemap_panel" && flutter test)
 
 echo
 echo "==> Running deterministic binding importer checks..."

@@ -3,9 +3,12 @@ const path = require('node:path');
 const {runTests} = require('@vscode/test-electron');
 const {verifyHostContractSourceFiles} = require('./host_contract.cjs');
 
-const repositoryRoot = path.resolve(__dirname, '../..');
+const packageRoot = path.resolve(__dirname, '../..');
+// Host Contract receipts are relative to the repository root, which is what
+// the container mounts; everything else here lives inside the package.
+const repositoryRoot = path.resolve(__dirname, '../../../..');
 const fixtureRoot = path.join(
-  repositoryRoot,
+  packageRoot,
   'test',
   'fixtures',
   'host_extension',
@@ -14,7 +17,7 @@ const fixtureManifest = require(path.join(fixtureRoot, 'package.json'));
 const vscodeVersion = fixtureManifest.engines.vscode;
 const contractId = 'checkpoint4ExtensionHost';
 const contractPath = path.join(
-  repositoryRoot,
+  packageRoot,
   'tool',
   'bindings',
   'contracts',

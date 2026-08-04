@@ -2,12 +2,12 @@ FROM node:22-bookworm@sha256:5647be709086c696ff32edaaf1c70cd26d1da6ab2b39c32f3c7
 
 WORKDIR /runner
 
-COPY tool/binding_importer/package.json \
-     tool/binding_importer/package-lock.json ./
+COPY packages/flutter_vscode/tool/binding_importer/package.json \
+     packages/flutter_vscode/tool/binding_importer/package-lock.json ./
 RUN npm ci --ignore-scripts
 
 ENV NODE_PATH=/runner/node_modules
 
 WORKDIR /workspace
 
-CMD ["npm", "test", "--prefix", "tool/binding_importer"]
+CMD ["npm", "test", "--prefix", "packages/flutter_vscode/tool/binding_importer"]

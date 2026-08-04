@@ -12,6 +12,7 @@ PACKAGE_COPY="${TEMP_ROOT}/package"
 WORKSPACE="${TEMP_ROOT}/workspace"
 PROJECT_ROOT="${WORKSPACE}/activated_extension"
 VIEW_FIXTURE_ROOT="${TEMP_ROOT}/host-extension-fixture"
+LAYER_COPY="${TEMP_ROOT}/dart_vscode"
 
 cleanup() {
   rm -rf "${TEMP_ROOT}"
@@ -57,6 +58,29 @@ done
 sed -i.bak '/^resolution: workspace$/d' "${PACKAGE_COPY}/pubspec.yaml"
 rm -f "${PACKAGE_COPY}/pubspec.yaml.bak"
 
+# `dart_vscode` carries the generated VS Code API and is not published yet, so
+# nothing here can resolve it from pub.dev. Stage it beside the package and
+# override; this goes away when the two packages ship together.
+mkdir -p "${LAYER_COPY}"
+(
+  cd "${REPO_ROOT}/packages/dart_vscode"
+  tar cf - --exclude=.dart_tool --exclude=build .
+) | (cd "${LAYER_COPY}" && tar xf -)
+sed -i.bak '/^resolution: workspace$/d' "${LAYER_COPY}/pubspec.yaml"
+rm -f "${LAYER_COPY}/pubspec.yaml.bak"
+printf '\ndependency_overrides:\n  dart_vscode:\n    path: %s\n' \
+  "${LAYER_COPY}" >> "${PACKAGE_COPY}/pubspec.yaml"
+
+# Each package inside the copied fixture is its own resolution root -- the CLI
+# runs `pub get` in host/ -- so every one that names the layer needs the same
+# override until it is published.
+while IFS= read -r manifest; do
+  if grep -q '^  dart_vscode:' "${manifest}"; then
+    printf '\ndependency_overrides:\n  dart_vscode:\n    path: %s\n' \
+      "${LAYER_COPY}" >> "${manifest}"
+  fi
+done < <(find "${VIEW_FIXTURE_ROOT}" -name pubspec.yaml)
+
 test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
 test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"
 test ! -e "${PACKAGE_COPY}/test"
@@ -68,7 +92,8 @@ test ! -e "${PACKAGE_COPY}/specs"
 PUB_CACHE="${PUB_CACHE_ROOT}" dart pub add \
   --directory="${VIEW_FIXTURE_ROOT}/views/main" \
   --no-precompile \
-  "override:flutter_vscode@{path: ${PACKAGE_COPY}}"
+  "override:flutter_vscode@{path: ${PACKAGE_COPY}}" \
+  "override:dart_vscode@{path: ${LAYER_COPY}}"
 
 PUB_CACHE="${PUB_CACHE_ROOT}" dart pub global activate \
   --source path "${PACKAGE_COPY}"

@@ -10,9 +10,9 @@ const {
   runTests,
 } = require('@vscode/test-electron');
 
-const repositoryRoot = path.resolve(__dirname, '../..');
+const packageRoot = path.resolve(__dirname, '../..');
 const driverRoot = path.join(
-  repositoryRoot,
+  packageRoot,
   'test',
   'fixtures',
   'coverage_treemap_driver',
