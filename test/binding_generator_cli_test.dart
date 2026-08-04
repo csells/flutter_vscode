@@ -105,8 +105,7 @@ void main() {
     }
   });
 
-  test('the runtime host fetch helper performs a real HTTP request',
-      () async {
+  test('the runtime host fetch helper performs a real HTTP request', () async {
     final temporary = await Directory.systemTemp.createTemp(
       'flutter_vscode_host_fetch_probe_',
     );
@@ -114,14 +113,9 @@ void main() {
     final auditSource = File(p.join(temporary.path, 'audit.dart'));
     final compiledAudit = File(p.join(temporary.path, 'audit.js'));
     final nodeProbe = File(p.join(temporary.path, 'probe.cjs'));
-    final hostPackageConfig = p.join(
-      'test',
-      'fixtures',
-      'host_extension',
-      'host',
-      '.dart_tool',
-      'package_config.json',
-    );
+    // The fixture host package is a member of the repository's pub
+    // workspace, so it resolves through the workspace root's config.
+    final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
 
     await auditSource.writeAsString(r'''
 import 'dart:js_interop';
@@ -190,7 +184,6 @@ server.listen(0, '127.0.0.1', async () => {
     );
     expect(probe.exitCode, 0, reason: '${probe.stdout}\n${probe.stderr}');
   });
-
 }
 
 Future<Map<String, List<int>>> _readTree(Directory root) async {

@@ -13,8 +13,9 @@ import 'package:coverage_treemap_shared/view_contract.dart';
 List<CoverageNode> descendSingleChildChain(List<CoverageNode> path) {
   final result = [...path];
   while (true) {
-    final children =
-        result.last.children.where((child) => child.linesFound > 0);
+    final children = result.last.children.where(
+      (child) => child.linesFound > 0,
+    );
     if (children.length != 1) {
       break;
     }

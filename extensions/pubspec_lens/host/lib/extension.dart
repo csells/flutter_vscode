@@ -252,53 +252,55 @@ final class _PubspecLensController {
   // ── native UI surface ────────────────────────────────────────────
 
   void _registerHoverProvider() {
-    final provideHover = ((
-      vs.TextDocument document,
-      vs.Position position,
-      vs.CancellationToken token,
-    ) {
-      final report = _reportAt(document.uri, position.line.toInt());
-      if (report == null || !report.dependency.isHosted) {
-        return null;
-      }
-      final buffer = StringBuffer('**${report.dependency.name}**');
-      final info = report.info;
-      if (info != null) {
-        buffer.write(' — latest `${info.latest}`');
-      }
-      switch (report.verdict.kind) {
-        case VerdictKind.behind:
-          buffer.write(
-            '\n\nBehind: `${report.dependency.constraintText}` already '
-            'allows ${report.verdict.latest} — bump to '
-            '`${report.verdict.suggestedConstraint}` to require it.',
-          );
-        case VerdictKind.outdated:
-          buffer.write(
-            '\n\nOutdated: `${report.dependency.constraintText}` excludes '
-            'the latest release; `${report.verdict.suggestedConstraint}` '
-            'available.',
-          );
-        case VerdictKind.unknown:
-          buffer.write('\n\nNo registry answer for this package.');
-        case VerdictKind.current || VerdictKind.skipped:
-          break;
-      }
-      final description = info?.description;
-      if (description != null) {
-        buffer.write('\n\n$description');
-      }
-      final name = report.dependency.nameSpan;
-      return _api.Hover.new$(
-        _api.MarkdownString.new$(buffer.toString()),
-        _api.Range.new$$2(
-          name.startLine,
-          name.startColumn,
-          name.endLine,
-          name.endColumn,
-        ),
-      );
-    }).toJS;
+    final provideHover =
+        ((
+              vs.TextDocument document,
+              vs.Position position,
+              vs.CancellationToken token,
+            ) {
+              final report = _reportAt(document.uri, position.line.toInt());
+              if (report == null || !report.dependency.isHosted) {
+                return null;
+              }
+              final buffer = StringBuffer('**${report.dependency.name}**');
+              final info = report.info;
+              if (info != null) {
+                buffer.write(' — latest `${info.latest}`');
+              }
+              switch (report.verdict.kind) {
+                case VerdictKind.behind:
+                  buffer.write(
+                    '\n\nBehind: `${report.dependency.constraintText}` already '
+                    'allows ${report.verdict.latest} — bump to '
+                    '`${report.verdict.suggestedConstraint}` to require it.',
+                  );
+                case VerdictKind.outdated:
+                  buffer.write(
+                    '\n\nOutdated: `${report.dependency.constraintText}` excludes '
+                    'the latest release; `${report.verdict.suggestedConstraint}` '
+                    'available.',
+                  );
+                case VerdictKind.unknown:
+                  buffer.write('\n\nNo registry answer for this package.');
+                case VerdictKind.current || VerdictKind.skipped:
+                  break;
+              }
+              final description = info?.description;
+              if (description != null) {
+                buffer.write('\n\n$description');
+              }
+              final name = report.dependency.nameSpan;
+              return _api.Hover.new$(
+                _api.MarkdownString.new$(buffer.toString()),
+                _api.Range.new$$2(
+                  name.startLine,
+                  name.startColumn,
+                  name.endLine,
+                  name.endColumn,
+                ),
+              );
+            })
+            .toJS;
     _subscribe(
       _api.languages.registerHoverProvider(
         'yaml'.toJS,
@@ -308,42 +310,45 @@ final class _PubspecLensController {
   }
 
   void _registerCodeLensProvider() {
-    final provideCodeLenses = ((
-      vs.TextDocument document,
-      vs.CancellationToken token,
-    ) {
-      final analysis = _analysesByUri[document.uri.toString$()];
-      if (analysis == null) {
-        return <vs.CodeLens>[].toJS;
-      }
-      final lenses = <vs.CodeLens>[];
-      for (final report in analysis.reports) {
-        final suggested = report.verdict.suggestedConstraint;
-        if (suggested == null || report.dependency.constraintSpan == null) {
-          continue;
-        }
-        final name = report.dependency.nameSpan;
-        lenses.add(
-          _api.CodeLens.new$(
-            _api.Range.new$$2(
-              name.startLine,
-              name.startColumn,
-              name.endLine,
-              name.endColumn,
-            ),
-            vs.CommandDart.lit$(
-              command: 'pubspec-lens.update',
-              title: 'Update to $suggested',
-              arguments: <JSAny?>[
-                document.uri.toString$().toJS,
-                report.dependency.name.toJS,
-              ].toJS,
-            ),
-          ),
-        );
-      }
-      return lenses.toJS;
-    }).toJS;
+    final provideCodeLenses =
+        ((
+              vs.TextDocument document,
+              vs.CancellationToken token,
+            ) {
+              final analysis = _analysesByUri[document.uri.toString$()];
+              if (analysis == null) {
+                return <vs.CodeLens>[].toJS;
+              }
+              final lenses = <vs.CodeLens>[];
+              for (final report in analysis.reports) {
+                final suggested = report.verdict.suggestedConstraint;
+                if (suggested == null ||
+                    report.dependency.constraintSpan == null) {
+                  continue;
+                }
+                final name = report.dependency.nameSpan;
+                lenses.add(
+                  _api.CodeLens.new$(
+                    _api.Range.new$$2(
+                      name.startLine,
+                      name.startColumn,
+                      name.endLine,
+                      name.endColumn,
+                    ),
+                    vs.CommandDart.lit$(
+                      command: 'pubspec-lens.update',
+                      title: 'Update to $suggested',
+                      arguments: <JSAny?>[
+                        document.uri.toString$().toJS,
+                        report.dependency.name.toJS,
+                      ].toJS,
+                    ),
+                  ),
+                );
+              }
+              return lenses.toJS;
+            })
+            .toJS;
     _subscribe(
       _api.languages.registerCodeLensProvider(
         'yaml'.toJS,

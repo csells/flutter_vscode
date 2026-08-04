@@ -1,5 +1,6 @@
 name: flutter_vscode_host_fixture_shared
 publish_to: none
+resolution: workspace
 
 environment:
   sdk: ^3.12.0

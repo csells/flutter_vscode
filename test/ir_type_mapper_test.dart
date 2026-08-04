@@ -161,8 +161,7 @@ void main() {
     });
   });
 
-  test('substitute rewrites type-parameter references position-correctly',
-      () {
+  test('substitute rewrites type-parameter references position-correctly', () {
     expect(
       mapper.substitute(
         const {

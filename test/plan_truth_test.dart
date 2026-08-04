@@ -53,8 +53,7 @@ void main() {
 
     final violations = <String>[];
     for (var index = 0; index < planLines.length; index += 1) {
-      for (final match
-          in RegExp('[0-9a-f]{64}').allMatches(planLines[index])) {
+      for (final match in RegExp('[0-9a-f]{64}').allMatches(planLines[index])) {
         final digest = match.group(0)!;
         if (currentDigests.contains(digest)) {
           continue;
@@ -126,8 +125,10 @@ void main() {
   });
 
   test('a completion status requires a fully checked plan', () {
-    final status = planLines
-        .firstWhere((line) => line.startsWith('Status:'), orElse: () => '');
+    final status = planLines.firstWhere(
+      (line) => line.startsWith('Status:'),
+      orElse: () => '',
+    );
     if (status.contains('Implemented and verified')) {
       expect(
         plan,

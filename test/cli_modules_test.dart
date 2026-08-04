@@ -393,9 +393,7 @@ const extension = ExtensionManifest(
 }
 
 Matcher _throwsCliException(String code, {String? containing}) => throwsA(
-      isA<CliException>()
-          .having((error) => error.code, 'code', code)
-          .having(
+      isA<CliException>().having((error) => error.code, 'code', code).having(
             (error) => error.message,
             'message',
             containing == null ? isNotEmpty : contains(containing),

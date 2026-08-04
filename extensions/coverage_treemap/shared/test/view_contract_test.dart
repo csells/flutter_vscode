@@ -15,8 +15,10 @@ SF:lib/b.dart
 DA:1,3
 end_of_record
 ''');
-      final snapshot =
-          CoverageSnapshot.fromReport('coverage/lcov.info', report);
+      final snapshot = CoverageSnapshot.fromReport(
+        'coverage/lcov.info',
+        report,
+      );
       final decoded = coverageSnapshotSchema.decode(
         coverageSnapshotSchema.encode(snapshot),
       );
@@ -46,12 +48,14 @@ end_of_record
           ),
         ),
       );
-      final valid = coverageSnapshotSchema.encode(
-        const CoverageSnapshot(
-          lcovPath: 'coverage/lcov.info',
-          root: CoverageNode(name: '', linesFound: 0, linesHit: 0),
-        ),
-      )! as Map<String, Object?>;
+      final valid =
+          coverageSnapshotSchema.encode(
+                const CoverageSnapshot(
+                  lcovPath: 'coverage/lcov.info',
+                  root: CoverageNode(name: '', linesFound: 0, linesHit: 0),
+                ),
+              )!
+              as Map<String, Object?>;
       expect(
         () => coverageSnapshotSchema.decode({...valid, 'extra': 1}),
         throwsA(

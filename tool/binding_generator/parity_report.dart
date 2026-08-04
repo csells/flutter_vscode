@@ -12,8 +12,8 @@ String buildParityReport(
   Map<String, Object?> coverage,
   Map<String, Object?> inventory,
 ) {
-  final summary = (coverage['summary']! as Map<Object?, Object?>)
-      .cast<String, Object?>();
+  final summary =
+      (coverage['summary']! as Map<Object?, Object?>).cast<String, Object?>();
   final entries = (coverage['entries']! as List<Object?>)
       .cast<Map<Object?, Object?>>()
       .map((entry) => entry.cast<String, Object?>())
@@ -23,8 +23,8 @@ String buildParityReport(
   for (final entry in entries) {
     final group = _groupFor(entry['id']! as String);
     final counts = groups.putIfAbsent(group, _GroupCounts.new);
-    final binding = (entry['binding']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final binding =
+        (entry['binding']! as Map<Object?, Object?>).cast<String, Object?>();
     switch (binding['status']) {
       case 'emitted':
         counts.emitted += 1;

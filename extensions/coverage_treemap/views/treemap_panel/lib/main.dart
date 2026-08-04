@@ -71,8 +71,9 @@ class _TreemapPageState extends State<_TreemapPage> {
     super.initState();
     // The shell owns these subscriptions: disposing it ends both streams,
     // so nothing here holds a StreamSubscription to cancel by hand.
-    widget.shell.themeChanges
-        .listen((snapshot) => unawaited(_reportTheme(snapshot)));
+    widget.shell.themeChanges.listen(
+      (snapshot) => unawaited(_reportTheme(snapshot)),
+    );
     widget.shell.events(snapshotPushStreamName).listen(_applyPushedSnapshot);
     unawaited(_reportTheme(widget.shell.theme));
     unawaited(_load());

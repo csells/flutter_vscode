@@ -15,12 +15,10 @@ void main() {
   group('dart-layer rules on synthetic IRs', () {
     for (final testCase in _ruleCases) {
       test(testCase.name, () {
-        final library = dart_layer
-            .emitDartLayer({
-              'schemaVersion': 1,
-              'declarations': testCase.declarations,
-            })
-            .library;
+        final library = dart_layer.emitDartLayer({
+          'schemaVersion': 1,
+          'declarations': testCase.declarations,
+        }).library;
         for (final fragment in testCase.expects) {
           expect(library, contains(fragment), reason: testCase.name);
         }
@@ -38,12 +36,10 @@ void main() {
   group('alias-named literal wrappers in the parity emitter', () {
     for (final testCase in _parityRuleCases) {
       test(testCase.name, () {
-        final library = parity
-            .emitParityLayer({
-              'schemaVersion': 1,
-              'declarations': testCase.declarations,
-            })
-            .library;
+        final library = parity.emitParityLayer({
+          'schemaVersion': 1,
+          'declarations': testCase.declarations,
+        }).library;
         for (final fragment in testCase.expects) {
           expect(library, contains(fragment), reason: testCase.name);
         }
@@ -80,12 +76,10 @@ void main() {
         ),
       ];
       final ledger = jsonDecode(
-        dart_layer
-            .emitDartLayer({
-              'schemaVersion': 1,
-              'declarations': declarations,
-            })
-            .ledger,
+        dart_layer.emitDartLayer({
+          'schemaVersion': 1,
+          'declarations': declarations,
+        }).ledger,
       ) as Map<String, Object?>;
       final dispositions = (ledger['dispositions']! as Map<Object?, Object?>)
           .cast<String, String>();

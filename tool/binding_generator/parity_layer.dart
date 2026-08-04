@@ -328,8 +328,7 @@ final class ParityEmitter {
     if (mappedName.startsWith('JSAnon_')) {
       for (final declaration in mapper.declarations) {
         if (declaration['kind'] == 'typeLiteral' &&
-            mapper.hashName('JSAnon', declaration['shapeHash']) ==
-                mappedName) {
+            mapper.hashName('JSAnon', declaration['shapeHash']) == mappedName) {
           return declaration;
         }
       }
@@ -596,9 +595,9 @@ final class ParityEmitter {
     final instantiated = ownerParameters.isEmpty
         ? name
         : '$name<${ownerParameters.map(
-            (parameter) =>
-                (parameter! as Map<Object?, Object?>)['name']! as String,
-          ).join(', ')}>';
+              (parameter) =>
+                  (parameter! as Map<Object?, Object?>)['name']! as String,
+            ).join(', ')}>';
     out
       ..writeln('  bool isInstance(JSAny? value) {')
       ..writeln('    if (value == null) return false;')
@@ -656,9 +655,9 @@ final class ParityEmitter {
     final instantiated = ownerParameters.isEmpty
         ? className
         : '$className<${ownerParameters.map(
-            (parameter) =>
-                (parameter! as Map<Object?, Object?>)['name']! as String,
-          ).join(', ')}>';
+              (parameter) =>
+                  (parameter! as Map<Object?, Object?>)['name']! as String,
+            ).join(', ')}>';
     final signature = _helperParameters(parameters, scopes, id);
     final trimmed =
         '${signature.local}.sublist(0, ${signature.trimExpression})';
@@ -797,8 +796,7 @@ final class ParityEmitter {
     final parameters =
         (declaration['parameters'] as List<Object?>?) ?? const [];
     final hasRest = parameters.any(
-      (parameter) =>
-          (parameter! as Map<Object?, Object?>)['rest'] == true,
+      (parameter) => (parameter! as Map<Object?, Object?>)['rest'] == true,
     );
     final ownScopes = [
       ...scopes,

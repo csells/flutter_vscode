@@ -1,5 +1,6 @@
 name: coverage_treemap_host
 publish_to: none
+resolution: workspace
 
 environment:
   sdk: ^3.12.0

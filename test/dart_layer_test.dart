@@ -134,7 +134,8 @@ void main() {
       expect(source, contains('Stream<T> get eventStream'));
     });
 
-    test('constructor helpers take ordinary Dart scalars '
+    test(
+        'constructor helpers take ordinary Dart scalars '
         '(dc:boundary-de-js)', () {
       expect(
         source,
@@ -145,7 +146,8 @@ void main() {
       );
     });
 
-    test(r'lit$ factories include inherited interface members '
+    test(
+        r'lit$ factories include inherited interface members '
         '(dc:flattened-literal-factory)', () {
       final factory = RegExp(
         r'factory DecorationRenderOptionsDart\.lit\$\(\{[^}]*\}\)',

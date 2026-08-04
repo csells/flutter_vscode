@@ -974,11 +974,12 @@ final class _DartLayerEmitter {
         final composed = <String, Object?>{
           for (var index = 0; index < targetParameters.length; index += 1)
             (targetParameters[index]! as Map<Object?, Object?>)['name']!
-                as String: index < baseArguments.length
-                ? (substitution.isEmpty
-                    ? baseArguments[index]
-                    : mapper.substitute(baseArguments[index], substitution))
-                : {'kind': 'primitive', 'name': 'any'},
+                    as String:
+                index < baseArguments.length
+                    ? (substitution.isEmpty
+                        ? baseArguments[index]
+                        : mapper.substitute(baseArguments[index], substitution))
+                    : {'kind': 'primitive', 'name': 'any'},
         };
         visit(target, composed);
       }

@@ -32,11 +32,11 @@
     },
     "bindingIrTypeMapper": {
       "path": "tool/binding_generator/ir_type_mapper.dart",
-      "sha256": "dc0b906a939254fc5bb9c0d7ed594a56ccae2610cf0dc74608c0276591ee8207"
+      "sha256": "454e124775c0a6ff38cf2df1b728d70d0f802c5601d8e46ac1c7e7595720ff57"
     },
     "bindingIrValidator": {
       "path": "tool/binding_generator/ir_validator.dart",
-      "sha256": "335648d378162a1c0bc2133f664ebe3baba852c3898f21fb1ded41dcf96ee446"
+      "sha256": "349bb154782e0d3e5ab75bd423e311ccff038e3854e76ca99118226bfdd7e4b7"
     },
     "bindingManifestProjection": {
       "path": "tool/binding_generator/manifest_projection.dart",
@@ -84,7 +84,7 @@
     },
     "contractWriter": {
       "path": "tool/binding_generator/contract.dart",
-      "sha256": "9c8525f0b14971e271beb8c69e64cdced4e3fe50b927bf5c25cdafdc2f8e5edf"
+      "sha256": "4f1915c204444c3cec4952ea233360d2d935e02eccd76818a10424a2feed0a31"
     },
     "ecmascriptWhitespace": {
       "path": "tool/binding_generator/ecmascript_whitespace.dart",
@@ -92,19 +92,15 @@
     },
     "evidenceIntegrityTest": {
       "path": "test/binding_evidence_test.dart",
-      "sha256": "c415a709ced7104b109e43bd4b7a999ba198955cdd87901f1598b6a09b0472b3"
+      "sha256": "121c0129cc000482bcc93628720f4b3fc7589584e7b18571db3aea1c81ad2db4"
     },
     "fixtureHost": {
       "path": "test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "32050e11b5334aa9e0db8d307aab4e94a0153f1d70ddfe0e00f6fa676be784e5"
+      "sha256": "b5ed1a11e07198246b35be8d016faf666603572d99ea89ee82969560caec3039"
     },
     "fixtureHostPackage": {
       "path": "test/fixtures/host_extension/host/pubspec.yaml",
-      "sha256": "a1d2d78795cb7f1054f43bef9e5832bfa2c2c35110eda493e8f29a7213f4121d"
-    },
-    "fixtureHostPackageLock": {
-      "path": "test/fixtures/host_extension/host/pubspec.lock",
-      "sha256": "b3c7412762ad8768fd28e27f4d8b8bbd1550bc881a598a5984116c804bb145ff"
+      "sha256": "d68f69c962e922da144fa90e2f271917f16674c4af0e71ec7002b649264860f7"
     },
     "fixtureManifest": {
       "path": "test/fixtures/host_extension/package.json",
@@ -120,7 +116,7 @@
     },
     "fixtureSharedPackage": {
       "path": "test/fixtures/host_extension/shared/pubspec.yaml",
-      "sha256": "a49e24227a26642e6a1d1788f317c386201503b6be9aebcef1336995678deef4"
+      "sha256": "a89bf4049c197b7e7859f2b9c7ffab3956014f0b9a22b778404aedb5a991ca18"
     },
     "fixtureTransport": {
       "path": "test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart",
@@ -128,7 +124,7 @@
     },
     "fixtureView": {
       "path": "test/fixtures/host_extension/views/main/lib/main.dart",
-      "sha256": "21bc585d27b8d0ca14d69435e6956202a0ab9ccc259d95b5d0e5239b38d020dd"
+      "sha256": "e48fb6de2164f585e04e3811ca878730105b8b3c7677908c36b44d1b0f63acf3"
     },
     "fixtureViewIndex": {
       "path": "test/fixtures/host_extension/views/main/web/index.html",
@@ -136,11 +132,7 @@
     },
     "fixtureViewPackage": {
       "path": "test/fixtures/host_extension/views/main/pubspec.yaml",
-      "sha256": "d30551dee4731586da08ed7772e7008edfd7e267b60895e9eff0902f126f3c57"
-    },
-    "fixtureViewPackageLock": {
-      "path": "test/fixtures/host_extension/views/main/pubspec.lock",
-      "sha256": "7e25d0424fe539be160b7abc72b07736c4d6bfc5e2d1410db29a535df8654a36"
+      "sha256": "39154195a0872a56a0f8d775c848f204fc9125f4eb1778d580e034a716345b46"
     },
     "flutterViewHostTemplate": {
       "path": "lib/src/cli/flutter_view_host_source.dart",
@@ -148,11 +140,11 @@
     },
     "frameworkPackage": {
       "path": "pubspec.yaml",
-      "sha256": "8e272bfa3cb3064e81bdb2fe6ffaa09c8df107191319aa0f257ba0d1cee40300"
+      "sha256": "ce12a510b80e1957797a665df46583affc954cdaa615bd276a29b3f2c542264c"
     },
     "frameworkPackageLock": {
       "path": "pubspec.lock",
-      "sha256": "49e0b47187aaa21657ed4b195241df08b2c43ede883f0b73e01a5b573a1cd95c"
+      "sha256": "b39917906a0748314bf6b735cd31a7252737d6e08ec7ba8a50c055a3dfbf294d"
     },
     "generatedBootstrap": {
       "path": "test/fixtures/host_extension/host/bootstrap.cjs",

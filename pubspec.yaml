@@ -5,6 +5,16 @@ description: >-
 version: 0.1.0
 homepage: https://github.com/SlowGen/flutter_vscode
 
+workspace:
+  - extensions/coverage_treemap/host
+  - extensions/coverage_treemap/shared
+  - extensions/coverage_treemap/views/treemap_panel
+  - extensions/pubspec_lens/host
+  - extensions/pubspec_lens/shared
+  - test/fixtures/host_extension/host
+  - test/fixtures/host_extension/shared
+  - test/fixtures/host_extension/views/main
+
 environment:
   sdk: '>=3.6.0 <4.0.0'
   flutter: ">=1.17.0"

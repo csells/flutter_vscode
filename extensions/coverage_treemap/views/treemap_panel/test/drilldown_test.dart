@@ -7,13 +7,12 @@ CoverageNode dir(
   int linesFound = 10,
   int linesHit = 5,
   List<CoverageNode> children = const [],
-}) =>
-    CoverageNode(
-      name: name,
-      linesFound: linesFound,
-      linesHit: linesHit,
-      children: children,
-    );
+}) => CoverageNode(
+  name: name,
+  linesFound: linesFound,
+  linesHit: linesHit,
+  children: children,
+);
 
 CoverageNode file(String name, {int linesFound = 10, int linesHit = 5}) =>
     CoverageNode(

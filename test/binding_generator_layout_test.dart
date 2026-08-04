@@ -82,9 +82,8 @@ void main() {
   }
 
   test('generator.dart keeps only the entangled walking-slice band', () {
-    final lineCount = File('tool/binding_generator/generator.dart')
-        .readAsLinesSync()
-        .length;
+    final lineCount =
+        File('tool/binding_generator/generator.dart').readAsLinesSync().length;
     expect(
       lineCount,
       lessThan(2500),

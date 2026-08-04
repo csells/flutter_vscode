@@ -63,8 +63,8 @@ PackageInfo parsePackageInfo(String body) {
   final pubspec = latest['pubspec'];
   final description =
       pubspec is Map<String, Object?> && pubspec['description'] is String
-          ? pubspec['description']! as String
-          : null;
+      ? pubspec['description']! as String
+      : null;
   return PackageInfo(latest: version, description: description);
 }
 

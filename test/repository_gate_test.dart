@@ -124,9 +124,8 @@ void main() {
       contains('test_pubspec_lens.sh'),
       reason: 'the aggregate gate must run the pubspec-lens gate',
     );
-    final extensionDirs = Directory('extensions')
-        .listSync()
-        .whereType<Directory>();
+    final extensionDirs =
+        Directory('extensions').listSync().whereType<Directory>();
     expect(extensionDirs, isNotEmpty);
     for (final extension in extensionDirs) {
       for (final root in ['host', 'shared']) {

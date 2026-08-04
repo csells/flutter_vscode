@@ -144,14 +144,9 @@ void main() {
         final probeSource = File(p.join(temporary.path, 'probe.dart'));
         final compiledProbe = File(p.join(temporary.path, 'probe.js'));
         final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
-        final hostPackageConfig = p.join(
-          'test',
-          'fixtures',
-          'host_extension',
-          'host',
-          '.dart_tool',
-          'package_config.json',
-        );
+        // The fixture host package is a member of the repository's pub
+        // workspace, so it resolves through the workspace root's config.
+        final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
         final extensionKey = RegExp(r'stackMappers\.(e_[0-9a-f]{64})')
             .firstMatch(
               File(

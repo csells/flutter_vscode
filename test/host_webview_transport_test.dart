@@ -14,14 +14,9 @@ void main() {
       final probeSource = File(p.join(temporary.path, 'probe.dart'));
       final compiledProbe = File(p.join(temporary.path, 'probe.js'));
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
-      final hostPackageConfig = p.join(
-        'test',
-        'fixtures',
-        'host_extension',
-        'host',
-        '.dart_tool',
-        'package_config.json',
-      );
+      // The fixture host package is a member of the repository's pub
+      // workspace, so it resolves through the workspace root's config.
+      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
 
       await probeSource.writeAsString('''
 import 'dart:js_interop';
@@ -138,14 +133,9 @@ require(process.argv[2]);
       final probeSource = File(p.join(temporary.path, 'probe.dart'));
       final compiledProbe = File(p.join(temporary.path, 'probe.js'));
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
-      final hostPackageConfig = p.join(
-        'test',
-        'fixtures',
-        'host_extension',
-        'host',
-        '.dart_tool',
-        'package_config.json',
-      );
+      // The fixture host package is a member of the repository's pub
+      // workspace, so it resolves through the workspace root's config.
+      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
 
       await probeSource.writeAsString('''
 import 'dart:async';
@@ -248,14 +238,9 @@ require(process.argv[2]);
       final probeSource = File(p.join(temporary.path, 'probe.dart'));
       final compiledProbe = File(p.join(temporary.path, 'probe.js'));
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
-      final hostPackageConfig = p.join(
-        'test',
-        'fixtures',
-        'host_extension',
-        'host',
-        '.dart_tool',
-        'package_config.json',
-      );
+      // The fixture host package is a member of the repository's pub
+      // workspace, so it resolves through the workspace root's config.
+      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
 
       await probeSource.writeAsString('''
 import 'dart:async';
@@ -345,5 +330,4 @@ require(process.argv[2]);
     },
     timeout: const Timeout(Duration(minutes: 3)),
   );
-
 }

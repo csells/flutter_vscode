@@ -49,8 +49,8 @@ void main() {
 
   test('P-2 every public declaration is emitted or explicitly erased', () {
     final ledger = _readJson(_ledgerPath);
-    final dispositions =
-        (ledger['dispositions']! as Map<Object?, Object?>).cast<String, String>();
+    final dispositions = (ledger['dispositions']! as Map<Object?, Object?>)
+        .cast<String, String>();
     const allowedErasures = {
       'emitted',
       'symbol-keyed-member',
@@ -135,7 +135,9 @@ void main() {
       expect(
         source,
         matches(
-          RegExp(r'extension type JSIntersection_\w+[^{]*implements[^{]*Memento'),
+          RegExp(
+            r'extension type JSIntersection_\w+[^{]*implements[^{]*Memento',
+          ),
         ),
       );
     });
@@ -167,8 +169,7 @@ void main() {
       expect(source, contains('typedef GlobPattern = JSAny;'));
     });
 
-    test('registered type literals are extension types with typed members',
-        () {
+    test('registered type literals are extension types with typed members', () {
       expect(source, matches(RegExp(r'extension type JSAnon_\w+\(JSObject')));
       expect(
         'extension type JSAnon_'.allMatches(source).length,
@@ -197,8 +198,7 @@ void main() {
       expect(source, contains('external void operator []=('));
     });
 
-    test('Promise and Thenable references map to JSPromise in signatures',
-        () {
+    test('Promise and Thenable references map to JSPromise in signatures', () {
       expect(source, matches(RegExp('external JSPromise<[^>]+> ')));
     });
 
@@ -266,8 +266,7 @@ void main() {
     final namespaces = [
       for (final declaration in (inventory['declarations']! as List<Object?>)
           .cast<Map<Object?, Object?>>())
-        if (declaration['kind'] == 'namespace')
-          declaration['name']! as String,
+        if (declaration['kind'] == 'namespace') declaration['name']! as String,
     ];
     expect(namespaces, isNotEmpty);
     final harness = File(
@@ -285,8 +284,7 @@ void main() {
 
   test('C-4 the parity report states machine-derived two-axis live coverage',
       () {
-    final report =
-        File('docs/reference/parity.md').readAsStringSync();
+    final report = File('docs/reference/parity.md').readAsStringSync();
     expect(
       report,
       contains('two axes'),
@@ -295,8 +293,7 @@ void main() {
     final namespaces = [
       for (final declaration in (inventory['declarations']! as List<Object?>)
           .cast<Map<Object?, Object?>>())
-        if (declaration['kind'] == 'namespace')
-          declaration['name']! as String,
+        if (declaration['kind'] == 'namespace') declaration['name']! as String,
     ];
     for (final namespace in namespaces) {
       expect(
@@ -323,8 +320,7 @@ void main() {
     }
   });
 
-  test('P-5 unmapped constructs fail generation with an actionable error',
-      () {
+  test('P-5 unmapped constructs fail generation with an actionable error', () {
     final synthetic = <String, Object?>{
       'schemaVersion': 1,
       'declarations': [

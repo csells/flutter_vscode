@@ -116,8 +116,7 @@ ThemeData vsCodeThemeData(VSCodeThemeSnapshot snapshot) {
       Color(snapshot.color('editorWidget-background') ?? 0xFF252526);
   final panelBorder = Color(snapshot.panelBorder ?? 0xFF454545);
   final focusBorder = Color(snapshot.focusBorder ?? 0xFF007FD4);
-  final listHoverBackground =
-      Color(snapshot.listHoverBackground ?? 0xFF2A2D2E);
+  final listHoverBackground = Color(snapshot.listHoverBackground ?? 0xFF2A2D2E);
   final colorScheme = ColorScheme.fromSeed(
     seedColor: buttonBackground,
     brightness: brightness,

@@ -2255,7 +2255,6 @@ void main() {
       await host.closed;
     });
   });
-
 }
 
 ViewOperation<Object?, Object?> _snapshotOperation(String name) {
@@ -2502,5 +2501,4 @@ final class _ReadyAckObservingViewTransport implements ViewTransport {
     }
     return _delegate.send(message);
   }
-
 }

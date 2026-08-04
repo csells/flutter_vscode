@@ -1,5 +1,6 @@
 name: treemap_panel
 publish_to: none
+resolution: workspace
 
 environment:
   sdk: ^3.12.0

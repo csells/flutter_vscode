@@ -27,8 +27,9 @@ void main() {
     test('parses per-file line hit maps', () {
       final report = parseLcov(_sample);
       expect(report.files, hasLength(3));
-      final parser = report.files
-          .singleWhere((file) => file.path == 'lib/src/parser.dart');
+      final parser = report.files.singleWhere(
+        (file) => file.path == 'lib/src/parser.dart',
+      );
       expect(parser.lineHits, {1: 4, 2: 0, 3: 1});
       expect(parser.linesFound, 3);
       expect(parser.linesHit, 2);
@@ -36,11 +37,13 @@ void main() {
 
     test('computes per-file coverage fractions', () {
       final report = parseLcov(_sample);
-      final painter = report.files
-          .singleWhere((file) => file.path == 'lib/src/render/painter.dart');
+      final painter = report.files.singleWhere(
+        (file) => file.path == 'lib/src/render/painter.dart',
+      );
       expect(painter.coverage, 0.0);
-      final main = report.files
-          .singleWhere((file) => file.path == 'lib/main.dart');
+      final main = report.files.singleWhere(
+        (file) => file.path == 'lib/main.dart',
+      );
       expect(main.coverage, 1.0);
     });
 

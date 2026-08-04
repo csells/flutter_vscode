@@ -43,6 +43,14 @@ done < "${PACKAGE_LIST}"
     .
 ) | (cd "${VIEW_FIXTURE_ROOT}" && tar xf -)
 
+# In the checkout the fixture is a member of the repository's pub workspace.
+# The copy stands alone the way an Extension Author's project does, so drop the
+# workspace opt-in: outside its workspace root pub rejects it outright.
+find "${VIEW_FIXTURE_ROOT}" -name pubspec.yaml -print0 | while IFS= read -r -d '' manifest; do
+  sed -i.bak '/^resolution: workspace$/d' "${manifest}"
+  rm -f "${manifest}.bak"
+done
+
 test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
 test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"
 test ! -e "${PACKAGE_COPY}/test"

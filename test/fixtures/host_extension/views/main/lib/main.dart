@@ -79,12 +79,12 @@ const _requestReloadOperation = ViewOperation<Object?, Object?>(
 
 final _confirmRenderObservationOperation =
     ViewOperation<ConfirmRenderObservationRequest, bool>(
-  name: confirmRenderObservationOperationName,
-  encodeArguments: encodeConfirmRenderObservationRequest,
-  decodeArguments: decodeConfirmRenderObservationRequest,
-  encodeResult: (value) => value,
-  decodeResult: decodeFixtureBool,
-);
+      name: confirmRenderObservationOperationName,
+      encodeArguments: encodeConfirmRenderObservationRequest,
+      decodeArguments: decodeConfirmRenderObservationRequest,
+      encodeResult: (value) => value,
+      decodeResult: decodeFixtureBool,
+    );
 
 void main() => runApp(const _FixtureView());
 
@@ -229,7 +229,7 @@ class _FixtureViewState extends State<_FixtureView> {
     unawaited(
       call.then<void>(
         (_) {},
-        onError: (Object _, StackTrace __) {},
+        onError: (Object _, StackTrace _) {},
       ),
     );
   }
@@ -291,8 +291,9 @@ class _FixtureViewState extends State<_FixtureView> {
 }
 
 String _fixtureMode() {
-  final element =
-      web.document.querySelector('meta[name="$fixtureModeMetaName"]');
+  final element = web.document.querySelector(
+    'meta[name="$fixtureModeMetaName"]',
+  );
   return (element as web.HTMLMetaElement?)?.content.trim() ?? '';
 }
 

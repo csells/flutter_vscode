@@ -35,8 +35,7 @@ void main() {
     });
 
     test('reads exact pins as hosted constraints', () {
-      final http =
-          parsePubspec(_pubspec).singleWhere((d) => d.name == 'http');
+      final http = parsePubspec(_pubspec).singleWhere((d) => d.name == 'http');
 
       expect(http.source, DependencySource.hosted);
       expect(http.constraintText, '1.2.0');
@@ -309,8 +308,7 @@ dependencies:
       expect(verdict.suggestedConstraint, isNull);
     });
 
-    test('an unparsable constraint is unknown even with a latest version',
-        () {
+    test('an unparsable constraint is unknown even with a latest version', () {
       final typo = parsePubspec('''
 dependencies:
   typo: banana

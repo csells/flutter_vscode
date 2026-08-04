@@ -66,8 +66,8 @@ void main() {
       final product =
           (pins['product']! as Map<Object?, Object?>).cast<String, Object?>();
       expect(product['version'], version, reason: '$version pins.json');
-      for (final input in (pins['inputs']! as List<Object?>)
-          .cast<Map<Object?, Object?>>()) {
+      for (final input
+          in (pins['inputs']! as List<Object?>).cast<Map<Object?, Object?>>()) {
         final path = input['path']! as String;
         final pinned = File(p.join(pinDirectory, path));
         expect(pinned.existsSync(), isTrue, reason: '$version $path');

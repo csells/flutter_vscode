@@ -113,9 +113,7 @@ Future<void> buildProject(
     workingDirectory: hostRoot.path,
     description: 'resolve Host Dart dependencies',
   );
-  final packageConfig = File(
-    p.join(hostRoot.path, '.dart_tool', 'package_config.json'),
-  );
+  final packageConfig = _findPackageConfig(hostRoot);
   final guardPackageConfig = await _writeDirectoryAwarePackageConfig(
     packageConfig,
   );
@@ -217,6 +215,29 @@ String _sharedPackageName(Directory root) {
     );
   }
   return match.group(1)!;
+}
+
+/// Locates the `package_config.json` that governs [start].
+///
+/// A standalone Extension Project resolves into its own `.dart_tool/`, but a
+/// project that is a member of a pub workspace resolves into the workspace
+/// root instead, so this walks upward the way the Dart toolchain does.
+File _findPackageConfig(Directory start) {
+  for (var directory = start;; directory = directory.parent) {
+    final candidate = File(
+      p.join(directory.path, '.dart_tool', 'package_config.json'),
+    );
+    if (candidate.existsSync()) {
+      return candidate;
+    }
+    if (p.equals(directory.path, directory.parent.path)) {
+      throw CliException(
+        'Host Dart dependencies did not resolve: no package config '
+        'exists at or above ${start.path}.',
+        code: 'MISSING_PACKAGE_CONFIG',
+      );
+    }
+  }
 }
 
 Future<File> _writeDirectoryAwarePackageConfig(File packageConfig) async {

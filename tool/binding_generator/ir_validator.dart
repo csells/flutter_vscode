@@ -853,8 +853,7 @@ void _validateIrRegisteredTypeLiteralShapes(
     final id = declaration['id']! as String;
     final path = declarationPathsById[id]!;
     final shape = _registeredTypeLiteralShape(declaration, path);
-    final expected =
-        sha256.convert(utf8.encode(jsonEncode(shape))).toString();
+    final expected = sha256.convert(utf8.encode(jsonEncode(shape))).toString();
     if (declaration['shapeHash'] != expected) {
       throw VSCodeBindingGenerationException(
         'INVALID_GENERATOR_INPUT',
@@ -1011,10 +1010,9 @@ void _validateRegisteredShapeChildren({
         throw mismatch('$kind ${name ?? ordinal} has no unique child');
       }
       final child = matches.single;
-      final canonical =
-          (jsonDecode(child['canonicalSignature']! as String)
-                  as Map<Object?, Object?>)
-              .cast<String, Object?>();
+      final canonical = (jsonDecode(child['canonicalSignature']! as String)
+              as Map<Object?, Object?>)
+          .cast<String, Object?>();
       if (kind == 'method') {
         canonical
           ..remove('static')

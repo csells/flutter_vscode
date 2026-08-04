@@ -489,7 +489,6 @@ Map<String, Object?> _createExtension() {
   );
 }
 
-
 void _writeMinimalFlutterViewInto(Directory view) {
   Directory(p.join(view.path, 'lib')).createSync(recursive: true);
   Directory(p.join(view.path, 'web')).createSync(recursive: true);

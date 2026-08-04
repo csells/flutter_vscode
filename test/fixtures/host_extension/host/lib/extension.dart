@@ -148,22 +148,26 @@ class _VSCodeHostExtension {
                 .call(((JSObject event) {}).toJS)
                 .dispose();
             final provider = parity.HoverProvider.lit$(
-              provideHover: ((
-                JSObject document,
-                JSObject hoverPosition,
-                JSObject token,
-              ) {
-                final markdown = api.MarkdownString.new$(
-                  'Hover from the parity layer'.toJS,
-                );
-                return api.Hover.new$(markdown);
-              }).toJS,
+              provideHover:
+                  ((
+                        JSObject document,
+                        JSObject hoverPosition,
+                        JSObject token,
+                      ) {
+                        final markdown = api.MarkdownString.new$(
+                          'Hover from the parity layer'.toJS,
+                        );
+                        return api.Hover.new$(markdown);
+                      })
+                      .toJS,
             );
             final selector = parity.DocumentFilter.lit$(
               language: 'json'.toJS,
             );
-            parityHoverRegistration =
-                api.languages.registerHoverProvider(selector, provider);
+            parityHoverRegistration = api.languages.registerHoverProvider(
+              selector,
+              provider,
+            );
             return toHostPromise(
               Future<JSAny?>(() async {
                 final families = <String, Object?>{};
@@ -199,15 +203,16 @@ class _VSCodeHostExtension {
                 );
                 families['extensions'] = self != null;
 
-                final localized =
-                    api.l10n.t('parity {0}'.toJS, <JSAny?>['42'.toJS]);
+                final localized = api.l10n.t('parity {0}'.toJS, <JSAny?>[
+                  '42'.toJS,
+                ]);
                 families['l10n'] = localized.toDart.contains('parity 42');
 
-                final languages =
-                    await api.languages.getLanguages().toDart;
+                final languages = await api.languages.getLanguages().toDart;
                 families['languages'] = languages.toDart.isNotEmpty;
 
-                families['lm'] = api.lm.tools.toDart.isEmpty ||
+                families['lm'] =
+                    api.lm.tools.toDart.isEmpty ||
                     api.lm.tools.toDart.isNotEmpty;
 
                 api.notebooks
@@ -226,8 +231,7 @@ class _VSCodeHostExtension {
 
                 final taskProvider = parity.TaskProvider.lit$(
                   provideTasks: ((JSObject token) => null).toJS,
-                  resolveTask:
-                      ((JSObject task, JSObject token) => null).toJS,
+                  resolveTask: ((JSObject task, JSObject token) => null).toJS,
                 );
                 api.tasks
                     .registerTaskProvider('parity-task-type', taskProvider)
@@ -246,15 +250,14 @@ class _VSCodeHostExtension {
 
                 api.chat
                     .createChatParticipant(
-                  'flutter-vscode-test.parity',
-                  ((
-                    JSObject request,
-                    JSObject chatContext,
-                    JSObject response,
-                    JSObject token,
-                  ) =>
-                          null)
-                      .toJS,
+                      'flutter-vscode-test.parity',
+                      ((
+                            JSObject request,
+                            JSObject chatContext,
+                            JSObject response,
+                            JSObject token,
+                          ) => null)
+                          .toJS,
                     )
                     .dispose();
                 families['chat'] = true;
@@ -294,16 +297,17 @@ class _VSCodeHostExtension {
                 final after = tokenSource.token.isCancellationRequested;
                 tokenSource.dispose();
 
-
-                final narrowed = api.Position.isInstance(position) &&
+                final narrowed =
+                    api.Position.isInstance(position) &&
                     !api.Uri.isInstance(position);
 
                 // cc:tuple — real directory entries as [name, FileType].
                 final parityContext = parity.ExtensionContext(rawContext);
-                final entries = (await api.workspace.fs
-                        .readDirectory(parityContext.extensionUri)
-                        .toDart)
-                    .toDart;
+                final entries =
+                    (await api.workspace.fs
+                            .readDirectory(parityContext.extensionUri)
+                            .toDart)
+                        .toDart;
                 final firstEntry = entries.first;
                 final tupleEntryName = firstEntry.$1.toDart;
                 final tupleEntryIsFile = entries.any(
@@ -313,9 +317,7 @@ class _VSCodeHostExtension {
                 // cc:intersection — Memento & setKeysForSync live.
                 final state = parityContext.globalState
                   ..setKeysForSync(<JSAny?>[].toJS as JSArray<JSString>);
-                await state
-                    .update('parityKey', 'parity-state'.toJS)
-                    .toDart;
+                await state.update('parityKey', 'parity-state'.toJS).toDart;
                 final intersectionRoundTrip =
                     (state.get('parityKey')! as JSString).toDart;
 
@@ -332,32 +334,33 @@ class _VSCodeHostExtension {
                 // cc:narrowing cc:mixed-union — narrow a union value that
                 // VS Code itself produced.
                 await api.window.showTextDocument(document).toDart;
-                final activeTab =
-                    api.window.tabGroups.activeTabGroup.activeTab;
-                final tabInputNarrowed = activeTab != null &&
+                final activeTab = api.window.tabGroups.activeTabGroup.activeTab;
+                final tabInputNarrowed =
+                    activeTab != null &&
                     api.TabInputText.isInstance(activeTab.input);
 
                 // cc:function-type — VS Code-invoked callback arguments
                 // plus a lit$ progress report.
-                final progressResult = (await api.window
-                        .withProgress<JSString>(
-                          parity.ProgressOptions.lit$(
-                            location:
-                                api.ProgressLocation.Notification.toJS,
-                          ),
-                          ((JSObject progress, JSObject token) {
-                            parity.Progress(progress).report(
-                              parity.WindowWithProgress$1.lit$(
-                                message: 'parity progress'.toJS,
+                final progressResult =
+                    (await api.window
+                            .withProgress<JSString>(
+                              parity.ProgressOptions.lit$(
+                                location:
+                                    api.ProgressLocation.Notification.toJS,
                               ),
-                            );
-                            return Future<JSAny?>.value(
-                              'parity-progress'.toJS,
-                            ).toJS;
-                          }).toJS,
-                        )
-                        .toDart)
-                    .toDart;
+                              ((JSObject progress, JSObject token) {
+                                parity.Progress(progress).report(
+                                  parity.WindowWithProgress$1.lit$(
+                                    message: 'parity progress'.toJS,
+                                  ),
+                                );
+                                return Future<JSAny?>.value(
+                                  'parity-progress'.toJS,
+                                ).toJS;
+                              }).toJS,
+                            )
+                            .toDart)
+                        .toDart;
 
                 final change = parity.PositionWith$1.lit$(line: 9.toJS);
                 final moved = position.with$$2(change);
@@ -399,11 +402,11 @@ class _VSCodeHostExtension {
             parityHoverRegistration = null;
             return null;
           }).toJS;
-          final disposeParityProviderRegistration =
-              vscode.commands.registerCommand(
-            _disposeParityProviderCommand,
-            toHostCallback(disposeParityProvider),
-          );
+          final disposeParityProviderRegistration = vscode.commands
+              .registerCommand(
+                _disposeParityProviderCommand,
+                toHostCallback(disposeParityProvider),
+              );
           _addSubscription(context, disposeParityProviderRegistration);
 
           final hostFetchProbe = ((JSAny? portValue) {
@@ -463,8 +466,12 @@ class _VSCodeHostExtension {
                               '${position.character.toInt()}'
                           .toJS,
                     );
-                    final range =
-                        vscode.Range.new$$2(0.toJS, 0.toJS, 0.toJS, 5.toJS);
+                    final range = vscode.Range.new$$2(
+                      0.toJS,
+                      0.toJS,
+                      0.toJS,
+                      5.toJS,
+                    );
                     return vscode.Hover.new$(contents, range);
                   }
                   .toJS;
@@ -507,11 +514,10 @@ class _VSCodeHostExtension {
 
           final cancellationTokenResult =
               (() => _hoverReceivedCancellationToken.toJS).toJS;
-          final cancellationTokenRegistration = vscode.commands
-              .registerCommand(
-                _hoverReceivedCancellationTokenCommand,
-                toHostCallback(cancellationTokenResult),
-              );
+          final cancellationTokenRegistration = vscode.commands.registerCommand(
+            _hoverReceivedCancellationTokenCommand,
+            toHostCallback(cancellationTokenResult),
+          );
           _addSubscription(context, cancellationTokenRegistration);
 
           final unsubscribe = _disposeOpenEventSubscription.toJS;
@@ -870,8 +876,7 @@ final class _ViewResources {
   int get pendingSendCount => viewHost.transport.pendingSendCount;
 
   int get subscriptionCount =>
-      viewHost.session.subscriptionCount +
-      viewHost.transport.subscriptionCount;
+      viewHost.session.subscriptionCount + viewHost.transport.subscriptionCount;
 
   Future<void> cleanup({bool panelAlreadyDisposed = false}) {
     _panelAlreadyDisposed |= panelAlreadyDisposed;

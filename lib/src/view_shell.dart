@@ -83,7 +83,12 @@ final class ViewShell {
     final sessions = sessionSource ?? platform.defaultViewShellSessionSource();
     final themes = themeSource ?? platform.defaultViewShellThemeSource();
     final session = await sessions.connect(operations);
-    return ViewShell._(session, themes.read(), themes.changes, sessions.release);
+    return ViewShell._(
+      session,
+      themes.read(),
+      themes.changes,
+      sessions.release,
+    );
   }
 
   /// The connected protocol session, for typed [ViewOperation] calls.

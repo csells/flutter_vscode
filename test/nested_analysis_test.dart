@@ -65,6 +65,16 @@ void main() {
       final source = Directory('extensions/coverage_treemap/shared');
       final copy = Directory(p.join(temporary.path, 'shared'));
       await Process.run('cp', ['-R', source.path, copy.path]);
+      // In the checkout this package is a member of the repository's pub
+      // workspace. The copy stands alone, and pub rejects a member outside
+      // its workspace root, so drop the opt-in the way a real standalone
+      // package would never carry it.
+      final copiedManifest = File(p.join(copy.path, 'pubspec.yaml'));
+      copiedManifest.writeAsStringSync(
+        copiedManifest
+            .readAsStringSync()
+            .replaceAll('resolution: workspace\n', ''),
+      );
       // Violates only the strict set (prefer_single_quotes), never the
       // default analyzer, so failure proves the include resolved.
       File(p.join(copy.path, 'lib', 'probe.dart'))

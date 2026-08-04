@@ -5030,11 +5030,11 @@ void main() {
               ),
         )
         .cast<String, Object?>();
-    final shape = (jsonDecode(jsonEncode(literal['shape']))
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final members = (shape['members']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
+    final shape =
+        (jsonDecode(jsonEncode(literal['shape'])) as Map<Object?, Object?>)
+            .cast<String, Object?>();
+    final members =
+        (shape['members']! as List<Object?>).cast<Map<Object?, Object?>>();
     members.firstWhere((member) => member['kind'] == 'method')['name'] = null;
     literal['shape'] = shape;
     final shapeHash = _shapeHash(shape);
@@ -5755,7 +5755,8 @@ String _resynchronizeAncestorTypeLiterals(
     }
     changed = false;
     final byId = <String, Map<Object?, Object?>>{
-      for (final candidate in declarations) candidate['id']! as String: candidate,
+      for (final candidate in declarations)
+        candidate['id']! as String: candidate,
     };
     final declarationsById = <String, Map<String, Object?>>{
       for (final candidate in declarations)
@@ -5976,7 +5977,9 @@ Map<String, Object?> _matchFixtureShapeChild(
   int? ordinal,
 ) {
   final sameKind = children
-      .where((candidate) => candidate['kind'] == kind && !used.contains(candidate))
+      .where(
+        (candidate) => candidate['kind'] == kind && !used.contains(candidate),
+      )
       .toList();
   var matches = sameKind
       .where(
@@ -6001,9 +6004,8 @@ Map<String, Object?> _rebuildFixtureTypeLiteralShape(
   Map<String, Map<String, Object?>> declarationsById,
 ) {
   final oldMembers = [
-    for (final member
-        in (literal['shape']! as Map<Object?, Object?>)['members']!
-            as List<Object?>)
+    for (final member in (literal['shape']!
+        as Map<Object?, Object?>)['members']! as List<Object?>)
       (member! as Map<Object?, Object?>).cast<String, Object?>(),
   ];
   final ordinals = <String, int>{};

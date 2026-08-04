@@ -31,7 +31,6 @@ const canonicalHostContractSourcePaths = <String, String>{
   'evidenceIntegrityTest': 'test/binding_evidence_test.dart',
   'fixtureHost': 'test/fixtures/host_extension/host/lib/extension.dart',
   'fixtureHostPackage': 'test/fixtures/host_extension/host/pubspec.yaml',
-  'fixtureHostPackageLock': 'test/fixtures/host_extension/host/pubspec.lock',
   'fixtureManifest': 'test/fixtures/host_extension/package.json',
   'fixtureProject': 'test/fixtures/host_extension/extension.json',
   'fixtureSharedContract':
@@ -42,10 +41,11 @@ const canonicalHostContractSourcePaths = <String, String>{
   'fixtureView': 'test/fixtures/host_extension/views/main/lib/main.dart',
   'fixtureViewIndex': 'test/fixtures/host_extension/views/main/web/index.html',
   'fixtureViewPackage': 'test/fixtures/host_extension/views/main/pubspec.yaml',
-  'fixtureViewPackageLock':
-      'test/fixtures/host_extension/views/main/pubspec.lock',
   'flutterViewHostTemplate': 'lib/src/cli/flutter_view_host_source.dart',
   'frameworkPackage': 'pubspec.yaml',
+  // The fixture packages are members of the repository's pub workspace, so
+  // this single root lockfile is the pinned resolution for the framework and
+  // every fixture package alike.
   'frameworkPackageLock': 'pubspec.lock',
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
   'generatedDartLayer':
@@ -111,7 +111,8 @@ void main() {
     );
     addTearDown(() => temporary.deleteSync(recursive: true));
     const overridesPath = 'tool/bindings/overrides/vscode-1.129.1.json';
-    const artifactPath = 'tool/bindings/contracts/checkpoint4-extension-host.json';
+    const artifactPath =
+        'tool/bindings/contracts/checkpoint4-extension-host.json';
     for (final relative in [
       ...contract_writer.canonicalHostContractSourcePaths.values,
       overridesPath,
@@ -312,12 +313,11 @@ void main() {
 
       expect(artifactJson['evidence'], {
         'kind': 'mechanicalAttribution',
-        'meaning':
-            'Every listed binding ID is attributed to this one real '
-                'Extension Host Contract by its reviewed Semantic Override; '
-                'the gate passes only after the receipted repository sources '
-                'and the surrounding native behavior pass, without '
-                'per-member observation.',
+        'meaning': 'Every listed binding ID is attributed to this one real '
+            'Extension Host Contract by its reviewed Semantic Override; '
+            'the gate passes only after the receipted repository sources '
+            'and the surrounding native behavior pass, without '
+            'per-member observation.',
         'independentBehavioralContracts': false,
       });
       expect(artifactJson, isNot(contains('verifiedBindings')));

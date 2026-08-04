@@ -8,8 +8,11 @@ import '../tool/binding_generator/parity_layer.dart' as parity;
 /// the byte-compare cannot.
 void main() {
   group('Total Mapping Rules on synthetic IRs', () {
-    for (final testCase
-        in [..._ruleCases, ..._extraRuleCases, ..._coverageRuleCases]) {
+    for (final testCase in [
+      ..._ruleCases,
+      ..._extraRuleCases,
+      ..._coverageRuleCases,
+    ]) {
       test(testCase.name, () {
         final library = parity.emitParityLayer({
           'schemaVersion': 1,
@@ -477,14 +480,19 @@ final List<_RuleCase> _extraRuleCases = <_RuleCase>[
     'call-signature interfaces wrap JSFunction (cc:call-signature)',
     [
       _iface('Listener'),
-      _decl('callSignature', r'$call', 'interface:vscode.Listener', extra: {
-        'id': r'callSignature:interface:vscode.Listener.$call@0',
-        'parameters': [_param('value', _string)],
-        'returnType': const {'kind': 'primitive', 'name': 'void'},
-        'typeParameters': <Object?>[],
-        'overloadOrdinal': 0,
-        'canonicalSignature': '{}',
-      },),
+      _decl(
+        'callSignature',
+        r'$call',
+        'interface:vscode.Listener',
+        extra: {
+          'id': r'callSignature:interface:vscode.Listener.$call@0',
+          'parameters': [_param('value', _string)],
+          'returnType': const {'kind': 'primitive', 'name': 'void'},
+          'typeParameters': <Object?>[],
+          'overloadOrdinal': 0,
+          'canonicalSignature': '{}',
+        },
+      ),
     ],
     ['extension type Listener(JSFunction _self)', 'call('],
   ),
@@ -519,21 +527,26 @@ final List<_RuleCase> _coverageRuleCases = <_RuleCase>[
         'id': r'typeLiteral:interface:vscode.Holder/$shape@cccc',
         'shapeHash': 'c' * 64,
       }),
-      _decl('typeLiteral', r'$type', 'interface:vscode.Holder', extra: {
-        'id': r'typeLiteral:interface:vscode.Holder/$shape@cccc',
-        'shapeHash': 'c' * 64,
-        'shape': {
-          'members': [
-            {
-              'kind': 'property',
-              'name': 'flag',
-              'optional': true,
-              'readonly': false,
-              'type': {'kind': 'primitive', 'name': 'boolean'},
-            },
-          ],
+      _decl(
+        'typeLiteral',
+        r'$type',
+        'interface:vscode.Holder',
+        extra: {
+          'id': r'typeLiteral:interface:vscode.Holder/$shape@cccc',
+          'shapeHash': 'c' * 64,
+          'shape': {
+            'members': [
+              {
+                'kind': 'property',
+                'name': 'flag',
+                'optional': true,
+                'readonly': false,
+                'type': {'kind': 'primitive', 'name': 'boolean'},
+              },
+            ],
+          },
         },
-      },),
+      ),
       _property(
         r'typeLiteral:interface:vscode.Holder/$shape@cccc',
         'flag',

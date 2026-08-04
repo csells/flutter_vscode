@@ -5,10 +5,9 @@ library;
 /// Line coverage for one instrumented source file.
 final class LcovFile {
   LcovFile._(this.path, Map<int, int> lineHits, int? linesFound, int? linesHit)
-      : lineHits = Map.unmodifiable(lineHits),
-        linesFound = linesFound ?? lineHits.length,
-        linesHit =
-            linesHit ?? lineHits.values.where((hits) => hits > 0).length;
+    : lineHits = Map.unmodifiable(lineHits),
+      linesFound = linesFound ?? lineHits.length,
+      linesHit = linesHit ?? lineHits.values.where((hits) => hits > 0).length;
 
   /// Source path exactly as recorded by the `SF:` record.
   final String path;

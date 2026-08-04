@@ -142,8 +142,7 @@ Matcher _throwsProtocolError(ViewProtocolErrorCode code, String message) {
 
 void main() {
   group('typed protocol frames', () {
-    test('every kind parses to its own type and round-trips its wire map',
-        () {
+    test('every kind parses to its own type and round-trips its wire map', () {
       const expectedTypes = <String, Type>{
         'ready': ViewReadyFrame,
         'readyAck': ViewReadyAckFrame,
@@ -331,8 +330,7 @@ void main() {
       }
     });
 
-    test('rejects kind-specific field violations with the pinned messages',
-        () {
+    test('rejects kind-specific field violations with the pinned messages', () {
       final violations = <String, (Map<String, Object?>, String)>{
         'readyAck activeNonce': (
           {..._canonicalFrames['readyAck']!, 'activeNonce': ''},
@@ -554,8 +552,8 @@ void main() {
         reason: 'the end marker must appear exactly once',
       );
 
-      final outside = source.substring(0, begin) +
-          source.substring(end + endMarker.length);
+      final outside =
+          source.substring(0, begin) + source.substring(end + endMarker.length);
       for (final literal in [
         "'protocol'",
         "'version'",

@@ -497,8 +497,7 @@ final class IrTypeMapper {
     }
     final allStringLiterals = rest.length > 1 &&
         rest.every(
-          (member) =>
-              member['kind'] == 'literal' && member['value'] is String,
+          (member) => member['kind'] == 'literal' && member['value'] is String,
         );
     if (allStringLiterals && !generic) {
       final name = registerLiteralWrapper(rest);
@@ -588,8 +587,7 @@ final class IrTypeMapper {
           return _categoryOfMapped(mapped);
         }
         return 'O';
-      case 'array' || 'tuple' || 'typeLiteral' || 'function' ||
-            'intersection':
+      case 'array' || 'tuple' || 'typeLiteral' || 'function' || 'intersection':
         return 'O';
       case 'union':
         final mapped = _mapUnion(
@@ -613,9 +611,8 @@ final class IrTypeMapper {
   }
 
   String _categoryOfMapped(String mapped) {
-    final bare = mapped.endsWith('?')
-        ? mapped.substring(0, mapped.length - 1)
-        : mapped;
+    final bare =
+        mapped.endsWith('?') ? mapped.substring(0, mapped.length - 1) : mapped;
     if (bare == 'JSString' || bare == 'String') return 'S';
     if (bare == 'JSNumber' || bare == 'num' || bare == 'int') return 'N';
     if (bare == 'JSBoolean' || bare == 'bool') return 'B';
