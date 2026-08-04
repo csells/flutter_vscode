@@ -41,3 +41,12 @@ generated-facade half of ADR 0006 — the Idiomatic Facade future is
 now hand-written framework modules over the single layer — while ADR
 0006's Parity Layer promise survives as the substrate inside the one
 artifact, with its totality ledger intact.
+
+## Amendment (ADR 0015)
+
+The layer is no longer emitted into each Extension Project. It ships in the
+pure-Dart `dart_vscode` package and projects import it, so a Host Dart
+module keeps a Flutter-free dependency graph and no project carries a copy
+that could drift. One generated layer still holds, in one place rather than
+one per project. See
+[ADR 0015](0015-ship-the-runtime-as-a-pure-dart-package.md).

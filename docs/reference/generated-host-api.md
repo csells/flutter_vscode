@@ -2,8 +2,8 @@
 
 New Extension Projects use direct generated Dart bindings inside VS Code's
 Extension Host. One generated artifact carries the whole API surface:
-`host/lib/generated/vscode_dart_layer.g.dart` (exported from the package as
-`package:flutter_vscode/vscode_dart.dart`) maps every public declaration of
+`package:dart_vscode/dart_vscode.dart` (exported from the package as
+`package:dart_vscode/dart_vscode.dart`) maps every public declaration of
 the pinned VS Code API (ADR 0012, Total Mapping Rules) and layers Dart-first
 ergonomics over that substrate in the same file. There is no separate parity
 artifact and no hand-reviewed facade; the artifact is total by construction
@@ -19,8 +19,8 @@ first query:
 ```dart
 import 'dart:js_interop';
 
+import 'package:dart_vscode/dart_vscode.dart';
 import 'package:my_extension_host/generated/host_exports.g.dart';
-import 'package:my_extension_host/generated/vscode_dart_layer.g.dart';
 import 'package:my_extension_host/generated/vscode_runtime.g.dart';
 
 @JSExport()
@@ -54,7 +54,7 @@ Every identifier above is generated into the project: `ExtensionContext`,
 
 ## Commands as ordinary Dart
 
-For command registration, `host/lib/generated/host_commands.g.dart` erases
+For command registration, `package:dart_vscode/host_commands.dart` erases
 the interop ceremony above. `ExtensionCommands` holds the context/api seam
 once; each `register` call takes a command name and an ordinary-Dart
 handler — dartified `List<Object?>` arguments in, a protocol-safe value

@@ -6,7 +6,8 @@ on:
   pull_request:
 
 jobs:
-  test:
+  checks:
+    name: Analyze, format, and publishability
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,14 +16,48 @@ jobs:
         with:
           channel: stable
 
+      # One resolve at the workspace root covers every package in the
+      # repository; without it the nested packages analyze as unresolved.
+      - name: Resolve the workspace
+        run: flutter pub get
+
       - name: Analyze
         run: flutter analyze
 
-      - name: Run full test gate
-        run: ./scripts/test_all.sh
+      # `git ls-files` would skip newly added files, so walk the tree instead.
+      - name: Check formatting
+        run: |
+          find packages extensions -name '*.dart' \
+            -not -path '*/generated/*' \
+            -not -name '*.g.dart' \
+            -not -path '*/.dart_tool/*' \
+            -not -path '*/build/*' \
+            -not -path '*/out/*' \
+            -print0 | xargs -0 dart format --output=none --set-exit-if-changed
 
-      - name: Verify publish archive
+      - name: Verify dart_vscode publishes
         run: dart pub publish --dry-run --ignore-warnings
+        working-directory: packages/dart_vscode
+
+      - name: Verify flutter_vscode publishes
+        run: dart pub publish --dry-run --ignore-warnings
+        working-directory: packages/flutter_vscode
+
+  gate:
+    name: Full gate, including the pinned Extension Host
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+
+      # Runs every package's test suite and then the real-host gates: the
+      # binding importer, the pinned Extension Host, an installed VSIX, and
+      # both shipped extensions, each in Docker against pinned VS Code.
+      - name: Run the full gate
+        run: ./scripts/test_all.sh
 
       - name: Verify generated files and checkout are clean
         run: |

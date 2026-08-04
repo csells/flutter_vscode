@@ -11,7 +11,7 @@ Put Extension Host logic in `host/lib/**`. It runs in VS Code even when no
 Flutter view exists.
 
 Use the one generated API layer,
-`host/lib/generated/vscode_dart_layer.g.dart`: mechanically generated
+`package:dart_vscode/dart_vscode.dart`: mechanically generated
 `dart:js_interop` bindings covering every public declaration of the pinned
 VS Code API while preserving native VS Code objects. Wrap the activation
 arguments with `ExtensionContext(rawContext)` and `VscodeApi(rawVscode)`.

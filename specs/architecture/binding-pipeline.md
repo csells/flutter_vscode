@@ -79,44 +79,45 @@ the second baseline.
    passthrough-identical, or carried parity erasure) — and a
    construct without a total rule fails generation
    (`test/parity_layer_test.dart`, `test/dart_layer_test.dart`,
-   `test/dart_layer_emitter_unit_test.dart`). `flutter_vscode build`
-   emits the same artifact into every Extension Project, and the
-   real-host gate executes it (the fixture parity smoke).
+   `test/dart_layer_emitter_unit_test.dart`). The artifact ships once, in
+   `package:dart_vscode`, and every Extension Project imports it rather
+   than receiving a copy (ADR 0015); the real-host gate executes it (the
+   fixture parity smoke).
 
 ## Regeneration commands
 
-Run from the repository root, in this order when in doubt. The
-examples name the 1.129.1 seed; substitute any pinned baseline —
-each has its own pins, IR, and overrides:
+Run from the repository root, in this order when in doubt. A release ships
+one pinned baseline (ADR 0014), so there is no target to substitute:
 
 ```sh
 # IR from pinned inputs (maintainer, after pin/importer changes):
-(cd tool/binding_importer && node src/cli.cjs \
+(cd packages/flutter_vscode/tool/binding_importer && node src/cli.cjs \
   --pins ../bindings/inputs/vscode/1.129.1/pins.json \
   --output ../bindings/ir/vscode-1.129.1.json)
 
+# The Generated API Layer and both totality ledgers, into the
+# dart_vscode package (after emitter or IR changes):
+dart packages/flutter_vscode/tool/binding_generator/generate.dart \
+  --dart-layer .
+
 # Runtime, host exports, bootstrap, manifest, and coverage into the
-# fixture:
-dart tool/binding_generator/generate.dart \
-  --inventory tool/bindings/ir/vscode-1.129.1.json \
-  --overrides tool/bindings/overrides/vscode-1.129.1.json \
-  --project test/fixtures/host_extension/extension.json \
-  --output-root test/fixtures/host_extension
-
-# The Generated API Layer and both totality ledgers (after emitter or
-# IR changes):
-dart tool/binding_generator/generate.dart --dart-layer .
-
-# CLI-owned fixture artifacts (view protocol copy, bundle):
+# fixture -- only what is derived from that project:
 bash scripts/build_host_fixture.sh
 
-# Durable Host Contract artifact + per-baseline overrides pins (after
-# any receipted source changes; repins every checked-in baseline):
-dart tool/binding_generator/generate.dart --contract .
+# Durable Host Contract artifact and the overrides pin (after any
+# receipted source changes):
+dart packages/flutter_vscode/tool/binding_generator/generate.dart \
+  --contract .
 
 # Generated parity report (after coverage changes):
-dart tool/binding_generator/generate.dart --parity .
+dart packages/flutter_vscode/tool/binding_generator/generate.dart \
+  --parity .
 ```
+
+Order matters when a receipted source changes: format, regenerate the
+contract, rebuild the fixture, regenerate the contract again -- the
+coverage ledger carries the contract digest, so the first pass moves it
+and the second settles it.
 
 If gates complain about stale generated artifacts, the failing test names
 which command to run; the checked-in files and their pins are always the

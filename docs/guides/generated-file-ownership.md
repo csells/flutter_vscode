@@ -15,7 +15,10 @@ Edit these files directly and commit them.
 ## Framework-managed artifacts
 
 - `package.json` and `coverage.json`.
-- `host/bootstrap.cjs` and `host/lib/generated/**`.
+- `host/bootstrap.cjs` and `host/lib/generated/**` -- which is only what is
+  derived from this project: its extension identifier, its collision-resistant
+  global key, and the bindings tied to them. Framework code is not copied
+  here; it ships in `package:dart_vscode` (ADR 0015).
 - `.vscode/launch.json`.
 - `out/**`, including the host bundle, source map, and built view assets.
 - `build/*.vsix`.

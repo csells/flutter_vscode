@@ -1,6 +1,22 @@
 
 ## Unreleased
 
+- Split the pure-Dart runtime into its own published package,
+  `dart_vscode` (ADR 0015), and stop copying framework source into
+  Extension Projects. The generated VS Code API, the Host/Flutter View
+  protocol, `ExtensionCommands`, the Flutter View host module, and the
+  Host Dart runtime are libraries there; a project now receives only the
+  two generated files derived from itself -- its extension identifier,
+  its collision-resistant global key, and the bindings tied to them.
+  Roughly 2,850 lines of framework code stop being emitted, and Host Dart
+  no longer pulls the Flutter SDK into its dependency graph.
+  **Breaking:** host packages depend on `dart_vscode` and import
+  `package:dart_vscode/...`; `flutter_vscode` requires `dart_vscode` at
+  the same version.
+- Adopt the conventional pub monorepo layout: the repository root is a
+  non-published workspace root and the published packages live under
+  `packages/`. Publishing the workspace root had broken
+  `dart pub global activate`, the documented way to install the CLI.
 - Ship one VS Code baseline per release (ADR 0014). `ExtensionManifest`
   loses `apiTarget`: the package version *is* the baseline, and an author
   who needs a different VS Code API depends on the `flutter_vscode`

@@ -165,14 +165,13 @@ development host while you test.
 ### Reaching the rest of the VS Code API
 
 The scaffold registers a command and a hover provider, but the generated
-layer is complete: `build` generates it into your project as
-`host/lib/generated/vscode_dart_layer.g.dart`. Wrap the raw activation
-module, and every namespace, class, enum, and callback in VS Code 1.129.1
-is available with types:
+layer is complete: it ships as `package:dart_vscode/dart_vscode.dart`,
+which your host package depends on. Wrap the raw activation module, and
+every namespace, class, enum, and callback in VS Code 1.129.1 is available
+with types:
 
 ```dart
-import 'package:my_extension_host/generated/vscode_dart_layer.g.dart'
-    as parity;
+import 'package:dart_vscode/dart_vscode.dart' as parity;
 
 final api = parity.VscodeApi(rawVscode);
 
@@ -291,7 +290,7 @@ blocks.
 
 `flutter_vscode build` now also compiles the view with webview-safe settings
 into `out/views/main_panel/` and generates the versioned view protocol into
-`host/lib/generated/view_protocol.g.dart`. No Node, npm, or manual web
+`package:dart_vscode/view_protocol.dart`. No Node, npm, or manual web
 tooling is involved, and `package` bundles the view assets into the VSIX.
 
 ### Showing the view from Host Dart
@@ -308,7 +307,7 @@ Add a command to `extension.dart`:
 ```
 
 For view-bearing projects, `build` also generates
-`host/lib/generated/flutter_view_host.g.dart`: the framework-owned
+`package:dart_vscode/flutter_view_host.dart`: the framework-owned
 hosting module. Opening the view from the command is one call —
 `FlutterViewHost.open` owns panel creation, resource-root scoping,
 session identifiers, CSP-correct HTML, and disposal:

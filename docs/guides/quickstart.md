@@ -98,7 +98,7 @@ pinned API.
 ## Reaching the full VS Code API
 
 The build emits one generated API layer into
-`host/lib/generated/vscode_dart_layer.g.dart` — the complete typed
+`package:dart_vscode/dart_vscode.dart` — the complete typed
 mapping of the pinned VS Code API with a Dart-first ergonomic surface in
 the same artifact. See the
 [Generated Host API reference](../reference/generated-host-api.md) for

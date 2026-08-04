@@ -29,7 +29,7 @@ source cannot produce environment-dependent manifests.
 ## A VS Code API symbol looks unsupported
 
 The generated layer is total by construction:
-`host/lib/generated/vscode_dart_layer.g.dart` maps every public declaration
+`package:dart_vscode/dart_vscode.dart` maps every public declaration
 of the pinned baseline, so no stable symbol is missing. `coverage.json`
 records behavioral verification, not availability — an entry still `pending`
 there is unverified, not unsupported. Use the symbol through the generated

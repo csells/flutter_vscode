@@ -34,7 +34,7 @@ nonzero while issues remain.
 
 ## Missing API
 
-The generated layer, `host/lib/generated/vscode_dart_layer.g.dart`, maps
+The generated layer, `package:dart_vscode/dart_vscode.dart`, maps
 every public declaration of the pinned VS Code API. A symbol that appears
 missing is either absent from the pinned `apiTarget` version or a framework
 defect. Do not add raw interop or edit generated files; report the pinned

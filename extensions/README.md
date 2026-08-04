@@ -13,7 +13,7 @@ Author would:
   (`create`/`build`/`package`);
 - no imports from the repository's internals (`package:flutter_vscode/src/`),
   `tool/`, or test fixtures — only CLI-generated files and the published
-  package surface (`package:flutter_vscode/vscode_dart.dart` in hosts,
+  package surface (`package:dart_vscode/dart_vscode.dart` in hosts,
   `package:flutter_vscode/view.dart` in views);
 - when an extension needs something the framework lacks, the gap is
   recorded (futures or a plan) and the framework change lands with its

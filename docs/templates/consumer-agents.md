@@ -20,7 +20,7 @@ skills under [`agent-skills/`](agent-skills/).
 
 1. Run host behavior without assuming a Flutter view exists.
 2. Use only the one generated API layer,
-   `host/lib/generated/vscode_dart_layer.g.dart`; it maps every public
+   `package:dart_vscode/dart_vscode.dart`; it maps every public
    declaration of the pinned VS Code API. Never handwrite a replacement
    binding; report a missing or wrong mapping as a framework defect.
 3. Keep `apiTarget` explicit. Do not raise it as a side effect of another edit.
