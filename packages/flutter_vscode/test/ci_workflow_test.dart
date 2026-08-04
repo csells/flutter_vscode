@@ -61,7 +61,9 @@ void main() {
       final clone = await Process.run('git', [
         'clone',
         '--quiet',
-        '--shared',
+        // Not `--shared`: it writes an alternates file pointing at the host's
+        // object store, which does not exist inside the container, so every
+        // git command the gates run fails with "not a tree object".
         repositoryRoot.path,
         checkout,
       ]);

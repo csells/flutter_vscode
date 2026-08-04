@@ -145,60 +145,71 @@ void main() {
     expect(await sentinel.readAsString(), 'do not change\n');
   });
 
-  test('create, build, and package failures expose stable CLI codes', () async {
-    final workspace = await Directory.systemTemp.createTemp(
-      'flutter_vscode_cli_error_codes_',
-    );
-    addTearDown(() => workspace.delete(recursive: true));
-
-    final cases = <(List<String>, int, String, String)>[
-      (
-        ['create', '../unsafe'],
-        64,
-        'INVALID_PROJECT_NAME:',
-        'lowercase_with_underscores',
-      ),
-      (
-        ['create', 'my__extension'],
-        64,
-        'INVALID_PROJECT_NAME:',
-        'lowercase_with_underscores',
-      ),
-      (
-        ['create', 'my_extension_'],
-        64,
-        'INVALID_PROJECT_NAME:',
-        'lowercase_with_underscores',
-      ),
-      (
-        ['build'],
-        64,
-        'BUILD_NOT_EXTENSION_PROJECT:',
-        'extension.dart',
-      ),
-      (
-        ['package'],
-        64,
-        'PACKAGE_NOT_EXTENSION_PROJECT:',
-        'extension.dart',
-      ),
-    ];
-    for (final cliCase in cases) {
-      final result = await Process.run(
-        'dart',
-        [_cliPath, ...cliCase.$1],
-        workingDirectory: workspace.path,
+  test(
+    'create, build, and package failures expose stable CLI codes',
+    () async {
+      final workspace = await Directory.systemTemp.createTemp(
+        'flutter_vscode_cli_error_codes_',
       );
+      addTearDown(() => workspace.delete(recursive: true));
 
-      expect(result.exitCode, cliCase.$2, reason: cliCase.$1.join(' '));
-      expect(
-        result.stderr,
-        startsWith(cliCase.$3),
-        reason: cliCase.$1.join(' '),
-      );
-      expect(result.stderr, contains(cliCase.$4), reason: cliCase.$1.join(' '));
-    }
-  });
+      final cases = <(List<String>, int, String, String)>[
+        (
+          ['create', '../unsafe'],
+          64,
+          'INVALID_PROJECT_NAME:',
+          'lowercase_with_underscores',
+        ),
+        (
+          ['create', 'my__extension'],
+          64,
+          'INVALID_PROJECT_NAME:',
+          'lowercase_with_underscores',
+        ),
+        (
+          ['create', 'my_extension_'],
+          64,
+          'INVALID_PROJECT_NAME:',
+          'lowercase_with_underscores',
+        ),
+        (
+          ['build'],
+          64,
+          'BUILD_NOT_EXTENSION_PROJECT:',
+          'extension.dart',
+        ),
+        (
+          ['package'],
+          64,
+          'PACKAGE_NOT_EXTENSION_PROJECT:',
+          'extension.dart',
+        ),
+      ];
+      for (final cliCase in cases) {
+        final result = await Process.run(
+          'dart',
+          [_cliPath, ...cliCase.$1],
+          workingDirectory: workspace.path,
+        );
+
+        expect(result.exitCode, cliCase.$2, reason: cliCase.$1.join(' '));
+        expect(
+          result.stderr,
+          startsWith(cliCase.$3),
+          reason: cliCase.$1.join(' '),
+        );
+        expect(
+          result.stderr,
+          contains(cliCase.$4),
+          reason: cliCase.$1.join(' '),
+        );
+      }
+    },
+    // Several real CLI invocations: the 30-second default is tight enough to
+    // fail on a loaded machine, which is a flaky red for a reason that has
+    // nothing to do with the behaviour under test.
+    timeout: const Timeout(Duration(minutes: 3)),
+  );
 
   test(
     'tool startup failures expose a stable CLI code',
