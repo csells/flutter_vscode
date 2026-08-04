@@ -96,7 +96,7 @@
     },
     "fixtureHost": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "f046528582873c5effb30aff8751f2124847b01c2d2f592add8427c50e329d4d"
+      "sha256": "2cc5c3abf9fb0d7abc0f8e458fa0188569418296a83ad1df1983df27f2670298"
     },
     "fixtureHostPackage": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/pubspec.yaml",
@@ -112,7 +112,7 @@
     },
     "fixtureSharedContract": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/shared/lib/fixture_view_contract.dart",
-      "sha256": "16b60a5be77e1910ff58cab7324f35bb3aaf7c511da3474932942e0927080f2f"
+      "sha256": "dc526ae03ca8d1c2a59fd4f3a9572db4fcb8ca7af642f099d514bfba992e9701"
     },
     "fixtureSharedPackage": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/shared/pubspec.yaml",
@@ -120,7 +120,7 @@
     },
     "fixtureView": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/views/main/lib/main.dart",
-      "sha256": "e48fb6de2164f585e04e3811ca878730105b8b3c7677908c36b44d1b0f63acf3"
+      "sha256": "902b327498f41c82969a2bd57b7a2182fdf5c26370e15948e9bde4cd51b4de1b"
     },
     "fixtureViewIndex": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/views/main/web/index.html",
@@ -196,7 +196,7 @@
     },
     "test": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/test/run.cjs",
-      "sha256": "1efa7f1435d0aebe61793e493a62d674b366ba377986a0dc6be91c846555c9d1"
+      "sha256": "bd3e792efc92677d9b7214f329b38a1999fd3b327377077224c2211eeb8d23a3"
     },
     "verifier": {
       "path": "packages/flutter_vscode/tool/extension_host_test/host_contract.cjs",

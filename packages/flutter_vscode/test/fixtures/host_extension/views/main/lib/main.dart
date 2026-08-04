@@ -316,9 +316,19 @@ Future<void> _confirmHostObservedRender(
           'Host Dart observed "$content" instead of "$expectedContent".',
         );
       }
+      final policy = web.document.querySelector(
+        'meta[http-equiv="Content-Security-Policy"]',
+      );
       final confirmed = await _confirmRenderObservationOperation.call(
         session,
-        ConfirmRenderObservationRequest(token: token, content: content),
+        ConfirmRenderObservationRequest(
+          token: token,
+          content: content,
+          // Read from this document, not from the framework's template: the
+          // point is what the webview was actually served.
+          contentSecurityPolicy:
+              (policy as web.HTMLMetaElement?)?.content.trim() ?? '',
+        ),
       );
       if (!confirmed) {
         throw StateError('Host Dart rejected its render observation.');

@@ -586,6 +586,7 @@ class _VSCodeHostExtension {
     var hostObservedRenderCount = 0;
     int? viewColdStartMs;
     String? hostObservedRenderedContent;
+    String? observedContentSecurityPolicy;
     late final _ViewResources resources;
     late final FlutterViewHost viewHost;
     viewHost = FlutterViewHost.open(
@@ -671,6 +672,7 @@ class _VSCodeHostExtension {
               .difference(viewHost.loadStartedAt)
               .inMilliseconds;
           hostObservedRenderedContent = observation.content;
+          observedContentSecurityPolicy = observation.contentSecurityPolicy;
           return true;
         }),
       ],
@@ -744,6 +746,7 @@ class _VSCodeHostExtension {
         'hostObservedRenderCount': hostObservedRenderCount,
         'viewColdStartMs': viewColdStartMs,
         'hostObservedRenderedContent': hostObservedRenderedContent,
+        'contentSecurityPolicy': observedContentSecurityPolicy,
       };
       if (fixtureMode == protocolProbeMode) {
         if (rendered case <Object?, Object?>{

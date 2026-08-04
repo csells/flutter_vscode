@@ -221,6 +221,28 @@ async function run() {
   assert.equal(viewReport.hostPendingSends, 0);
   assert.equal(viewReport.hostReceivingSubscriptions, 0);
   assert.equal(viewReport.hostObservedRenderCount, 1);
+
+  // The Content Security Policy the framework serves is the only thing
+  // standing between injected script in a webview and an extension host that
+  // runs the author's Dart. Byte-asserting the emitted template proves the
+  // string we meant to send; this asserts the policy the live webview
+  // actually received.
+  const csp = viewReport.contentSecurityPolicy;
+  assert.ok(
+    typeof csp === 'string' && csp.length > 0,
+    'the Flutter View must report the policy present in its own document',
+  );
+  assert.match(csp, /default-src 'none'/);
+  assert.match(
+    csp,
+    /script-src [^;]*'nonce-[A-Za-z0-9+/=_-]+'/,
+    `script-src must carry a nonce: ${csp}`,
+  );
+  assert.doesNotMatch(
+    csp,
+    /script-src [^;]*'unsafe-inline'/,
+    `script-src must never allow inline script: ${csp}`,
+  );
   assert.ok(
     Number.isFinite(viewReport.viewColdStartMs) &&
       viewReport.viewColdStartMs > 0 &&

@@ -61,6 +61,7 @@ final class ConfirmRenderObservationRequest {
   const ConfirmRenderObservationRequest({
     required this.token,
     required this.content,
+    required this.contentSecurityPolicy,
   });
 
   /// Opaque token populated only by the Host-owned DOM observer.
@@ -68,6 +69,13 @@ final class ConfirmRenderObservationRequest {
 
   /// Exact content found in the Flutter semantics DOM.
   final String content;
+
+  /// The Content Security Policy present in the view's own document.
+  ///
+  /// Read from the live webview rather than from the emitted template, so a
+  /// policy VS Code rewrote, or one whose nonce does not match the script it
+  /// admits, is observable instead of assumed.
+  final String contentSecurityPolicy;
 }
 
 /// Encodes a typed fixture request as an exact protocol snapshot.
@@ -106,21 +114,35 @@ Object? decodeFixtureSnapshot(Object? value) => value;
 Object? encodeConfirmRenderObservationRequest(
   ConfirmRenderObservationRequest request,
 ) {
-  return <String, Object?>{'token': request.token, 'content': request.content};
+  return <String, Object?>{
+    'token': request.token,
+    'content': request.content,
+    'contentSecurityPolicy': request.contentSecurityPolicy,
+  };
 }
 
 /// Validates and decodes a Host-owned DOM render observation.
 ConfirmRenderObservationRequest decodeConfirmRenderObservationRequest(
   Object? value,
 ) {
-  if (value case <Object?, Object?>{
-    'token': final String token,
-    'content': final String content,
-  } when value.length == 2 && token.isNotEmpty && content.isNotEmpty) {
-    return ConfirmRenderObservationRequest(token: token, content: content);
+  if (value
+      case <Object?, Object?>{
+        'token': final String token,
+        'content': final String content,
+        'contentSecurityPolicy': final String contentSecurityPolicy,
+      }
+      when value.length == 3 &&
+          token.isNotEmpty &&
+          content.isNotEmpty &&
+          contentSecurityPolicy.isNotEmpty) {
+    return ConfirmRenderObservationRequest(
+      token: token,
+      content: content,
+      contentSecurityPolicy: contentSecurityPolicy,
+    );
   }
   throw const FormatException(
-    'Expected exact non-empty render token and content fields.',
+    'Expected exact non-empty render token, content, and policy fields.',
   );
 }
 
