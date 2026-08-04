@@ -1,5 +1,9 @@
 /// The one generated VS Code API layer, self-contained.
 ///
+/// Pure Dart: this package is `dart:js_interop` only, so a Host Dart module
+/// compiled with `dart compile js` never pulls the Flutter SDK into its
+/// dependency graph.
+///
 /// A single mechanically generated artifact carries the complete typed
 /// Parity Layer substrate (ADR 0012, Total Mapping Rules) and the
 /// Dart-ergonomics layer over it (developer-experience D-2) — a total,

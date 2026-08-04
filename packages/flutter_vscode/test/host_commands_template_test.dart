@@ -163,7 +163,7 @@ void main() {
 import 'dart:js_interop';
 
 import 'package:flutter_vscode_host_fixture/generated/host_commands.g.dart';
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 
 @JS('hostCommandsProbe')
 external set _hostCommandsProbe(JSFunction value);

@@ -15,7 +15,7 @@ const hostCommandsSource = r"""
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 
 import 'vscode_runtime.g.dart';
 

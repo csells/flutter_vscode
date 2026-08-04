@@ -17,7 +17,7 @@ import 'dart:async';
 import 'dart:js_interop';
 import 'dart:math';
 
-import 'package:flutter_vscode/vscode_dart.dart' as vs;
+import 'package:dart_vscode/dart_vscode.dart' as vs;
 
 import 'view_protocol.g.dart';
 

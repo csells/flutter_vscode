@@ -63,13 +63,32 @@ Future<BindingInputs> loadBindingInputs(Directory packageRoot) async {
   );
 }
 
+/// Locates the installed `dart_vscode` package root.
+///
+/// Generated Host Dart imports `package:dart_vscode/dart_vscode.dart`, so a
+/// scaffolded project has to reach whichever copy of that package this CLI
+/// is running against. Once `dart_vscode` is published a scaffold can carry
+/// an ordinary hosted constraint instead.
+Future<Directory> resolveDartVscodeRoot() async {
+  final library = await Isolate.resolvePackageUri(
+    Uri.parse('package:dart_vscode/dart_vscode.dart'),
+  );
+  if (library == null || library.scheme != 'file') {
+    throw const CliException(
+      'Could not locate the dart_vscode package.',
+      code: 'FRAMEWORK_PACKAGE_NOT_FOUND',
+    );
+  }
+  return Directory(p.dirname(p.dirname(library.toFilePath())));
+}
+
 /// Locates the installed flutter_vscode package root.
 ///
 /// The pinned baseline, generator sources, and framework resources the
 /// commands read all live beneath this directory.
 Future<Directory> resolvePackageRoot() async {
   final library = await Isolate.resolvePackageUri(
-    Uri.parse('package:flutter_vscode/vscode_dart.dart'),
+    Uri.parse('package:flutter_vscode/manifest.dart'),
   );
   if (library == null || library.scheme != 'file') {
     throw const CliException(

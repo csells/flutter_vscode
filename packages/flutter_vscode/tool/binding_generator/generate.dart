@@ -18,10 +18,13 @@ Future<void> main(List<String> arguments) async {
       }
       final root = arguments[1];
       final package = '$root/packages/flutter_vscode';
+      const layerPackage = 'packages/dart_vscode';
       final artifacts = emitDartLayer(
         await _readJson('$package/tool/bindings/ir/vscode-1.129.1.json'),
       );
-      await File('$package/lib/src/generated/vscode_dart_layer.g.dart')
+      final layerFile = '$root/$layerPackage/lib/src/generated'
+          '/vscode_dart_layer.g.dart';
+      await File(layerFile)
           .create(recursive: true)
           .then((file) => file.writeAsString(artifacts.library));
       await File('$package/tool/bindings/dart-layer-ledger.json')

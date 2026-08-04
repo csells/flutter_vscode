@@ -38,6 +38,7 @@ Future<void> createProject(
       .map((word) => '${word[0].toUpperCase()}${word.substring(1)}')
       .join(' ');
   final packageRoot = await resolvePackageRoot();
+  final dartVscodeRoot = await resolveDartVscodeRoot();
   final descriptor = File(p.join(root.path, 'extension.dart'))
     ..writeAsStringSync('''
 import 'package:flutter_vscode/manifest.dart';
@@ -71,6 +72,13 @@ environment:
 dependencies:
   flutter_vscode:
     path: ${packageRoot.path}
+
+# `flutter_vscode` depends on `dart_vscode`, the pure-Dart package carrying
+# the generated VS Code API. This override points at the copy this CLI runs
+# against and can be dropped once `dart_vscode` is published.
+dependency_overrides:
+  dart_vscode:
+    path: ${dartVscodeRoot.path}
 ''');
   File(p.join(root.path, 'host', 'pubspec.yaml')).writeAsStringSync('''
 name: ${name}_host
@@ -80,8 +88,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
-  flutter_vscode:
-    path: ${packageRoot.path}
+  dart_vscode:
+    path: ${dartVscodeRoot.path}
   ${name}_shared:
     path: ../shared
 ''');
@@ -126,7 +134,7 @@ import 'package:${projectName}_host/generated/host_exports.g.dart';
 // The complete typed VS Code API generated into this project. Wrap the
 // raw activation module with VscodeApi(rawVscode), or enter the
 // Dart-first ergonomics layer over it with VscodeApi(rawVscode).dart.
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 // Runtime helpers: toHostPromise, toHostCallback, hostFetch.
 import 'package:${projectName}_host/generated/vscode_runtime.g.dart';
 import 'package:${projectName}_shared/shared.dart';

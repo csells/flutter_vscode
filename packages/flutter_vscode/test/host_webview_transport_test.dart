@@ -24,7 +24,7 @@ void main() {
       await probeSource.writeAsString('''
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportDisposeProbe')
@@ -145,7 +145,7 @@ require(process.argv[2]);
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportRejectProbe')
@@ -251,7 +251,7 @@ require(process.argv[2]);
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/vscode_dart.dart';
+import 'package:dart_vscode/dart_vscode.dart';
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 
 @JS('transportUnobservedProbe')

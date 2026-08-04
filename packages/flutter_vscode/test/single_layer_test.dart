@@ -13,7 +13,9 @@ import 'support/repository.dart';
 /// `package:flutter_vscode/vscode_parity.dart` export retire, and
 /// `flutter_vscode build` emits exactly one API artifact into projects.
 void main() {
-  const artifactPath = 'lib/src/generated/vscode_dart_layer.g.dart';
+  const layerArtifact =
+      'packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart';
+  final artifactPath = repoPath(layerArtifact);
 
   group('the merged artifact is self-contained', () {
     late final String source;
@@ -69,19 +71,21 @@ void main() {
       isFalse,
       reason: 'the standalone parity artifact retires',
     );
-    final generated = Directory('lib/src/generated')
-        .listSync()
-        .whereType<File>()
-        .map((file) => p.basename(file.path))
-        .toList()
-      ..sort();
+    final generated =
+        Directory(repoPath('packages/dart_vscode/lib/src/generated'))
+            .listSync()
+            .whereType<File>()
+            .map((file) => p.basename(file.path))
+            .toList()
+          ..sort();
     expect(
       generated,
       ['vscode_dart_layer.g.dart'],
-      reason: 'lib/src/generated must hold exactly one API artifact',
+      reason: 'dart_vscode must hold exactly one generated API artifact',
     );
     expect(
-      File('lib/vscode_dart.dart').readAsStringSync(),
+      File(repoPath('packages/dart_vscode/lib/dart_vscode.dart'))
+          .readAsStringSync(),
       isNot(contains('vscode_parity_layer.g.dart')),
       reason: 'the one API export must not re-export the retired artifact',
     );

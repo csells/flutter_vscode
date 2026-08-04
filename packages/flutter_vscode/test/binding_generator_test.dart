@@ -1563,7 +1563,9 @@ void main() {
         }),
         containsPair('binding', {
           'status': 'emitted',
-          'artifacts': ['lib/src/generated/vscode_dart_layer.g.dart'],
+          'artifacts': [
+            'packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart',
+          ],
         }),
         containsPair('host', {
           'status': 'verified',

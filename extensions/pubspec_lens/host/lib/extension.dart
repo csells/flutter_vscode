@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/vscode_dart.dart' as vs;
+import 'package:dart_vscode/dart_vscode.dart' as vs;
 import 'package:pubspec_lens_host/generated/host_commands.g.dart';
 import 'package:pubspec_lens_host/generated/host_exports.g.dart';
 import 'package:pubspec_lens_host/generated/vscode_runtime.g.dart';

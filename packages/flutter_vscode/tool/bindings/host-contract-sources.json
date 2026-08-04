@@ -35,6 +35,7 @@
     "frameworkPackage": "pubspec.yaml",
     "frameworkPackageLock": "pubspec.lock",
     "generatedBootstrap": "packages/flutter_vscode/test/fixtures/host_extension/host/bootstrap.cjs",
+    "generatedDartLayer": "packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart",
     "generatedHostCommands": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/host_commands.g.dart",
     "generatedHostExports": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
     "generatedRuntime": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",

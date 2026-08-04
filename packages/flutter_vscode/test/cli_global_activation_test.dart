@@ -20,10 +20,25 @@ void main() {
       // installs ignore it; a path-source copy has no workspace root above it,
       // so drop it to mimic what pub.dev actually resolves.
       final copiedManifest = File(p.join(packageCopy.path, 'pubspec.yaml'));
-      copiedManifest.writeAsStringSync(
-        copiedManifest
+      // `dart_vscode` carries the generated VS Code API and is not published
+      // yet, so a path-source activation cannot resolve it from pub.dev. Copy
+      // it beside the package and override; once both packages ship together
+      // this override goes away and hosted resolution covers it.
+      final layerCopy = Directory(p.join(temporary.path, 'dart_vscode'));
+      await _copyPackage(
+        Directory(p.join(Directory.current.parent.path, 'dart_vscode')),
+        layerCopy,
+      );
+      File(p.join(layerCopy.path, 'pubspec.yaml')).writeAsStringSync(
+        File(p.join(layerCopy.path, 'pubspec.yaml'))
             .readAsStringSync()
             .replaceAll('resolution: workspace\n', ''),
+      );
+      copiedManifest.writeAsStringSync(
+        '${copiedManifest.readAsStringSync().replaceAll('resolution: workspace\n', '')}\n'
+        'dependency_overrides:\n'
+        '  dart_vscode:\n'
+        '    path: ${layerCopy.path}\n',
       );
       final environment = <String, String>{
         ...Platform.environment,

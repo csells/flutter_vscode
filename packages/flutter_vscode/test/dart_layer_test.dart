@@ -4,8 +4,11 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/dart_layer.dart' as dart_layer;
+import 'support/repository.dart';
 
-const _libraryPath = 'lib/src/generated/vscode_dart_layer.g.dart';
+final String _libraryPath = repoPath(
+  'packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart',
+);
 const _ledgerPath = 'tool/bindings/dart-layer-ledger.json';
 const _parityLedgerPath = 'tool/bindings/parity-ledger.json';
 
@@ -26,7 +29,8 @@ void main() {
     );
     expect(File(_ledgerPath).readAsStringSync(), artifacts.ledger);
     expect(
-      File('lib/vscode_dart.dart').readAsStringSync(),
+      File(repoPath('packages/dart_vscode/lib/dart_vscode.dart'))
+          .readAsStringSync(),
       contains('src/generated/vscode_dart_layer.g.dart'),
       reason: 'the layer must be exported for Extension Authors',
     );

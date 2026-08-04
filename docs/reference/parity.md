@@ -6,7 +6,7 @@
 
 Typed parity is total by construction (ADR 0012, ADR 0013):
 the one generated API artifact, exported as
-`package:flutter_vscode/vscode_dart.dart`, maps every public
+`package:dart_vscode/dart_vscode.dart`, maps every public
 declaration of the pinned API via Total Mapping Rules — the
 Parity Layer substrate and the Dart-ergonomics surface in one
 file, each with its own totality ledger gated by the parity

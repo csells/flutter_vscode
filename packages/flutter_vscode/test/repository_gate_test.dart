@@ -84,12 +84,13 @@ void main() {
     expect(
       pubIgnore,
       containsAll({
+        // The specs, gate scripts, docs, and example extensions live above
+        // this package, so the archive never sees them and `.pubignore` has
+        // nothing to say about them.
         '/test/',
-        '/specs/',
         '**/build/',
         '/tool/binding_importer/',
         '/tool/extension_host_test/',
-        '/extensions/',
       }),
     );
     expect(pubIgnore, isNot(contains('/tool/binding_generator/')));
