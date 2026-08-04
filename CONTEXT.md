@@ -132,8 +132,9 @@ An explicit opt-in mode for proposed VS Code APIs, pinned to a compatible
 Insiders build and outside normal compatibility and Marketplace guarantees.
 _Avoid_: Proposed API support, preview flag
 
-**Project API Target**:
-The minimum stable VS Code version selected by an Extension Author; it controls
-the available generated API surface and the managed extension compatibility
-declaration.
-_Avoid_: Latest VS Code, generator version, API Parity Baseline
+**Shipped API Baseline**:
+The single API Parity Baseline whose generated API a given `flutter_vscode`
+release carries. An Extension Author chooses it by depending on that release,
+never by declaring a target, and it fixes the managed extension compatibility
+declaration (ADR 0014).
+_Avoid_: Project API Target, apiTarget, per-project baseline, latest VS Code

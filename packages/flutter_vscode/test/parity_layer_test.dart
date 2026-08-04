@@ -5,6 +5,8 @@ import 'package:test/test.dart';
 
 import '../tool/binding_generator/parity_layer.dart' as parity;
 
+import 'support/repository.dart';
+
 const _ledgerPath = 'tool/bindings/parity-ledger.json';
 
 Map<String, Object?> _readJson(String path) =>
@@ -284,7 +286,8 @@ void main() {
 
   test('C-4 the parity report states machine-derived two-axis live coverage',
       () {
-    final report = File('docs/reference/parity.md').readAsStringSync();
+    final report =
+        File(repoPath('docs/reference/parity.md')).readAsStringSync();
     expect(
       report,
       contains('two axes'),

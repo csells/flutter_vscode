@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 /// The archived plan's frozen bytes. Changing the archive requires
 /// consciously updating this pin in the same commit with a reason.
 const archivedPlanSha256 =
@@ -14,7 +16,7 @@ const archivedPlanSha256 =
 /// This ratchet exists because all four hardening rounds rotted the same
 /// way — digests recorded as prose while the tree moved on.
 void main() {
-  const planPath = 'specs/plans/archive/first-working-extension.md';
+  final planPath = repoPath('specs/plans/archive/first-working-extension.md');
   final planLines = File(planPath).readAsLinesSync();
   final plan = planLines.join('\n');
 
@@ -96,7 +98,7 @@ void main() {
   });
 
   test('active plans do not claim completion over unchecked items', () {
-    final planFiles = Directory('specs/plans')
+    final planFiles = Directory(repoPath('specs/plans'))
         .listSync()
         .whereType<File>()
         .where((file) => file.path.endsWith('.md'));

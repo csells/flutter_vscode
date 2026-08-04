@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 /// SL-1: one self-contained generated API artifact.
 ///
 /// The mechanical dart layer carries the substrate (the former standalone
@@ -88,7 +90,7 @@ void main() {
   test('built project trees carry no standalone parity artifact', () {
     for (final generatedRoot in [
       'test/fixtures/host_extension/host/lib/generated',
-      'extensions/coverage_treemap/host/lib/generated',
+      repoPath('extensions/coverage_treemap/host/lib/generated'),
     ]) {
       final names = Directory(generatedRoot)
           .listSync()
@@ -124,7 +126,7 @@ void main() {
     test('built project trees carry no facade or walking-slice parity', () {
       for (final generatedRoot in [
         'test/fixtures/host_extension/host/lib/generated',
-        'extensions/coverage_treemap/host/lib/generated',
+        repoPath('extensions/coverage_treemap/host/lib/generated'),
       ]) {
         final names = Directory(generatedRoot)
             .listSync()
@@ -172,7 +174,7 @@ void main() {
     test('hosts, scaffold, and view-host template import no facade', () {
       for (final source in [
         'test/fixtures/host_extension/host/lib/extension.dart',
-        'extensions/coverage_treemap/host/lib/extension.dart',
+        repoPath('extensions/coverage_treemap/host/lib/extension.dart'),
         'lib/src/cli/create_command.dart',
         'lib/src/cli/flutter_view_host_source.dart',
       ]) {
@@ -201,9 +203,9 @@ void main() {
       ];
       final livingDocs = <File>[
         File('README.md'),
-        File('CONTEXT.md'),
+        File(repoPath('CONTEXT.md')),
         for (final root in ['docs', 'specs/architecture', 'skills'])
-          ...Directory(root)
+          ...Directory(repoPath(root))
               .listSync(recursive: true)
               .whereType<File>()
               .where((file) => file.path.endsWith('.md')),

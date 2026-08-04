@@ -9,71 +9,29 @@ import 'package:crypto/crypto.dart';
 /// `tool/extension_host_test/host_contract.cjs` and
 /// `test/binding_evidence_test.dart`; each copy cross-checks the others
 /// through the byte-identical artifact they all validate.
-const canonicalHostContractSourcePaths = <String, String>{
-  'activationFailureTest':
-      'test/fixtures/host_extension/test/activation_failure.cjs',
-  'bindingCoverageLedger': 'tool/binding_generator/coverage_ledger.dart',
-  'bindingGenerator': 'tool/binding_generator/generator.dart',
-  'bindingIrTypeMapper': 'tool/binding_generator/ir_type_mapper.dart',
-  'bindingIrValidator': 'tool/binding_generator/ir_validator.dart',
-  'bindingManifestProjection':
-      'tool/binding_generator/manifest_projection.dart',
-  'bindingTemplates': 'tool/binding_generator/templates.dart',
-  'bindingValidators': 'tool/binding_generator/validators.dart',
-  'bindingWriter': 'tool/binding_generator/writer.dart',
-  'bootstrapLifecycleTest':
-      'tool/extension_host_test/bootstrap_lifecycle.test.cjs',
-  'buildReceipt': 'lib/src/cli/build_receipt.dart',
-  'builder': 'scripts/build_host_fixture.sh',
-  'canonicalInventory': 'tool/bindings/ir/vscode-1.129.1.json',
-  'canonicalViewProtocol': 'lib/src/view_protocol.dart',
-  'cli': 'bin/flutter_vscode.dart',
-  'container': 'tool/extension_host_test/Dockerfile',
-  'contractWriter': 'tool/binding_generator/contract.dart',
-  'ecmascriptWhitespace': 'tool/binding_generator/ecmascript_whitespace.dart',
-  'evidenceIntegrityTest': 'test/binding_evidence_test.dart',
-  'fixtureHost': 'test/fixtures/host_extension/host/lib/extension.dart',
-  'fixtureHostPackage': 'test/fixtures/host_extension/host/pubspec.yaml',
-  'fixtureManifest': 'test/fixtures/host_extension/package.json',
-  'fixtureProject': 'test/fixtures/host_extension/extension.json',
-  'fixtureSharedContract':
-      'test/fixtures/host_extension/shared/lib/fixture_view_contract.dart',
-  'fixtureSharedPackage': 'test/fixtures/host_extension/shared/pubspec.yaml',
-  'fixtureTransport':
-      'test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart',
-  'fixtureView': 'test/fixtures/host_extension/views/main/lib/main.dart',
-  'fixtureViewIndex': 'test/fixtures/host_extension/views/main/web/index.html',
-  'fixtureViewPackage': 'test/fixtures/host_extension/views/main/pubspec.yaml',
-  'flutterViewHostTemplate': 'lib/src/cli/flutter_view_host_source.dart',
-  'frameworkPackage': 'pubspec.yaml',
-  // The fixture packages are members of the repository's pub workspace, so
-  // this single root lockfile is the pinned resolution for the framework and
-  // every fixture package alike.
-  'frameworkPackageLock': 'pubspec.lock',
-  'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
-  'generatedHostCommands':
-      'test/fixtures/host_extension/host/lib/generated/host_commands.g.dart',
-  'generatedHostExports':
-      'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  'generatedRuntime':
-      'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
-  'generatedSharedViewProtocol':
-      'test/fixtures/host_extension/shared/lib/generated/view_protocol.g.dart',
-  'generatedViewProtocol':
-      'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
-  'harnessPackage': 'tool/extension_host_test/package.json',
-  'harnessPackageLock': 'tool/extension_host_test/package-lock.json',
-  'hostCommandsTemplate': 'lib/src/cli/host_commands_source.dart',
-  'hostImportChecker': 'tool/check_host_imports.dart',
-  'launcher': 'tool/extension_host_test/run.cjs',
-  'projectDescriptor': 'lib/src/cli/project_descriptor.dart',
-  'runner': 'scripts/test_host_extension.sh',
-  'test': 'test/fixtures/host_extension/test/run.cjs',
-  'verifier': 'tool/extension_host_test/host_contract.cjs',
-  'verifierTest': 'tool/extension_host_test/host_contract.test.cjs',
-  'viewLibrary': 'lib/view.dart',
-  'viewTransport': 'lib/src/view_transport_web.dart',
-};
+/// Repository-relative location of the one receipt-path definition.
+///
+/// The contract writer, the Dart evidence suite, and the in-container
+/// verifier all read this file. Transcribing the list into any of them
+/// again is a defect: a duplicated constant only ever catches someone
+/// forgetting to update a copy, which is a hazard the duplication itself
+/// creates.
+const hostContractSourcesPath =
+    '$frameworkPackagePath/tool/bindings/host-contract-sources.json';
+
+/// Repository-relative location of the published framework package.
+const frameworkPackagePath = 'packages/flutter_vscode';
+
+/// Reads the repository-relative receipt paths the contract attests.
+Map<String, String> hostContractSourcePaths(Directory repositoryRoot) {
+  final file = File('${repositoryRoot.path}/$hostContractSourcesPath');
+  final decoded = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
+  final sources =
+      (decoded['sources']! as Map<Object?, Object?>).cast<String, Object?>();
+  return <String, String>{
+    for (final entry in sources.entries) entry.key: entry.value! as String,
+  };
+}
 
 /// Builds the canonical checkpoint-4 Host Contract artifact from tree state.
 ///
@@ -90,40 +48,47 @@ String buildHostContractArtifact(Directory repositoryRoot) {
               as Map<Object?, Object?>)
           .cast<String, Object?>();
 
-  final inventory = readJson('tool/bindings/ir/vscode-1.129.1.json');
+  final inventory =
+      readJson('$frameworkPackagePath/tool/bindings/ir/vscode-1.129.1.json');
   final product = ((inventory['source']! as Map<Object?, Object?>)['product']!
           as Map<Object?, Object?>)
       .cast<String, Object?>();
 
-  final fixtureManifest = readJson('test/fixtures/host_extension/package.json');
+  final fixtureManifest = readJson(
+    '$frameworkPackagePath/test/fixtures/host_extension/package.json',
+  );
   final fixtureEngines = (fixtureManifest['engines']! as Map<Object?, Object?>)
       .cast<String, Object?>();
 
-  final harnessPackage = readJson('tool/extension_host_test/package.json');
+  final harnessPackage =
+      readJson('$frameworkPackagePath/tool/extension_host_test/package.json');
   final harnessDependencies =
       (harnessPackage['devDependencies']! as Map<Object?, Object?>)
           .cast<String, Object?>();
 
   final container =
-      File('$root/tool/extension_host_test/Dockerfile').readAsStringSync();
+      File('$root/$frameworkPackagePath/tool/extension_host_test/Dockerfile')
+          .readAsStringSync();
   final nodeImage =
       RegExp(r'^FROM (\S+)$', multiLine: true).firstMatch(container)!.group(1)!;
 
-  final sourceIds = canonicalHostContractSourcePaths.keys.toList()..sort();
+  final sourcePaths = hostContractSourcePaths(repositoryRoot);
+  final sourceIds = sourcePaths.keys.toList()..sort();
   final sources = <String, Object?>{
     for (final sourceId in sourceIds)
       sourceId: <String, Object?>{
-        'path': canonicalHostContractSourcePaths[sourceId],
+        'path': sourcePaths[sourceId],
         'sha256': sha256
             .convert(
-              File('$root/${canonicalHostContractSourcePaths[sourceId]}')
-                  .readAsBytesSync(),
+              File('$root/${sourcePaths[sourceId]}').readAsBytesSync(),
             )
             .toString(),
       },
   };
 
-  final overrides = readJson('tool/bindings/overrides/vscode-1.129.1.json');
+  final overrides = readJson(
+    '$frameworkPackagePath/tool/bindings/overrides/vscode-1.129.1.json',
+  );
   final entries =
       (overrides['entries']! as Map<Object?, Object?>).cast<String, Object?>();
   final attributedBindings = <String>[
@@ -183,20 +148,22 @@ String buildHostContractArtifact(Directory repositoryRoot) {
 void writeHostContractArtifact(Directory repositoryRoot) {
   final root = repositoryRoot.path;
   final artifact = buildHostContractArtifact(repositoryRoot);
-  File('$root/tool/bindings/contracts/checkpoint4-extension-host.json')
+  final contracts = '$root/$frameworkPackagePath/tool/bindings/contracts';
+  File('$contracts/checkpoint4-extension-host.json')
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(artifact);
 
   final digest = sha256.convert(utf8.encode(artifact)).toString();
-  final overridesFiles = Directory('$root/tool/bindings/overrides')
-      .listSync()
-      .whereType<File>()
-      .where(
-        (file) => RegExp(r'vscode-\d+\.\d+\.\d+\.json$')
-            .hasMatch(file.uri.pathSegments.last),
-      )
-      .toList()
-    ..sort((left, right) => left.path.compareTo(right.path));
+  final overridesFiles =
+      Directory('$root/$frameworkPackagePath/tool/bindings/overrides')
+          .listSync()
+          .whereType<File>()
+          .where(
+            (file) => RegExp(r'vscode-\d+\.\d+\.\d+\.json$')
+                .hasMatch(file.uri.pathSegments.last),
+          )
+          .toList()
+        ..sort((left, right) => left.path.compareTo(right.path));
   if (overridesFiles.isEmpty) {
     throw StateError('Expected at least one Semantic Override file to repin.');
   }

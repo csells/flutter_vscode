@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 void main() {
   test(
     'failed native listener disposal stays owned until close retries',
@@ -16,7 +18,8 @@ void main() {
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
       // The fixture host package is a member of the repository's pub
       // workspace, so it resolves through the workspace root's config.
-      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
+      final hostPackageConfig =
+          repoPath(p.join('.dart_tool', 'package_config.json'));
 
       await probeSource.writeAsString('''
 import 'dart:js_interop';
@@ -135,7 +138,8 @@ require(process.argv[2]);
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
       // The fixture host package is a member of the repository's pub
       // workspace, so it resolves through the workspace root's config.
-      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
+      final hostPackageConfig =
+          repoPath(p.join('.dart_tool', 'package_config.json'));
 
       await probeSource.writeAsString('''
 import 'dart:async';
@@ -240,7 +244,8 @@ require(process.argv[2]);
       final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
       // The fixture host package is a member of the repository's pub
       // workspace, so it resolves through the workspace root's config.
-      final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
+      final hostPackageConfig =
+          repoPath(p.join('.dart_tool', 'package_config.json'));
 
       await probeSource.writeAsString('''
 import 'dart:async';

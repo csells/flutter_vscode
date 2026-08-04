@@ -4,80 +4,15 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
-const CANONICAL_SOURCE_PATHS = Object.freeze({
-  activationFailureTest:
-    'test/fixtures/host_extension/test/activation_failure.cjs',
-  bindingCoverageLedger: 'tool/binding_generator/coverage_ledger.dart',
-  bindingGenerator: 'tool/binding_generator/generator.dart',
-  bindingIrTypeMapper: 'tool/binding_generator/ir_type_mapper.dart',
-  bindingIrValidator: 'tool/binding_generator/ir_validator.dart',
-  bindingManifestProjection:
-    'tool/binding_generator/manifest_projection.dart',
-  bindingTemplates: 'tool/binding_generator/templates.dart',
-  bindingValidators: 'tool/binding_generator/validators.dart',
-  bindingWriter: 'tool/binding_generator/writer.dart',
-  bootstrapLifecycleTest:
-    'tool/extension_host_test/bootstrap_lifecycle.test.cjs',
-  buildReceipt: 'lib/src/cli/build_receipt.dart',
-  builder: 'scripts/build_host_fixture.sh',
-  canonicalInventory: 'tool/bindings/ir/vscode-1.129.1.json',
-  canonicalViewProtocol: 'lib/src/view_protocol.dart',
-  cli: 'bin/flutter_vscode.dart',
-  container: 'tool/extension_host_test/Dockerfile',
-  contractWriter: 'tool/binding_generator/contract.dart',
-  ecmascriptWhitespace:
-    'tool/binding_generator/ecmascript_whitespace.dart',
-  evidenceIntegrityTest: 'test/binding_evidence_test.dart',
-  fixtureHost: 'test/fixtures/host_extension/host/lib/extension.dart',
-  fixtureHostPackage: 'test/fixtures/host_extension/host/pubspec.yaml',
-  fixtureHostPackageLock:
-    'test/fixtures/host_extension/host/pubspec.lock',
-  fixtureManifest: 'test/fixtures/host_extension/package.json',
-  fixtureProject: 'test/fixtures/host_extension/extension.json',
-  fixtureSharedContract:
-    'test/fixtures/host_extension/shared/lib/fixture_view_contract.dart',
-  fixtureSharedPackage:
-    'test/fixtures/host_extension/shared/pubspec.yaml',
-  fixtureTransport:
-    'test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart',
-  fixtureView: 'test/fixtures/host_extension/views/main/lib/main.dart',
-  fixtureViewIndex:
-    'test/fixtures/host_extension/views/main/web/index.html',
-  fixtureViewPackage:
-    'test/fixtures/host_extension/views/main/pubspec.yaml',
-  fixtureViewPackageLock:
-    'test/fixtures/host_extension/views/main/pubspec.lock',
-  flutterViewHostTemplate: 'lib/src/cli/flutter_view_host_source.dart',
-  frameworkPackage: 'pubspec.yaml',
-  frameworkPackageLock: 'pubspec.lock',
-  generatedBootstrap: 'test/fixtures/host_extension/host/bootstrap.cjs',
-  generatedDartLayer:
-    'test/fixtures/host_extension/host/lib/generated/' +
-    'vscode_dart_layer.g.dart',
-  generatedHostCommands:
-    'test/fixtures/host_extension/host/lib/generated/host_commands.g.dart',
-  generatedHostExports:
-    'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  generatedRuntime:
-    'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
-  generatedSharedViewProtocol:
-    'test/fixtures/host_extension/shared/lib/generated/' +
-    'view_protocol.g.dart',
-  generatedViewProtocol:
-    'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
-  harnessPackage: 'tool/extension_host_test/package.json',
-  harnessPackageLock: 'tool/extension_host_test/package-lock.json',
-  hostCommandsTemplate: 'lib/src/cli/host_commands_source.dart',
-  hostImportChecker: 'tool/check_host_imports.dart',
-  launcher: 'tool/extension_host_test/run.cjs',
-  projectDescriptor: 'lib/src/cli/project_descriptor.dart',
-  runner: 'scripts/test_host_extension.sh',
-  test: 'test/fixtures/host_extension/test/run.cjs',
-  verifier: 'tool/extension_host_test/host_contract.cjs',
-  verifierTest: 'tool/extension_host_test/host_contract.test.cjs',
-  viewLibrary: 'lib/view.dart',
-  viewTransport: 'lib/src/view_transport_web.dart',
-});
+// The one receipt-path definition, read rather than transcribed. Keeping a
+// second copy here would only ever catch someone forgetting to update it.
+const HOST_CONTRACT_SOURCES_PATH =
+  'packages/flutter_vscode/tool/bindings/host-contract-sources.json';
+
+function readCanonicalSourcePaths(repositoryRoot) {
+  const file = path.join(repositoryRoot, HOST_CONTRACT_SOURCES_PATH);
+  return JSON.parse(fs.readFileSync(file, 'utf8')).sources;
+}
 
 function verifyHostContractSourceFiles({contractId, contract, repositoryRoot}) {
   const sources = contract?.sources;
@@ -93,8 +28,9 @@ function verifyHostContractSourceFiles({contractId, contract, repositoryRoot}) {
     throw new Error(`Host Contract ${contractId} source schema is invalid.`);
   }
 
+  const canonicalSourcePaths = readCanonicalSourcePaths(repositoryRoot);
   const sourceIds = Object.keys(sources).sort();
-  const canonicalSourceIds = Object.keys(CANONICAL_SOURCE_PATHS).sort();
+  const canonicalSourceIds = Object.keys(canonicalSourcePaths).sort();
   if (JSON.stringify(sourceIds) !== JSON.stringify(canonicalSourceIds)) {
     throw new Error(
       `Host Contract ${contractId} source keys must be exactly ` +
@@ -124,7 +60,7 @@ function verifyHostContractSourceFiles({contractId, contract, repositoryRoot}) {
         `Host Contract ${contractId} source ${sourceId} receipt is invalid.`,
       );
     }
-    const canonicalPath = CANONICAL_SOURCE_PATHS[sourceId];
+    const canonicalPath = canonicalSourcePaths[sourceId];
     if (receipt.path !== canonicalPath) {
       throw new Error(
         `Host Contract ${contractId} source ${sourceId} path must be ` +

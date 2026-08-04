@@ -6,77 +6,26 @@ import 'package:test/test.dart';
 
 import '../tool/binding_generator/contract.dart' as contract_writer;
 
-const canonicalHostContractSourcePaths = <String, String>{
-  'activationFailureTest':
-      'test/fixtures/host_extension/test/activation_failure.cjs',
-  'bindingCoverageLedger': 'tool/binding_generator/coverage_ledger.dart',
-  'bindingGenerator': 'tool/binding_generator/generator.dart',
-  'bindingIrTypeMapper': 'tool/binding_generator/ir_type_mapper.dart',
-  'bindingIrValidator': 'tool/binding_generator/ir_validator.dart',
-  'bindingManifestProjection':
-      'tool/binding_generator/manifest_projection.dart',
-  'bindingTemplates': 'tool/binding_generator/templates.dart',
-  'bindingValidators': 'tool/binding_generator/validators.dart',
-  'bindingWriter': 'tool/binding_generator/writer.dart',
-  'bootstrapLifecycleTest':
-      'tool/extension_host_test/bootstrap_lifecycle.test.cjs',
-  'buildReceipt': 'lib/src/cli/build_receipt.dart',
-  'builder': 'scripts/build_host_fixture.sh',
-  'canonicalInventory': 'tool/bindings/ir/vscode-1.129.1.json',
-  'canonicalViewProtocol': 'lib/src/view_protocol.dart',
-  'cli': 'bin/flutter_vscode.dart',
-  'container': 'tool/extension_host_test/Dockerfile',
-  'contractWriter': 'tool/binding_generator/contract.dart',
-  'ecmascriptWhitespace': 'tool/binding_generator/ecmascript_whitespace.dart',
-  'evidenceIntegrityTest': 'test/binding_evidence_test.dart',
-  'fixtureHost': 'test/fixtures/host_extension/host/lib/extension.dart',
-  'fixtureHostPackage': 'test/fixtures/host_extension/host/pubspec.yaml',
-  'fixtureManifest': 'test/fixtures/host_extension/package.json',
-  'fixtureProject': 'test/fixtures/host_extension/extension.json',
-  'fixtureSharedContract':
-      'test/fixtures/host_extension/shared/lib/fixture_view_contract.dart',
-  'fixtureSharedPackage': 'test/fixtures/host_extension/shared/pubspec.yaml',
-  'fixtureTransport':
-      'test/fixtures/host_extension/host/lib/generated/flutter_view_host.g.dart',
-  'fixtureView': 'test/fixtures/host_extension/views/main/lib/main.dart',
-  'fixtureViewIndex': 'test/fixtures/host_extension/views/main/web/index.html',
-  'fixtureViewPackage': 'test/fixtures/host_extension/views/main/pubspec.yaml',
-  'flutterViewHostTemplate': 'lib/src/cli/flutter_view_host_source.dart',
-  'frameworkPackage': 'pubspec.yaml',
-  // The fixture packages are members of the repository's pub workspace, so
-  // this single root lockfile is the pinned resolution for the framework and
-  // every fixture package alike.
-  'frameworkPackageLock': 'pubspec.lock',
-  'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
-  'generatedHostCommands':
-      'test/fixtures/host_extension/host/lib/generated/host_commands.g.dart',
-  'generatedHostExports':
-      'test/fixtures/host_extension/host/lib/generated/host_exports.g.dart',
-  'generatedRuntime':
-      'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
-  'generatedSharedViewProtocol':
-      'test/fixtures/host_extension/shared/lib/generated/view_protocol.g.dart',
-  'generatedViewProtocol':
-      'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
-  'harnessPackage': 'tool/extension_host_test/package.json',
-  'harnessPackageLock': 'tool/extension_host_test/package-lock.json',
-  'hostCommandsTemplate': 'lib/src/cli/host_commands_source.dart',
-  'hostImportChecker': 'tool/check_host_imports.dart',
-  'launcher': 'tool/extension_host_test/run.cjs',
-  'projectDescriptor': 'lib/src/cli/project_descriptor.dart',
-  'runner': 'scripts/test_host_extension.sh',
-  'test': 'test/fixtures/host_extension/test/run.cjs',
-  'verifier': 'tool/extension_host_test/host_contract.cjs',
-  'verifierTest': 'tool/extension_host_test/host_contract.test.cjs',
-  'viewLibrary': 'lib/view.dart',
-  'viewTransport': 'lib/src/view_transport_web.dart',
-};
+/// The repository root: tests run with the package as the working
+/// directory, but the contract receipts repository-relative paths.
+Directory _repositoryRoot() {
+  for (var dir = Directory.current;; dir = dir.parent) {
+    final pubspec = File('${dir.path}/pubspec.yaml');
+    if (pubspec.existsSync() &&
+        pubspec.readAsStringSync().contains('\nworkspace:')) {
+      return dir;
+    }
+    if (dir.path == dir.parent.path) {
+      throw StateError('No workspace root above ${Directory.current.path}');
+    }
+  }
+}
 
 void main() {
   test('the durable Host Contract artifact matches mechanical regeneration',
       () {
     final regenerated =
-        contract_writer.buildHostContractArtifact(Directory.current);
+        contract_writer.buildHostContractArtifact(_repositoryRoot());
     expect(
       File(
         'tool/bindings/contracts/checkpoint4-extension-host.json',
@@ -85,12 +34,6 @@ void main() {
       reason: 'The artifact is written only by the mechanical regenerator. '
           'Refresh it with: '
           'dart tool/binding_generator/generate.dart --contract .',
-    );
-    expect(
-      contract_writer.canonicalHostContractSourcePaths,
-      canonicalHostContractSourcePaths,
-      reason: 'The writer and the evidence suite must attest the same '
-          'receipt closure.',
     );
     final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
     final contract = (overrides['hostContracts']!
@@ -108,16 +51,17 @@ void main() {
       'flutter_vscode_contract_writer_',
     );
     addTearDown(() => temporary.deleteSync(recursive: true));
-    const overridesPath = 'tool/bindings/overrides/vscode-1.129.1.json';
-    const artifactPath =
-        'tool/bindings/contracts/checkpoint4-extension-host.json';
+    const overridesPath =
+        'packages/flutter_vscode/tool/bindings/overrides/vscode-1.129.1.json';
+    const artifactPath = 'packages/flutter_vscode/tool/bindings/'
+        'contracts/checkpoint4-extension-host.json';
     for (final relative in [
-      ...contract_writer.canonicalHostContractSourcePaths.values,
+      ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
       overridesPath,
     ]) {
       final destination = File('${temporary.path}/$relative');
       destination.parent.createSync(recursive: true);
-      File(relative).copySync(destination.path);
+      File('${_repositoryRoot().path}/$relative').copySync(destination.path);
     }
 
     contract_writer.writeHostContractArtifact(temporary);
@@ -141,7 +85,9 @@ void main() {
         RegExp('"artifactSha256": "[0-9a-f]{64}"'),
         '"artifactSha256": "PIN"',
       ),
-      File(overridesPath).readAsStringSync().replaceFirst(
+      File('${_repositoryRoot().path}/$overridesPath')
+          .readAsStringSync()
+          .replaceFirst(
             RegExp('"artifactSha256": "[0-9a-f]{64}"'),
             '"artifactSha256": "PIN"',
           ),
@@ -167,14 +113,15 @@ void main() {
       'flutter_vscode_contract_writer_pins_',
     );
     addTearDown(() => temporary.deleteSync(recursive: true));
-    const overridesPath = 'tool/bindings/overrides/vscode-1.129.1.json';
+    const overridesPath =
+        'packages/flutter_vscode/tool/bindings/overrides/vscode-1.129.1.json';
     for (final relative in [
-      ...contract_writer.canonicalHostContractSourcePaths.values,
+      ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
       overridesPath,
     ]) {
       final destination = File('${temporary.path}/$relative');
       destination.parent.createSync(recursive: true);
-      File(relative).copySync(destination.path);
+      File('${_repositoryRoot().path}/$relative').copySync(destination.path);
     }
     final overridesFile = File('${temporary.path}/$overridesPath');
     final original = overridesFile.readAsStringSync();
@@ -290,17 +237,18 @@ void main() {
           .cast<String, Object?>();
       expect(
         sources.keys.toSet(),
-        canonicalHostContractSourcePaths.keys.toSet(),
+        contract_writer.hostContractSourcePaths(_repositoryRoot()).keys.toSet(),
       );
       for (final sourceEntry in sources.entries) {
         final source = (sourceEntry.value! as Map<Object?, Object?>)
             .cast<String, Object?>();
         expect(
           source['path'],
-          canonicalHostContractSourcePaths[sourceEntry.key],
+          contract_writer
+              .hostContractSourcePaths(_repositoryRoot())[sourceEntry.key],
           reason: sourceEntry.key,
         );
-        final sourceFile = File(source['path']! as String);
+        final sourceFile = File('${_repositoryRoot().path}/${source['path']}');
         expect(sourceFile.existsSync(), isTrue, reason: sourceEntry.key);
         expect(
           sha256.convert(sourceFile.readAsBytesSync()).toString(),

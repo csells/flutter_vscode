@@ -40,12 +40,12 @@ printf 'int util() => 0;\n' > "${WORKSPACE}/lib/src/util.dart"
 
 (
   cd "${EXTENSION_ROOT}"
-  dart "${REPO_ROOT}/bin/flutter_vscode.dart" build
-  dart "${REPO_ROOT}/bin/flutter_vscode.dart" package
+  dart "${REPO_ROOT}/packages/flutter_vscode/bin/flutter_vscode.dart" build
+  dart "${REPO_ROOT}/packages/flutter_vscode/bin/flutter_vscode.dart" package
 )
 
 docker build \
-  --file "${REPO_ROOT}/tool/extension_host_test/Dockerfile" \
+  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 
@@ -58,4 +58,4 @@ docker run --rm --init --shm-size=1g \
   --env FLUTTER_VSCODE_COVERAGE_WORKSPACE=/coverage-workspace \
   --workdir /test-run \
   "${IMAGE_NAME}" \
-  xvfb-run -a node /workspace/tool/extension_host_test/run_coverage_extension.cjs
+  xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run_coverage_extension.cjs

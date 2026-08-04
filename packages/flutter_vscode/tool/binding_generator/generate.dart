@@ -17,15 +17,16 @@ Future<void> main(List<String> arguments) async {
         );
       }
       final root = arguments[1];
+      final package = '$root/packages/flutter_vscode';
       final artifacts = emitDartLayer(
-        await _readJson('$root/tool/bindings/ir/vscode-1.129.1.json'),
+        await _readJson('$package/tool/bindings/ir/vscode-1.129.1.json'),
       );
-      await File('$root/lib/src/generated/vscode_dart_layer.g.dart')
+      await File('$package/lib/src/generated/vscode_dart_layer.g.dart')
           .create(recursive: true)
           .then((file) => file.writeAsString(artifacts.library));
-      await File('$root/tool/bindings/dart-layer-ledger.json')
+      await File('$package/tool/bindings/dart-layer-ledger.json')
           .writeAsString(artifacts.ledger);
-      await File('$root/tool/bindings/parity-ledger.json')
+      await File('$package/tool/bindings/parity-ledger.json')
           .writeAsString(artifacts.parityLedger);
       return;
     }
@@ -38,10 +39,10 @@ Future<void> main(List<String> arguments) async {
       }
       final root = arguments[1];
       final coverage = await _readJson(
-        '$root/test/fixtures/host_extension/coverage.json',
+        '$root/packages/flutter_vscode/test/fixtures/host_extension/coverage.json',
       );
       final inventory = await _readJson(
-        '$root/tool/bindings/ir/vscode-1.129.1.json',
+        '$root/packages/flutter_vscode/tool/bindings/ir/vscode-1.129.1.json',
       );
       await File('$root/docs/reference/parity.md')
           .writeAsString(buildParityReport(coverage, inventory));

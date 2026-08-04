@@ -3,16 +3,19 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 void main() {
   test('full repository gate installs and exercises the packaged extension',
       () {
-    final fullGate = File('scripts/test_all.sh').readAsStringSync();
+    final fullGate = File(repoPath('scripts/test_all.sh')).readAsStringSync();
 
     expect(fullGate, contains('./scripts/test_packaged_extension.sh'));
   });
 
   test('CI enforces analysis, package proof, and a clean checkout', () {
-    final workflow = File('.github/workflows/test.yml').readAsStringSync();
+    final workflow =
+        File(repoPath('.github/workflows/test.yml')).readAsStringSync();
 
     expect(workflow, contains('flutter analyze'));
     expect(workflow, contains('./scripts/test_all.sh'));
@@ -102,7 +105,8 @@ void main() {
   });
 
   test('shipped example extensions honor the consumer guardrails', () {
-    final areaReadme = File('extensions/README.md').readAsStringSync();
+    final areaReadme =
+        File(repoPath('extensions/README.md')).readAsStringSync();
     expect(
       areaReadme,
       contains('consumes the framework the way an Extension'),
@@ -113,7 +117,7 @@ void main() {
       contains('extensions/'),
       reason: 'the root README must route readers to the shipped examples',
     );
-    final aggregate = File('scripts/test_all.sh').readAsStringSync();
+    final aggregate = File(repoPath('scripts/test_all.sh')).readAsStringSync();
     expect(
       aggregate,
       contains('test_coverage_extension.sh'),
@@ -125,7 +129,7 @@ void main() {
       reason: 'the aggregate gate must run the pubspec-lens gate',
     );
     final extensionDirs =
-        Directory('extensions').listSync().whereType<Directory>();
+        Directory(repoPath('extensions')).listSync().whereType<Directory>();
     expect(extensionDirs, isNotEmpty);
     for (final extension in extensionDirs) {
       for (final root in ['host', 'shared']) {
@@ -153,7 +157,7 @@ void main() {
   });
 
   test('the startup measurement is documented from gate output', () {
-    final doc = File('docs/reference/startup.md').readAsStringSync();
+    final doc = File(repoPath('docs/reference/startup.md')).readAsStringSync();
     expect(
       doc,
       contains('webview load to first rendered frame'),
@@ -183,7 +187,7 @@ void main() {
 
   test('packaged E2E activates the pub-filtered framework contents', () {
     final packagedGate =
-        File('scripts/test_packaged_extension.sh').readAsStringSync();
+        File(repoPath('scripts/test_packaged_extension.sh')).readAsStringSync();
 
     expect(
       packagedGate,
@@ -209,8 +213,8 @@ void main() {
 
   test('Extension Host gates use fresh invocation-scoped VS Code caches', () {
     for (final path in [
-      'scripts/test_host_extension.sh',
-      'scripts/test_packaged_extension.sh',
+      repoPath('scripts/test_host_extension.sh'),
+      repoPath('scripts/test_packaged_extension.sh'),
     ]) {
       final gate = File(path).readAsStringSync();
 
@@ -238,11 +242,13 @@ void main() {
   });
 
   test('Host fixture resolves the receipted root package before its CLI', () {
-    final builder = File('scripts/build_host_fixture.sh').readAsStringSync();
+    final builder =
+        File(repoPath('scripts/build_host_fixture.sh')).readAsStringSync();
     const repositoryRoot = r'${REPO_ROOT}';
     const resolution = 'flutter pub get --enforce-lockfile --no-example '
         '--directory="$repositoryRoot"';
-    const cli = 'dart "$repositoryRoot/bin/flutter_vscode.dart" build';
+    const packageBin = 'packages/flutter_vscode/bin/flutter_vscode.dart';
+    const cli = 'dart "$repositoryRoot/$packageBin" build';
 
     expect(builder, contains(resolution));
     expect(builder, contains(cli));
@@ -250,8 +256,10 @@ void main() {
   });
 
   test('lock-enforced Host builds include a trackable root lockfile', () {
+    // One workspace, one lockfile: it lives at the repository root and is the
+    // pinned resolution for the framework and every member package alike.
     expect(
-      FileSystemEntity.typeSync('pubspec.lock'),
+      FileSystemEntity.typeSync(repoPath('pubspec.lock')),
       FileSystemEntityType.file,
     );
 
@@ -268,6 +276,7 @@ void main() {
     final repositoryFiles = Process.runSync(
       'git',
       ['ls-files', '--cached', '--', 'pubspec.lock'],
+      workingDirectory: repositoryRoot.path,
     );
     expect(repositoryFiles.exitCode, 0);
     expect(
@@ -280,6 +289,7 @@ void main() {
     final committedFiles = Process.runSync(
       'git',
       ['ls-tree', '--name-only', 'HEAD', '--', 'pubspec.lock'],
+      workingDirectory: repositoryRoot.path,
     );
     expect(committedFiles.exitCode, 0);
     expect(
@@ -292,12 +302,12 @@ void main() {
 
   test('parity report is linked from the reference index', () {
     expect(
-      File('docs/reference/index.md').readAsStringSync(),
+      File(repoPath('docs/reference/index.md')).readAsStringSync(),
       contains('parity.md'),
       reason: 'the generated parity burn-down must be discoverable',
     );
     expect(
-      File('docs/reference/parity.md').readAsStringSync(),
+      File(repoPath('docs/reference/parity.md')).readAsStringSync(),
       contains('defect'),
       reason: "the report must state the vision's missing-path-is-a-defect "
           'rule',
@@ -305,8 +315,8 @@ void main() {
   });
 
   test('generated Host API guide registers providers synchronously', () {
-    final guide =
-        File('docs/reference/generated-host-api.md').readAsStringSync();
+    final guide = File(repoPath('docs/reference/generated-host-api.md'))
+        .readAsStringSync();
 
     expect(guide, isNot(contains('Future<JSAny?>(()')));
     expect(guide, contains('Future<JSAny?>.value(null).toJS'));

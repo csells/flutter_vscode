@@ -18,7 +18,7 @@ mkdir -p "${CACHE_ROOT}"
 "${REPO_ROOT}/scripts/build_host_fixture.sh"
 
 docker build \
-  --file "${REPO_ROOT}/tool/extension_host_test/Dockerfile" \
+  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 
@@ -28,4 +28,4 @@ docker run --rm --init --shm-size=1g \
   --env VSCODE_TEST_CACHE_PATH=/vscode-test-cache \
   --workdir /test-run \
   "${IMAGE_NAME}" \
-  xvfb-run -a node /workspace/tool/extension_host_test/run_breakpoint.cjs
+  xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run_breakpoint.cjs

@@ -4,14 +4,12 @@ import 'package:flutter_vscode/manifest.dart';
 const extension = ExtensionManifest(
   name: 'pubspec-lens',
   displayName: 'Pubspec Lens',
-  description: 'Dependency intelligence for pubspec.yaml: hovers, '
+  description:
+      'Dependency intelligence for pubspec.yaml: hovers, '
       'outdated-pin diagnostics, CodeLens updates, and a dependency tree.',
   version: '0.0.1',
   publisher: 'local',
-  activationEvents: [
-    'onLanguage:yaml',
-    'workspaceContains:pubspec.yaml',
-  ],
+  activationEvents: ['onLanguage:yaml', 'workspaceContains:pubspec.yaml'],
   commands: [
     ExtensionCommand(
       command: 'pubspec-lens.refresh',

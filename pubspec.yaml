@@ -1,42 +1,22 @@
-name: flutter_vscode
-description: >-
-  Build VS Code extensions with Dart-owned host behavior and optional Flutter
-  views.
-version: 0.1.0
-homepage: https://github.com/SlowGen/flutter_vscode
+# Workspace root for the flutter_vscode repository.
+#
+# This package is never published: it exists so that one `pub get` at the
+# checkout root resolves every package in the repository, which is what
+# makes `flutter analyze` meaningful across the whole tree. The published
+# package is `packages/flutter_vscode`.
+name: flutter_vscode_repository
+publish_to: none
+
+environment:
+  sdk: ^3.12.0
 
 workspace:
+  - packages/flutter_vscode
   - extensions/coverage_treemap/host
   - extensions/coverage_treemap/shared
   - extensions/coverage_treemap/views/treemap_panel
   - extensions/pubspec_lens/host
   - extensions/pubspec_lens/shared
-  - test/fixtures/host_extension/host
-  - test/fixtures/host_extension/shared
-  - test/fixtures/host_extension/views/main
-
-environment:
-  sdk: '>=3.6.0 <4.0.0'
-  flutter: ">=1.17.0"
-
-dependencies:
-  analyzer: ^10.0.1
-  archive: ^4.0.9
-  crypto: ^3.0.7
-  flutter:
-    sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
-  meta: ^1.9.1
-  path: ^1.8.3
-  web: ^1.1.0
-  xml: ^6.6.1
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  test: ^1.24.0
-  very_good_analysis: ^10.0.0
-
-executables:
-  flutter_vscode: flutter_vscode
+  - packages/flutter_vscode/test/fixtures/host_extension/host
+  - packages/flutter_vscode/test/fixtures/host_extension/shared
+  - packages/flutter_vscode/test/fixtures/host_extension/views/main

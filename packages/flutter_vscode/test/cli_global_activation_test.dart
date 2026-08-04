@@ -16,6 +16,15 @@ void main() {
       final packageCopy = Directory(p.join(temporary.path, 'package'));
       await workspace.create();
       await _copyPackage(Directory.current, packageCopy);
+      // A published workspace member carries `resolution: workspace`. Hosted
+      // installs ignore it; a path-source copy has no workspace root above it,
+      // so drop it to mimic what pub.dev actually resolves.
+      final copiedManifest = File(p.join(packageCopy.path, 'pubspec.yaml'));
+      copiedManifest.writeAsStringSync(
+        copiedManifest
+            .readAsStringSync()
+            .replaceAll('resolution: workspace\n', ''),
+      );
       final environment = <String, String>{
         ...Platform.environment,
         'PUB_CACHE': cache.path,

@@ -3,12 +3,14 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 /// Nested Dart packages whose standalone `dart analyze` must enforce
 /// the repository's strict lint set (D-9: the root include silently
 /// fails to resolve outside the root package context).
 List<Directory> _nestedPackages() {
   final roots = [
-    Directory('extensions'),
+    Directory(repoPath('extensions')),
     Directory('test/fixtures/host_extension'),
   ];
   final packages = <Directory>[];
@@ -62,7 +64,7 @@ void main() {
         'flutter_vscode_nested_lint_',
       );
       addTearDown(() => temporary.delete(recursive: true));
-      final source = Directory('extensions/coverage_treemap/shared');
+      final source = Directory(repoPath('extensions/coverage_treemap/shared'));
       final copy = Directory(p.join(temporary.path, 'shared'));
       await Process.run('cp', ['-R', source.path, copy.path]);
       // In the checkout this package is a member of the repository's pub

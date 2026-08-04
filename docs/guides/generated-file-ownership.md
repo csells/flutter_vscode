@@ -5,7 +5,7 @@ An Extension Project has two ownership classes. Keep this boundary intact so
 
 ## Author-owned source
 
-- `extension.dart`: metadata, Project API Target, and contributions.
+- `extension.dart`: metadata and contributions.
 - `host/lib/**`: activation, commands, providers, and host lifecycle behavior.
 - `shared/lib/**`: pure Dart code shared across runtimes.
 - `views/**`: optional Flutter view source and assets.

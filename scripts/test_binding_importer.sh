@@ -6,7 +6,7 @@ REPO_ROOT="${SCRIPT_DIR}/.."
 IMAGE_NAME="flutter-vscode-binding-importer-test:local"
 
 docker build \
-  --file "${REPO_ROOT}/tool/binding_importer/Dockerfile" \
+  --file "${REPO_ROOT}/packages/flutter_vscode/tool/binding_importer/Dockerfile" \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 

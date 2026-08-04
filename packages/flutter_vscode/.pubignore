@@ -8,10 +8,10 @@
 **/build/
 **/node_modules/
 
-# Repository-only specifications, fixtures, and maintainer gates.
-/specs/
+# Repository-only fixtures and maintainer tooling. The specs, gate scripts,
+# docs, and example extensions live above this package and are never part of
+# the archive.
 /test/
-/scripts/
 /tool/binding_importer/
 /tool/extension_host_test/
 
@@ -23,5 +23,3 @@
 /tool/bindings/dart-layer-ledger.json
 /tool/bindings/parity-ledger.json
 
-# Shipped example extensions are repository surfaces, not package assets.
-/extensions/

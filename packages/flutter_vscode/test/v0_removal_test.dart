@@ -2,6 +2,8 @@ import 'dart:io';
 
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 /// V0-1/V0-2: the legacy v0 pipeline is deleted, not carried.
 ///
 /// The v0 annotation/builder pipeline (source_gen builders, the
@@ -111,7 +113,8 @@ void main() {
     });
 
     test('the aggregate gate runs no v0 steps', () {
-      final aggregate = File('scripts/test_all.sh').readAsStringSync();
+      final aggregate =
+          File(repoPath('scripts/test_all.sh')).readAsStringSync();
       for (final retired in [
         'build_runner',
         'check_dart_generator',

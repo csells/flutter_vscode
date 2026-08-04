@@ -5,6 +5,7 @@ import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/parity_report.dart' as parity;
+import 'support/repository.dart';
 
 void main() {
   test('checked-in parity report matches mechanical regeneration', () {
@@ -17,7 +18,7 @@ void main() {
     ) as Map<Object?, Object?>)
         .cast<String, Object?>();
     expect(
-      File('docs/reference/parity.md').readAsStringSync(),
+      File(repoPath('docs/reference/parity.md')).readAsStringSync(),
       parity.buildParityReport(coverage, inventory),
       reason: 'The parity report is a Framework-Managed doc. Refresh it '
           'with: dart tool/binding_generator/generate.dart --parity .',
@@ -114,7 +115,8 @@ void main() {
     final nodeProbe = File(p.join(temporary.path, 'probe.cjs'));
     // The fixture host package is a member of the repository's pub
     // workspace, so it resolves through the workspace root's config.
-    final hostPackageConfig = p.join('.dart_tool', 'package_config.json');
+    final hostPackageConfig =
+        repoPath(p.join('.dart_tool', 'package_config.json'));
 
     await auditSource.writeAsString(r'''
 import 'dart:js_interop';

@@ -18,7 +18,7 @@ mkdir -p "${CACHE_ROOT}"
 "${REPO_ROOT}/scripts/build_host_fixture.sh"
 
 docker build \
-  --file "${REPO_ROOT}/tool/extension_host_test/Dockerfile" \
+  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 
@@ -29,6 +29,6 @@ docker run --rm --init --shm-size=1g \
   --workdir /test-run \
   "${IMAGE_NAME}" \
   sh -c \
-  'node --test /workspace/tool/extension_host_test/bootstrap_lifecycle.test.cjs \
-    /workspace/tool/extension_host_test/host_contract.test.cjs &&
-   xvfb-run -a node /workspace/tool/extension_host_test/run.cjs'
+  'node --test /workspace/packages/flutter_vscode/tool/extension_host_test/bootstrap_lifecycle.test.cjs \
+    /workspace/packages/flutter_vscode/tool/extension_host_test/host_contract.test.cjs &&
+   xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run.cjs'

@@ -26,15 +26,18 @@ mkdir -p "${CACHE_ROOT}"
 # comes from `dart pub publish --dry-run` itself, so the installed E2E
 # exercises exactly what a published package would contain.
 PACKAGE_LIST="${TEMP_ROOT}/pub-archive-files.txt"
-(cd "${REPO_ROOT}" && dart tool/pub_archive_list.dart) > "${PACKAGE_LIST}"
+# The published package is a workspace member; its archive is listed and
+# copied relative to the package, not the repository root.
+PACKAGE_ROOT="${REPO_ROOT}/packages/flutter_vscode"
+(cd "${PACKAGE_ROOT}" && dart tool/pub_archive_list.dart) > "${PACKAGE_LIST}"
 grep -qx "pubspec.yaml" "${PACKAGE_LIST}"
 grep -qx "bin/flutter_vscode.dart" "${PACKAGE_LIST}"
 while IFS= read -r archived_file; do
   mkdir -p "${PACKAGE_COPY}/$(dirname "${archived_file}")"
-  cp "${REPO_ROOT}/${archived_file}" "${PACKAGE_COPY}/${archived_file}"
+  cp "${PACKAGE_ROOT}/${archived_file}" "${PACKAGE_COPY}/${archived_file}"
 done < "${PACKAGE_LIST}"
 (
-  cd "${REPO_ROOT}/test/fixtures/host_extension"
+  cd "${REPO_ROOT}/packages/flutter_vscode/test/fixtures/host_extension"
   tar cf - \
     --exclude=.dart_tool \
     --exclude=build \
@@ -50,6 +53,9 @@ find "${VIEW_FIXTURE_ROOT}" -name pubspec.yaml -print0 | while IFS= read -r -d '
   sed -i.bak '/^resolution: workspace$/d' "${manifest}"
   rm -f "${manifest}.bak"
 done
+
+sed -i.bak '/^resolution: workspace$/d' "${PACKAGE_COPY}/pubspec.yaml"
+rm -f "${PACKAGE_COPY}/pubspec.yaml.bak"
 
 test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
 test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"
@@ -83,7 +89,7 @@ CLI="${PUB_CACHE_ROOT}/bin/flutter_vscode"
 )
 
 docker build \
-  --file "${REPO_ROOT}/tool/extension_host_test/Dockerfile" \
+  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
   --tag "${IMAGE_NAME}" \
   "${REPO_ROOT}"
 
@@ -102,7 +108,7 @@ run_packaged_project() {
     --env FLUTTER_VSCODE_PACKAGED_REQUIRE_VIEW="${require_view}" \
     --workdir /test-run \
     "${IMAGE_NAME}" \
-    xvfb-run -a node /workspace/tool/extension_host_test/run_packaged.cjs
+    xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run_packaged.cjs
 }
 
 run_packaged_project "${PROJECT_ROOT}" "Hello from Dart" 0

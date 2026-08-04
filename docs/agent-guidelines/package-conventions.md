@@ -8,7 +8,8 @@
 
 ## API Design
 
-- Keep Project API Target explicit in Dart-owned configuration.
+- The Shipped API Baseline comes from the `flutter_vscode` release a
+  project depends on; projects never declare a target (ADR 0014).
 - Expose native host behavior through generated parity and idiomatic layers.
 - Expose a small typed view protocol rather than raw envelopes or arbitrary
   host API dispatch.

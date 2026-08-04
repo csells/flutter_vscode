@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'support/repository.dart';
+
 void main() {
   test(
     'a failed webview connect clears the memo so a retry reconnects',
@@ -121,7 +123,7 @@ require(process.argv[2]);
         [
           'compile',
           'js',
-          '--packages=.dart_tool/package_config.json',
+          '--packages=${repoPath('.dart_tool/package_config.json')}',
           probeSource.path,
           '-o',
           compiledProbe.path,
