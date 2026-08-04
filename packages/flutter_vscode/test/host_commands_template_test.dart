@@ -1,139 +1,31 @@
 import 'dart:io';
 
-import 'package:flutter_vscode/src/cli/host_commands_source.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
 import 'support/repository.dart';
 
+/// The command-registration module is a library in `package:dart_vscode`, so
+/// the analyzer proves it compiles and this proves it behaves. It used to be
+/// a `const` string, which left assertions about its *source text* as the
+/// only thing a test could reach.
 void main() {
-  group('ExtensionCommands template interface', () {
-    test('register() takes an ordinary-Dart handler', () {
-      expect(
-        hostCommandsSource,
-        contains('final class ExtensionCommands'),
-        reason: 'one small object holds the context/api seam so call '
-            'sites carry only a name and behavior',
-      );
-      expect(
-        hostCommandsSource,
-        contains('FutureOr<Object?> Function(List<Object?> arguments)'),
-        reason: 'handlers are ordinary Dart: dartified arguments in, a '
-            'protocol-safe value (or Future of one) out',
-      );
-      expect(
-        hostCommandsSource,
-        contains('Disposable register(String name, CommandHandler handler)'),
-        reason: 'registration returns the native registration for callers '
-            'that dispose early',
-      );
+  group('ExtensionCommands', () {
+    test('a host-only project receives no command module', () async {
+      // It is a library now, so `build` has nothing to copy.
+      for (final project in [
+        'test/fixtures/host_extension',
+        repoPath('extensions/pubspec_lens'),
+      ]) {
+        expect(
+          File(
+            p.join(project, 'host', 'lib', 'generated', 'host_commands.g.dart'),
+          ).existsSync(),
+          isFalse,
+          reason: project,
+        );
+      }
     });
-
-    test('the module owns every interop seam the ceremony used to', () {
-      expect(
-        hostCommandsSource,
-        contains('toHostCallback('),
-        reason: 'synchronous throws must retain mapped Dart stack frames',
-      );
-      expect(
-        hostCommandsSource,
-        contains('toHostPromise'),
-        reason: 'handler futures must cross as host promises with mapped '
-            'failure stacks',
-      );
-      expect(
-        hostCommandsSource,
-        contains('.dartify()'),
-        reason: 'invocation arguments must reach the handler as Dart values',
-      );
-      expect(
-        hostCommandsSource,
-        contains('context.subscriptions'),
-        reason: 'registrations must ride the extension lifetime',
-      );
-    });
-
-    test('the checked-in Host fixture module mirrors the template', () {
-      expect(
-        File(
-          'test/fixtures/host_extension/host/lib/generated/'
-          'host_commands.g.dart',
-        ).existsSync(),
-        isTrue,
-        reason: 'the module is emitted for every project, so the fixture '
-            '(a view-bearing project) must carry it; rebuild with '
-            'scripts/build_host_fixture.sh',
-      );
-      expect(
-        File(
-          'test/fixtures/host_extension/host/lib/generated/'
-          'host_commands.g.dart',
-        ).readAsStringSync(),
-        hostCommandsSource,
-        reason: 'Rebuild the fixture (scripts/build_host_fixture.sh) after '
-            'changing the template.',
-      );
-    });
-
-    test(
-      'build emits the module byte-for-byte for a host-only project',
-      () async {
-        final workspace = await Directory.systemTemp.createTemp(
-          'flutter_vscode_cli_host_commands_',
-        );
-        addTearDown(() => workspace.delete(recursive: true));
-        final executable = p.join(
-          Directory.current.path,
-          'bin',
-          'flutter_vscode.dart',
-        );
-        final create = await Process.run(
-          'dart',
-          [executable, 'create', 'my_extension'],
-          workingDirectory: workspace.path,
-        );
-        expect(
-          create.exitCode,
-          0,
-          reason: '${create.stdout}\n${create.stderr}',
-        );
-        final project = Directory(p.join(workspace.path, 'my_extension'));
-        final module = File(
-          p.join(
-            project.path,
-            'host',
-            'lib',
-            'generated',
-            'host_commands.g.dart',
-          ),
-        );
-        expect(
-          module.existsSync(),
-          isTrue,
-          reason: 'create must scaffold the module so command registration '
-              'analyzes before the first build',
-        );
-
-        final build = await Process.run(
-          'dart',
-          [executable, 'build'],
-          workingDirectory: project.path,
-        );
-        expect(build.exitCode, 0, reason: '${build.stdout}\n${build.stderr}');
-        expect(
-          module.existsSync(),
-          isTrue,
-          reason: 'a host-only project must carry the command module',
-        );
-        expect(
-          module.readAsStringSync(),
-          hostCommandsSource,
-          reason: 'The emitted module must match the framework template '
-              'byte-for-byte',
-        );
-      },
-      timeout: const Timeout(Duration(minutes: 3)),
-    );
 
     test(
       'a registered handler receives dartified arguments and its Future '
@@ -162,8 +54,8 @@ void main() {
         await probeSource.writeAsString('''
 import 'dart:js_interop';
 
-import 'package:flutter_vscode_host_fixture/generated/host_commands.g.dart';
 import 'package:dart_vscode/dart_vscode.dart';
+import 'package:dart_vscode/host_commands.dart';
 
 @JS('hostCommandsProbe')
 external set _hostCommandsProbe(JSFunction value);

@@ -4,8 +4,8 @@
 /// [ViewOperation]s live here so host and view import one declaration.
 library;
 
-import 'package:coverage_treemap_shared/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
+import 'package:dart_vscode/view_protocol.dart';
 
 /// Operation name for requesting the current coverage snapshot.
 const coverageSnapshotOperationName = 'coverageTreemap.getSnapshot';

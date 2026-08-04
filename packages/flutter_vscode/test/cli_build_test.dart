@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_vscode/src/cli/flutter_view_host_source.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -274,13 +273,9 @@ Map<String, Object?> _createExtension() {
         0,
         reason: '${viewBuild.stdout}\n${viewBuild.stderr}',
       );
-      expect(module.existsSync(), isTrue);
-      expect(
-        module.readAsStringSync(),
-        flutterViewHostSource,
-        reason: 'The emitted module must match the framework template '
-            'byte-for-byte',
-      );
+      // The Flutter View host module is a library in package:dart_vscode,
+      // not a file emitted into the project, so nothing is copied here.
+      expect(module.existsSync(), isFalse);
     },
     timeout: const Timeout(Duration(minutes: 10)),
   );

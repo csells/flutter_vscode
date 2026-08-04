@@ -44,11 +44,9 @@ void main() {
           'view_protocol.g.dart',
         ),
       );
-      expect(generatedProtocol.existsSync(), isTrue);
-      expect(
-        await generatedProtocol.readAsBytes(),
-        await File('lib/src/view_protocol.dart').readAsBytes(),
-      );
+      // Both runtimes type against package:dart_vscode; a view project
+      // receives no copy of the protocol to keep in sync.
+      expect(generatedProtocol.existsSync(), isFalse);
       expect(
         File(
           p.join(
@@ -58,12 +56,10 @@ void main() {
             'generated',
             'view_protocol.g.dart',
           ),
-        ).readAsStringSync(),
-        contains(
-          "export 'package:my_extension_shared/generated/view_protocol.g.dart';",
-        ),
-        reason: 'the host module re-exports the shared protocol copy so '
-            'host and shared code type against one declaration',
+        ).existsSync(),
+        isFalse,
+        reason: 'the host imports package:dart_vscode/view_protocol.dart '
+            'directly; there is no re-export of a copy',
       );
       final viewOutput = Directory(
         p.join(project.path, 'out', 'views', 'main_panel'),
@@ -99,7 +95,6 @@ void main() {
         for (var index = 0; index < firstViewFiles.length; index += 1)
           firstViewPaths[index]: await firstViewFiles[index].readAsBytes(),
       };
-      final firstProtocolBytes = await generatedProtocol.readAsBytes();
 
       final repeatedBuild = await Process.run(
         'dart',
@@ -130,7 +125,11 @@ void main() {
           reason: 'Flutter View output changed across identical builds: $path',
         );
       }
-      expect(await generatedProtocol.readAsBytes(), firstProtocolBytes);
+      expect(
+        generatedProtocol.existsSync(),
+        isFalse,
+        reason: 'a rebuild must not start emitting a protocol copy',
+      );
 
       final package = await Process.run(
         'dart',

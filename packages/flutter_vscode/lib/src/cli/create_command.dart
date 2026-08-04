@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
-import 'package:flutter_vscode/src/cli/host_commands_source.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 
@@ -121,7 +120,6 @@ environment:
     {
       for (final entry in generated.entries)
         if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,
-      'host/lib/generated/host_commands.g.dart': hostCommandsSource,
     },
     root,
   );
@@ -136,7 +134,7 @@ import 'package:${projectName}_host/generated/host_exports.g.dart';
 // Dart-first ergonomics layer over it with VscodeApi(rawVscode).dart.
 import 'package:dart_vscode/dart_vscode.dart';
 // Runtime helpers: toHostPromise, toHostCallback, hostFetch.
-import 'package:${projectName}_host/generated/vscode_runtime.g.dart';
+import 'package:dart_vscode/host_runtime.dart';
 import 'package:${projectName}_shared/shared.dart';
 
 const _helloCommand = '$manifestName.hello';

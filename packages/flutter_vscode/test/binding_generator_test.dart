@@ -1434,9 +1434,9 @@ void main() {
       reason: 'the retired facade and walking-slice parity must not return',
     );
     final runtime = first.files['host/lib/generated/vscode_runtime.g.dart']!;
-    expect(runtime, contains('toHostPromise'));
-    expect(runtime, contains('JavaScriptError'));
-    expect(runtime, contains('toHostCallback'));
+    expect(runtime, contains('installGeneratedHostRuntime'));
+    expect(runtime, contains('stackMappers'));
+    expect(runtime, contains('callbackWrappers'));
     expect(runtime, isNot(contains('observeHostBindings')));
     expect(runtime, isNot(contains('observeHostCallback')));
     final bootstrap = first.files['host/bootstrap.cjs']!;

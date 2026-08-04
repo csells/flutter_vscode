@@ -84,8 +84,6 @@ void main() {
     final nonBindingFiles =
         checkedInFiles.keys.toSet().difference(firstFiles.keys.toSet());
     const cliOwnedArtifacts = {
-      'host/lib/generated/flutter_view_host.g.dart',
-      'host/lib/generated/host_commands.g.dart',
       'host/lib/generated/view_protocol.g.dart',
     };
     expect(
@@ -121,7 +119,7 @@ void main() {
     await auditSource.writeAsString(r'''
 import 'dart:js_interop';
 
-import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
+import 'package:dart_vscode/host_runtime.dart';
 
 @JS('fetchProbe')
 external set _fetchProbe(JSFunction value);

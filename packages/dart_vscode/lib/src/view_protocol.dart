@@ -145,10 +145,11 @@ typedef ViewValueDecoder<T> = T Function(Object? value);
 /// never share nominal types. [FlutterViewSession.operationCaller]
 /// and [ViewOperation.callThrough] meet at this plain function type,
 /// so one shared operation declaration serves both runtimes.
-typedef ViewOperationCaller = Future<Object?> Function(
-  String operation,
-  Object? arguments,
-);
+typedef ViewOperationCaller =
+    Future<Object?> Function(
+      String operation,
+      Object? arguments,
+    );
 
 /// A typed, allowlistable operation shared by Host Dart and a Flutter View.
 ///
@@ -164,12 +165,12 @@ final class ViewOperation<Request, Result> {
     required ViewValueEncoder<Result> encodeResult,
     required ViewValueDecoder<Result> decodeResult,
   }) : this._(
-          name,
-          encodeArguments,
-          decodeArguments,
-          encodeResult,
-          decodeResult,
-        );
+         name,
+         encodeArguments,
+         decodeArguments,
+         encodeResult,
+         decodeResult,
+       );
 
   const ViewOperation._(
     this._name,
@@ -188,14 +189,13 @@ final class ViewOperation<Request, Result> {
     String name, {
     required ViewValueEncoder<Result> encodeResult,
     required ViewValueDecoder<Result> decodeResult,
-  }) =>
-      ViewOperation<void, Result>._(
-        name,
-        _encodeVoidValue,
-        _decodeVoidValue,
-        encodeResult,
-        decodeResult,
-      );
+  }) => ViewOperation<void, Result>._(
+    name,
+    _encodeVoidValue,
+    _decodeVoidValue,
+    encodeResult,
+    decodeResult,
+  );
 
   /// A typed operation whose result side carries no value.
   ///
@@ -206,14 +206,13 @@ final class ViewOperation<Request, Result> {
     String name, {
     required ViewValueEncoder<Request> encodeArguments,
     required ViewValueDecoder<Request> decodeArguments,
-  }) =>
-      ViewOperation<Request, void>._(
-        name,
-        encodeArguments,
-        decodeArguments,
-        _encodeVoidValue,
-        _decodeVoidValue,
-      );
+  }) => ViewOperation<Request, void>._(
+    name,
+    encodeArguments,
+    decodeArguments,
+    _encodeVoidValue,
+    _decodeVoidValue,
+  );
 
   static Object? _encodeVoidValue(void value) => null;
 
@@ -308,29 +307,37 @@ final class ViewValueKind<F> {
   const ViewValueKind._(this._encode, this._decode);
 
   /// String values.
-  static const ViewValueKind<String> string =
-      ViewValueKind._(_passValue, _decodeString);
+  static const ViewValueKind<String> string = ViewValueKind._(
+    _passValue,
+    _decodeString,
+  );
 
   /// Integer values.
-  static const ViewValueKind<int> integer =
-      ViewValueKind._(_passValue, _decodeInt);
+  static const ViewValueKind<int> integer = ViewValueKind._(
+    _passValue,
+    _decodeInt,
+  );
 
   /// Boolean values.
-  static const ViewValueKind<bool> boolean =
-      ViewValueKind._(_passValue, _decodeBool);
+  static const ViewValueKind<bool> boolean = ViewValueKind._(
+    _passValue,
+    _decodeBool,
+  );
 
   /// Double values.
   ///
   /// Decoding accepts any wire `num`: compiled JavaScript does not
   /// preserve the int/double distinction for whole numbers.
-  static const ViewValueKind<double> doubleNumber =
-      ViewValueKind._(_passValue, _decodeDouble);
+  static const ViewValueKind<double> doubleNumber = ViewValueKind._(
+    _passValue,
+    _decodeDouble,
+  );
 
   /// This kind, additionally admitting `null`.
   ViewValueKind<F?> get orNull => ViewValueKind<F?>._(
-        (value) => value == null ? null : _encode(value),
-        (value) => value == null ? null : _decode(value),
-      );
+    (value) => value == null ? null : _encode(value),
+    (value) => value == null ? null : _decode(value),
+  );
 
   /// A list whose items all match [of].
   ///
@@ -402,11 +409,12 @@ typedef ViewFieldReader<F> = F Function(ViewDecodedFields fields);
 
 /// Declares one schema field — wire [key], value [kind], and the
 /// getter [read] — and returns the field's typed reader.
-typedef ViewFieldDeclarator<T> = ViewFieldReader<F> Function<F>(
-  String key,
-  ViewValueKind<F> kind,
-  F Function(T value) read,
-);
+typedef ViewFieldDeclarator<T> =
+    ViewFieldReader<F> Function<F>(
+      String key,
+      ViewValueKind<F> kind,
+      F Function(T value) read,
+    );
 
 /// Decoded field values handed to a schema's constructor wiring.
 final class ViewDecodedFields {
@@ -432,7 +440,8 @@ final class ViewValueSchema<T> {
   factory ViewValueSchema(
     T Function(ViewDecodedFields fields) Function(
       ViewFieldDeclarator<T> field,
-    ) declare,
+    )
+    declare,
   ) {
     final builder = _ViewSchemaBuilder<T>();
     final construct = declare(builder.declareField);
@@ -448,8 +457,8 @@ final class ViewValueSchema<T> {
   /// Encodes [value] as a protocol-safe snapshot of exactly the
   /// declared keys.
   Object? encode(T value) => <String, Object?>{
-        for (final field in _fields) field.key: field.encodeFrom(value),
-      };
+    for (final field in _fields) field.key: field.encodeFrom(value),
+  };
 
   /// Decodes and validates a protocol snapshot against the exact
   /// declared schema.
@@ -587,11 +596,11 @@ sealed class ViewProtocolFrame {
       'ready' || 'shutdown' => envelopeKeys,
       'readyAck' => const {...envelopeKeys, 'activeNonce'},
       'call' || 'hostCall' => const {
-          ...envelopeKeys,
-          'id',
-          'operation',
-          'arguments',
-        },
+        ...envelopeKeys,
+        'id',
+        'operation',
+        'arguments',
+      },
       'result' || 'hostResult' => const {...envelopeKeys, 'id', 'result'},
       'rendered' => const {...envelopeKeys, 'value'},
       'error' || 'hostError' => const {...envelopeKeys, 'id', 'error'},
@@ -758,13 +767,13 @@ sealed class ViewProtocolFrame {
 
   /// Serializes this frame as its exact wire map, in stable key order.
   Map<String, Object?> toWire() => {
-        'protocol': _protocolMarker,
-        'version': _protocolVersion,
-        'kind': kind,
-        'session': session,
-        'nonce': nonce,
-        ..._payloadEntries(),
-      };
+    'protocol': _protocolMarker,
+    'version': _protocolVersion,
+    'kind': kind,
+    'session': session,
+    'nonce': nonce,
+    ..._payloadEntries(),
+  };
 
   /// Kind-specific wire fields, in their stable wire order.
   Map<String, Object?> _payloadEntries();
@@ -826,10 +835,10 @@ final class ViewCallFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'id': id,
-        'operation': operation,
-        'arguments': arguments,
-      };
+    'id': id,
+    'operation': operation,
+    'arguments': arguments,
+  };
 }
 
 /// Host Dart answers a Flutter View call with its result.
@@ -876,9 +885,9 @@ final class ViewErrorFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'id': id,
-        'error': _errorPayload(error),
-      };
+    'id': id,
+    'error': _errorPayload(error),
+  };
 }
 
 /// A Flutter View reports the protocol-safe value it currently renders.
@@ -925,10 +934,10 @@ final class ViewHostCallFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'id': id,
-        'operation': operation,
-        'arguments': arguments,
-      };
+    'id': id,
+    'operation': operation,
+    'arguments': arguments,
+  };
 }
 
 /// A Flutter View answers a host call with its result.
@@ -975,9 +984,9 @@ final class ViewHostErrorFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'id': id,
-        'error': _errorPayload(error),
-      };
+    'id': id,
+    'error': _errorPayload(error),
+  };
 }
 
 /// An initiator abandons its in-flight request.
@@ -1020,9 +1029,9 @@ final class ViewEventFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'stream': stream,
-        'payload': payload,
-      };
+    'stream': stream,
+    'payload': payload,
+  };
 }
 
 /// Host Dart requests an orderly Flutter View shutdown.
@@ -1054,18 +1063,18 @@ final class ViewClosingFrame extends ViewProtocolFrame {
 
   @override
   Map<String, Object?> _payloadEntries() => {
-        'report': {
-          'pendingRequestCount': report.pendingRequestCount,
-          'subscriptionCount': report.subscriptionCount,
-        },
-      };
+    'report': {
+      'pendingRequestCount': report.pendingRequestCount,
+      'subscriptionCount': report.subscriptionCount,
+    },
+  };
 }
 
 Map<String, Object?> _errorPayload(ViewProtocolException error) => {
-      'code': error.code.wireName,
-      'message': error.message,
-      'details': error.details,
-    };
+  'code': error.code.wireName,
+  'message': error.message,
+  'details': error.details,
+};
 
 bool _isNonEmptyString(Object? value) => value is String && value.isNotEmpty;
 
@@ -1136,10 +1145,10 @@ abstract base class _ViewSessionCore {
     String sessionId,
     String bootstrapNonce,
     Map<String, _HostViewOperation> operations,
-  )   : _transport = transport,
-        _sessionId = sessionId,
-        _bootstrapNonce = bootstrapNonce,
-        _operations = operations;
+  ) : _transport = transport,
+      _sessionId = sessionId,
+      _bootstrapNonce = bootstrapNonce,
+      _operations = operations;
 
   final ViewTransport _transport;
   final String _sessionId;
@@ -1227,9 +1236,9 @@ abstract base class _ViewSessionCore {
   Future<void> _handleResponseDeliveryFailure();
 
   ViewTransportLifecycle? get _transportLifecycle => switch (_transport) {
-        final ViewTransportLifecycle lifecycle => lifecycle,
-        _ => null,
-      };
+    final ViewTransportLifecycle lifecycle => lifecycle,
+    _ => null,
+  };
 
   Future<void> _sendFrame(ViewProtocolFrame frame) =>
       _transport.send(frame.toWire());
@@ -1563,8 +1572,7 @@ final class HostViewSession extends _ViewSessionCore {
   Future<Result> call<Request, Result>(
     ViewOperation<Request, Result> operation,
     Request arguments,
-  ) =>
-      callWithHandle(operation, arguments).result;
+  ) => callWithHandle(operation, arguments).result;
 
   /// Calls a Flutter View-bound [operation], returning a cancellable
   /// handle for the in-flight request.
@@ -1777,13 +1785,12 @@ final class HostViewSession extends _ViewSessionCore {
   ViewProtocolFrame _inboundErrorFrame(
     String id,
     ViewProtocolException error,
-  ) =>
-      ViewErrorFrame(
-        session: _sessionId,
-        nonce: _activeNonce!,
-        id: id,
-        error: error,
-      );
+  ) => ViewErrorFrame(
+    session: _sessionId,
+    nonce: _activeNonce!,
+    id: id,
+    error: error,
+  );
 
   @override
   Future<void> _handleResponseDeliveryFailure() => _closeAfterDeliveryFailure();
@@ -2011,8 +2018,9 @@ final class FlutterViewSession extends _ViewSessionCore {
       );
       return;
     }
-    final expectedNonce =
-        _connected.isCompleted ? _activeNonce : _bootstrapNonce;
+    final expectedNonce = _connected.isCompleted
+        ? _activeNonce
+        : _bootstrapNonce;
     if (frame.nonce != expectedNonce) {
       _observeOptionalError(
         _rejectConnection(
@@ -2106,13 +2114,12 @@ final class FlutterViewSession extends _ViewSessionCore {
   ViewProtocolFrame _inboundErrorFrame(
     String id,
     ViewProtocolException error,
-  ) =>
-      ViewHostErrorFrame(
-        session: _sessionId,
-        nonce: _activeNonce!,
-        id: id,
-        error: error,
-      );
+  ) => ViewHostErrorFrame(
+    session: _sessionId,
+    nonce: _activeNonce!,
+    id: id,
+    error: error,
+  );
 
   @override
   Future<void> _handleResponseDeliveryFailure() => _terminate();

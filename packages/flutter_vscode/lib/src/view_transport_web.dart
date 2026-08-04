@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
-import 'package:flutter_vscode/src/view_protocol.dart';
+import 'package:dart_vscode/view_protocol.dart';
 import 'package:web/web.dart' as web;
 
 /// Acquires and owns the transport for one VS Code-hosted Flutter View.

@@ -6,8 +6,6 @@ import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_inputs.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
-import 'package:flutter_vscode/src/cli/flutter_view_host_source.dart';
-import 'package:flutter_vscode/src/cli/host_commands_source.dart';
 import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
@@ -59,48 +57,16 @@ Future<void> buildProject(
     await generatedRoot.delete(recursive: true);
   }
   await toolchain.writeBindings(generated, root);
-  await File(p.join(generatedRoot.path, 'host_commands.g.dart'))
-      .writeAsString(hostCommandsSource);
+  // Framework code is not emitted into projects: the view protocol, the
+  // command registration module, and the Flutter View host module are
+  // libraries in package:dart_vscode. A project receives only what is
+  // derived from the project itself.
   final sharedGeneratedRoot = Directory(
     p.join(root.path, 'shared', 'lib', 'generated'),
   );
-  if (views.isNotEmpty) {
-    final protocolSource = File(
-      p.join(packageRoot.path, 'lib', 'src', 'view_protocol.dart'),
-    );
-    if (!protocolSource.existsSync()) {
-      throw const CliException(
-        'flutter_vscode is missing its Host/Flutter View protocol source.',
-        code: 'MISSING_FRAMEWORK_RESOURCE',
-      );
-    }
-    // The protocol contract lives in the shared package, where host
-    // and view code alike can type against one generated copy; the
-    // host module re-exports it so generated host imports stay stable.
-    await sharedGeneratedRoot.create(recursive: true);
-    await protocolSource.copy(
-      p.join(sharedGeneratedRoot.path, 'view_protocol.g.dart'),
-    );
-    final sharedPackage = _sharedPackageName(root);
-    await File(p.join(generatedRoot.path, 'view_protocol.g.dart'))
-        .writeAsString(
-      '// GENERATED CODE - DO NOT MODIFY BY HAND.\n'
-      "export 'package:$sharedPackage/generated/view_protocol.g.dart';\n",
-    );
-    await File(p.join(generatedRoot.path, 'flutter_view_host.g.dart'))
-        .writeAsString(flutterViewHostSource);
-  } else {
-    final staleModule = File(
-      p.join(generatedRoot.path, 'flutter_view_host.g.dart'),
-    );
-    if (staleModule.existsSync()) {
-      await staleModule.delete();
-    }
-    if (sharedGeneratedRoot.existsSync()) {
-      await sharedGeneratedRoot.delete(recursive: true);
-    }
+  if (sharedGeneratedRoot.existsSync()) {
+    await sharedGeneratedRoot.delete(recursive: true);
   }
-
   await _run(
     'dart',
     const ['pub', 'get'],
@@ -191,24 +157,6 @@ Future<void> buildProject(
     artifactPaths: managedArtifactPaths(root),
   );
   stdout.writeln('Built ${root.path}');
-}
-
-String _sharedPackageName(Directory root) {
-  final pubspec = File(p.join(root.path, 'shared', 'pubspec.yaml'));
-  final match = pubspec.existsSync()
-      ? RegExp(
-          r'^name:\s*(\S+)\s*$',
-          multiLine: true,
-        ).firstMatch(pubspec.readAsStringSync())
-      : null;
-  if (match == null) {
-    throw const CliException(
-      'A Flutter View project needs shared/pubspec.yaml with a name: '
-      'entry; the shared package carries the generated view protocol.',
-      code: 'MISSING_SHARED_PACKAGE_NAME',
-    );
-  }
-  return match.group(1)!;
 }
 
 /// Locates the `package_config.json` that governs [start].

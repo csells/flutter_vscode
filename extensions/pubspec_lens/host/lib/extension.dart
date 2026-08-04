@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:js_interop';
 
 import 'package:dart_vscode/dart_vscode.dart' as vs;
-import 'package:pubspec_lens_host/generated/host_commands.g.dart';
+import 'package:dart_vscode/host_commands.dart';
+import 'package:dart_vscode/host_runtime.dart';
 import 'package:pubspec_lens_host/generated/host_exports.g.dart';
-import 'package:pubspec_lens_host/generated/vscode_runtime.g.dart';
 import 'package:pubspec_lens_host/registry_client.dart';
 import 'package:pubspec_lens_shared/pubspec_model.dart';
 import 'package:pubspec_lens_shared/registry.dart';

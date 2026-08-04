@@ -180,7 +180,7 @@ void main() {
         'test/fixtures/host_extension/host/lib/extension.dart',
         repoPath('extensions/coverage_treemap/host/lib/extension.dart'),
         'lib/src/cli/create_command.dart',
-        'lib/src/cli/flutter_view_host_source.dart',
+        repoPath('packages/dart_vscode/lib/src/flutter_view_host.dart'),
       ]) {
         expect(
           File(source).readAsStringSync(),

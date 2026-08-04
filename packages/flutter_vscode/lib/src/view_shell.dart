@@ -5,7 +5,7 @@ library;
 
 import 'dart:async';
 
-import 'package:flutter_vscode/src/view_protocol.dart';
+import 'package:dart_vscode/view_protocol.dart';
 import 'package:flutter_vscode/src/view_shell_platform_stub.dart'
     if (dart.library.html) 'package:flutter_vscode/src/view_shell_platform_web.dart'
     as platform;

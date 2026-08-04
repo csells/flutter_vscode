@@ -1,4 +1,4 @@
-import 'package:flutter_vscode/src/view_protocol.dart';
+import 'package:dart_vscode/view_protocol.dart';
 import 'package:test/test.dart';
 
 /// A ThemeReport-shaped contract type: string plus int-or-null.

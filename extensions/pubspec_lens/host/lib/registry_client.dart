@@ -3,7 +3,7 @@
 /// degradation.
 library;
 
-import 'package:pubspec_lens_host/generated/vscode_runtime.g.dart';
+import 'package:dart_vscode/host_runtime.dart';
 import 'package:pubspec_lens_shared/registry.dart';
 
 /// The signature of the network seam, matching the generated

@@ -1,4 +1,4 @@
-import 'package:flutter_vscode/src/view_protocol.dart';
+import 'package:dart_vscode/view_protocol.dart';
 
 /// Acquires and owns the transport for one VS Code-hosted Flutter View.
 final class VSCodeViewBootstrap {

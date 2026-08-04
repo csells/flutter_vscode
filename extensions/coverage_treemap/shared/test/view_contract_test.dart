@@ -1,6 +1,6 @@
-import 'package:coverage_treemap_shared/generated/view_protocol.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
+import 'package:dart_vscode/view_protocol.dart';
 import 'package:test/test.dart';
 
 void main() {

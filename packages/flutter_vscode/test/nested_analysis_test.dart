@@ -73,9 +73,10 @@ void main() {
       // package would never carry it.
       final copiedManifest = File(p.join(copy.path, 'pubspec.yaml'));
       copiedManifest.writeAsStringSync(
-        copiedManifest
-            .readAsStringSync()
-            .replaceAll('resolution: workspace\n', ''),
+        '${copiedManifest.readAsStringSync().replaceAll('resolution: workspace\n', '')}\n'
+        'dependency_overrides:\n'
+        '  dart_vscode:\n'
+        '    path: ${repoPath('packages/dart_vscode')}\n',
       );
       // Violates only the strict set (prefer_single_quotes), never the
       // default analyzer, so failure proves the include resolved.

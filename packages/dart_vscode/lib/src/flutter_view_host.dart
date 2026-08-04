@@ -1,25 +1,19 @@
-/// The framework-owned Flutter View hosting module emitted into
-/// Extension Projects as `host/lib/generated/flutter_view_host.g.dart`
-/// whenever the project contains at least one Flutter View.
+/// Hosts a Flutter View from Host Dart: panel lifecycle, the webview shell,
+/// and the protocol session that carries operations between the two runtimes.
 ///
-/// The module is a template because it imports its generated sibling
-/// (`view_protocol.g.dart`), which only exists inside a generated
-/// project; the API layer itself comes from the framework package. The
-/// host-extension fixture carries the analyzed, gate-tested instance.
+/// This is framework code, not generated code. It used to be emitted into
+/// every Extension Project as `flutter_view_host.g.dart`, stored here as a
+/// `const` string -- which is why it could not be analyzed or tested where
+/// it lived.
 library;
-
-/// Source text for `host/lib/generated/flutter_view_host.g.dart`.
-const flutterViewHostSource = r"""
-// GENERATED CODE - DO NOT MODIFY BY HAND.
-// ignore_for_file: always_use_package_imports
 
 import 'dart:async';
 import 'dart:js_interop';
 import 'dart:math';
 
 import 'package:dart_vscode/dart_vscode.dart' as vs;
+import 'package:dart_vscode/view_protocol.dart';
 
-import 'view_protocol.g.dart';
 
 /// Observes each parsed native webview message after it is queued for
 /// the protocol validator; harnesses use it to inspect traffic without
@@ -374,4 +368,3 @@ String _secureToken() {
   final random = Random.secure();
   return List.generate(32, (_) => random.nextInt(16).toRadixString(16)).join();
 }
-""";

@@ -5,6 +5,8 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_vscode/view.dart';
 
+import 'support/repository.dart';
+
 /// The wire maps below are the version-2 protocol schema, one per kind,
 /// written in the exact key order the runtime emits.
 const Map<String, Map<String, Object?>> _canonicalFrames = {
@@ -531,7 +533,9 @@ void main() {
   group('wire schema locality', () {
     test('envelope key literals appear only inside the frame module region',
         () {
-      final source = File('lib/src/view_protocol.dart').readAsStringSync();
+      final source =
+          File(repoPath('packages/dart_vscode/lib/src/view_protocol.dart'))
+              .readAsStringSync();
       const beginMarker =
           '// === View protocol frames: the only region that reads or writes '
           'wire keys ===';

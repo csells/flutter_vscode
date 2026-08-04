@@ -27,29 +27,14 @@ void main() {
     expect(workflow, contains('git status --porcelain'));
   });
 
-  test('checked-in Host fixture protocol matches the public runtime source',
-      () {
-    final runtimeProtocol =
-        File('lib/src/view_protocol.dart').readAsBytesSync();
-    final checkedInFixture = File(
-      'test/fixtures/host_extension/shared/lib/generated/view_protocol.g.dart',
-    ).readAsBytesSync();
-
+  test('no project carries a copy of the protocol to drift from', () {
+    // The protocol is a library in package:dart_vscode; there is no second
+    // copy that could disagree with it.
     expect(
-      checkedInFixture,
-      orderedEquals(runtimeProtocol),
-      reason:
-          'Regenerate the checked-in Host fixture before running its build.',
-    );
-    expect(
-      File(
-        'test/fixtures/host_extension/host/lib/generated/view_protocol.g.dart',
-      ).readAsStringSync(),
-      contains(
-        "export 'package:flutter_vscode_host_fixture_shared/generated/view_protocol.g.dart';",
-      ),
-      reason: 'the host module re-exports the shared protocol copy so '
-          'host and shared code type against one declaration',
+      Directory(
+        'test/fixtures/host_extension/shared/lib/generated',
+      ).existsSync(),
+      isFalse,
     );
   });
 

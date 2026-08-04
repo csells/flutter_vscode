@@ -1,12 +1,15 @@
-// GENERATED CODE - DO NOT MODIFY BY HAND.
-// ignore_for_file: always_use_package_imports
+/// Registering ordinary-Dart command handlers with VS Code.
+///
+/// Framework code, not generated code: it used to be emitted into every
+/// Extension Project as `host_commands.g.dart`, stored as a `const` string.
+library;
 
 import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:dart_vscode/dart_vscode.dart';
 
-import 'vscode_runtime.g.dart';
+import 'package:dart_vscode/host_runtime.dart';
 
 /// An ordinary-Dart command handler.
 ///

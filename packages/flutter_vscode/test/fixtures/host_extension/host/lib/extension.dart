@@ -3,10 +3,10 @@ import 'dart:js_interop';
 import 'dart:math';
 
 import 'package:dart_vscode/dart_vscode.dart' as parity;
-import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
+import 'package:dart_vscode/flutter_view_host.dart';
+import 'package:dart_vscode/host_runtime.dart';
+import 'package:dart_vscode/view_protocol.dart';
 import 'package:flutter_vscode_host_fixture/generated/host_exports.g.dart';
-import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
-import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
 
 const _pingCommand = 'flutter-vscode.host-test.ping';

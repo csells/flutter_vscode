@@ -2,14 +2,14 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
-import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
-import 'package:coverage_treemap_host/generated/host_commands.g.dart';
 import 'package:coverage_treemap_host/generated/host_exports.g.dart';
-import 'package:coverage_treemap_host/generated/vscode_runtime.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
 import 'package:dart_vscode/dart_vscode.dart' as parity;
 import 'package:dart_vscode/dart_vscode.dart' as vs;
+import 'package:dart_vscode/flutter_view_host.dart';
+import 'package:dart_vscode/host_commands.dart';
+import 'package:dart_vscode/host_runtime.dart';
 
 const _lcovRelativePath = 'coverage/lcov.info';
 
