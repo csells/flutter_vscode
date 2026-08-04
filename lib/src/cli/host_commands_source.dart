@@ -1,10 +1,10 @@
 /// The framework-owned command-registration module emitted into
 /// Extension Projects as `host/lib/generated/host_commands.g.dart`.
 ///
-/// The module is a template because it imports its generated siblings
-/// (`vscode_dart_layer.g.dart`, `vscode_runtime.g.dart`), which only
-/// exist inside a generated project; the host-extension fixture carries
-/// the analyzed, gate-tested instance.
+/// The module is a template because it imports its generated sibling
+/// (`vscode_runtime.g.dart`), which only exists inside a generated
+/// project; the API layer itself comes from the framework package. The
+/// host-extension fixture carries the analyzed, gate-tested instance.
 library;
 
 /// Source text for `host/lib/generated/host_commands.g.dart`.
@@ -15,7 +15,8 @@ const hostCommandsSource = r"""
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'vscode_dart_layer.g.dart';
+import 'package:flutter_vscode/vscode_dart.dart';
+
 import 'vscode_runtime.g.dart';
 
 /// An ordinary-Dart command handler.

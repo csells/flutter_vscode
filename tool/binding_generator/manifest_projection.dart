@@ -338,7 +338,6 @@ Object _projectCommandIcon(Object? value) {
 void validateProjectDescriptor(Map<String, Object?> project) {
   const expectedKeys = {
     'activationEvents',
-    'apiTarget',
     'commands',
     'description',
     'displayName',

@@ -98,7 +98,11 @@ void main() {
       contains("import 'package:flutter_vscode/manifest.dart';"),
     );
     expect(source, contains('const extension = ExtensionManifest('));
-    expect(source, contains("apiTarget: '1.129.1'"));
+    expect(
+      source,
+      isNot(contains('apiTarget')),
+      reason: 'the package release is the baseline; projects do not select',
+    );
     expect(source, contains("name: 'my-extension'"));
     expect(source, contains("publisher: 'local'"));
     expect(source, contains("activationEvents: ['onLanguage:json']"));

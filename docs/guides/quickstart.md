@@ -40,12 +40,12 @@ The project separates pure host Dart, optional Flutter views, and a pure shared
 Dart package. It contains no author-maintained JavaScript, TypeScript, or
 `package.json`.
 
-`extension.dart` is the source of truth for metadata and contributions. Its
-`apiTarget` selects the exact pinned VS Code API and controls the generated
-`engines.vscode` value. Two pinned baselines ship today — 1.129.1 (the
-scaffold default) and 1.130.0 — and
-[new baselines are added beside them](new-baseline.md), never swapped in
-place. Change that target only as an explicit compatibility decision.
+`extension.dart` is the source of truth for metadata and contributions. The
+VS Code API it builds against is the one baseline this `flutter_vscode`
+release pins (1.129.1), which also fixes the generated `engines.vscode`
+value. There is no per-project selector: to move to a different VS Code
+API, depend on the `flutter_vscode` release that ships it — an explicit
+compatibility decision recorded in your `pubspec.yaml`.
 
 ## 3. Implement host behavior
 
@@ -90,8 +90,8 @@ The command validates framework-managed artifacts and writes the VSIX beneath
 `build/`. Install that file with VS Code's **Extensions: Install from VSIX…**
 command.
 
-The behavioral proof runs against the pinned VS Code baselines (the
-`apiTarget` values shipped in-tree). Do not infer or handwrite bindings:
+The behavioral proof runs against the pinned VS Code baseline shipped
+in-tree. Do not infer or handwrite bindings:
 the generated API layer already maps every public declaration of the
 pinned API.
 

@@ -5,12 +5,11 @@ import 'dart:js_interop';
 import 'package:coverage_treemap_host/generated/flutter_view_host.g.dart';
 import 'package:coverage_treemap_host/generated/host_commands.g.dart';
 import 'package:coverage_treemap_host/generated/host_exports.g.dart';
-import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart'
-    as parity;
-import 'package:coverage_treemap_host/generated/vscode_dart_layer.g.dart' as vs;
 import 'package:coverage_treemap_host/generated/vscode_runtime.g.dart';
 import 'package:coverage_treemap_shared/lcov.dart';
 import 'package:coverage_treemap_shared/view_contract.dart';
+import 'package:flutter_vscode/vscode_dart.dart' as parity;
+import 'package:flutter_vscode/vscode_dart.dart' as vs;
 
 const _lcovRelativePath = 'coverage/lcov.info';
 

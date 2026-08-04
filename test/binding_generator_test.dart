@@ -1042,67 +1042,6 @@ void main() {
     );
   });
 
-  test('rejects a Project API Target that differs from the inventory', () {
-    final project = _project()..['apiTarget'] = '1.130.0';
-
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: _inventory(['interface:vscode.Known']),
-        overrides: _overrides({
-          'interface:vscode.Known': 'opaqueJsObject',
-        }),
-        project: project,
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'PROJECT_API_TARGET_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('project.apiTarget 1.130.0'),
-                contains('inventory targets 1.129.1'),
-                contains('matching pinned inventory'),
-              ),
-            ),
-      ),
-    );
-  });
-
-  test('requires an explicit Project API Target', () {
-    final project = _project()..remove('apiTarget');
-
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: _inventory(['interface:vscode.Known']),
-        overrides: _overrides({
-          'interface:vscode.Known': 'opaqueJsObject',
-        }),
-        project: project,
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_PROJECT_MANIFEST',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('project.apiTarget is required'),
-                contains('exact pinned VS Code version'),
-              ),
-            ),
-      ),
-    );
-  });
-
   test('rejects a Semantic Override that is outside the selected closure', () {
     final generator = VSCodeBindingGenerator();
 
@@ -1624,7 +1563,7 @@ void main() {
         }),
         containsPair('binding', {
           'status': 'emitted',
-          'artifacts': ['host/lib/generated/vscode_dart_layer.g.dart'],
+          'artifacts': ['lib/src/generated/vscode_dart_layer.g.dart'],
         }),
         containsPair('host', {
           'status': 'verified',
@@ -6637,7 +6576,6 @@ bool _containsRegisteredLiteralReference(Object? value) {
 Map<String, Object?> _project() {
   return {
     'schemaVersion': 1,
-    'apiTarget': '1.129.1',
     'name': 'fixture',
     'displayName': 'Fixture',
     'description': 'Fixture.',

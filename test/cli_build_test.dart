@@ -39,7 +39,6 @@ void main() {
         p.join('host', 'bootstrap.cjs'),
         p.join('host', 'lib', 'generated', 'host_exports.g.dart'),
         p.join('host', 'lib', 'generated', 'vscode_runtime.g.dart'),
-        p.join('host', 'lib', 'generated', 'vscode_dart_layer.g.dart'),
         p.join('out', 'bootstrap.cjs'),
         p.join('out', 'extension.dart.js'),
         p.join('out', 'extension.dart.js.map'),
@@ -79,45 +78,6 @@ void main() {
   );
 
   test(
-    'build fails closed when the Project API Target is not pinned',
-    () async {
-      final workspace = await Directory.systemTemp.createTemp(
-        'flutter_vscode_cli_api_target_',
-      );
-      addTearDown(() => workspace.delete(recursive: true));
-      final executable = p.join(
-        Directory.current.path,
-        'bin',
-        'flutter_vscode.dart',
-      );
-      final create = await Process.run(
-        'dart',
-        [executable, 'create', 'my_extension'],
-        workingDirectory: workspace.path,
-      );
-      expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
-      final project = Directory(p.join(workspace.path, 'my_extension'));
-      final descriptor = File(p.join(project.path, 'extension.dart'));
-      descriptor.writeAsStringSync(
-        descriptor
-            .readAsStringSync()
-            .replaceFirst("apiTarget: '1.129.1'", "apiTarget: '9.9.9'"),
-      );
-
-      final build = await Process.run(
-        'dart',
-        [executable, 'build'],
-        workingDirectory: project.path,
-      );
-
-      expect(build.exitCode, 1, reason: '${build.stdout}\n${build.stderr}');
-      expect(build.stderr, contains('Project API Target 9.9.9'));
-      expect(build.stderr, contains('No pinned binding inputs'));
-    },
-    timeout: const Timeout(Duration(minutes: 2)),
-  );
-
-  test(
     'build regenerates the managed artifact tree byte for byte',
     () async {
       final workspace = await Directory.systemTemp.createTemp(
@@ -152,7 +112,6 @@ void main() {
         'coverage.json',
         'host/bootstrap.cjs',
         'host/lib/generated/host_exports.g.dart',
-        'host/lib/generated/vscode_dart_layer.g.dart',
         'host/lib/generated/vscode_runtime.g.dart',
         'out/bootstrap.cjs',
         'out/extension.dart.js',
@@ -230,7 +189,6 @@ Map<String, Object?> _createExtension() {
   File(${jsonEncode(marker.path)}).writeAsStringSync('executed');
   return <String, Object?>{
     'schemaVersion': 1,
-    'apiTarget': '1.129.1',
     'name': 'my-extension',
     'displayName': 'My Extension',
     'description': 'A VS Code extension written in Dart.',

@@ -44,7 +44,6 @@ import 'package:flutter_vscode/manifest.dart';
 
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
 const extension = ExtensionManifest(
-  apiTarget: '$defaultApiTarget',
   name: '$manifestName',
   displayName: '$displayName',
   description: 'A VS Code extension written in Dart.',
@@ -81,6 +80,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  flutter_vscode:
+    path: ${packageRoot.path}
   ${name}_shared:
     path: ../shared
 ''');
@@ -102,11 +103,7 @@ environment:
   );
 
   final project = await readProjectDescriptor(descriptor);
-  final bindingInputs = await selectBindingInputs(
-    packageRoot: packageRoot,
-    project: project,
-    requireApiTarget: true,
-  );
+  final bindingInputs = await loadBindingInputs(packageRoot);
   final generated = toolchain.generateBindings(
     inventory: bindingInputs.inventory,
     overrides: bindingInputs.overrides,
@@ -116,8 +113,6 @@ environment:
     {
       for (final entry in generated.entries)
         if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,
-      'host/lib/generated/vscode_dart_layer.g.dart':
-          toolchain.emitDartLayerLibrary(bindingInputs.inventory),
       'host/lib/generated/host_commands.g.dart': hostCommandsSource,
     },
     root,
@@ -131,7 +126,7 @@ import 'package:${projectName}_host/generated/host_exports.g.dart';
 // The complete typed VS Code API generated into this project. Wrap the
 // raw activation module with VscodeApi(rawVscode), or enter the
 // Dart-first ergonomics layer over it with VscodeApi(rawVscode).dart.
-import 'package:${projectName}_host/generated/vscode_dart_layer.g.dart';
+import 'package:flutter_vscode/vscode_dart.dart';
 // Runtime helpers: toHostPromise, toHostCallback, hostFetch.
 import 'package:${projectName}_host/generated/vscode_runtime.g.dart';
 import 'package:${projectName}_shared/shared.dart';

@@ -46,11 +46,7 @@ Future<void> buildProject(
   final project = dartDescriptor.existsSync()
       ? await readProjectDescriptor(dartDescriptor)
       : await readJsonObject(jsonDescriptor);
-  final bindingInputs = await selectBindingInputs(
-    packageRoot: packageRoot,
-    project: project,
-    requireApiTarget: dartDescriptor.existsSync(),
-  );
+  final bindingInputs = await loadBindingInputs(packageRoot);
   final generated = toolchain.generateBindings(
     inventory: bindingInputs.inventory,
     overrides: bindingInputs.overrides,
@@ -63,8 +59,6 @@ Future<void> buildProject(
     await generatedRoot.delete(recursive: true);
   }
   await toolchain.writeBindings(generated, root);
-  await File(p.join(generatedRoot.path, 'vscode_dart_layer.g.dart'))
-      .writeAsString(toolchain.emitDartLayerLibrary(bindingInputs.inventory));
   await File(p.join(generatedRoot.path, 'host_commands.g.dart'))
       .writeAsString(hostCommandsSource);
   final sharedGeneratedRoot = Directory(

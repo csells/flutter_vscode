@@ -8,6 +8,8 @@ environment:
 dependencies:
   coverage_treemap_shared:
     path: ../shared
+  flutter_vscode:
+    path: ../../..
 
 dev_dependencies:
   very_good_analysis: ^10.0.0

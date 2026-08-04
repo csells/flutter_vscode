@@ -138,11 +138,14 @@ void main() {
             continue;
           }
           final source = entity.readAsStringSync();
+          // The published surface is fair game -- an Extension Author
+          // imports the shipped API layer exactly like this. Reaching into
+          // the repository's private `src/` is what the guardrail forbids.
           expect(
             source,
-            isNot(contains("import 'package:flutter_vscode/")),
-            reason: '${entity.path} must consume only generated files, '
-                'never the framework package directly (guardrail)',
+            isNot(contains("import 'package:flutter_vscode/src/")),
+            reason: '${entity.path} must consume the published package '
+                'surface, never the framework internals (guardrail)',
           );
         }
       }

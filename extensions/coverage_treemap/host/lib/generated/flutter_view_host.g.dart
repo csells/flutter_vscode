@@ -5,8 +5,9 @@ import 'dart:async';
 import 'dart:js_interop';
 import 'dart:math';
 
+import 'package:flutter_vscode/vscode_dart.dart' as vs;
+
 import 'view_protocol.g.dart';
-import 'vscode_dart_layer.g.dart' as vs;
 
 /// Observes each parsed native webview message after it is queued for
 /// the protocol validator; harnesses use it to inspect traffic without

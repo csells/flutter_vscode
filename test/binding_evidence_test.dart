@@ -48,8 +48,6 @@ const canonicalHostContractSourcePaths = <String, String>{
   // every fixture package alike.
   'frameworkPackageLock': 'pubspec.lock',
   'generatedBootstrap': 'test/fixtures/host_extension/host/bootstrap.cjs',
-  'generatedDartLayer':
-      'test/fixtures/host_extension/host/lib/generated/vscode_dart_layer.g.dart',
   'generatedHostCommands':
       'test/fixtures/host_extension/host/lib/generated/host_commands.g.dart',
   'generatedHostExports':

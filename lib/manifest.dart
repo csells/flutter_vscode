@@ -32,14 +32,13 @@ library;
 /// The Dart-owned metadata of one VS Code extension.
 ///
 /// `flutter_vscode build` projects this manifest into the generated
-/// `package.json` and selects the pinned VS Code API bindings for
-/// [apiTarget]. Only constant literal values are supported; the CLI parses
-/// the declaration as data and never executes it.
+/// `package.json` and builds against the one VS Code baseline this
+/// `flutter_vscode` release pins. Only constant literal values are
+/// supported; the CLI parses the declaration as data and never executes it.
 final class ExtensionManifest {
   /// Creates the manifest an Extension Project declares as
   /// `const extension = ExtensionManifest(...)`.
   const ExtensionManifest({
-    required this.apiTarget,
     required this.name,
     required this.displayName,
     required this.description,
@@ -49,15 +48,6 @@ final class ExtensionManifest {
     this.commands = const [],
     this.schemaVersion = 1,
   });
-
-  /// The exact stable VS Code version whose pinned API bindings the build
-  /// uses, for example `'1.129.1'`.
-  ///
-  /// This is the Project API Target: it also becomes the generated
-  /// `engines.vscode` minimum. It is deliberately required — the author
-  /// raises it explicitly before using a newer VS Code capability, and
-  /// framework upgrades never raise it silently (ADR 0011).
-  final String apiTarget;
 
   /// The extension identifier component, in lower-kebab-case, for example
   /// `'my-extension'`.

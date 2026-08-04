@@ -1,16 +1,20 @@
-# Onboarding a New VS Code Baseline
+# Moving the Pinned VS Code Baseline
 
-How a maintainer adds a pinned VS Code release beside the existing
-baselines. Checked-in baselines form an immutable, numerically ordered
-series seeded at 1.129.1 (ADR 0008): a new release is *added*, never a
-replacement, and earlier baselines stay supported. This procedure is
-the one used to onboard 1.130.0.
+How a maintainer advances the one VS Code release this package pins.
+The package version *is* the baseline (ADR 0014): a release ships
+exactly one pinned API, projects do not select among several, and an
+author who needs an older API depends on the `flutter_vscode` release
+that shipped it. Moving the baseline is therefore a regenerate-and-
+republish operation, not an additive one.
 
-Machine checks back every step: `test/cli_multi_baseline_test.dart`
-proves the structural invariants and that a scaffolded project builds
-against each pinned baseline, and `./scripts/test_binding_importer.sh`
-runs the importer suite plus the whole-series validation in the pinned
-Node container.
+`./scripts/test_binding_importer.sh` runs the importer suite and the
+baseline validation in the pinned Node container.
+
+> **Reviewing the delta.** ADR 0008 blocks a release on unclassified
+> API symbols by comparing the incoming baseline against the previous
+> one. Keep the outgoing baseline's pinned inputs in the tree for the
+> duration of the upgrade round so that comparison has both sides, and
+> remove them in the same commit that ships the new one.
 
 ## 1. Choose the release and resolve its commit
 
@@ -71,10 +75,10 @@ public symbol that lacks a reviewed entry with the candidate
 declaration's current fingerprint (removals need strategy
 `reviewedRemoval` plus a reason).
 
-For 1.130.0 the entire delta was source metadata: `vscode.d.ts` and
-the schema/validator inputs were byte-identical to 1.129.1 and only
-`strings.ts` changed outside the extracted validation projection, so
-the seed's reviewed classifications carried over unchanged.
+A delta can be pure source metadata — when `vscode.d.ts` and the
+schema/validator inputs are byte-identical and only, say, `strings.ts`
+changes outside the extracted validation projection, the previous
+reviewed classifications carry over unchanged.
 
 A larger delta can also surface a construct the Complete Parity Layer
 has no Total Mapping Rule for; generation then fails with a
@@ -102,16 +106,23 @@ it repins `artifactSha256` into every checked-in override file:
 dart tool/binding_generator/generate.dart --contract .
 ```
 
-## 6. Prove selection end to end
+## 6. Retarget the package and prove it end to end
 
-`flutter_vscode build` selects binding inputs by the project
-descriptor's `apiTarget` and enumerates the pinned baselines in its
-unknown-target error. Run the multi-baseline suite, which builds a
-scaffolded project against every pinned baseline:
+Advance `shippedApiTarget` in `lib/src/cli/baselines.dart`, regenerate
+the framework's own layer, rebuild the fixture and both shipped
+extensions, then run the whole suite:
 
 ```sh
-flutter test test/cli_multi_baseline_test.dart
+dart tool/binding_generator/generate.dart --contract .
+./scripts/build_host_fixture.sh
+flutter test test extensions/coverage_treemap/shared/test \
+  extensions/coverage_treemap/views/treemap_panel/test \
+  extensions/pubspec_lens/shared/test
 ```
+
+Record the new baseline in `CHANGELOG.md`: for consumers it is a
+breaking change, because the generated `engines.vscode` minimum moves
+with it.
 
 ## Related
 

@@ -2,11 +2,10 @@ import 'dart:async';
 import 'dart:js_interop';
 import 'dart:math';
 
+import 'package:flutter_vscode/vscode_dart.dart' as parity;
 import 'package:flutter_vscode_host_fixture/generated/flutter_view_host.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/host_exports.g.dart';
 import 'package:flutter_vscode_host_fixture/generated/view_protocol.g.dart';
-import 'package:flutter_vscode_host_fixture/generated/vscode_dart_layer.g.dart'
-    as parity;
 import 'package:flutter_vscode_host_fixture/generated/vscode_runtime.g.dart';
 import 'package:flutter_vscode_host_fixture_shared/fixture_view_contract.dart';
 

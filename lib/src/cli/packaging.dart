@@ -24,22 +24,24 @@ Future<void> packageProject(Directory root) async {
       exitCode: 64,
     );
   }
-  final project = dartDescriptor.existsSync()
-      ? await readProjectDescriptor(dartDescriptor)
-      : await readJsonObject(jsonDescriptor);
+  // Parsing the descriptor still validates it; packaging reads no field
+  // from it now that the baseline comes from the framework release.
+  if (dartDescriptor.existsSync()) {
+    await readProjectDescriptor(dartDescriptor);
+  } else {
+    await readJsonObject(jsonDescriptor);
+  }
   final views = discoverViews(root);
   validateFlutterViewLayout(root, views);
   final packagedViewFiles = viewOutputFiles(root, views);
-  final apiTarget = project['apiTarget'];
-  final currentApiTarget = apiTarget is String ? apiTarget : defaultApiTarget;
   final packageRoot = await resolvePackageRoot();
   final toolIdentity = await frameworkToolIdentity(
     packageRoot,
-    currentApiTarget,
+    shippedApiTarget,
   );
   final receiptProblems = await validateBuildReceipt(
     projectRoot: root,
-    apiTarget: currentApiTarget,
+    apiTarget: shippedApiTarget,
     toolIdentity: toolIdentity,
     inputPaths: buildInputPaths(root),
     artifactPaths: managedArtifactPaths(root),

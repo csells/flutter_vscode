@@ -1,6 +1,5 @@
 {
   "schemaVersion": 1,
-  "apiTarget": "1.129.1",
   "name": "host-extension-fixture",
   "displayName": "flutter_vscode Host Extension Fixture",
   "description": "Internal fixture for the Dart Extension Host walking skeleton.",

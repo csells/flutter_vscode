@@ -22,3 +22,14 @@ seed when a project descriptor omits `apiTarget`
 (`lib/src/cli/baselines.dart`), so the no-silent-raise guarantee rests
 on projects keeping the explicit key that `create` scaffolds. Making
 the key required is the recorded hardening follow-up.
+
+## Amendment (ADR 0014)
+
+The per-project `apiTarget` this decision relied on no longer exists. A
+`flutter_vscode` release ships one pinned VS Code baseline, so the
+generated `engines.vscode` minimum follows the framework release a
+project depends on. The no-silent-raise guarantee stands, but it is now
+carried by the dependency constraint in the project's `pubspec.yaml` and
+by the framework CHANGELOG rather than by a manifest field: a baseline
+move is a breaking change and is released as one. See
+[ADR 0014](0014-ship-one-vscode-baseline-per-release.md).

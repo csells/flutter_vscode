@@ -7,8 +7,10 @@ objects and callbacks. You never write, read, or repair TypeScript.
 
 One generated layer reaches the VS Code API: a mechanically generated,
 complete typed Dart mapping of every public declaration in the pinned
-VS Code baseline your project selects (1.129.1 and 1.130.0 ship today),
-with a Dart-first ergonomic surface in the same artifact.
+VS Code baseline this release ships (1.129.1), with a Dart-first
+ergonomic surface in the same artifact. The package version *is* the
+baseline — you import the layer from `package:flutter_vscode`, and the
+release you depend on decides which VS Code API you get.
 
 ## Getting started
 
@@ -48,7 +50,6 @@ analyzer-checked Dart:
 import 'package:flutter_vscode/manifest.dart';
 
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -68,11 +69,12 @@ The CLI parses this declaration as data — project code is never executed —
 while the scaffolded root `pubspec.yaml` gives the author's editor full
 completion and type-checking over the same constant.
 
-`apiTarget` selects which pinned VS Code baseline the build generates
-against and controls the generated `engines.vscode` value. Baselines
-are added beside each other, never replaced —
-[Onboarding a New VS Code Baseline](docs/guides/new-baseline.md)
-documents how a maintainer pins the next one.
+The build generates against the one VS Code baseline this release pins,
+which also fixes the generated `engines.vscode` value. A project does not
+choose a baseline: depend on the `flutter_vscode` release that ships the
+API you need, exactly as you would pin any other package.
+[Moving the Pinned VS Code Baseline](docs/guides/new-baseline.md)
+documents how a maintainer advances it.
 
 Behavior lives in `host/lib/extension.dart`. The scaffold already uses the
 VS Code API through the generated layer — it registers the contributed
@@ -108,8 +110,8 @@ flutter_vscode doctor
 
 `doctor` writes one `[ok]` or `[!!]` line per check — the Dart and
 Flutter SDK probes, plus (inside an Extension Project) the layout, the
-descriptor, and whether the declared `apiTarget` is pinned in this
-framework version — and exits nonzero when any check fails.
+descriptor, and whether this framework version carries its pinned
+binding inputs — and exits nonzero when any check fails.
 
 Build it:
 

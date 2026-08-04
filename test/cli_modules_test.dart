@@ -182,72 +182,40 @@ void main() {
   });
 
   group('baselines', () {
-    test('the default API target is the single shipped constant', () {
-      expect(defaultApiTarget, '1.129.1');
-      expect(pinnedApiTargets(Directory.current), contains(defaultApiTarget));
+    test('the package ships exactly one pinned VS Code baseline', () {
+      expect(shippedApiTarget, '1.129.1');
+      final pinned = Directory(p.join('tool', 'bindings', 'inputs', 'vscode'))
+          .listSync()
+          .whereType<Directory>()
+          .map((entry) => p.basename(entry.path))
+          .toList();
+      expect(
+        pinned,
+        [shippedApiTarget],
+        reason: 'the package version is the baseline: a release ships one '
+            'pinned VS Code API and projects do not select among several',
+      );
     });
 
-    test('selection returns pinned inputs for a shipped target', () async {
-      final inputs = await selectBindingInputs(
-        packageRoot: Directory.current,
-        project: <String, Object?>{'apiTarget': defaultApiTarget},
-        requireApiTarget: true,
-      );
+    test('loading returns the shipped pinned inputs', () async {
+      final inputs = await loadBindingInputs(Directory.current);
 
-      expect(inputs.apiTarget, defaultApiTarget);
+      expect(inputs.apiTarget, shippedApiTarget);
       expect(inputs.inventory, isNotEmpty);
       expect(inputs.overrides, isNotEmpty);
     });
 
-    test('selection falls back to the default for legacy JSON descriptors',
-        () async {
-      final inputs = await selectBindingInputs(
-        packageRoot: Directory.current,
-        project: const <String, Object?>{},
-        requireApiTarget: false,
-      );
-
-      expect(inputs.apiTarget, defaultApiTarget);
-    });
-
-    test('an unknown target fails naming every pinned baseline', () async {
-      final pinned = pinnedApiTargets(Directory.current);
-      expect(pinned, isNotEmpty);
+    test('a framework missing its pinned inputs fails closed', () async {
+      final empty = Directory.systemTemp.createTempSync('flutter_vscode_pins_');
+      addTearDown(() => empty.deleteSync(recursive: true));
 
       await expectLater(
-        selectBindingInputs(
-          packageRoot: Directory.current,
-          project: const <String, Object?>{'apiTarget': '9.9.9'},
-          requireApiTarget: true,
-        ),
-        throwsA(
-          isA<CliException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'UNAVAILABLE_PROJECT_API_TARGET',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                allOf([for (final target in pinned) contains(target)]),
-              ),
-        ),
-      );
-    });
-
-    test('a missing required target fails closed', () async {
-      await expectLater(
-        selectBindingInputs(
-          packageRoot: Directory.current,
-          project: const <String, Object?>{},
-          requireApiTarget: true,
-        ),
+        loadBindingInputs(empty),
         throwsA(
           isA<CliException>().having(
             (error) => error.code,
             'code',
-            'INVALID_PROJECT_API_TARGET',
+            'MISSING_FRAMEWORK_RESOURCE',
           ),
         ),
       );
@@ -326,7 +294,10 @@ void main() {
       expect(failures, 0, reason: out.toString());
       final report = out.toString();
       expect(report, contains('[ok] Project layout'));
-      expect(report, contains('[ok] API target $defaultApiTarget'));
+      expect(
+        report,
+        contains('[ok] VS Code baseline $shippedApiTarget'),
+      );
       expect(report, contains('No issues found.'));
     });
   });
@@ -376,7 +347,6 @@ Future<Directory> _scaffoldProject({Directory? workspace}) async {
 import 'package:flutter_vscode/manifest.dart';
 
 const extension = ExtensionManifest(
-  apiTarget: '$defaultApiTarget',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',

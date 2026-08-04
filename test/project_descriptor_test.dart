@@ -31,7 +31,6 @@ import 'package:flutter_vscode/manifest.dart';
 
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension '
@@ -51,7 +50,6 @@ const extension = ExtensionManifest(
 
     expect(project, <String, Object?>{
       'schemaVersion': 1,
-      'apiTarget': '1.129.1',
       'name': 'my-extension',
       'displayName': 'My Extension',
       'description': 'A VS Code extension written in Dart.',
@@ -74,7 +72,6 @@ const extension = ExtensionManifest(
   test('injects the const defaults the manifest type declares', () async {
     final project = await _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -91,7 +88,6 @@ const extension = ExtensionManifest(
   test('accepts an explicit const constructor invocation', () async {
     final project = await _parse('''
 const extension = const ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -113,7 +109,6 @@ const extension = const ExtensionManifest(
       _parse('''
 const extension = <String, Object?>{
   'schemaVersion': 1,
-  'apiTarget': '1.129.1',
   'name': 'my-extension',
 };
 '''),
@@ -127,7 +122,6 @@ const extension = <String, Object?>{
 import 'dart:io';
 
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -144,7 +138,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: someName,
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -161,7 +154,6 @@ const extension = ExtensionManifest(
     expect(
       _parse(r'''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My ${1 + 1} Extension',
   description: 'A VS Code extension written in Dart.',
@@ -178,7 +170,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -195,7 +186,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -214,7 +204,6 @@ const extension = ExtensionManifest(
       _parse('''
 const extension = ExtensionManifest(
   'my-extension',
-  apiTarget: '1.129.1',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
   version: '0.0.1',
@@ -230,7 +219,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   name: 'my-other-extension',
   displayName: 'My Extension',
@@ -248,7 +236,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -264,7 +251,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',
@@ -284,7 +270,6 @@ const extension = ExtensionManifest(
     expect(
       _parse('''
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'my-extension',
   displayName: 'My Extension',
   description: 'A VS Code extension written in Dart.',

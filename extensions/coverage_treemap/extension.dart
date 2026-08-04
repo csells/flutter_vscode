@@ -2,7 +2,6 @@ import 'package:flutter_vscode/manifest.dart';
 
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'coverage-treemap',
   displayName: 'Coverage Treemap',
   description: 'Line coverage in your editor and a coverage treemap.',

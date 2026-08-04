@@ -2,10 +2,10 @@
 /// Extension Projects as `host/lib/generated/flutter_view_host.g.dart`
 /// whenever the project contains at least one Flutter View.
 ///
-/// The module is a template because it imports its generated siblings
-/// (`view_protocol.g.dart`, `vscode_dart_layer.g.dart`), which only
-/// exist inside a generated project; the host-extension fixture carries
-/// the analyzed, gate-tested instance.
+/// The module is a template because it imports its generated sibling
+/// (`view_protocol.g.dart`), which only exists inside a generated
+/// project; the API layer itself comes from the framework package. The
+/// host-extension fixture carries the analyzed, gate-tested instance.
 library;
 
 /// Source text for `host/lib/generated/flutter_view_host.g.dart`.
@@ -17,8 +17,9 @@ import 'dart:async';
 import 'dart:js_interop';
 import 'dart:math';
 
+import 'package:flutter_vscode/vscode_dart.dart' as vs;
+
 import 'view_protocol.g.dart';
-import 'vscode_dart_layer.g.dart' as vs;
 
 /// Observes each parsed native webview message after it is queued for
 /// the protocol validator; harnesses use it to inspect traffic without

@@ -6,6 +6,8 @@ environment:
   sdk: ^3.12.0
 
 dependencies:
+  flutter_vscode:
+    path: ../../..
   pubspec_lens_shared:
     path: ../shared
 

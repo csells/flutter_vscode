@@ -39,7 +39,6 @@ final class _ConstShape {
 const _manifestShape = _ConstShape(
   typeName: 'ExtensionManifest',
   requiredFields: {
-    'apiTarget',
     'name',
     'displayName',
     'description',
@@ -53,7 +52,6 @@ const _manifestShape = _ConstShape(
   },
   fieldOrder: [
     'schemaVersion',
-    'apiTarget',
     'name',
     'displayName',
     'description',

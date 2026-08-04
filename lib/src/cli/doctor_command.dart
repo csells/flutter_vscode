@@ -60,41 +60,33 @@ Future<int> doctorProject(
       }
     }
     try {
-      final project = dartDescriptor.existsSync()
-          ? await readProjectDescriptor(dartDescriptor)
-          : await readJsonObject(jsonDescriptor);
-      final target = project['apiTarget'];
-      if (target is String && target.isNotEmpty) {
-        final frameworkRoot = packageRoot ?? await resolvePackageRoot();
-        final pins = File(
-          p.join(
-            frameworkRoot.path,
-            'tool',
-            'bindings',
-            'inputs',
-            'vscode',
-            target,
-            'pins.json',
-          ),
-        );
-        checks.add(
-          (
-            'API target $target',
-            pins.existsSync(),
-            pins.existsSync()
-                ? null
-                : 'this flutter_vscode has no pinned inputs for $target',
-          ),
-        );
+      // Parsing is the check: a malformed descriptor reports below.
+      if (dartDescriptor.existsSync()) {
+        await readProjectDescriptor(dartDescriptor);
       } else {
-        checks.add(
-          (
-            'API target',
-            false,
-            'apiTarget is missing from the project descriptor',
-          ),
-        );
+        await readJsonObject(jsonDescriptor);
       }
+      final frameworkRoot = packageRoot ?? await resolvePackageRoot();
+      final pins = File(
+        p.join(
+          frameworkRoot.path,
+          'tool',
+          'bindings',
+          'inputs',
+          'vscode',
+          shippedApiTarget,
+          'pins.json',
+        ),
+      );
+      checks.add(
+        (
+          'VS Code baseline $shippedApiTarget',
+          pins.existsSync(),
+          pins.existsSync()
+              ? null
+              : 'this flutter_vscode is missing its pinned binding inputs',
+        ),
+      );
     } on Object catch (error) {
       checks.add(('Project descriptor', false, '$error'));
     }

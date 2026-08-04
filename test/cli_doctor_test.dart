@@ -45,7 +45,7 @@ void main() {
       expect(output, contains('[ok] Dart SDK'));
       expect(output, contains('[ok] Flutter SDK'));
       expect(output, contains('[ok] Project layout'));
-      expect(output, contains('[ok] API target 1.129.1'));
+      expect(output, contains('[ok] VS Code baseline 1.129.1'));
       expect(output, contains('No issues found'));
     },
     timeout: const Timeout(Duration(minutes: 5)),
@@ -84,7 +84,6 @@ void main() {
       File(p.join(project.path, 'extension.json')).writeAsStringSync('''
 {
   "schemaVersion": 1,
-  "apiTarget": "1.129.1",
   "name": "my-extension",
   "displayName": "My Extension",
   "description": "A VS Code extension written in Dart.",
@@ -100,7 +99,7 @@ void main() {
       final doctor = await _cli(['doctor'], workingDirectory: project.path);
 
       expect(doctor.exitCode, 0, reason: '${doctor.stdout}\n${doctor.stderr}');
-      expect('${doctor.stdout}', contains('[ok] API target 1.129.1'));
+      expect('${doctor.stdout}', contains('[ok] VS Code baseline 1.129.1'));
     },
     timeout: const Timeout(Duration(minutes: 5)),
   );

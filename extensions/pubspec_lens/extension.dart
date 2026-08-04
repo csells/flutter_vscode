@@ -2,7 +2,6 @@ import 'package:flutter_vscode/manifest.dart';
 
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
 const extension = ExtensionManifest(
-  apiTarget: '1.129.1',
   name: 'pubspec-lens',
   displayName: 'Pubspec Lens',
   description: 'Dependency intelligence for pubspec.yaml: hovers, '

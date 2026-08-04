@@ -111,7 +111,7 @@ String emitCoverageLedger({
         'status': binding,
         if (binding == 'emitted')
           'artifacts': <String>[
-            'host/lib/generated/vscode_dart_layer.g.dart',
+            'lib/src/generated/vscode_dart_layer.g.dart',
           ],
       },
       'host': <String, Object?>{

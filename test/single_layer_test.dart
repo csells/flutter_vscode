@@ -101,8 +101,10 @@ void main() {
       );
       expect(
         names,
-        contains('vscode_dart_layer.g.dart'),
-        reason: '$generatedRoot must carry the one merged artifact',
+        isNot(contains('vscode_dart_layer.g.dart')),
+        reason: '$generatedRoot must not carry a copy of the API layer: '
+            'the layer ships in the framework package and projects import '
+            'it from there',
       );
     }
     expect(

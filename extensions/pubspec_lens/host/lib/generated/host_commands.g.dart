@@ -4,7 +4,8 @@
 import 'dart:async';
 import 'dart:js_interop';
 
-import 'vscode_dart_layer.g.dart';
+import 'package:flutter_vscode/vscode_dart.dart';
+
 import 'vscode_runtime.g.dart';
 
 /// An ordinary-Dart command handler.

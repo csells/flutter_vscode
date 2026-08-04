@@ -1,6 +1,19 @@
 
 ## Unreleased
 
+- Ship one VS Code baseline per release (ADR 0014). `ExtensionManifest`
+  loses `apiTarget`: the package version *is* the baseline, and an author
+  who needs a different VS Code API depends on the `flutter_vscode`
+  release that ships it rather than selecting one inside the package.
+  Because every project now builds against the same baseline, the API
+  layer is no longer copied into each project — it ships once as
+  `package:flutter_vscode/vscode_dart.dart` and generated host modules
+  import it from there, leaving each project with only the generated
+  files derived from its own commands and views. The second pinned
+  baseline and its inputs are removed; the tracked tree drops ~5.8 MB and
+  every Extension Project drops 718 KB. **Breaking:** projects declaring
+  `apiTarget` must remove it, and `engines.vscode` now moves with the
+  framework release.
 - Ship two example extensions under `extensions/`, each proven by its own
   real-host gate rather than a unit test. **Coverage Treemap** (Flutter
   View) paints `lcov.info` coverage into the editor, keeps a live

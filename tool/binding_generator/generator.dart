@@ -252,23 +252,6 @@ final class VSCodeBindingGenerator {
       product['version'],
       'inventory.source.product.version',
     );
-    final projectApiTargetValue = project['apiTarget'];
-    if (projectApiTargetValue is! String || projectApiTargetValue.isEmpty) {
-      throw const VSCodeBindingGenerationException(
-        'INVALID_PROJECT_MANIFEST',
-        'project.apiTarget is required and must name an exact pinned VS Code '
-            'version.',
-      );
-    }
-    final projectApiTarget = projectApiTargetValue;
-    if (projectApiTarget != inventoryVersion) {
-      throw VSCodeBindingGenerationException(
-        'PROJECT_API_TARGET_MISMATCH',
-        'project.apiTarget $projectApiTarget differs from this build; the '
-            'inventory targets $inventoryVersion. Select $inventoryVersion '
-            'or provide the matching pinned inventory and Semantic Overrides.',
-      );
-    }
     final inputSha256 = sha256Digest(
       source['inputSha256'],
       'inventory.source.inputSha256',
