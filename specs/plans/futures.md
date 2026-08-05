@@ -39,11 +39,11 @@ sequence or schedule. Rough dependency order below.
 - Generated-file ownership and repair (doctor detects; repair is the
   follow-up). The v0-removal round deleted the legacy pipeline;
   `test/v0_removal_test.dart` keeps it deleted.
-- Desktop platform proof: a macOS gate first (the breakpoint round
-  already runs the harness headed on macOS), Windows next — every
-  real user develops on desktop, and the live-only bugs found so far
-  all surfaced there. Remote-host and multi-extension hardening
-  remain backlog behind it.
+- Desktop platform proof beyond macOS: the macOS gate landed
+  (`scripts/test_host_extension_native.sh` plus the CI desktop job);
+  Windows is next — its drivers need their own path and launch
+  handling. Remote-host and multi-extension hardening remain backlog
+  behind it.
 - Platform reach: Web Extension Host before 1.0 (ADR 0009).
 
 - Optional command-contribution fields in the typed manifest: the
@@ -52,16 +52,6 @@ sequence or schedule. Rough dependency order below.
   `command` and `title` — extend the type (and its parser mirror in
   `lib/src/cli/project_descriptor.dart`) when a real extension needs
   one of the optional fields.
-- Views and configuration contributions in the typed manifest: the
-  pubspec-lens round needed both — a tree view must be contributed
-  before `registerTreeDataProvider` renders anywhere, and the
-  configuration API rejects writes to unregistered keys. The
-  contribution pipeline is schema-pinned (the inventory carries
-  exactly the commands contribution schema), so this is a real
-  binding-importer + generator + manifest-type round, not a field
-  addition. Until it lands, the PL-4 gate's driver contributes
-  `pubspecLens.registryUrl` and the `pubspecLens.dependencies` view
-  on the extension's behalf.
 
 ## Engineering debt (from the audits)
 

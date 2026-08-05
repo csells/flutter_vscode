@@ -14,6 +14,8 @@ String emitCoverageLedger({
   required String manifestSchemaSha256,
   required String manifestValidatorSha256,
   required String commandsContributionSchemaSha256,
+  required String viewsContributionSchemaSha256,
+  required String configurationContributionSchemaSha256,
   required Map<String, Map<String, Object?>> declarationsById,
   required Map<String, Object?> entries,
   required Map<String, String> strategiesById,
@@ -134,6 +136,9 @@ String emitCoverageLedger({
       'manifestSchemaSha256': manifestSchemaSha256,
       'manifestValidatorSha256': manifestValidatorSha256,
       'commandsContributionSchemaSha256': commandsContributionSchemaSha256,
+      'viewsContributionSchemaSha256': viewsContributionSchemaSha256,
+      'configurationContributionSchemaSha256':
+          configurationContributionSchemaSha256,
     },
     'hostContracts': hostContracts,
     'hostEvidence': <String, Object?>{

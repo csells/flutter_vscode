@@ -151,10 +151,9 @@ the VSIX, installs it into the pinned Extension Host in Docker,
 serves a deterministic fake pub.dev from inside the host, and
 asserts the hover, the single diagnostic, a lens on each trailing
 pin (and none on the current one), both CodeLens edits, and the tree
-snapshot. First-cut note: the dependencies tree view renders only
-where its view id is contributed (the gate's driver does this, so it
-won't appear in a plain F5 session); manifest views/configuration
-contributions are a recorded framework follow-up.
+snapshot. The extension contributes its dependencies view and its
+registryUrl setting through the typed manifest, so the tree renders in
+a plain F5 session with no test driver involved.
 
 Plan and status:
 [`specs/plans/pubspec-lens.md`](../specs/plans/archive/pubspec-lens.md),

@@ -223,6 +223,8 @@ final class VSCodeBindingGenerator {
         'manifestSchemaSha256',
         'manifestValidatorSha256',
         'commandsContributionSchemaSha256',
+        'viewsContributionSchemaSha256',
+        'configurationContributionSchemaSha256',
         'hostContracts',
         'targets',
         'entries',
@@ -296,6 +298,36 @@ final class VSCodeBindingGenerator {
             'uses $commandsContributionSchemaSha256.',
       );
     }
+    final viewsContributionSchemaSha256 =
+        validateViewsContributionSchemas(inventory);
+    final overrideViewsContributionSchemaSha256 = sha256Digest(
+      overrides['viewsContributionSchemaSha256'],
+      'overrides.viewsContributionSchemaSha256',
+    );
+    if (overrideViewsContributionSchemaSha256 !=
+        viewsContributionSchemaSha256) {
+      throw VSCodeBindingGenerationException(
+        'CONTRIBUTION_SCHEMA_PIN_MISMATCH',
+        'Semantic Overrides reviewed views contribution schema '
+            '$overrideViewsContributionSchemaSha256, but the inventory '
+            'uses $viewsContributionSchemaSha256.',
+      );
+    }
+    final configurationContributionSchemaSha256 =
+        validateConfigurationContributionSchema(inventory);
+    final overrideConfigurationContributionSchemaSha256 = sha256Digest(
+      overrides['configurationContributionSchemaSha256'],
+      'overrides.configurationContributionSchemaSha256',
+    );
+    if (overrideConfigurationContributionSchemaSha256 !=
+        configurationContributionSchemaSha256) {
+      throw VSCodeBindingGenerationException(
+        'CONTRIBUTION_SCHEMA_PIN_MISMATCH',
+        'Semantic Overrides reviewed configuration contribution schema '
+            '$overrideConfigurationContributionSchemaSha256, but the '
+            'inventory uses $configurationContributionSchemaSha256.',
+      );
+    }
     final projectName = extensionIdentifierComponent(
       project['name'],
       'project.name',
@@ -329,6 +361,17 @@ final class VSCodeBindingGenerator {
         string(event, 'project.activationEvents entry'),
     ];
     final commands = projectCommands(project['commands']);
+    final viewsContainers = projectViewsContainers(project['viewsContainers']);
+    final contributedContainers = <String>{
+      for (final entry in viewsContainers.values)
+        for (final container in entry! as List<Map<String, Object?>>)
+          container['id']! as String,
+    };
+    final views = projectViews(
+      project['views'],
+      contributedContainers: contributedContainers,
+    );
+    final configuration = projectConfiguration(project['configuration']);
     final declarations = objectList(
       inventory['declarations'],
       'inventory.declarations',
@@ -523,6 +566,9 @@ final class VSCodeBindingGenerator {
       manifestSchemaSha256: manifestSchemaSha256,
       manifestValidatorSha256: manifestValidatorSha256,
       commandsContributionSchemaSha256: commandsContributionSchemaSha256,
+      viewsContributionSchemaSha256: viewsContributionSchemaSha256,
+      configurationContributionSchemaSha256:
+          configurationContributionSchemaSha256,
       declarationsById: declarationsById,
       entries: entries,
       strategiesById: strategiesById,
@@ -540,8 +586,16 @@ final class VSCodeBindingGenerator {
       'engines': <String, Object?>{'vscode': inventoryVersion},
       'main': './out/bootstrap.cjs',
       'activationEvents': activationEvents,
-      if (commands.isNotEmpty)
-        'contributes': <String, Object?>{'commands': commands},
+      if (commands.isNotEmpty ||
+          viewsContainers.isNotEmpty ||
+          views.isNotEmpty ||
+          configuration.isNotEmpty)
+        'contributes': <String, Object?>{
+          if (commands.isNotEmpty) 'commands': commands,
+          if (viewsContainers.isNotEmpty) 'viewsContainers': viewsContainers,
+          if (views.isNotEmpty) 'views': views,
+          if (configuration.isNotEmpty) 'configuration': configuration,
+        },
     };
     final dartExtensionId = jsonEncode(extensionId);
     final javaScriptExtensionKey = jsonEncode(extensionKey);

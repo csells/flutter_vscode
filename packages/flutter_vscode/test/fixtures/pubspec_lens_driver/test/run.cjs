@@ -6,12 +6,10 @@
 // The port problem: the workspace settings file cannot name the
 // registry URL before launch because the port is unknown until the
 // server binds. So this driver starts the server first, then writes
-// the URL through the configuration API. The API rejects writes to
-// unregistered keys, which is why this driver's package.json
-// contributes the pubspecLens.registryUrl setting (and the
-// pubspecLens.dependencies view the extension's tree data provider
-// binds to) — the Extension Manifest does not project configuration
-// or views contributions yet; that gap is recorded in futures.
+// the URL through the configuration API. The extension declares the
+// pubspecLens.registryUrl setting and the pubspecLens.dependencies
+// view in its own typed manifest; this driver contributes nothing on
+// its behalf.
 
 const assert = require('node:assert/strict');
 const http = require('node:http');

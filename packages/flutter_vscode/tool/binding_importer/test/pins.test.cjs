@@ -321,7 +321,7 @@ test('v1 pins require exactly one receipt of every official kind', (context) => 
   }
 });
 
-test('v1 pins require exactly the commands contribution schema', (context) => {
+test('v1 pins require exactly the pinned contribution schemas', (context) => {
   const fixture = createRepositoryPinsFixture(
     context,
     'flutter-vscode-pin-contributions-',
@@ -332,6 +332,7 @@ test('v1 pins require exactly the commands contribution schema', (context) => {
     ['duplicate', ['commands', 'commands']],
     ['unknown', ['other']],
     ['extra', ['commands', 'other']],
+    ['stale single-schema form', ['commands']],
   ];
 
   for (const [name, contributionSchemas] of cases) {
@@ -347,7 +348,10 @@ test('v1 pins require exactly the commands contribution schema', (context) => {
       (error) => {
         assert.equal(error.code, 'PIN_METADATA_INVALID');
         assert.match(error.message, /contributionSchemas/);
-        assert.match(error.message, /exactly \["commands"\]/);
+        assert.match(
+          error.message,
+          /exactly \["commands","configuration","views","viewsContainers"\]/,
+        );
         return true;
       },
       name,
@@ -712,5 +716,46 @@ test('repository VS Code inputs match their recorded checksums', () => {
     license: 'MIT',
     licensePath: 'LICENSE.txt',
   });
-  assert.deepEqual(pins.contributionSchemas, ['commands']);
+  const views = pins.inputs.find(
+    (input) => input.kind === 'viewsContributionSchemaSource',
+  );
+  assert.deepEqual(views, {
+    name: 'Views extension point source',
+    kind: 'viewsContributionSchemaSource',
+    path: 'viewsExtensionPoint.ts',
+    version: '1.129.1',
+    commit: '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8',
+    source:
+      'https://raw.githubusercontent.com/microsoft/vscode/' +
+      '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/' +
+      'browser/viewsExtensionPoint.ts',
+    sha256:
+      '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+    license: 'MIT',
+    licensePath: 'LICENSE.txt',
+  });
+  const configuration = pins.inputs.find(
+    (input) => input.kind === 'configurationContributionSchemaSource',
+  );
+  assert.deepEqual(configuration, {
+    name: 'Configuration extension point source',
+    kind: 'configurationContributionSchemaSource',
+    path: 'configurationExtensionPoint.ts',
+    version: '1.129.1',
+    commit: '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8',
+    source:
+      'https://raw.githubusercontent.com/microsoft/vscode/' +
+      '8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/' +
+      'common/configurationExtensionPoint.ts',
+    sha256:
+      'e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a',
+    license: 'MIT',
+    licensePath: 'LICENSE.txt',
+  });
+  assert.deepEqual(pins.contributionSchemas, [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ]);
 });

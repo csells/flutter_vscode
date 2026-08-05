@@ -46,6 +46,9 @@ final class ExtensionManifest {
     required this.publisher,
     required this.activationEvents,
     this.commands = const [],
+    this.viewsContainers = const {},
+    this.views = const {},
+    this.configuration,
     this.schemaVersion = 1,
   });
 
@@ -86,6 +89,28 @@ final class ExtensionManifest {
   /// the Host Dart entrypoint under the same command identifier.
   final List<ExtensionCommand> commands;
 
+  /// View containers this extension contributes, keyed by location.
+  ///
+  /// The pinned VS Code accepts `activitybar`, `panel`, and
+  /// `secondarySidebar`. A container is where [views] render; contribute
+  /// one and key views by its id.
+  final Map<String, List<ExtensionViewContainer>> viewsContainers;
+
+  /// Views this extension contributes, keyed by container.
+  ///
+  /// Keys are the built-in containers (`explorer`, `debug`, `scm`, `test`)
+  /// or the id of a container from [viewsContainers]. A tree view rendered
+  /// with `registerTreeDataProvider` must be contributed here first;
+  /// without the contribution it renders nowhere.
+  final Map<String, List<ExtensionView>> views;
+
+  /// The settings this extension registers, shown in the Settings editor.
+  ///
+  /// The configuration API rejects reads of unregistered keys, so a
+  /// setting must be declared here before `workspace.getConfiguration`
+  /// can see it.
+  final ExtensionConfiguration? configuration;
+
   /// The descriptor schema revision, currently always `1`.
   final int schemaVersion;
 }
@@ -103,4 +128,91 @@ final class ExtensionCommand {
 
   /// The human-readable title VS Code shows in the Command Palette.
   final String title;
+}
+
+/// One contributed view container: an icon in the Activity Bar, the Panel,
+/// or the Secondary Side Bar that holds this extension's views.
+final class ExtensionViewContainer {
+  /// Creates a container [id] rendered with [title] and [icon].
+  const ExtensionViewContainer({
+    required this.id,
+    required this.title,
+    required this.icon,
+  });
+
+  /// The container identifier: alphanumeric, `_`, and `-` only.
+  ///
+  /// [ExtensionManifest.views] keys views into this container by this id.
+  final String id;
+
+  /// The human-readable name rendered on the container.
+  final String title;
+
+  /// Path to the container icon, or a theme icon like `r'$(list-tree)'`.
+  final String icon;
+}
+
+/// One contributed view inside a container.
+final class ExtensionView {
+  /// Creates a view [id] rendered as [name] with [icon].
+  const ExtensionView({
+    required this.id,
+    required this.name,
+    required this.icon,
+    this.type,
+    this.when,
+    this.visibility,
+    this.contextualTitle,
+    this.initialSize,
+  });
+
+  /// The view identifier a `TreeDataProvider` or webview view registers
+  /// against, for example `'myExtension.dependencies'`.
+  final String id;
+
+  /// The human-readable view name.
+  final String name;
+
+  /// Path to the view icon, or a theme icon like `r'$(list-tree)'`.
+  ///
+  /// Required by the pinned manifest schema.
+  final String icon;
+
+  /// `'tree'` (the default) or `'webview'`.
+  final String? type;
+
+  /// A when-clause context expression controlling the view's visibility.
+  final String? when;
+
+  /// Initial state: `'visible'`, `'hidden'`, or `'collapsed'`.
+  final String? visibility;
+
+  /// Human-readable context for when the view moves out of its container.
+  final String? contextualTitle;
+
+  /// Initial size, behaving like the CSS `flex` property.
+  final num? initialSize;
+}
+
+/// The settings category this extension registers.
+final class ExtensionConfiguration {
+  /// Creates a settings category holding [properties].
+  const ExtensionConfiguration({
+    required this.properties,
+    this.title,
+    this.order,
+  });
+
+  /// Setting descriptors keyed by full setting name, for example
+  /// `'myExtension.registryUrl'`.
+  ///
+  /// Each value is a JSON-schema fragment: at minimum a `'type'`, and
+  /// usually a `'default'` and a `'description'`.
+  final Map<String, Map<String, Object?>> properties;
+
+  /// The Settings editor subheading; defaults to the display name.
+  final String? title;
+
+  /// This category's order relative to other categories.
+  final int? order;
 }

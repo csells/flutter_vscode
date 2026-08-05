@@ -10,6 +10,14 @@ const officialSourcePathByKind = new Map([
   ],
   ['contributionValidationHelperSource', 'src/vs/base/common/strings.ts'],
   [
+    'viewsContributionSchemaSource',
+    'src/vs/workbench/api/browser/viewsExtensionPoint.ts',
+  ],
+  [
+    'configurationContributionSchemaSource',
+    'src/vs/workbench/api/common/configurationExtensionPoint.ts',
+  ],
+  [
     'extensionManifestSchemaSource',
     'src/vs/workbench/services/extensions/common/extensionsRegistry.ts',
   ],
@@ -150,12 +158,19 @@ function verifyPinnedInputs(manifestPath) {
       );
     }
   }
+  const expectedSchemas = [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ];
   if (
     !Array.isArray(manifest.contributionSchemas) ||
-    manifest.contributionSchemas.length !== 1 ||
-    manifest.contributionSchemas[0] !== 'commands'
+    manifest.contributionSchemas.join(',') !== expectedSchemas.join(',')
   ) {
-    invalidMetadata('contributionSchemas must be exactly ["commands"]');
+    invalidMetadata(
+      `contributionSchemas must be exactly ${JSON.stringify(expectedSchemas)}`,
+    );
   }
 
   validateExactKeys(

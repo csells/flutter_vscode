@@ -1,6 +1,30 @@
 
 ## Unreleased
 
+- Contribute views, view containers, and configuration from the typed
+  manifest (the last author-visible gap the upstream review named).
+  `ExtensionManifest` gains `views`, `viewsContainers`, and
+  `configuration`, projected into `package.json` through the same
+  pinned-schema pipeline as commands: two newly pinned VS Code sources
+  (`viewsExtensionPoint.ts`, `configurationExtensionPoint.ts`) are
+  extracted fail-closed by the importer -- schema literals normalized,
+  runtime validator branches asserted verbatim -- and the generator
+  byte-compares the projection against an independently reviewed copy
+  before validating author data with the platform's own semantics. A
+  whitespace-only container id fails the build because the pinned host
+  errors on it; a whitespace-only container title does not, because the
+  pinned host only warns. Pubspec Lens now declares its dependencies
+  view and its `pubspecLens.registryUrl` setting itself, and its gate
+  driver contributes nothing on its behalf -- the tree renders in a
+  plain F5 session.
+- Prove the pinned Extension Host on macOS: the same driver, contract
+  verification, and pinned VS Code, natively with no container and no
+  xvfb (`scripts/test_host_extension_native.sh`), plus a macOS CI job.
+  Wire the breakpoint gate into `test_all.sh` and retire the archived
+  round-5 exit checker. Assert the Content Security Policy the live
+  webview was actually served -- which already differs from the emitted
+  template: VS Code injects its CDN origins -- rather than only
+  byte-comparing the template.
 - Split the pure-Dart runtime into its own published package,
   `dart_vscode` (ADR 0015), and stop copying framework source into
   Extension Projects. The generated VS Code API, the Host/Flutter View

@@ -5,13 +5,15 @@
     "inputSha256": "ee11e767c8ab76f6c0de8dc88222796147a6f0bc82f3a1ec644e41b39b52f2cd",
     "manifestSchemaSha256": "feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa",
     "manifestValidatorSha256": "e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1",
-    "commandsContributionSchemaSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33"
+    "commandsContributionSchemaSha256": "a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33",
+    "viewsContributionSchemaSha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+    "configurationContributionSchemaSha256": "e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a"
   },
   "hostContracts": {
     "checkpoint4ExtensionHost": {
       "boundary": "vscodeExtensionHost",
       "artifact": "tool/bindings/contracts/checkpoint4-extension-host.json",
-      "artifactSha256": "3a6e9309b64ebc47200f97bac3305de938a3ec6f82a61d40828917275cbea514"
+      "artifactSha256": "d9c3c5c297c92a3015c1052f1756c1e7d13ad5c18289af2f09cd97674a6ffb0e"
     }
   },
   "hostEvidence": {

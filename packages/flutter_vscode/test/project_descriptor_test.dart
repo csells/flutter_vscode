@@ -66,6 +66,81 @@ const extension = ExtensionManifest(
           'title': 'Say Goodbye',
         },
       ],
+      'viewsContainers': <String, Object?>{},
+      'views': <String, Object?>{},
+      'configuration': null,
+    });
+  });
+
+  test('parses view, container, and configuration declarations', () async {
+    final project = await _parse(r'''
+import 'package:flutter_vscode/manifest.dart';
+
+/// Dart-owned extension metadata consumed by `flutter_vscode build`.
+const extension = ExtensionManifest(
+  name: 'my-extension',
+  displayName: 'My Extension',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: [],
+  viewsContainers: {
+    'activitybar': [
+      ExtensionViewContainer(
+        id: 'myContainer',
+        title: 'Mine',
+        icon: r'$(package)',
+      ),
+    ],
+  },
+  views: {
+    'myContainer': [
+      ExtensionView(
+        id: 'my.tree',
+        name: 'My Tree',
+        icon: r'$(list-tree)',
+        visibility: 'collapsed',
+      ),
+    ],
+  },
+  configuration: ExtensionConfiguration(
+    title: 'Mine',
+    properties: {
+      'my.setting': {'type': 'string', 'default': 'x'},
+    },
+  ),
+);
+''');
+
+    expect(project['viewsContainers'], <String, Object?>{
+      'activitybar': <Object?>[
+        <String, Object?>{
+          'id': 'myContainer',
+          'title': 'Mine',
+          'icon': r'$(package)',
+        },
+      ],
+    });
+    expect(project['views'], <String, Object?>{
+      'myContainer': <Object?>[
+        <String, Object?>{
+          'id': 'my.tree',
+          'name': 'My Tree',
+          'icon': r'$(list-tree)',
+          'type': null,
+          'when': null,
+          'visibility': 'collapsed',
+          'contextualTitle': null,
+          'initialSize': null,
+        },
+      ],
+    });
+    expect(project['configuration'], <String, Object?>{
+      'title': 'Mine',
+      'order': null,
+      'properties': <String, Object?>{
+        'my.setting': <String, Object?>{'type': 'string', 'default': 'x'},
+      },
     });
   });
 

@@ -43,7 +43,10 @@ async function main() {
       path.join(__dirname, '.vscode-test'),
     extensionDevelopmentPath: fixtureRoot,
     extensionTestsPath: path.join(fixtureRoot, 'test', 'run.cjs'),
-    launchArgs: ['--disable-extensions'],
+    // --enable-logging surfaces webview renderer console output (CSP
+    // violations, resource failures, JS errors); without it a view that
+    // fails to boot times out silently.
+    launchArgs: ['--disable-extensions', '--enable-logging'],
   });
 
   console.log('[host-test] launching activation-failure host');

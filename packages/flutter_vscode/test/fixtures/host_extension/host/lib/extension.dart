@@ -863,7 +863,15 @@ Future<T> _awaitViewMilestone<T>(
   return Future.any<T>([
     milestone,
     transport.failure,
-  ]).timeout(const Duration(seconds: 30));
+  ]).timeout(
+    // Generous on purpose: a cold macOS runner spends real time in
+    // Gatekeeper and first-launch Electron caches before the webview's
+    // first frame, and the assertion here is that the view boots, not that
+    // it boots fast -- cold-start latency is measured and reported
+    // separately. The first native macOS run timed out at 30 seconds and
+    // passed warm; CI runners are always cold.
+    const Duration(seconds: 120),
+  );
 }
 
 final class _ViewResources {

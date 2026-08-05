@@ -129,6 +129,119 @@ void registerProjectContributionsTests() {
       ],
     });
   });
+  test('emits view and configuration contributions from Dart-owned data', () {
+    // A tree view renders only where its view id is contributed, and the
+    // configuration API rejects reads of unregistered keys. Until the typed
+    // manifest can declare both, every host-only extension needs a test
+    // driver to inject them -- which is exactly what the shipped Pubspec
+    // Lens example has had to do.
+    final project = _readJson('test/fixtures/host_extension/extension.json')
+      ..['viewsContainers'] = <String, Object?>{
+        'activitybar': <Object?>[
+          <String, Object?>{
+            'id': 'fixtureContainer',
+            'title': 'Fixture',
+            'icon': 'media/fixture.svg',
+          },
+        ],
+      }
+      ..['views'] = <String, Object?>{
+        'fixtureContainer': <Object?>[
+          <String, Object?>{
+            'id': 'fixture.tree',
+            'name': 'Fixture Tree',
+            // The pinned manifest schema requires a view icon, though the
+            // runtime tolerates its absence; the build follows the schema.
+            'icon': r'$(list-tree)',
+          },
+        ],
+      }
+      ..['configuration'] = <String, Object?>{
+        'title': 'Fixture',
+        'properties': <String, Object?>{
+          'fixture.registryUrl': <String, Object?>{
+            'type': 'string',
+            'default': 'https://pub.dev',
+            'description': 'Registry queried for the latest versions.',
+          },
+        },
+      };
+
+    final generated = VSCodeBindingGenerator().generate(
+      inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
+      overrides: _readJson('tool/bindings/overrides/vscode-1.129.1.json'),
+      project: project,
+    );
+
+    final manifest =
+        (jsonDecode(generated.files['package.json']!) as Map<Object?, Object?>)
+            .cast<String, Object?>();
+    final contributes = (manifest['contributes']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    expect(contributes['viewsContainers'], {
+      'activitybar': [
+        {
+          'id': 'fixtureContainer',
+          'title': 'Fixture',
+          'icon': 'media/fixture.svg',
+        },
+      ],
+    });
+    expect(contributes['views'], {
+      'fixtureContainer': [
+        {'id': 'fixture.tree', 'name': 'Fixture Tree', 'icon': r'$(list-tree)'},
+      ],
+    });
+    expect(contributes['configuration'], {
+      'title': 'Fixture',
+      'properties': {
+        'fixture.registryUrl': {
+          'type': 'string',
+          'default': 'https://pub.dev',
+          'description': 'Registry queried for the latest versions.',
+        },
+      },
+    });
+  });
+
+  test('rejects contribution strings the pinned host rejects', () {
+    final base = _readJson('test/fixtures/host_extension/extension.json');
+    final broken = <Map<String, Object?>>[
+      base
+        ..['viewsContainers'] = <String, Object?>{
+          'activitybar': <Object?>[
+            <String, Object?>{'id': ' \t', 'title': 'F', 'icon': 'i.svg'},
+          ],
+        },
+      _readJson('test/fixtures/host_extension/extension.json')
+        ..['configuration'] = <String, Object?>{
+          'properties': <String, Object?>{
+            // The pinned schema's propertyNames pattern is \S+: a name
+            // with no non-whitespace character is unregisterable.
+            ' \t': <String, Object?>{'type': 'string'},
+          },
+        },
+    ];
+    for (final project in broken) {
+      expect(
+        () => VSCodeBindingGenerator().generate(
+          inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
+          overrides: _readJson('tool/bindings/overrides/vscode-1.129.1.json'),
+          project: project,
+        ),
+        throwsA(
+          isA<VSCodeBindingGenerationException>().having(
+            (error) => error.code,
+            'code',
+            'INVALID_PROJECT_MANIFEST',
+          ),
+        ),
+        reason: 'VS Code drops whitespace-only ids and names at runtime; '
+            'the build must fail closed instead of shipping a dead view',
+      );
+    }
+  });
+
   test('rejects whitespace-only required command contribution strings', () {
     for (final field in ['command', 'title']) {
       final project = _project()

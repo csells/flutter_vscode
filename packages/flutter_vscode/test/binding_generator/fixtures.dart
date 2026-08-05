@@ -98,6 +98,34 @@ Map<String, Object?> _inventory(List<String> ids) {
           'licensePath': 'LICENSE.txt',
         },
         {
+          'name': 'VS Code views extension point source',
+          'kind': 'viewsContributionSchemaSource',
+          'path': 'viewsExtensionPoint.ts',
+          'version': '1.129.1',
+          'commit': '0' * 40,
+          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+              '${'0' * 40}/src/vs/workbench/api/browser/'
+              'viewsExtensionPoint.ts',
+          'sha256':
+              '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+          'license': 'MIT',
+          'licensePath': 'LICENSE.txt',
+        },
+        {
+          'name': 'VS Code configuration extension point source',
+          'kind': 'configurationContributionSchemaSource',
+          'path': 'configurationExtensionPoint.ts',
+          'version': '1.129.1',
+          'commit': '0' * 40,
+          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+              '${'0' * 40}/src/vs/workbench/api/common/'
+              'configurationExtensionPoint.ts',
+          'sha256':
+              'e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a',
+          'license': 'MIT',
+          'licensePath': 'LICENSE.txt',
+        },
+        {
           'name': 'VS Code license',
           'kind': 'license',
           'path': 'LICENSE.txt',
@@ -110,7 +138,12 @@ Map<String, Object?> _inventory(List<String> ids) {
           'license': 'MIT',
         },
       ],
-      'contributionSchemas': ['commands'],
+      'contributionSchemas': [
+        'commands',
+        'configuration',
+        'views',
+        'viewsContainers',
+      ],
     },
     'manifestSchema': {
       'inputSha256':
@@ -203,6 +236,137 @@ Map<String, Object?> _inventory(List<String> ids) {
           },
         },
       },
+      'configuration': {
+        'inputSha256':
+            'e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a',
+        'extensionPoint': 'configuration',
+        'accepts': ['object', 'array'],
+        'entrySchema': {
+          'type': 'object',
+          'properties': {
+            'order': {
+              'type': 'integer',
+            },
+            'properties': {
+              'type': 'object',
+              'propertyNames': {
+                'pattern': r'\S+',
+              },
+              'additionalProperties': <String, Object?>{},
+            },
+            'title': {
+              'type': 'string',
+            },
+          },
+        },
+        'validation': {
+          'propertyNamePattern': r'\S+',
+          'titleType': 'string',
+        },
+      },
+      'views': {
+        'inputSha256':
+            '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+        'extensionPoint': 'views',
+        'accepts': ['object'],
+        'locations': ['debug', 'explorer', 'scm', 'test'],
+        'remoteLocations': ['remote'],
+        'additionalLocations': true,
+        'itemSchema': {
+          'type': 'object',
+          'required': ['id', 'name', 'icon'],
+          'properties': {
+            'accessibilityHelpContent': {
+              'type': 'string',
+            },
+            'contextualTitle': {
+              'type': 'string',
+            },
+            'icon': {
+              'type': 'string',
+            },
+            'id': {
+              'type': 'string',
+            },
+            'initialSize': {
+              'type': 'number',
+            },
+            'name': {
+              'type': 'string',
+            },
+            'type': {
+              'type': 'string',
+              'enum': ['tree', 'webview'],
+            },
+            'visibility': {
+              'type': 'string',
+              'enum': ['visible', 'hidden', 'collapsed'],
+            },
+            'when': {
+              'type': 'string',
+            },
+          },
+        },
+        'remoteItemSchema': {
+          'type': 'object',
+          'required': ['id', 'name'],
+          'properties': {
+            'group': {
+              'type': 'string',
+            },
+            'id': {
+              'type': 'string',
+            },
+            'name': {
+              'type': 'string',
+            },
+            'remoteName': {
+              'type': ['string', 'array'],
+              'items': {
+                'type': 'string',
+              },
+            },
+            'when': {
+              'type': 'string',
+            },
+          },
+        },
+        'validation': {
+          'requiredStringProperties': ['id', 'name'],
+          'optionalStringProperties': ['when', 'icon', 'contextualTitle'],
+          'visibilityEnum': ['visible', 'hidden', 'collapsed'],
+        },
+      },
+      'viewsContainers': {
+        'inputSha256':
+            '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+        'extensionPoint': 'viewsContainers',
+        'accepts': ['object'],
+        'locations': ['activitybar', 'panel', 'secondarySidebar'],
+        'itemSchema': {
+          'type': 'object',
+          'required': ['id', 'title', 'icon'],
+          'properties': {
+            'icon': {
+              'type': 'string',
+            },
+            'id': {
+              'type': 'string',
+              'pattern': r'^[a-zA-Z0-9_-]+$',
+            },
+            'title': {
+              'type': 'string',
+            },
+          },
+        },
+        'validation': {
+          'whitespacePredicate': 'ecmascript-trim-empty',
+          'idPattern': r'^[a-zA-Z0-9_-]+$',
+          'requiredStringProperties': ['id', 'title', 'icon'],
+          'nonWhitespaceStringProperties': ['id'],
+          'whitespaceWarningProperties': ['title'],
+        },
+      },
     },
     'module': {'id': 'module:vscode', 'name': 'vscode'},
     'declarations': [for (final id in ids) _testDeclaration(id)],
@@ -218,6 +382,10 @@ Map<String, Object?> _overrides(
       'e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1',
   String commandsContributionSchemaSha256 =
       'a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33',
+  String viewsContributionSchemaSha256 =
+      '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+  String configurationContributionSchemaSha256 =
+      'e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a',
   List<String>? targets,
 }) {
   return {
@@ -226,6 +394,9 @@ Map<String, Object?> _overrides(
     'manifestSchemaSha256': manifestSchemaSha256,
     'manifestValidatorSha256': manifestValidatorSha256,
     'commandsContributionSchemaSha256': commandsContributionSchemaSha256,
+    'viewsContributionSchemaSha256': viewsContributionSchemaSha256,
+    'configurationContributionSchemaSha256':
+        configurationContributionSchemaSha256,
     'hostContracts': {
       'testExtensionHost': {
         'boundary': 'vscodeExtensionHost',

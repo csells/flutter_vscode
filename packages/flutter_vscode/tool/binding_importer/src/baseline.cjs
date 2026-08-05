@@ -167,12 +167,14 @@ function validateOverrideStructure(candidate, overrides) {
   validateDeclaredHostContracts(overrides.hostContracts);
   const requiredFields = [
     'commandsContributionSchemaSha256',
+    'configurationContributionSchemaSha256',
     'entries',
     'hostContracts',
     'manifestSchemaSha256',
     'manifestValidatorSha256',
     'schemaVersion',
     'targets',
+    'viewsContributionSchemaSha256',
     'vscodeVersion',
   ];
   const expectedFields = Object.prototype.hasOwnProperty.call(
@@ -286,6 +288,16 @@ function validateRootEvidence(candidate, overrides) {
       'commandsContributionSchemaSha256',
       'contributionSchemas.commands.inputSha256',
       candidate?.contributionSchemas?.commands?.inputSha256,
+    ],
+    [
+      'viewsContributionSchemaSha256',
+      'contributionSchemas.views.inputSha256',
+      candidate?.contributionSchemas?.views?.inputSha256,
+    ],
+    [
+      'configurationContributionSchemaSha256',
+      'contributionSchemas.configuration.inputSha256',
+      candidate?.contributionSchemas?.configuration?.inputSha256,
     ],
   ];
   for (const [overrideField, candidateField, candidateHash] of evidence) {

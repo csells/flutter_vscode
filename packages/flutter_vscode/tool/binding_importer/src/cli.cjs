@@ -10,6 +10,10 @@ const {
   extractContributionSchemaProjection,
 } = require('./contribution_schema.cjs');
 const {
+  extractViewsContributionProjections,
+  extractConfigurationContributionProjection,
+} = require('./view_configuration_schema.cjs');
+const {
   extractManifestSchemaProjection,
 } = require('./manifest_schema.cjs');
 const {
@@ -111,22 +115,59 @@ function main(arguments_) {
       path.dirname(options.pins),
       input.path,
     );
-    const projection = extractContributionSchemaProjection(
-      fs.readFileSync(contributionPath, 'utf8'),
-      contributionPath,
-      fs.readFileSync(contributionValidationHelperPath, 'utf8'),
-      contributionValidationHelperPath,
-    );
-    if (contributionSchemas[projection.extensionPoint] !== undefined) {
+    const projections = [
+      extractContributionSchemaProjection(
+        fs.readFileSync(contributionPath, 'utf8'),
+        contributionPath,
+        fs.readFileSync(contributionValidationHelperPath, 'utf8'),
+        contributionValidationHelperPath,
+      ),
+    ];
+    for (const projection of projections) {
+      if (contributionSchemas[projection.extensionPoint] !== undefined) {
+        throw cliError(
+          'CONTRIBUTION_SCHEMA_PIN_INVALID',
+          `Multiple inputs define ${projection.extensionPoint}.`,
+        );
+      }
+      contributionSchemas[projection.extensionPoint] = {
+        inputSha256: input.sha256,
+        ...projection,
+      };
+    }
+  }
+  const schemaSourceExtractors = [
+    ['viewsContributionSchemaSource', extractViewsContributionProjections],
+    [
+      'configurationContributionSchemaSource',
+      extractConfigurationContributionProjection,
+    ],
+  ];
+  for (const [kind, extract] of schemaSourceExtractors) {
+    const kindInputs = pinSet.inputs.filter((input) => input.kind === kind);
+    if (kindInputs.length !== 1) {
       throw cliError(
         'CONTRIBUTION_SCHEMA_PIN_INVALID',
-        `Multiple inputs define ${projection.extensionPoint}.`,
+        `Expected exactly one ${kind} input, found ${kindInputs.length}.`,
       );
     }
-    contributionSchemas[projection.extensionPoint] = {
-      inputSha256: input.sha256,
-      ...projection,
-    };
+    const input = kindInputs[0];
+    const sourcePath = path.resolve(path.dirname(options.pins), input.path);
+    for (const projection of extract(
+      fs.readFileSync(sourcePath, 'utf8'),
+      sourcePath,
+    )) {
+      if (contributionSchemas[projection.extensionPoint] !== undefined) {
+        throw cliError(
+          'CONTRIBUTION_SCHEMA_PIN_INVALID',
+          `Multiple inputs define ${projection.extensionPoint}.`,
+        );
+      }
+      contributionSchemas[projection.extensionPoint] = {
+        inputSha256: input.sha256,
+        ...projection,
+      };
+    }
   }
   const extractedContributionNames = Object.keys(contributionSchemas).sort();
   if (!arraysEqual(extractedContributionNames, pinSet.contributionSchemas)) {

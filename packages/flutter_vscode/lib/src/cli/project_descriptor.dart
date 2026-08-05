@@ -49,6 +49,9 @@ const _manifestShape = _ConstShape(
   defaults: {
     'schemaVersion': 1,
     'commands': <Object?>[],
+    'viewsContainers': <String, Object?>{},
+    'views': <String, Object?>{},
+    'configuration': null,
   },
   fieldOrder: [
     'schemaVersion',
@@ -59,6 +62,9 @@ const _manifestShape = _ConstShape(
     'publisher',
     'activationEvents',
     'commands',
+    'viewsContainers',
+    'views',
+    'configuration',
   ],
 );
 
@@ -67,6 +73,42 @@ const _commandShape = _ConstShape(
   requiredFields: {'command', 'title'},
   defaults: {},
   fieldOrder: ['command', 'title'],
+);
+
+const _viewContainerShape = _ConstShape(
+  typeName: 'ExtensionViewContainer',
+  requiredFields: {'id', 'title', 'icon'},
+  defaults: {},
+  fieldOrder: ['id', 'title', 'icon'],
+);
+
+const _viewShape = _ConstShape(
+  typeName: 'ExtensionView',
+  requiredFields: {'id', 'name', 'icon'},
+  defaults: {
+    'type': null,
+    'when': null,
+    'visibility': null,
+    'contextualTitle': null,
+    'initialSize': null,
+  },
+  fieldOrder: [
+    'id',
+    'name',
+    'icon',
+    'type',
+    'when',
+    'visibility',
+    'contextualTitle',
+    'initialSize',
+  ],
+);
+
+const _configurationShape = _ConstShape(
+  typeName: 'ExtensionConfiguration',
+  requiredFields: {'properties'},
+  defaults: {'title': null, 'order': null},
+  fieldOrder: ['title', 'order', 'properties'],
 );
 
 /// Reads the deliberately restricted Dart-owned extension descriptor.
@@ -210,9 +252,16 @@ Map<String, Object?> _readInvocation(
 }
 
 Object? _readValue(Expression expression) {
-  final command = _asInvocationOf(expression, _commandShape.typeName);
-  if (command != null) {
-    return _readInvocation(command, _commandShape);
+  for (final shape in const [
+    _commandShape,
+    _viewContainerShape,
+    _viewShape,
+    _configurationShape,
+  ]) {
+    final invocation = _asInvocationOf(expression, shape.typeName);
+    if (invocation != null) {
+      return _readInvocation(invocation, shape);
+    }
   }
   return switch (expression) {
     SimpleStringLiteral() => expression.value,
@@ -222,8 +271,32 @@ Object? _readValue(Expression expression) {
     DoubleLiteral() => expression.value,
     NullLiteral() => null,
     ListLiteral() => _readList(expression),
+    SetOrMapLiteral() => _readMap(expression),
     _ => throw const FormatException(_literalRules),
   };
+}
+
+Map<String, Object?> _readMap(SetOrMapLiteral literal) {
+  final values = <String, Object?>{};
+  for (final element in literal.elements) {
+    if (element is! MapLiteralEntry) {
+      throw const FormatException(_literalRules);
+    }
+    final key = element.key;
+    if (key is! SimpleStringLiteral) {
+      throw const FormatException(
+        'extension.dart map keys must be simple string literals. '
+        '$_literalRules',
+      );
+    }
+    if (values.containsKey(key.value)) {
+      throw FormatException(
+        'extension.dart declares the duplicate map key "${key.value}".',
+      );
+    }
+    values[key.value] = _readValue(element.value);
+  }
+  return values;
 }
 
 String _readAdjacentStrings(AdjacentStrings literal) {

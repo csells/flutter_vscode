@@ -1139,4 +1139,25 @@ function unsupported(fileName, path, detail) {
   throw error;
 }
 
-module.exports = {extractContributionSchemaProjection};
+module.exports = {
+  extractContributionSchemaProjection,
+  // Shared fail-closed AST helpers, reused by the views/configuration
+  // extractor so both speak the same dialect of refusal.
+  helpers: {
+    collectIfStatements,
+    compareOrdinal,
+    expectArrayProperty,
+    expectIdentifier,
+    expectObjectLiteral,
+    expectOnlyObjectProperties,
+    expectPropertyInitializer,
+    expectStringLiteral,
+    expectStringProperty,
+    findVariableInitializer,
+    hasProperty,
+    normalizedExpressionText,
+    propertyName,
+    unsupported,
+    unwrapExpression,
+  },
+};

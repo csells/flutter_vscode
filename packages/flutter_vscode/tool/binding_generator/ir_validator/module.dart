@@ -126,6 +126,8 @@ Map<String, Object?> validateIrSource(
       'extensionManifestValidatorSource',
       'contributionSchemaSource',
       'contributionValidationHelperSource',
+      'viewsContributionSchemaSource',
+      'configurationContributionSchemaSource',
       'license',
     }.contains(kind)) {
       _invalidIrValue('$path.kind', kind);
@@ -149,10 +151,17 @@ Map<String, Object?> validateIrSource(
         'inventory.source.contributionSchemas[$index]',
       ),
   ];
-  if (schemaNames.length != 1 || schemaNames.single != 'commands') {
+  const expectedSchemaNames = [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ];
+  if (schemaNames.join(',') != expectedSchemaNames.join(',')) {
     throw const VSCodeBindingGenerationException(
       'INVALID_GENERATOR_INPUT',
-      'inventory.source.contributionSchemas must contain exactly commands.',
+      'inventory.source.contributionSchemas must contain exactly commands, '
+          'configuration, views, viewsContainers.',
     );
   }
   const officialSourcePathByKind = <String, String>{
@@ -164,6 +173,10 @@ Map<String, Object?> validateIrSource(
     'contributionSchemaSource':
         'src/vs/workbench/services/actions/common/menusExtensionPoint.ts',
     'contributionValidationHelperSource': 'src/vs/base/common/strings.ts',
+    'viewsContributionSchemaSource':
+        'src/vs/workbench/api/browser/viewsExtensionPoint.ts',
+    'configurationContributionSchemaSource':
+        'src/vs/workbench/api/common/configurationExtensionPoint.ts',
     'license': 'LICENSE.txt',
   };
   for (final entry in officialSourcePathByKind.entries) {

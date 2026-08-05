@@ -152,6 +152,10 @@ void registerEmissionOutputsTests() {
           'e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1',
       'commandsContributionSchemaSha256':
           'a85c943ae42b2cdef0403070f78cfb9dbe7bcdc1fce7c57bf9ca2234d1e36a33',
+      'viewsContributionSchemaSha256':
+          '17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102',
+      'configurationContributionSchemaSha256':
+          'e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a',
     });
     final pinnedOverrides = _readJson(
       'tool/bindings/overrides/vscode-1.129.1.json',

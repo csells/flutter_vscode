@@ -820,6 +820,9 @@ function inventory(declarations) {
     manifestValidator: {inputSha256: '2'.repeat(64)},
     contributionSchemas: {
       commands: {inputSha256: '3'.repeat(64)},
+      views: {inputSha256: '5'.repeat(64)},
+      viewsContainers: {inputSha256: '5'.repeat(64)},
+      configuration: {inputSha256: '6'.repeat(64)},
     },
     declarations,
   };
@@ -843,6 +846,8 @@ function overrides(entries, hostContracts) {
     manifestSchemaSha256: '1'.repeat(64),
     manifestValidatorSha256: '2'.repeat(64),
     commandsContributionSchemaSha256: '3'.repeat(64),
+    viewsContributionSchemaSha256: '5'.repeat(64),
+    configurationContributionSchemaSha256: '6'.repeat(64),
     hostContracts,
     targets: Object.keys(entries),
     entries,

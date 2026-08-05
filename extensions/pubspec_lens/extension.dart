@@ -24,4 +24,23 @@ const extension = ExtensionManifest(
       title: 'Pubspec Lens: Smoke Report (diagnostics)',
     ),
   ],
+  views: {
+    'explorer': [
+      ExtensionView(
+        id: 'pubspecLens.dependencies',
+        name: 'Pubspec Dependencies',
+        icon: r'$(package)',
+      ),
+    ],
+  },
+  configuration: ExtensionConfiguration(
+    title: 'Pubspec Lens',
+    properties: {
+      'pubspecLens.registryUrl': {
+        'type': 'string',
+        'default': 'https://pub.dev',
+        'description': 'Base URL of the pub-compatible package registry.',
+      },
+    },
+  ),
 );

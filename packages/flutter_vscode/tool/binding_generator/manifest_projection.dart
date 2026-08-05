@@ -143,10 +143,18 @@ String validateCommandsContributionSchema(
     inventory['contributionSchemas'],
     'inventory.contributionSchemas',
   );
-  if (schemas.keys.length != 1 || !schemas.containsKey('commands')) {
+  const expectedSchemas = [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ];
+  final schemaNames = schemas.keys.toList()..sort();
+  if (schemaNames.join(',') != expectedSchemas.join(',')) {
     throw const VSCodeBindingGenerationException(
       'INVALID_GENERATOR_INPUT',
-      'Inventory must contain exactly the commands contribution schema.',
+      'Inventory must contain exactly the commands, configuration, views, '
+          'and viewsContainers contribution schemas.',
     );
   }
   final commands = objectMap(
@@ -307,6 +315,446 @@ List<Map<String, Object?>> projectCommands(Object? value) {
   return result;
 }
 
+/// The shared view item schema, reviewed against the pinned extraction.
+const _viewItemSchema = <String, Object?>{
+  'type': 'object',
+  'required': <Object?>['id', 'name', 'icon'],
+  'properties': <String, Object?>{
+    'accessibilityHelpContent': <String, Object?>{'type': 'string'},
+    'contextualTitle': <String, Object?>{'type': 'string'},
+    'icon': <String, Object?>{'type': 'string'},
+    'id': <String, Object?>{'type': 'string'},
+    'initialSize': <String, Object?>{'type': 'number'},
+    'name': <String, Object?>{'type': 'string'},
+    'type': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>['tree', 'webview'],
+    },
+    'visibility': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>['visible', 'hidden', 'collapsed'],
+    },
+    'when': <String, Object?>{'type': 'string'},
+  },
+};
+
+/// Validates the pinned views and viewsContainers schemas; returns their
+/// shared input hash. Both live in one pinned source file, so one hash
+/// covers both -- the generator refuses an inventory where they diverge.
+String validateViewsContributionSchemas(Map<String, Object?> inventory) {
+  final schemas = objectMap(
+    inventory['contributionSchemas'],
+    'inventory.contributionSchemas',
+  );
+  final containers = objectMap(
+    schemas['viewsContainers'],
+    'inventory.contributionSchemas.viewsContainers',
+  );
+  final views = objectMap(
+    schemas['views'],
+    'inventory.contributionSchemas.views',
+  );
+  final containersSha256 = sha256Digest(
+    containers['inputSha256'],
+    'inventory.contributionSchemas.viewsContainers.inputSha256',
+  );
+  final viewsSha256 = sha256Digest(
+    views['inputSha256'],
+    'inventory.contributionSchemas.views.inputSha256',
+  );
+  if (containersSha256 != viewsSha256) {
+    throw const VSCodeBindingGenerationException(
+      'INVALID_GENERATOR_INPUT',
+      'views and viewsContainers must share one pinned source file.',
+    );
+  }
+  const expectedContainers = <String, Object?>{
+    'extensionPoint': 'viewsContainers',
+    'accepts': <Object?>['object'],
+    'locations': <Object?>['activitybar', 'panel', 'secondarySidebar'],
+    'itemSchema': <String, Object?>{
+      'type': 'object',
+      'required': <Object?>['id', 'title', 'icon'],
+      'properties': <String, Object?>{
+        'icon': <String, Object?>{'type': 'string'},
+        'id': <String, Object?>{
+          'type': 'string',
+          'pattern': r'^[a-zA-Z0-9_-]+$',
+        },
+        'title': <String, Object?>{'type': 'string'},
+      },
+    },
+    'validation': <String, Object?>{
+      'whitespacePredicate': 'ecmascript-trim-empty',
+      'idPattern': r'^[a-zA-Z0-9_-]+$',
+      'requiredStringProperties': <Object?>['id', 'title', 'icon'],
+      'nonWhitespaceStringProperties': <Object?>['id'],
+      'whitespaceWarningProperties': <Object?>['title'],
+    },
+  };
+  const expectedViews = <String, Object?>{
+    'extensionPoint': 'views',
+    'accepts': <Object?>['object'],
+    'locations': <Object?>['debug', 'explorer', 'scm', 'test'],
+    'remoteLocations': <Object?>['remote'],
+    'additionalLocations': true,
+    'itemSchema': _viewItemSchema,
+    'remoteItemSchema': <String, Object?>{
+      'type': 'object',
+      'required': <Object?>['id', 'name'],
+      'properties': <String, Object?>{
+        'group': <String, Object?>{'type': 'string'},
+        'id': <String, Object?>{'type': 'string'},
+        'name': <String, Object?>{'type': 'string'},
+        'remoteName': <String, Object?>{
+          'type': <Object?>['string', 'array'],
+          'items': <String, Object?>{'type': 'string'},
+        },
+        'when': <String, Object?>{'type': 'string'},
+      },
+    },
+    'validation': <String, Object?>{
+      'requiredStringProperties': <Object?>['id', 'name'],
+      'optionalStringProperties': <Object?>['when', 'icon', 'contextualTitle'],
+      'visibilityEnum': <Object?>['visible', 'hidden', 'collapsed'],
+    },
+  };
+  _expectReviewedProjection(
+    containers,
+    expectedContainers,
+    'inventory.contributionSchemas.viewsContainers',
+  );
+  _expectReviewedProjection(
+    views,
+    expectedViews,
+    'inventory.contributionSchemas.views',
+  );
+  return viewsSha256;
+}
+
+/// Validates the pinned configuration schema; returns its input hash.
+String validateConfigurationContributionSchema(
+  Map<String, Object?> inventory,
+) {
+  final schemas = objectMap(
+    inventory['contributionSchemas'],
+    'inventory.contributionSchemas',
+  );
+  final configuration = objectMap(
+    schemas['configuration'],
+    'inventory.contributionSchemas.configuration',
+  );
+  final inputSha256 = sha256Digest(
+    configuration['inputSha256'],
+    'inventory.contributionSchemas.configuration.inputSha256',
+  );
+  const expected = <String, Object?>{
+    'extensionPoint': 'configuration',
+    'accepts': <Object?>['object', 'array'],
+    'entrySchema': <String, Object?>{
+      'type': 'object',
+      'properties': <String, Object?>{
+        'order': <String, Object?>{'type': 'integer'},
+        'properties': <String, Object?>{
+          'type': 'object',
+          'propertyNames': <String, Object?>{'pattern': r'\S+'},
+          'additionalProperties': <String, Object?>{},
+        },
+        'title': <String, Object?>{'type': 'string'},
+      },
+    },
+    'validation': <String, Object?>{
+      'propertyNamePattern': r'\S+',
+      'titleType': 'string',
+    },
+  };
+  _expectReviewedProjection(
+    configuration,
+    expected,
+    'inventory.contributionSchemas.configuration',
+  );
+  return inputSha256;
+}
+
+void _expectReviewedProjection(
+  Map<String, Object?> actual,
+  Map<String, Object?> expected,
+  String path,
+) {
+  final projection = Map<String, Object?>.of(actual)..remove('inputSha256');
+  if (jsonEncode(projection) != jsonEncode(expected)) {
+    final differingPath = _firstJsonDifferencePath(expected, projection, path);
+    throw VSCodeBindingGenerationException(
+      'INVALID_GENERATOR_INPUT',
+      'Contribution schema at $path contains an unprojected change. First '
+          'differing path: $differingPath. Regenerate the IR from the pinned '
+          'inputs; if upstream changed, review and update the generator '
+          'projection before retrying.',
+    );
+  }
+}
+
+/// Projects author viewsContainers data against the pinned schema.
+Map<String, Object?> projectViewsContainers(Object? value) {
+  if (value == null) {
+    return const {};
+  }
+  const locations = {'activitybar', 'panel', 'secondarySidebar'};
+  final idPattern = RegExp(r'^[a-zA-Z0-9_-]+$');
+  final result = <String, Object?>{};
+  final byLocation = objectMap(value, 'project.viewsContainers');
+  final identifiers = <String>{};
+  for (final location in byLocation.keys.toList()..sort()) {
+    if (!locations.contains(location)) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'Unknown views container location $location; the pinned VS Code '
+            'accepts ${locations.join(', ')}.',
+      );
+    }
+    final containers = <Map<String, Object?>>[];
+    for (final rawContainer in objectList(
+      byLocation[location],
+      'project.viewsContainers.$location',
+    )) {
+      final container = objectMap(
+        rawContainer,
+        'project.viewsContainers.$location entry',
+      );
+      final unknown = container.keys
+          .where((key) => !{'id', 'title', 'icon'}.contains(key))
+          .toList()
+        ..sort();
+      if (unknown.isNotEmpty) {
+        throw VSCodeBindingGenerationException(
+          'INVALID_PROJECT_MANIFEST',
+          'Unknown views container fields: ${unknown.join(', ')}.',
+        );
+      }
+      final identifier = nonWhitespaceString(
+        container['id'],
+        'project.viewsContainers.$location entry.id',
+      );
+      if (!idPattern.hasMatch(identifier)) {
+        throw VSCodeBindingGenerationException(
+          'INVALID_PROJECT_MANIFEST',
+          'Views container id $identifier must match '
+              '${idPattern.pattern}.',
+        );
+      }
+      if (!identifiers.add(identifier)) {
+        throw VSCodeBindingGenerationException(
+          'INVALID_PROJECT_MANIFEST',
+          'Duplicate views container $identifier.',
+        );
+      }
+      containers.add(<String, Object?>{
+        'id': identifier,
+        // A whitespace-only title is a warning in the pinned host, not an
+        // error; the projection matches the platform instead of exceeding
+        // it.
+        'title': string(
+          container['title'],
+          'project.viewsContainers.$location entry.title',
+        ),
+        'icon': string(
+          container['icon'],
+          'project.viewsContainers.$location entry.icon',
+        ),
+      });
+    }
+    result[location] = containers;
+  }
+  return result;
+}
+
+/// Projects author views data against the pinned schema.
+Map<String, Object?> projectViews(
+  Object? value, {
+  required Set<String> contributedContainers,
+}) {
+  if (value == null) {
+    return const {};
+  }
+  const knownLocations = {'debug', 'explorer', 'scm', 'test'};
+  const remoteLocations = {'remote'};
+  const optionalStrings = {
+    'when',
+    'icon',
+    'contextualTitle',
+    'accessibilityHelpContent',
+  };
+  const visibilityEnum = {'visible', 'hidden', 'collapsed'};
+  const typeEnum = {'tree', 'webview'};
+  final result = <String, Object?>{};
+  final byLocation = objectMap(value, 'project.views');
+  final identifiers = <String>{};
+  for (final location in byLocation.keys.toList()..sort()) {
+    if (remoteLocations.contains(location)) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'The $location views container needs the contribViewsRemote API '
+            'proposal, which stable extensions cannot enable.',
+      );
+    }
+    if (!knownLocations.contains(location) &&
+        !contributedContainers.contains(location)) {
+      throw VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'Views location $location is neither a built-in container '
+            '(${knownLocations.join(', ')}) nor one contributed by this '
+            'extension.',
+      );
+    }
+    final views = <Map<String, Object?>>[];
+    for (final rawView in objectList(
+      byLocation[location],
+      'project.views.$location',
+    )) {
+      final view = objectMap(rawView, 'project.views.$location entry');
+      final unknown = view.keys
+          .where(
+            (key) => !{
+              'id',
+              'name',
+              'icon',
+              'type',
+              'visibility',
+              'initialSize',
+              ...optionalStrings,
+            }.contains(key),
+          )
+          .toList()
+        ..sort();
+      if (unknown.isNotEmpty) {
+        throw VSCodeBindingGenerationException(
+          'INVALID_PROJECT_MANIFEST',
+          'Unknown view fields: ${unknown.join(', ')}.',
+        );
+      }
+      final identifier = nonWhitespaceString(
+        view['id'],
+        'project.views.$location entry.id',
+      );
+      if (!identifiers.add(identifier)) {
+        throw VSCodeBindingGenerationException(
+          'INVALID_PROJECT_MANIFEST',
+          'Duplicate view $identifier.',
+        );
+      }
+      final projected = <String, Object?>{
+        'id': identifier,
+        'name': string(view['name'], 'project.views.$location entry.name'),
+        // Required by the pinned manifest schema, though the runtime
+        // tolerates its absence: the build follows the schema.
+        'icon': string(view['icon'], 'project.views.$location entry.icon'),
+      };
+      final type = view['type'];
+      if (type != null) {
+        final typed = string(type, 'project.views.$location entry.type');
+        if (!typeEnum.contains(typed)) {
+          throw VSCodeBindingGenerationException(
+            'INVALID_PROJECT_MANIFEST',
+            'View type $typed must be one of ${typeEnum.join(', ')}.',
+          );
+        }
+        projected['type'] = typed;
+      }
+      final visibility = view['visibility'];
+      if (visibility != null) {
+        final typed = string(
+          visibility,
+          'project.views.$location entry.visibility',
+        );
+        if (!visibilityEnum.contains(typed)) {
+          throw VSCodeBindingGenerationException(
+            'INVALID_PROJECT_MANIFEST',
+            'View visibility $typed must be one of '
+                '${visibilityEnum.join(', ')}.',
+          );
+        }
+        projected['visibility'] = typed;
+      }
+      final initialSize = view['initialSize'];
+      if (initialSize != null) {
+        if (initialSize is! num) {
+          throw const VSCodeBindingGenerationException(
+            'INVALID_PROJECT_MANIFEST',
+            'View initialSize must be a number.',
+          );
+        }
+        projected['initialSize'] = initialSize;
+      }
+      for (final key in optionalStrings) {
+        if (view[key] != null) {
+          projected[key] = string(
+            view[key],
+            'project.views.$location entry.$key',
+          );
+        }
+      }
+      views.add(projected);
+    }
+    result[location] = views;
+  }
+  return result;
+}
+
+/// Projects author configuration data against the pinned schema.
+Map<String, Object?> projectConfiguration(Object? value) {
+  if (value == null) {
+    return const {};
+  }
+  final entry = objectMap(value, 'project.configuration');
+  final unknown = entry.keys
+      .where((key) => !{'title', 'order', 'properties'}.contains(key))
+      .toList()
+    ..sort();
+  if (unknown.isNotEmpty) {
+    throw VSCodeBindingGenerationException(
+      'INVALID_PROJECT_MANIFEST',
+      'Unknown configuration fields: ${unknown.join(', ')}.',
+    );
+  }
+  final result = <String, Object?>{};
+  if (entry['title'] != null) {
+    result['title'] = string(entry['title'], 'project.configuration.title');
+  }
+  final order = entry['order'];
+  if (order != null) {
+    if (order is! int) {
+      throw const VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'configuration.order must be an integer.',
+      );
+    }
+    result['order'] = order;
+  }
+  final properties = objectMap(
+    entry['properties'],
+    'project.configuration.properties',
+  );
+  final nonWhitespace = RegExp(r'\S');
+  final projected = <String, Object?>{};
+  for (final name in properties.keys.toList()..sort()) {
+    if (!nonWhitespace.hasMatch(name)) {
+      throw const VSCodeBindingGenerationException(
+        'INVALID_PROJECT_MANIFEST',
+        'Configuration property names must contain a non-whitespace '
+            'character.',
+      );
+    }
+    // The pinned schema accepts any draft-07 schema as a property value;
+    // the projection passes the author value through untouched.
+    projected[name] = objectMap(
+      properties[name],
+      'project.configuration.properties.$name',
+    );
+  }
+  result['properties'] = projected;
+  return result;
+}
+
 Object _projectCommandIcon(Object? value) {
   if (value is String) {
     return value;
@@ -339,6 +787,9 @@ void validateProjectDescriptor(Map<String, Object?> project) {
   const expectedKeys = {
     'activationEvents',
     'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
     'description',
     'displayName',
     'name',

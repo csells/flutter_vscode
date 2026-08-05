@@ -378,7 +378,12 @@ export const commandsExtensionPoint = ExtensionsRegistry.registerExtensionPoint(
       .digest('hex'),
     license: 'MIT',
   });
-  pins.contributionSchemas = ['commands'];
+  pins.contributionSchemas = [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ];
   const pinsPath = path.join(directory, 'pins.json');
   const outputPath = path.join(directory, 'inventory.json');
   fs.writeFileSync(pinsPath, `${JSON.stringify(pins, null, 2)}\n`);
@@ -397,9 +402,16 @@ export const commandsExtensionPoint = ExtensionsRegistry.registerExtensionPoint(
 
   assert.equal(result.status, 0, result.stderr);
   const ir = JSON.parse(fs.readFileSync(outputPath, 'utf8'));
-  assert.deepEqual(ir.source.contributionSchemas, ['commands']);
+  assert.deepEqual(ir.source.contributionSchemas, [
+    'commands',
+    'configuration',
+    'views',
+    'viewsContainers',
+  ]);
   assert.deepEqual(ir.contributionSchemas.commands, {
-    inputSha256: pins.inputs.at(-1).sha256,
+    inputSha256: pins.inputs.find(
+      (input) => input.kind === 'contributionSchemaSource',
+    ).sha256,
     extensionPoint: 'commands',
     accepts: ['object', 'array'],
     itemSchema: {

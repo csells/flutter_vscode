@@ -26,6 +26,25 @@
         "command": "pubspec-lens.smoke",
         "title": "Pubspec Lens: Smoke Report (diagnostics)"
       }
-    ]
+    ],
+    "views": {
+      "explorer": [
+        {
+          "id": "pubspecLens.dependencies",
+          "name": "Pubspec Dependencies",
+          "icon": "$(package)"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Pubspec Lens",
+      "properties": {
+        "pubspecLens.registryUrl": {
+          "type": "string",
+          "default": "https://pub.dev",
+          "description": "Base URL of the pub-compatible package registry."
+        }
+      }
+    }
   }
 }

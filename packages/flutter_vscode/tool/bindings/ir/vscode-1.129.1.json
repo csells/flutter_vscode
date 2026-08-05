@@ -81,10 +81,35 @@
         "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/LICENSE.txt",
         "sha256": "9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9",
         "license": "MIT"
+      },
+      {
+        "name": "Views extension point source",
+        "kind": "viewsContributionSchemaSource",
+        "path": "viewsExtensionPoint.ts",
+        "version": "1.129.1",
+        "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+        "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/browser/viewsExtensionPoint.ts",
+        "sha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+        "license": "MIT",
+        "licensePath": "LICENSE.txt"
+      },
+      {
+        "name": "Configuration extension point source",
+        "kind": "configurationContributionSchemaSource",
+        "path": "configurationExtensionPoint.ts",
+        "version": "1.129.1",
+        "commit": "8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8",
+        "source": "https://raw.githubusercontent.com/microsoft/vscode/8a7abeba6e03ea3af87bfbce9a1b7e48fed567b8/src/vs/workbench/api/common/configurationExtensionPoint.ts",
+        "sha256": "e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a",
+        "license": "MIT",
+        "licensePath": "LICENSE.txt"
       }
     ],
     "contributionSchemas": [
-      "commands"
+      "commands",
+      "configuration",
+      "views",
+      "viewsContainers"
     ]
   },
   "manifestSchema": {
@@ -233,6 +258,192 @@
             "light"
           ]
         }
+      }
+    },
+    "viewsContainers": {
+      "inputSha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+      "extensionPoint": "viewsContainers",
+      "accepts": [
+        "object"
+      ],
+      "locations": [
+        "activitybar",
+        "panel",
+        "secondarySidebar"
+      ],
+      "itemSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "icon"
+        ],
+        "properties": {
+          "icon": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "validation": {
+        "whitespacePredicate": "ecmascript-trim-empty",
+        "idPattern": "^[a-zA-Z0-9_-]+$",
+        "requiredStringProperties": [
+          "id",
+          "title",
+          "icon"
+        ],
+        "nonWhitespaceStringProperties": [
+          "id"
+        ],
+        "whitespaceWarningProperties": [
+          "title"
+        ]
+      }
+    },
+    "views": {
+      "inputSha256": "17006750e3af4359fa5a518bf8dcb14beb060e98bc401245302a46030172a102",
+      "extensionPoint": "views",
+      "accepts": [
+        "object"
+      ],
+      "locations": [
+        "debug",
+        "explorer",
+        "scm",
+        "test"
+      ],
+      "remoteLocations": [
+        "remote"
+      ],
+      "additionalLocations": true,
+      "itemSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "icon"
+        ],
+        "properties": {
+          "accessibilityHelpContent": {
+            "type": "string"
+          },
+          "contextualTitle": {
+            "type": "string"
+          },
+          "icon": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "initialSize": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "tree",
+              "webview"
+            ]
+          },
+          "visibility": {
+            "type": "string",
+            "enum": [
+              "visible",
+              "hidden",
+              "collapsed"
+            ]
+          },
+          "when": {
+            "type": "string"
+          }
+        }
+      },
+      "remoteItemSchema": {
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "properties": {
+          "group": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "remoteName": {
+            "type": [
+              "string",
+              "array"
+            ],
+            "items": {
+              "type": "string"
+            }
+          },
+          "when": {
+            "type": "string"
+          }
+        }
+      },
+      "validation": {
+        "requiredStringProperties": [
+          "id",
+          "name"
+        ],
+        "optionalStringProperties": [
+          "when",
+          "icon",
+          "contextualTitle"
+        ],
+        "visibilityEnum": [
+          "visible",
+          "hidden",
+          "collapsed"
+        ]
+      }
+    },
+    "configuration": {
+      "inputSha256": "e9faa24f3835b807762aa069a8029c3b004b76a3e7f42ceddee598b71b26cb0a",
+      "extensionPoint": "configuration",
+      "accepts": [
+        "object",
+        "array"
+      ],
+      "entrySchema": {
+        "type": "object",
+        "properties": {
+          "order": {
+            "type": "integer"
+          },
+          "properties": {
+            "type": "object",
+            "propertyNames": {
+              "pattern": "\\S+"
+            },
+            "additionalProperties": {}
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "validation": {
+        "propertyNamePattern": "\\S+",
+        "titleType": "string"
       }
     }
   },
