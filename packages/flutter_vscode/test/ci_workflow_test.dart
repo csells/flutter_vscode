@@ -108,13 +108,42 @@ void main() {
 
       var executed = 0;
       for (final job in jobs.entries) {
+        final runsOn = (job.value as YamlMap)['runs-on'] as String? ?? '';
         final steps = (job.value as YamlMap)['steps'] as YamlList;
+        // Each job executes on the platform it declares, or the test
+        // fails: an ubuntu job runs in the Linux container; a macos job
+        // runs natively when this host is macOS, which is what the runner
+        // does. Executing a macos job inside a Linux container is how this
+        // test once segfaulted VS Code, and skipping it proves nothing.
+        final native = runsOn.startsWith('macos');
+        if (native && !Platform.isMacOS) {
+          fail(
+            'workflow job "${job.key}" declares $runsOn, which this host '
+            'cannot execute faithfully; run the test on macOS or in CI',
+          );
+        }
         for (final step in steps.cast<YamlMap>()) {
           final command = step['run'] as String?;
           if (command == null) {
             continue;
           }
           final relative = step['working-directory'] as String?;
+          if (native) {
+            final result = await Process.run(
+              'bash',
+              ['-lc', command],
+              workingDirectory:
+                  relative == null ? checkout : p.join(checkout, relative),
+            );
+            expect(
+              result.exitCode,
+              0,
+              reason: 'workflow job "${job.key}", step "${step['name']}" '
+                  'failed natively\n${result.stdout}\n${result.stderr}',
+            );
+            executed += 1;
+            continue;
+          }
           final result = await Process.run('docker', [
             'run',
             '--rm',
@@ -149,7 +178,7 @@ void main() {
 
       expect(
         executed,
-        greaterThanOrEqualTo(6),
+        greaterThanOrEqualTo(7),
         reason: 'every `run:` step in the workflow must have been executed; '
             'a workflow that grew steps this test skipped would pass falsely',
       );
