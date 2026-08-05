@@ -33,6 +33,40 @@ void registerProjectContributionsTests() {
       ),
     );
   });
+  test('rejects unprojected changes in each new contribution schema', () {
+    // Double entry, same as commands: the importer derives each projection
+    // from the pinned source and the generator carries an independently
+    // reviewed copy. A drifted IR node must fail with the differing path,
+    // never be absorbed.
+    for (final schema in ['viewsContainers', 'views', 'configuration']) {
+      final inventory = _inventory(['interface:vscode.Known']);
+      final schemas =
+          (inventory['contributionSchemas']! as Map<Object?, Object?>)
+              .cast<String, Object?>();
+      (schemas[schema]! as Map<Object?, Object?>)
+          .cast<String, Object?>()
+          .remove('validation');
+
+      expect(
+        () => VSCodeBindingGenerator().generate(
+          inventory: inventory,
+          overrides: _overrides({'interface:vscode.Known': 'opaqueJsObject'}),
+          project: _project(),
+        ),
+        throwsA(
+          isA<VSCodeBindingGenerationException>()
+              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+              .having(
+                (error) => error.message,
+                'message',
+                allOf(contains(schema), contains('unprojected change')),
+              ),
+        ),
+        reason: schema,
+      );
+    }
+  });
+
   test('reports the first command schema drift path and remediation', () {
     final inventory = _inventory(['interface:vscode.Known']);
     final schemas = (inventory['contributionSchemas']! as Map<Object?, Object?>)

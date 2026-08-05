@@ -124,6 +124,15 @@ async function run() {
     assert.equal(report.behind, 1);
     assert.equal(report.outdated, 1);
     assert.equal(report.skipped, 1);
+    // The smoke report's treeChildren reads the extension's internal model,
+    // which proves the analysis but nothing about the contributed view. The
+    // <viewId>.focus command exists only when VS Code accepted the views
+    // contribution from the extension's own manifest, so focusing is
+    // contribution proof the extension cannot fake -- and it renders the
+    // view, driving the registered provider through the real tree.
+    await vscode.commands.executeCommand('pubspecLens.dependencies.focus');
+    console.log('[pubspec-lens-test] contributed view focused and rendered');
+
     assert.deepEqual(report.treeChildren, [
       'current_pkg — current (latest 1.2.3)',
       'behind_pkg — behind (^1.2.3 available)',

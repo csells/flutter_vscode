@@ -70,6 +70,13 @@ void main() {
 
       watcher.kill();
     },
-    timeout: const Timeout(Duration(minutes: 12)),
+    // The inner waits already fail with diagnostics at five minutes each;
+    // the outer ceiling exists only as a backstop and must never be what
+    // fires first. At twelve minutes it was exactly that: two five-minute
+    // budgets plus a scaffold and two pub resolves under full-suite load
+    // left no headroom, which is the recorded "contention flake" -- green
+    // standalone, red under load, same mechanism as the error-code test's
+    // thirty-second default.
+    timeout: const Timeout(Duration(minutes: 20)),
   );
 }
