@@ -4,6 +4,7 @@ description: >-
   views.
 version: 0.1.0
 homepage: https://github.com/SlowGen/flutter_vscode
+repository: https://github.com/SlowGen/flutter_vscode
 resolution: workspace
 
 

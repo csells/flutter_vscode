@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_vscode/view.dart';
+import 'package:dart_vscode/view_protocol.dart';
+import 'package:test/test.dart';
 
 part 'view_protocol/refusals.dart';
 part 'view_protocol/handshake.dart';
@@ -56,8 +56,9 @@ final class _KindFailingViewTransport implements ViewTransport {
 
   @override
   Future<void> send(Object? message) {
-    if (message case <Object?, Object?>{'kind': final String kind}
-        when kind == _failedKind) {
+    if (message case <Object?, Object?>{
+      'kind': final String kind,
+    } when kind == _failedKind) {
       throw StateError('transport send failed for $kind');
     }
     return _delegate.send(message);
@@ -246,9 +247,9 @@ final class _ReadyAckObservingViewTransport implements ViewTransport {
   void Function()? onReadyAck;
 
   List<Object?> get sentKinds => [
-        for (final rawMessage in sent)
-          (rawMessage! as Map<Object?, Object?>)['kind'],
-      ];
+    for (final rawMessage in sent)
+      (rawMessage! as Map<Object?, Object?>)['kind'],
+  ];
 
   @override
   Stream<Object?> get messages => _delegate.messages;

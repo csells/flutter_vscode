@@ -17,9 +17,9 @@ final ViewValueSchema<_Report> _reportSchema = ViewValueSchema((field) {
     (report) => report.editorBackground,
   );
   return (fields) => _Report(
-        kind: kind(fields),
-        editorBackground: editorBackground(fields),
-      );
+    kind: kind(fields),
+    editorBackground: editorBackground(fields),
+  );
 });
 
 /// A CoverageNode-shaped recursive tree.
@@ -39,8 +39,11 @@ final class _Node {
 
 final ViewValueSchema<_Node> _nodeSchema = ViewValueSchema((field) {
   final name = field('name', ViewValueKind.string, (node) => node.name);
-  final linesFound =
-      field('linesFound', ViewValueKind.integer, (node) => node.linesFound);
+  final linesFound = field(
+    'linesFound',
+    ViewValueKind.integer,
+    (node) => node.linesFound,
+  );
   final isFile = field('isFile', ViewValueKind.boolean, (node) => node.isFile);
   final children = field(
     'children',
@@ -48,11 +51,11 @@ final ViewValueSchema<_Node> _nodeSchema = ViewValueSchema((field) {
     (node) => node.children,
   );
   return (fields) => _Node(
-        name: name(fields),
-        linesFound: linesFound(fields),
-        isFile: isFile(fields),
-        children: children(fields),
-      );
+    name: name(fields),
+    linesFound: linesFound(fields),
+    isFile: isFile(fields),
+    children: children(fields),
+  );
 });
 
 /// A CoverageSnapshot-shaped composite nesting the recursive tree.
@@ -138,12 +141,12 @@ void main() {
 
   group('ViewValueSchema exact-schema guard', () {
     Matcher throwsFormatExceptionNaming(String fragment) => throwsA(
-          isA<FormatException>().having(
-            (error) => error.message,
-            'message',
-            contains(fragment),
-          ),
-        );
+      isA<FormatException>().having(
+        (error) => error.message,
+        'message',
+        contains(fragment),
+      ),
+    );
 
     test('a missing key is rejected by name', () {
       expect(
@@ -199,17 +202,21 @@ void main() {
     });
 
     test('a wrong-typed tree leaf names the failing path', () {
-      final wire = _snapshotSchema.encode(
-        const _Snapshot(
-          lcovPath: 'coverage/lcov.info',
-          root: _Node(
-            name: '',
-            linesFound: 1,
-            isFile: false,
-            children: [_Node(name: 'a.dart', linesFound: 1, isFile: true)],
-          ),
-        ),
-      )! as Map<Object?, Object?>;
+      final wire =
+          _snapshotSchema.encode(
+                const _Snapshot(
+                  lcovPath: 'coverage/lcov.info',
+                  root: _Node(
+                    name: '',
+                    linesFound: 1,
+                    isFile: false,
+                    children: [
+                      _Node(name: 'a.dart', linesFound: 1, isFile: true),
+                    ],
+                  ),
+                ),
+              )!
+              as Map<Object?, Object?>;
       final root = wire['root']! as Map<Object?, Object?>;
       final child =
           (root['children']! as List<Object?>).first! as Map<Object?, Object?>;
@@ -254,7 +261,8 @@ void main() {
       expect(
         ViewValueKind.doubleNumber.decode(1),
         1.0,
-        reason: 'compiled JavaScript does not preserve the int/double '
+        reason:
+            'compiled JavaScript does not preserve the int/double '
             'distinction for whole numbers',
       );
       expect(

@@ -61,9 +61,12 @@ byte-equal regeneration and cover exactly the IR
    mapped generated position over `--inspect-extensions`, and the
    Extension Host pauses on a location that maps back to the same
    Dart line (`packages/flutter_vscode/tool/extension_host_test/run_breakpoint.cjs`).
-6. `./scripts/test_all.sh` — every package's suite, the importer
-   checks, and all five real-host gates including the breakpoint gate.
-   Nothing in this chain runs only when someone remembers it.
+6. The CI workflow (`.github/workflows/test.yml`) — the one aggregate:
+   every package's suite as a standard-runner step, and every real-host
+   gate script as its own step, breakpoints included.
+   `scripts/ci_gates.sh` runs the same workflow locally, each job on
+   the platform it declares. Nothing in this chain runs only when
+   someone remembers it.
 
 
 ## Methodology (inherited, binding on future rounds)

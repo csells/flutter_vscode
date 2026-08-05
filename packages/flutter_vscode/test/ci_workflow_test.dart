@@ -26,9 +26,10 @@ import 'support/repository.dart';
 /// x86_64 and this runs at the host's architecture, because emulating
 /// Electron and xvfb is slow enough to make the test useless as a check.
 ///
-/// This test must never run inside the workflow it executes. The gate job
-/// runs `test_all.sh`, which runs `flutter test`, so that script excludes
-/// the `gate` tag -- without it, the workflow test invokes itself.
+/// This test must never run inside the workflow it executes. The workflow's
+/// test job runs `flutter test --exclude-tags gate` and its gate job runs
+/// only the per-gate scripts, so nothing in CI reaches this test -- locally
+/// it runs through `scripts/ci_gates.sh` or `flutter test --tags gate`.
 void main() {
   const image = 'flutter-vscode-ci-runner:local';
 
@@ -186,7 +187,7 @@ void main() {
       );
       expect(
         declared,
-        greaterThanOrEqualTo(8),
+        greaterThanOrEqualTo(20),
         reason: 'the workflow lost run steps; if that was deliberate, '
             'update this floor with the change that removed them',
       );

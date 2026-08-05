@@ -31,8 +31,8 @@ proven in a pinned real Extension Host by
 Status rule inherited from the plans: a completion claim is valid only
 while its named check is green at HEAD. The archived
 first-working-extension plan's one-shot exit checker is retired -- its
-claims are carried forward by the live aggregate gate
-(`scripts/test_all.sh`), which subsumes every check it ran; later
+claims are carried forward by the CI workflow's suite and gate steps,
+which subsume every check it ran; later
 closed plans carry their own validity checks (the parity suite, the
 coverage-extension gate), and
 the archived

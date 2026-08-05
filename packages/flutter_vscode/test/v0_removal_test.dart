@@ -112,9 +112,9 @@ void main() {
       }
     });
 
-    test('the aggregate gate runs no v0 steps', () {
+    test('CI runs no v0 steps', () {
       final aggregate =
-          File(repoPath('scripts/test_all.sh')).readAsStringSync();
+          File(repoPath('.github/workflows/test.yml')).readAsStringSync();
       for (final retired in [
         'build_runner',
         'check_dart_generator',
@@ -124,7 +124,7 @@ void main() {
         expect(
           aggregate,
           isNot(contains(retired)),
-          reason: 'test_all.sh must not run the retired v0 step "$retired"',
+          reason: 'the workflow must not run the retired v0 step "$retired"',
         );
       }
     });

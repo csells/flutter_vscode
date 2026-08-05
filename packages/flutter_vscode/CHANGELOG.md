@@ -20,7 +20,7 @@
 - Prove the pinned Extension Host on macOS: the same driver, contract
   verification, and pinned VS Code, natively with no container and no
   xvfb (`scripts/test_host_extension_native.sh`), plus a macOS CI job.
-  Wire the breakpoint gate into `test_all.sh` and retire the archived
+  Wire the breakpoint gate into CI and retire the archived
   round-5 exit checker. Assert the Content Security Policy the live
   webview was actually served -- which already differs from the emitted
   template: VS Code injects its CDN origins -- rather than only

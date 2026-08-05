@@ -404,11 +404,12 @@ Contributors need Flutter, Docker, and a running Docker daemon:
 
 ```sh
 flutter analyze
-./scripts/test_all.sh
+./scripts/ci_gates.sh
 ```
 
-The full gate regenerates bindings, tests both generators, launches the pinned
-Extension Host fixture, then creates and installs a clean Dart-owned VSIX in an
+`ci_gates.sh` runs the repository's CI workflow locally, job by job: it
+regenerates bindings, tests both generators, launches the pinned Extension
+Host fixture, then creates and installs a clean Dart-owned VSIX in an
 isolated VS Code profile.
 
 ## Documentation

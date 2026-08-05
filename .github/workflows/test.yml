@@ -44,8 +44,8 @@ jobs:
         run: dart pub publish --dry-run --ignore-warnings
         working-directory: packages/flutter_vscode
 
-  gate:
-    name: Full gate, including the pinned Extension Host
+  test:
+    name: Every package's suite, standard runners
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -55,11 +55,60 @@ jobs:
           flutter-version: 3.44.6
           channel: stable
 
-      # Runs every package's test suite and then the real-host gates: the
-      # binding importer, the pinned Extension Host, an installed VSIX, and
-      # both shipped extensions, each in Docker against pinned VS Code.
-      - name: Run the full gate
-        run: ./scripts/test_all.sh
+      - name: Resolve the workspace
+        run: flutter pub get
+
+      - name: dart_vscode suite
+        run: dart test
+        working-directory: packages/dart_vscode
+
+      - name: flutter_vscode suite
+        run: flutter test --exclude-tags gate
+        working-directory: packages/flutter_vscode
+
+      - name: pubspec_lens shared suite
+        run: dart test
+        working-directory: extensions/pubspec_lens/shared
+
+      - name: coverage_treemap shared suite
+        run: dart test
+        working-directory: extensions/coverage_treemap/shared
+
+      - name: treemap_panel suite
+        run: flutter test
+        working-directory: extensions/coverage_treemap/views/treemap_panel
+
+  gate:
+    name: Real-host gates against pinned VS Code
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+
+      - name: Resolve the workspace
+        run: flutter pub get
+
+      - name: Deterministic binding importer checks
+        run: ./scripts/test_binding_importer.sh
+
+      - name: Pinned Extension Host gate
+        run: ./scripts/test_host_extension.sh
+
+      - name: Packaged extension end to end
+        run: ./scripts/test_packaged_extension.sh
+
+      - name: Coverage Treemap real-host gate
+        run: ./scripts/test_coverage_extension.sh
+
+      - name: Pubspec Lens real-host gate
+        run: ./scripts/test_pubspec_lens.sh
+
+      - name: Breakpoints bind to Dart source lines
+        run: ./scripts/test_breakpoints.sh
 
       - name: Verify generated files and checkout are clean
         run: |

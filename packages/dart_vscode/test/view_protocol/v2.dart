@@ -37,27 +37,29 @@ void registerViewProtocolV2Tests() {
       await view.close();
     });
 
-    test('a failing view-bound operation surfaces a structured error',
-        () async {
-      final operation = _snapshotOperation('view.fails');
-      final (host, view) = await connectPair(
-        viewOperations: [
-          operation.bind((_) => throw StateError('view exploded')),
-        ],
-      );
+    test(
+      'a failing view-bound operation surfaces a structured error',
+      () async {
+        final operation = _snapshotOperation('view.fails');
+        final (host, view) = await connectPair(
+          viewOperations: [
+            operation.bind((_) => throw StateError('view exploded')),
+          ],
+        );
 
-      await expectLater(
-        host.call(operation, null),
-        throwsA(
-          isA<ViewProtocolException>().having(
-            (error) => error.code,
-            'code',
-            ViewProtocolErrorCode.operationFailed,
+        await expectLater(
+          host.call(operation, null),
+          throwsA(
+            isA<ViewProtocolException>().having(
+              (error) => error.code,
+              'code',
+              ViewProtocolErrorCode.operationFailed,
+            ),
           ),
-        ),
-      );
-      await view.close();
-    });
+        );
+        await view.close();
+      },
+    );
 
     test('a cancelled host call completes with cancellation', () async {
       final operation = _snapshotOperation('view.slow');

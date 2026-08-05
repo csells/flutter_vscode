@@ -6,25 +6,44 @@ import 'package:test/test.dart';
 import 'support/repository.dart';
 
 void main() {
-  test('full repository gate installs and exercises the packaged extension',
-      () {
-    final fullGate = File(repoPath('scripts/test_all.sh')).readAsStringSync();
-
-    expect(fullGate, contains('./scripts/test_packaged_extension.sh'));
-  });
-
-  test('CI enforces analysis, package proof, and a clean checkout', () {
+  test('the workflow is the one aggregate: every suite and gate is a step', () {
+    // There is no aggregate script; the workflow lists what CI runs, and
+    // scripts/ci_gates.sh mirrors it locally. A suite or gate missing here
+    // is a suite or gate CI silently stopped running.
     final workflow =
         File(repoPath('.github/workflows/test.yml')).readAsStringSync();
 
     expect(workflow, contains('flutter analyze'));
-    expect(workflow, contains('./scripts/test_all.sh'));
     expect(
       workflow,
       contains('dart pub publish --dry-run --ignore-warnings'),
     );
     expect(workflow, contains('git diff --exit-code'));
     expect(workflow, contains('git status --porcelain'));
+    for (final gate in [
+      './scripts/test_binding_importer.sh',
+      './scripts/test_host_extension.sh',
+      './scripts/test_packaged_extension.sh',
+      './scripts/test_coverage_extension.sh',
+      './scripts/test_pubspec_lens.sh',
+      './scripts/test_breakpoints.sh',
+      './scripts/test_host_extension_native.sh',
+    ]) {
+      expect(workflow, contains(gate));
+    }
+    for (final suite in [
+      'packages/dart_vscode',
+      'packages/flutter_vscode',
+      'extensions/pubspec_lens/shared',
+      'extensions/coverage_treemap/shared',
+      'extensions/coverage_treemap/views/treemap_panel',
+    ]) {
+      expect(
+        workflow,
+        contains('working-directory: $suite'),
+        reason: 'the $suite suite must run as its own workflow step',
+      );
+    }
   });
 
   test('no project carries a copy of the protocol to drift from', () {
@@ -106,16 +125,17 @@ void main() {
       contains('extensions/'),
       reason: 'the root README must route readers to the shipped examples',
     );
-    final aggregate = File(repoPath('scripts/test_all.sh')).readAsStringSync();
+    final workflow =
+        File(repoPath('.github/workflows/test.yml')).readAsStringSync();
     expect(
-      aggregate,
+      workflow,
       contains('test_coverage_extension.sh'),
-      reason: 'the aggregate gate must run the example-extension gate',
+      reason: 'CI must run the example-extension gate',
     );
     expect(
-      aggregate,
+      workflow,
       contains('test_pubspec_lens.sh'),
-      reason: 'the aggregate gate must run the pubspec-lens gate',
+      reason: 'CI must run the pubspec-lens gate',
     );
     final extensionDirs =
         Directory(repoPath('extensions')).listSync().whereType<Directory>();

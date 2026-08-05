@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_vscode/view.dart';
+import 'package:dart_vscode/view_protocol.dart';
+import 'package:test/test.dart';
 
 import 'support/repository.dart';
 
@@ -182,8 +182,9 @@ void main() {
       expect(call.operation, 'fixture.echo');
       expect(call.arguments, {'key': 'value'});
 
-      final readyAck = ViewProtocolFrame.parse(_canonicalFrames['readyAck'])
-          as ViewReadyAckFrame;
+      final readyAck =
+          ViewProtocolFrame.parse(_canonicalFrames['readyAck'])
+              as ViewReadyAckFrame;
       expect(readyAck.activeNonce, 'active-1');
 
       final error =
@@ -193,8 +194,9 @@ void main() {
       expect(error.error.message, 'The operation failed.');
       expect(error.error.details, {'cause': 'offline'});
 
-      final closing = ViewProtocolFrame.parse(_canonicalFrames['closing'])
-          as ViewClosingFrame;
+      final closing =
+          ViewProtocolFrame.parse(_canonicalFrames['closing'])
+              as ViewClosingFrame;
       expect(closing.report.pendingRequestCount, 2);
       expect(closing.report.subscriptionCount, 1);
 
@@ -476,58 +478,63 @@ void main() {
   });
 
   group('shared session core', () {
-    test('a duplicate inbound host-call ID is refused through the core',
-        () async {
-      final transport = _ScriptedViewTransport();
-      addTearDown(transport.close);
-      final operation = ViewOperation<Object?, Object?>(
-        name: 'view.echo',
-        encodeArguments: (value) => value,
-        decodeArguments: (value) => value,
-        encodeResult: (value) => value,
-        decodeResult: (value) => value,
-      );
-      var invocationCount = 0;
-      final connection = FlutterViewSession.connect(
-        transport: transport,
-        sessionId: 'session-1',
-        bootstrapNonce: 'bootstrap-1',
-        operations: [
-          operation.bind((_) {
-            invocationCount += 1;
-            return 'ok';
-          }),
-        ],
-      );
-      transport.deliver(_canonicalFrames['readyAck']);
-      final view = await connection;
+    test(
+      'a duplicate inbound host-call ID is refused through the core',
+      () async {
+        final transport = _ScriptedViewTransport();
+        addTearDown(transport.close);
+        final operation = ViewOperation<Object?, Object?>(
+          name: 'view.echo',
+          encodeArguments: (value) => value,
+          decodeArguments: (value) => value,
+          encodeResult: (value) => value,
+          decodeResult: (value) => value,
+        );
+        var invocationCount = 0;
+        final connection = FlutterViewSession.connect(
+          transport: transport,
+          sessionId: 'session-1',
+          bootstrapNonce: 'bootstrap-1',
+          operations: [
+            operation.bind((_) {
+              invocationCount += 1;
+              return 'ok';
+            }),
+          ],
+        );
+        transport.deliver(_canonicalFrames['readyAck']);
+        final view = await connection;
 
-      transport
-        ..deliver(_canonicalFrames['hostCall'])
-        ..deliver(_canonicalFrames['hostCall']);
-      await pumpEventQueue();
+        transport
+          ..deliver(_canonicalFrames['hostCall'])
+          ..deliver(_canonicalFrames['hostCall']);
+        await pumpEventQueue();
 
-      expect(invocationCount, 1);
-      final results =
-          transport.sent.where((frame) => frame['kind'] == 'hostResult');
-      expect(results, hasLength(1));
-      expect(results.single['id'], 'host-request-1');
-      expect(results.single['result'], 'ok');
-      final errors =
-          transport.sent.where((frame) => frame['kind'] == 'hostError');
-      expect(errors, hasLength(1));
-      final structuredError = (errors.single['error']! as Map<Object?, Object?>)
-          .cast<String, Object?>();
-      expect(
-        structuredError['code'],
-        ViewProtocolErrorCode.duplicateRequest.wireName,
-      );
-      expect(
-        structuredError['message'],
-        'A host request ID may be used only once in a session.',
-      );
-      await view.close();
-    });
+        expect(invocationCount, 1);
+        final results = transport.sent.where(
+          (frame) => frame['kind'] == 'hostResult',
+        );
+        expect(results, hasLength(1));
+        expect(results.single['id'], 'host-request-1');
+        expect(results.single['result'], 'ok');
+        final errors = transport.sent.where(
+          (frame) => frame['kind'] == 'hostError',
+        );
+        expect(errors, hasLength(1));
+        final structuredError =
+            (errors.single['error']! as Map<Object?, Object?>)
+                .cast<String, Object?>();
+        expect(
+          structuredError['code'],
+          ViewProtocolErrorCode.duplicateRequest.wireName,
+        );
+        expect(
+          structuredError['message'],
+          'A host request ID may be used only once in a session.',
+        );
+        await view.close();
+      },
+    );
   });
 
   group('wire schema locality', () {
@@ -567,7 +574,8 @@ void main() {
           expect(
             source.contains(literal),
             isFalse,
-            reason: '$path must not read or write the $literal wire key; '
+            reason:
+                '$path must not read or write the $literal wire key; '
                 'that belongs to the frames part alone',
           );
         }

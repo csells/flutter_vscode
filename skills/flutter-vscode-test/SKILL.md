@@ -46,4 +46,4 @@ flutter_vscode package
 ```
 
 Framework contributors additionally run `flutter analyze` and
-`./scripts/test_all.sh`.
+`./scripts/ci_gates.sh`.
