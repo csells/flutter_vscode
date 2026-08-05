@@ -100,6 +100,18 @@ function main(arguments_) {
     contributionValidationHelperInput.path,
   );
   const contributionSchemas = {};
+  const recordProjection = (projection, input) => {
+    if (contributionSchemas[projection.extensionPoint] !== undefined) {
+      throw cliError(
+        'CONTRIBUTION_SCHEMA_PIN_INVALID',
+        `Multiple inputs define ${projection.extensionPoint}.`,
+      );
+    }
+    contributionSchemas[projection.extensionPoint] = {
+      inputSha256: input.sha256,
+      ...projection,
+    };
+  };
   for (const input of contributionInputs) {
     if (
       input.version !== contributionValidationHelperInput.version ||
@@ -115,26 +127,15 @@ function main(arguments_) {
       path.dirname(options.pins),
       input.path,
     );
-    const projections = [
+    recordProjection(
       extractContributionSchemaProjection(
         fs.readFileSync(contributionPath, 'utf8'),
         contributionPath,
         fs.readFileSync(contributionValidationHelperPath, 'utf8'),
         contributionValidationHelperPath,
       ),
-    ];
-    for (const projection of projections) {
-      if (contributionSchemas[projection.extensionPoint] !== undefined) {
-        throw cliError(
-          'CONTRIBUTION_SCHEMA_PIN_INVALID',
-          `Multiple inputs define ${projection.extensionPoint}.`,
-        );
-      }
-      contributionSchemas[projection.extensionPoint] = {
-        inputSha256: input.sha256,
-        ...projection,
-      };
-    }
+      input,
+    );
   }
   const schemaSourceExtractors = [
     ['viewsContributionSchemaSource', extractViewsContributionProjections],
@@ -157,16 +158,7 @@ function main(arguments_) {
       fs.readFileSync(sourcePath, 'utf8'),
       sourcePath,
     )) {
-      if (contributionSchemas[projection.extensionPoint] !== undefined) {
-        throw cliError(
-          'CONTRIBUTION_SCHEMA_PIN_INVALID',
-          `Multiple inputs define ${projection.extensionPoint}.`,
-        );
-      }
-      contributionSchemas[projection.extensionPoint] = {
-        inputSha256: input.sha256,
-        ...projection,
-      };
+      recordProjection(projection, input);
     }
   }
   const extractedContributionNames = Object.keys(contributionSchemas).sort();

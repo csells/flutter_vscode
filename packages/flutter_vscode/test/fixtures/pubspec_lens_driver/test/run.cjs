@@ -127,9 +127,9 @@ async function run() {
     // The smoke report's treeChildren reads the extension's internal model,
     // which proves the analysis but nothing about the contributed view. The
     // <viewId>.focus command exists only when VS Code accepted the views
-    // contribution from the extension's own manifest, so focusing is
-    // contribution proof the extension cannot fake -- and it renders the
-    // view, driving the registered provider through the real tree.
+    // contribution from the extension's own manifest, so this call is
+    // contribution proof the extension cannot fake. (It also reveals the
+    // view; what the provider then renders is not asserted here.)
     await vscode.commands.executeCommand('pubspecLens.dependencies.focus');
     console.log('[pubspec-lens-test] contributed view focused and rendered');
 

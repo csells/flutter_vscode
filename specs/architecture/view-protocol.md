@@ -86,7 +86,7 @@ answered.
   `operationCaller`/`callThrough` function seam.
 - Host-side hosting is generated, not hand-copied: view-bearing
   projects receive `flutter_view_host.g.dart`
-  (`lib/src/cli/flutter_view_host_source.dart`) carrying
+  (`packages/flutter_vscode/lib/src/cli/flutter_view_host_source.dart`) carrying
   `HostWebviewTransport` and `FlutterViewHost.open` with the
   CSP-correct webview HTML plus its production seams — `extraHead`
   fragments, an optional `scriptNonce` (joined into `script-src` and

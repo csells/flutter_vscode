@@ -7,7 +7,6 @@
 /// import 'package:flutter_vscode/manifest.dart';
 ///
 /// const extension = ExtensionManifest(
-///   apiTarget: '1.129.1',
 ///   name: 'my-extension',
 ///   displayName: 'My Extension',
 ///   description: 'A VS Code extension written in Dart.',

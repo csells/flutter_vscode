@@ -9,7 +9,8 @@ skills under [`agent-skills/`](agent-skills/).
 
 ## Source of truth
 
-- Edit `extension.dart` for metadata, `apiTarget`, and contributions.
+- Edit `extension.dart` for metadata and contributions (commands, views,
+  view containers, configuration).
 - Edit `host/lib/**` for commands, providers, events, and VS Code object use.
 - Edit `shared/lib/**` only for runtime-neutral Dart.
 - Edit `views/**` for optional Flutter UI.
@@ -23,7 +24,8 @@ skills under [`agent-skills/`](agent-skills/).
    `package:dart_vscode/dart_vscode.dart`; it maps every public
    declaration of the pinned VS Code API. Never handwrite a replacement
    binding; report a missing or wrong mapping as a framework defect.
-3. Keep `apiTarget` explicit. Do not raise it as a side effect of another edit.
+3. The VS Code baseline comes from the `flutter_vscode` release you depend
+   on; move it only by upgrading that dependency deliberately.
 4. Put Flutter/browser imports only in `views/`; keep `host/` and `shared/`
    within their enforced dependency boundaries.
 5. Send only validated value snapshots across the versioned view protocol.
@@ -57,8 +59,9 @@ flutter_vscode test
 flutter_vscode package
 ```
 
-`doctor` verifies the Dart and Flutter SDKs, the project layout, and the
-pinned `apiTarget` before deeper work. `test` runs every author suite the
+`doctor` verifies the Dart and Flutter SDKs, the project layout, and that
+the installed framework carries its pinned VS Code baseline before deeper
+work. `test` runs every author suite the
 project has: `shared/test` and `host/test` with `dart test`, and each
 `views/<name>/test` with `flutter test`.
 

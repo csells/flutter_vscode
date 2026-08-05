@@ -15,14 +15,14 @@ flutter_vscode doctor
 
 `doctor` writes one `[ok]` or `[!!]` line per check — the Dart and Flutter
 SDK probes, and inside an Extension Project the layout, the descriptor, and
-whether the declared `apiTarget` is pinned in this framework version — then
+whether this framework version carries its pinned VS Code baseline — then
 exits nonzero if any check failed. Clear every `[!!]` line before chasing a
 deeper cause.
 
 ## Build rejects `extension.dart`
 
 Keep the descriptor as the restricted constant map emitted by `create`. Use
-literal values only, retain `schemaVersion` and `apiTarget`, and remove unknown
+literal values only, retain `schemaVersion`, and remove unknown
 fields. The CLI parses this file without executing project code so identical
 source cannot produce environment-dependent manifests.
 

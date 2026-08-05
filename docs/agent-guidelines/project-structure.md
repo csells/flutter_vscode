@@ -9,23 +9,34 @@ of a generated Extension Project is its concern, not this page's.
 
 ## Project Type
 
-This repository is a Flutter package, not a standalone app. It provides the
-Extension Project CLI, deterministic VS Code binding generation, pure-Dart
-host utilities, and an optional Flutter View protocol.
+This repository is a pub workspace whose root is never published. One
+`dart pub get` at the root resolves every member. Two packages publish:
+`packages/dart_vscode` (pure Dart: the generated VS Code API, the view
+protocol, and the Host Dart runtime) and `packages/flutter_vscode` (the
+Extension Project CLI, deterministic binding generation, and the Flutter
+View runtime).
 
 ## Expected Layout
 
-- `lib/` public APIs and runtime/protocol implementation.
-- `lib/src/cli/` the CLI's in-process command modules (create, build,
-  watch, package, doctor, test) wired together by the thin process adapter.
-- `bin/flutter_vscode.dart` canonical `create`, `build [--watch]`,
-  `package`, `doctor`, and `test` CLI.
-- `tool/binding_importer/` pinned TypeScript-to-IR maintainer tooling.
-- `tool/binding_generator/` IR/override-to-Dart and manifest generation.
-- `tool/bindings/` pinned inputs, canonical IR, and Semantic Overrides.
-- `test/fixtures/host_extension/` real Extension Host and Flutter View fixture.
+- `packages/dart_vscode/lib/` the pure-Dart runtime authors' host code
+  imports: the generated API layer, `view_protocol`, `host_commands`,
+  `host_runtime`, and `flutter_view_host`.
+- `packages/flutter_vscode/lib/` the manifest types, the Flutter View
+  runtime, and `lib/src/cli/` command modules (create, build, watch,
+  package, doctor, test).
+- `packages/flutter_vscode/bin/flutter_vscode.dart` the canonical CLI.
+- `packages/flutter_vscode/tool/binding_importer/` pinned
+  TypeScript-to-IR maintainer tooling.
+- `packages/flutter_vscode/tool/binding_generator/` IR/override-to-Dart
+  and manifest generation.
+- `packages/flutter_vscode/tool/bindings/` pinned inputs, canonical IR,
+  and Semantic Overrides.
+- `packages/flutter_vscode/test/fixtures/host_extension/` real Extension
+  Host and Flutter View fixture.
 - `extensions/` shipped example extensions that consume the framework the
   way an Extension Author would ([guardrails](../../extensions/README.md)).
+- `scripts/` maintainer gates, including the real-host Extension Host
+  runs and the native macOS gate.
 - `skills/` consumer agent skills, copied into Extension Projects as
   `agent-skills/` ([index](../../skills/README.md)).
 

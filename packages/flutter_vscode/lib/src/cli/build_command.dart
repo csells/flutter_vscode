@@ -147,11 +147,11 @@ Future<void> buildProject(
   await _writeLaunchConfiguration(root);
   final toolIdentity = await frameworkToolIdentity(
     packageRoot,
-    bindingInputs.apiTarget,
+    shippedApiTarget,
   );
   await writeBuildReceipt(
     projectRoot: root,
-    apiTarget: bindingInputs.apiTarget,
+    apiTarget: shippedApiTarget,
     toolIdentity: toolIdentity,
     inputPaths: buildInputPaths(root),
     artifactPaths: managedArtifactPaths(root),

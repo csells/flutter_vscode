@@ -25,9 +25,6 @@ final class BindingInputs {
 
   /// The same-version Semantic Override file for the shipped baseline.
   final Map<String, Object?> overrides;
-
-  /// The baseline these inputs describe.
-  String get apiTarget => shippedApiTarget;
 }
 
 /// Loads the pinned binding inputs shipped with this package.

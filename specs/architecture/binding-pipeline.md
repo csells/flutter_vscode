@@ -5,32 +5,30 @@ inputs plus reviewed Semantic Overrides. No LLM, probabilistic mapping,
 silent omission, or guessed `dynamic` types participate; anything the
 pipeline cannot express fails closed.
 
-Multiple pinned stable baselines ship in-tree (1.129.1 and 1.130.0). A
-baseline counts only when its pinned inputs, imported IR, and
-same-version Semantic Override file all exist; an Extension Project's
-descriptor `apiTarget` selects one, and an unknown target fails with an
-actionable error naming every shipped target
-(`test/cli_multi_baseline_test.dart`). Onboarding a new release is
-documented in `docs/guides/new-baseline.md`, recorded as executed for
-the second baseline.
+One pinned stable baseline ships per release (ADR 0014): the package
+version is the baseline, and a project never selects one. The baseline
+counts only when its pinned inputs, imported IR, and same-version
+Semantic Override file all exist. Moving to a newer VS Code release is
+a regenerate-and-republish operation, documented in
+`docs/guides/new-baseline.md`.
 
 ## Stages
 
-1. **Pins** — `tool/bindings/inputs/vscode/<version>/pins.json` pins six
+1. **Pins** — `packages/flutter_vscode/tool/bindings/inputs/vscode/<version>/pins.json` pins six
    official inputs (`vscode.d.ts`, manifest schema/validator sources, the
    `commands` contribution schema source, transitive helper, license)
    with exact product version, commit, canonical source URL, checksum,
    and license. The manifest has one exact producer schema; input paths
    must resolve (realpath) inside the pin directory
-   (`tool/binding_importer/src/pins.cjs`, `test/pins.test.cjs`).
-2. **Importer** — `tool/binding_importer` (maintainer-only, pinned
+   (`packages/flutter_vscode/tool/binding_importer/src/pins.cjs`, `test/pins.test.cjs`).
+2. **Importer** — `packages/flutter_vscode/tool/binding_importer` (maintainer-only, pinned
    TypeScript parser) normalizes the pinned sources into canonical IR at
-   `tool/bindings/ir/vscode-<version>.json`. The IR is lossless for every
+   `packages/flutter_vscode/tool/bindings/ir/vscode-<version>.json`. The IR is lossless for every
    supported declaration shape — generic scopes alpha-normalized,
    visibility propagated, member order preserved via stored canonical
    type-literal shapes — and inexpressible syntax is rejected, never
-   erased (`tool/binding_importer/test/inventory.test.cjs`).
-3. **Overrides** — `tool/bindings/overrides/vscode-<version>.json` holds
+   erased (`packages/flutter_vscode/tool/binding_importer/test/inventory.test.cjs`).
+3. **Overrides** — `packages/flutter_vscode/tool/bindings/overrides/vscode-<version>.json` holds
    reviewed classifications (`entries` with strategies and declaration
    fingerprints, `targets`, Host Contract pins). Baseline updates fail
    closed: new, shape-changed, or removed public symbols require reviewed
@@ -38,7 +36,7 @@ the second baseline.
    `npm run check:baseline-series`); ADR 0008 blocks releases on
    unclassified public symbols.
 4. **Generator** — the orchestration in
-   `tool/binding_generator/generator.dart` consumes IR + overrides and
+   `packages/flutter_vscode/tool/binding_generator/generator.dart` consumes IR + overrides and
    accepts only IR the producer could emit; the walking-slice strategy
    and relation validation still runs on every generate, so the
    reviewed override classifications keep their ADR-0008 gate without
@@ -54,14 +52,14 @@ the second baseline.
    `validators.dart` the shared leaf scalars. The validated slice is
    derived entirely from IR + override strategies — no shadow
    name/count profile in generator source
-   (`test/binding_generator_test.dart`,
+   (`packages/flutter_vscode/test/binding_generator_test.dart`,
    `test/binding_generator_layout_test.dart`).
 5. **Outputs** — runtime module, host exports, bootstrap, manifest,
    and coverage ledger into the extension project; byte-identical on
    regeneration (`test/binding_generator_cli_test.dart`).
-6. **Generated API Layer** — `tool/binding_generator/dart_layer.dart`
+6. **Generated API Layer** — `packages/flutter_vscode/tool/binding_generator/dart_layer.dart`
    (`generate.dart --dart-layer .`) emits the one self-contained API
-   artifact, `lib/src/generated/vscode_dart_layer.g.dart`, exported
+   artifact, `packages/flutter_vscode/lib/src/generated/vscode_dart_layer.g.dart`, exported
    as `package:flutter_vscode/vscode_dart.dart`: the complete typed
    Parity Layer substrate (ADR 0012, emitted in-memory by
    `parity_layer.dart` and inlined into the artifact) with the
@@ -72,9 +70,9 @@ the second baseline.
    consume the shared `ir_type_mapper.dart` (IR indexes, type mapping
    with union/alias/LUB rules, substitution, name mangling, erasure as
    a per-call parameter). One `--dart-layer` run writes two totality
-   ledgers — `tool/bindings/parity-ledger.json` covering every IR
+   ledgers — `packages/flutter_vscode/tool/bindings/parity-ledger.json` covering every IR
    declaration in the substrate, and
-   `tool/bindings/dart-layer-ledger.json`, in which every substrate
+   `packages/flutter_vscode/tool/bindings/dart-layer-ledger.json`, in which every substrate
    declaration receives a disposition (emitted,
    passthrough-identical, or carried parity erasure) — and a
    construct without a total rule fails generation

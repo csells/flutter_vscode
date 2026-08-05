@@ -200,7 +200,6 @@ void main() {
     test('loading returns the shipped pinned inputs', () async {
       final inputs = await loadBindingInputs(Directory.current);
 
-      expect(inputs.apiTarget, shippedApiTarget);
       expect(inputs.inventory, isNotEmpty);
       expect(inputs.overrides, isNotEmpty);
     });

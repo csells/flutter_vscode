@@ -16,7 +16,7 @@ flutter_vscode package                    # installable VSIX
   Layer exists before the first build); a host-only extension simply has no
   `views/`. Extension metadata and contributions are Dart-owned in
   `extension.dart` — a single const Dart literal map parsed as data,
-  never executed (`lib/src/cli/project_descriptor.dart`).
+  never executed (`packages/flutter_vscode/lib/src/cli/project_descriptor.dart`).
   `extension.json` is the alternate form; `build` errors when both
   exist.
 - `build` generates every Framework-Managed Artifact — `package.json`,
@@ -29,10 +29,9 @@ flutter_vscode package                    # installable VSIX
   boundary (deliberately skipping package `test/` directories: author
   tests may depend on `package:test` and never execute in the
   Extension Host), and reports malformed Dart with filename/line/column
-  and remediation (no internal stacks, no exit 255). The descriptor's
-  `apiTarget` selects among the pinned VS Code baselines shipped
-  in-tree; an unknown target fails with an actionable error naming
-  every shipped target. Generated activation registers providers
+  and remediation (no internal stacks, no exit 255). The build targets
+  the one VS Code baseline this framework release pins (ADR 0014); a
+  project never selects one. Generated activation registers providers
   synchronously so lazy activation cannot race a first query. Flutter
   Views boot through `runFlutterView` from
   `package:flutter_vscode/view.dart`, which prepares the webview

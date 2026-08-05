@@ -18,6 +18,14 @@ workspace: one `dart pub get` at the root resolves every package, and
 Start with the [package README](packages/flutter_vscode/README.md) to build
 an extension, or the [quickstart](docs/guides/quickstart.md).
 
+## Relationship to the original pipeline
+
+This tree replaces the v0 annotation/TypeScript pipeline wholesale -- a
+full cutover, with no compatibility layer and no migration path from the
+v0 surface. The v0 scaffolder, builder surface, and webview bridge are
+deleted, and `packages/flutter_vscode/test/v0_removal_test.dart` keeps
+them deleted.
+
 ## Working in this repository
 
 ```sh

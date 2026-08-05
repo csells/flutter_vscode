@@ -12,10 +12,10 @@ import 'package:pubspec_lens_shared/registry.dart';
 
 /// The view id the dependencies tree binds to.
 ///
-/// The Extension Manifest does not project views contributions yet
-/// (recorded in futures), so outside a workbench that contributes
-/// this id the registration parks a data provider nobody renders;
-/// the PL-4 gate's driver contributes the view.
+/// Contributed by this extension's own typed manifest (`extension.dart`
+/// declares it under `views`), so the tree renders in a plain F5 session;
+/// the gate proves the contribution through the `.focus` command VS Code
+/// registers only for contributed views.
 const _dependenciesViewId = 'pubspecLens.dependencies';
 
 @JSExport()

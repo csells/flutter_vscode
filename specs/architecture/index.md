@@ -29,10 +29,12 @@ proven in a pinned real Extension Host by
 `scripts/test_coverage_extension.sh`.
 
 Status rule inherited from the plans: a completion claim is valid only
-while its named check is green at HEAD. `scripts/check_round5_exit.sh`
-is the closure authority for the archived first-working-extension
-plan; later closed plans carry their own validity checks (the parity
-suite, the coverage-extension gate) rather than that one script, and
+while its named check is green at HEAD. The archived
+first-working-extension plan's one-shot exit checker is retired -- its
+claims are carried forward by the live aggregate gate
+(`scripts/test_all.sh`), which subsumes every check it ran; later
+closed plans carry their own validity checks (the parity suite, the
+coverage-extension gate), and
 the archived
 [developer-experience plan](../plans/archive/developer-experience.md)
 and the archived

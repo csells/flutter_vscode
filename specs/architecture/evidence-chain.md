@@ -6,23 +6,23 @@ keep "verified" meaning something.
 
 ## Receipts and the durable Host Contract
 
-`tool/bindings/contracts/checkpoint4-extension-host.json` attests the
+`packages/flutter_vscode/tool/bindings/contracts/checkpoint4-extension-host.json` attests the
 real-host evidence run: API and runtime targets, one source receipt
 per load-bearing file (exact SHA-256 — generator, writer, CLI, the
 generated API layer, fixtures, lockfiles, the verifier, its test,
 and the contract writer itself; the artifact's `sources` block is the
 authoritative list, not any count in prose), and the attributed
 binding IDs. It is written only by the
-mechanical regenerator (`tool/binding_generator/contract.dart`, invoked
+mechanical regenerator (`packages/flutter_vscode/tool/binding_generator/contract.dart`, invoked
 as `generate.dart --contract .`); hand-editing evidence is not a
 supported workflow. Overrides pins are per-baseline: every checked-in
 baseline cites the same checkpoint-4 contract, and the contract writer
 surgically repins the `artifactSha256` in each
-`tool/bindings/overrides/vscode-*.json` on every write.
-`test/binding_evidence_test.dart` proves the checked-in artifact
+`packages/flutter_vscode/tool/bindings/overrides/vscode-*.json` on every write.
+`packages/flutter_vscode/test/binding_evidence_test.dart` proves the checked-in artifact
 byte-equals regeneration and that the overrides pin matches its bytes;
 the real-host launcher verifies all receipts before VS Code starts and
-again before accepting evidence (`tool/extension_host_test/run.cjs`,
+again before accepting evidence (`packages/flutter_vscode/tool/extension_host_test/run.cjs`,
 `host_contract.cjs`). Attribution is mechanical and says so: binding
 IDs cite the one receipted contract whose gate passed its surrounding
 native behavior — there is no per-member observation mechanism, and
@@ -31,8 +31,8 @@ contracts (the `evidence.meaning` field states this in the artifact
 itself).
 
 The machine-checked totality artifacts are ledgers, not prose: the
-substrate's `tool/bindings/parity-ledger.json` and the ergonomic
-surface's `tool/bindings/dart-layer-ledger.json` — both written by
+substrate's `packages/flutter_vscode/tool/bindings/parity-ledger.json` and the ergonomic
+surface's `packages/flutter_vscode/tool/bindings/dart-layer-ledger.json` — both written by
 one `--dart-layer` run for the one generated API artifact — must each
 byte-equal regeneration and cover exactly the IR
 (`test/parity_layer_test.dart`, `test/dart_layer_test.dart`).
@@ -40,15 +40,15 @@ byte-equal regeneration and cover exactly the IR
 ## Gate hierarchy
 
 1. Focused suites (`flutter test`, importer `npm test`, Node harness
-   tests) — including `test/plan_truth_test.dart` (prose-truth ratchet),
-   `test/repository_gate_test.dart` (CI-definition pins, generated
+   tests) — including `packages/flutter_vscode/test/plan_truth_test.dart` (prose-truth ratchet),
+   `packages/flutter_vscode/test/repository_gate_test.dart` (CI-definition pins, generated
    convergence, lockfile-in-HEAD, cache freshness), and
    `test/v0_removal_test.dart` (the deleted v0 pipeline stays deleted).
 2. `./scripts/test_host_extension.sh` — the pinned real Extension Host in
    Docker, receipt-verified, with adversarial webview probes.
 3. `./scripts/test_packaged_extension.sh` — installed-VSIX proof for both
    fixtures, staged from `dart pub`'s own archive listing
-   (`tool/pub_archive_list.dart`), hover-first lazy activation asserted.
+   (`packages/flutter_vscode/tool/pub_archive_list.dart`), hover-first lazy activation asserted.
 4. `./scripts/test_coverage_extension.sh` — the shipped
    `extensions/coverage_treemap` example, built and packaged by the
    CLI, installed into the pinned Extension Host in Docker against a
@@ -77,7 +77,7 @@ byte-equal regeneration and cover exactly the IR
   chronology is `git log`, not narrative. Where a red is inexpressible
   in-repo, the ledger says exactly that.
 - **Prose truth.** Documents may not carry present-tense claims a machine
-  cannot vouch for. `test/plan_truth_test.dart` enforces digest truth and
+  cannot vouch for. `packages/flutter_vscode/test/plan_truth_test.dart` enforces digest truth and
   self-consistency for the archived plan and pins its bytes: the archive
   is frozen history, so any edit fails the ratchet deliberately.
 - **Status validity.** A completion claim holds only while its named

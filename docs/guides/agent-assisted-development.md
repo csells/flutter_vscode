@@ -75,7 +75,9 @@ JavaScript bundles, source maps, or VSIX contents.
 
 ## Review checklist
 
-1. `extension.dart` retains the explicit `apiTarget`.
+1. `extension.dart` declares only manifest fields the typed
+   `ExtensionManifest` supports; the VS Code baseline comes from the
+   framework release, never from the descriptor (ADR 0014).
 2. Host behavior works before any view opens and after a view closes.
 3. Cross-runtime messages use typed protocol operations and value snapshots.
 4. Host/shared dependency checks pass.

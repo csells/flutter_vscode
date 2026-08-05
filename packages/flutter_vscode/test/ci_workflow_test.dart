@@ -107,6 +107,7 @@ void main() {
       );
 
       var executed = 0;
+      var declared = 0;
       for (final job in jobs.entries) {
         final runsOn = (job.value as YamlMap)['runs-on'] as String? ?? '';
         final steps = (job.value as YamlMap)['steps'] as YamlList;
@@ -127,6 +128,7 @@ void main() {
           if (command == null) {
             continue;
           }
+          declared += 1;
           final relative = step['working-directory'] as String?;
           if (native) {
             final result = await Process.run(
@@ -178,9 +180,15 @@ void main() {
 
       expect(
         executed,
-        greaterThanOrEqualTo(7),
+        declared,
         reason: 'every `run:` step in the workflow must have been executed; '
             'a workflow that grew steps this test skipped would pass falsely',
+      );
+      expect(
+        declared,
+        greaterThanOrEqualTo(8),
+        reason: 'the workflow lost run steps; if that was deliberate, '
+            'update this floor with the change that removed them',
       );
     },
     timeout: const Timeout(Duration(hours: 2)),

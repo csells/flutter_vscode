@@ -10,6 +10,8 @@ import 'support/repository.dart';
 /// fails to resolve outside the root package context).
 List<Directory> _nestedPackages() {
   final roots = [
+    // The examples live above this package, the fixture inside it; each
+    // path is relative to what actually contains it.
     Directory(repoPath('extensions')),
     Directory('test/fixtures/host_extension'),
   ];
