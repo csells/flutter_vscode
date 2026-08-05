@@ -531,47 +531,46 @@ void main() {
   });
 
   group('wire schema locality', () {
-    test('envelope key literals appear only inside the frame module region',
-        () {
-      final source =
-          File(repoPath('packages/dart_vscode/lib/src/view_protocol.dart'))
-              .readAsStringSync();
-      const beginMarker =
-          '// === View protocol frames: the only region that reads or writes '
-          'wire keys ===';
-      const endMarker = '// === End of view protocol frames ===';
-      final begin = source.indexOf(beginMarker);
-      final end = source.indexOf(endMarker);
+    test('envelope key literals appear only in the frames part', () {
+      // The frame module is a file now, not a region between comment
+      // markers. A file boundary is checkable by anyone reading the tree;
+      // a marker was a promise that the next edit could quietly break.
+      const protocolRoot = 'packages/dart_vscode/lib/src';
+      const framesPart = '$protocolRoot/view_protocol/frames.dart';
+      final everythingElse = [
+        '$protocolRoot/view_protocol.dart',
+        '$protocolRoot/view_protocol/host_session.dart',
+        '$protocolRoot/view_protocol/view_session.dart',
+      ];
 
-      expect(begin, greaterThanOrEqualTo(0), reason: 'begin marker missing');
-      expect(end, greaterThan(begin), reason: 'end marker missing');
-      expect(
-        source.indexOf(beginMarker, begin + beginMarker.length),
-        -1,
-        reason: 'the begin marker must appear exactly once',
-      );
-      expect(
-        source.indexOf(endMarker, end + endMarker.length),
-        -1,
-        reason: 'the end marker must appear exactly once',
-      );
+      expect(File(repoPath(framesPart)).existsSync(), isTrue);
 
-      final outside =
-          source.substring(0, begin) + source.substring(end + endMarker.length);
-      for (final literal in [
+      const wireLiterals = [
         "'protocol'",
         "'version'",
         "'kind'",
         "'session'",
         "'nonce'",
         "'flutter-vscode.view'",
-      ]) {
+      ];
+      final frames = File(repoPath(framesPart)).readAsStringSync();
+      for (final literal in wireLiterals) {
         expect(
-          outside.contains(literal),
-          isFalse,
-          reason: 'the $literal wire literal must live only inside the '
-              'frame module region',
+          frames.contains(literal),
+          isTrue,
+          reason: 'the frames part is where $literal belongs',
         );
+      }
+      for (final path in everythingElse) {
+        final source = File(repoPath(path)).readAsStringSync();
+        for (final literal in wireLiterals) {
+          expect(
+            source.contains(literal),
+            isFalse,
+            reason: '$path must not read or write the $literal wire key; '
+                'that belongs to the frames part alone',
+          );
+        }
       }
     });
   });

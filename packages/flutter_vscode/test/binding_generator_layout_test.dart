@@ -9,6 +9,8 @@ library;
 
 import 'dart:io';
 
+import 'package:path/path.dart' as p;
+
 import 'package:test/test.dart';
 
 /// Expected top-level declarations per sibling module, matched textually
@@ -69,7 +71,9 @@ void main() {
         reason: '${entry.key} must exist as a sibling module of '
             'generator.dart.',
       );
-      final source = file.readAsStringSync();
+      // A module may be several files: the entry plus the parts it declares.
+      // Ownership is about which module holds a declaration, not which file.
+      final source = _moduleSource(file);
       for (final declaration in entry.value) {
         expect(
           source,
@@ -92,4 +96,17 @@ void main() {
           'and templates move to sibling modules.',
     );
   });
+}
+
+/// The full source of a module: its entry file and every part it declares.
+String _moduleSource(File entry) {
+  final source = entry.readAsStringSync();
+  final parts = RegExp("^part '([^']+)';", multiLine: true)
+      .allMatches(source)
+      .map((match) => match.group(1)!);
+  return [
+    source,
+    for (final part in parts)
+      File(p.join(entry.parent.path, part)).readAsStringSync(),
+  ].join('\n');
 }

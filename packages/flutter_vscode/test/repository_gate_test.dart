@@ -82,11 +82,14 @@ void main() {
     expect(pubIgnore, isNot(contains('/tool/bindings/')));
     expect(pubIgnore, isNot(contains('/tool/bindings/contracts/')));
     expect(pubIgnore, isNot(contains('/tool/bindings/inputs/')));
+    // The artifact grows with the number of files it attests, and splitting
+    // a module into parts means more files, not more prose. The bound keeps
+    // it reviewable; it is not a claim that fewer receipts is better.
     expect(
       File(
         'tool/bindings/contracts/checkpoint4-extension-host.json',
       ).lengthSync(),
-      lessThan(16 * 1024),
+      lessThan(24 * 1024),
     );
   });
 
@@ -195,6 +198,36 @@ void main() {
         r'"override:flutter_vscode@{path: ${PACKAGE_COPY}}"',
       ),
     );
+  });
+
+  test('the pinned host is proven on macOS, not only in Linux containers', () {
+    // Every live-only webview bug this project has found was found by hand
+    // on desktop; the containers cannot see that class of failure. The
+    // native gate runs the same driver against the same pinned VS Code,
+    // directly on the host OS -- no Docker, no xvfb.
+    final native = File(repoPath('scripts/test_host_extension_native.sh'));
+    expect(native.existsSync(), isTrue);
+    final script = native.readAsStringSync();
+    expect(
+      script,
+      isNot(contains('docker')),
+      reason: 'the native gate exists precisely to not be a container',
+    );
+    expect(
+      script,
+      contains('run.cjs'),
+      reason: 'same driver, same pinned VS Code, different platform',
+    );
+
+    final workflow = File(
+      repoPath('.github/workflows/test.yml'),
+    ).readAsStringSync();
+    expect(
+      workflow,
+      contains('runs-on: macos-latest'),
+      reason: 'desktop stays proven only if CI runs it',
+    );
+    expect(workflow, contains('./scripts/test_host_extension_native.sh'));
   });
 
   test('Extension Host gates use fresh invocation-scoped VS Code caches', () {

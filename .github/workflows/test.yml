@@ -68,3 +68,20 @@ jobs:
             git status --short
             exit 1
           fi
+
+  desktop:
+    name: Pinned host, natively on macOS
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.44.6
+          channel: stable
+
+      # No Docker and no xvfb: macOS runners have neither, and the point of
+      # this job is the platform every author actually develops on. The
+      # Electron window runs headed on the runner's virtual display.
+      - name: Run the pinned Extension Host gate natively
+        run: ./scripts/test_host_extension_native.sh
