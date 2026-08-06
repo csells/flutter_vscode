@@ -256,7 +256,7 @@
     },
     "launcher": {
       "path": "packages/flutter_vscode/tool/extension_host_test/run.cjs",
-      "sha256": "fe184910ef7ce09be3840d858c168d4eb0bb2322ac316939132f8dda958cf90d"
+      "sha256": "7bd6b8ddf5d9d066479bd3e6e752430e0e7b4b5052f857b804bd43599db2a055"
     },
     "projectArtifacts": {
       "path": "packages/flutter_vscode/lib/src/cli/project_artifacts.dart",

@@ -17,7 +17,9 @@ const fixtureManifest = require(path.join(fixtureRoot, 'package.json'));
 const vscodeVersion = fixtureManifest.engines.vscode;
 const contractId = 'checkpoint4ExtensionHost';
 const contractPath = path.join(
-  packageRoot,
+  repositoryRoot,
+  'packages',
+  'dart_vscode',
   'tool',
   'bindings',
   'contracts',
