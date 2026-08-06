@@ -17,7 +17,7 @@ const contract = {
 };
 const canonicalArtifactPath = path.resolve(
   __dirname,
-  '../bindings/contracts/checkpoint4-extension-host.json',
+  '../../../dart_vscode/tool/bindings/contracts/checkpoint4-extension-host.json',
 );
 const canonicalSourcePaths = Object.fromEntries(
   Object.entries(JSON.parse(
@@ -71,7 +71,7 @@ test('Host Contract source receipts reject a canonical source rebound', () => {
       contract: artifact,
       repositoryRoot,
     }),
-    /source bindingGenerator path must be packages\/flutter_vscode\/tool\/binding_generator\/generator\.dart; found packages\/flutter_vscode\/lib\/view\.dart/,
+    /source bindingGenerator path must be packages\/dart_vscode\/tool\/binding_generator\/generator\.dart; found packages\/flutter_vscode\/lib\/view\.dart/,
   );
 });
 

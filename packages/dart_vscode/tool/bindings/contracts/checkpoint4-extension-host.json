@@ -280,7 +280,7 @@
     },
     "verifierTest": {
       "path": "packages/flutter_vscode/tool/extension_host_test/host_contract.test.cjs",
-      "sha256": "99362ff5ee1d6fe8a9a71083ffbec5f75fbb968e504ba1719c00024bdf54a2fd"
+      "sha256": "2bb0b2ba53b8309c60b508254455c7b21b98ef7f821a9c3b91ac6ae7603d3ced"
     },
     "viewLibrary": {
       "path": "packages/flutter_vscode/lib/view.dart",
