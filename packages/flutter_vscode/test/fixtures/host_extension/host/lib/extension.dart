@@ -869,8 +869,11 @@ Future<T> _awaitViewMilestone<T>(
     // first frame, and the assertion here is that the view boots, not that
     // it boots fast -- cold-start latency is measured and reported
     // separately. The first native macOS run timed out at 30 seconds and
-    // passed warm; CI runners are always cold.
-    const Duration(seconds: 120),
+    // passed warm; 120 seconds then timed out when the local workflow
+    // aggregate ran this step right after three container jobs on the
+    // same machine, while the standalone gate rendered in under 200ms.
+    // CI runners are always cold and the local mirror is colder still.
+    const Duration(seconds: 300),
   );
 }
 

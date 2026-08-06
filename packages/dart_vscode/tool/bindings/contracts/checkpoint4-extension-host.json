@@ -168,7 +168,7 @@
     },
     "fixtureHost": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "792f487d8744c37d6286cfe1a1aa73b1fcf23bab2fe17f6441259afd60ba8fc3"
+      "sha256": "cc49b8984850f91faab4b37955b887281684d5544669ca710af42f05dc9f94a2"
     },
     "fixtureHostPackage": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/pubspec.yaml",
