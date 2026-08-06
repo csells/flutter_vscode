@@ -14,7 +14,7 @@ Edit these files directly and commit them.
 
 ## Framework-managed artifacts
 
-- `package.json` and `coverage.json`.
+- `package.json`.
 - `host/bootstrap.cjs` and `host/lib/generated/**` -- which is only what is
   derived from this project: its extension identifier, its collision-resistant
   global key, and the bindings tied to them. Framework code is not copied

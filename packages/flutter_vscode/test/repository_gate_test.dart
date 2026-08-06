@@ -82,7 +82,7 @@ void main() {
     }
   });
 
-  test('published package excludes repository-only hardening fixtures', () {
+  test('published packages exclude repository-only hardening fixtures', () {
     final pubIgnore = File('.pubignore').readAsLinesSync().toSet();
 
     expect(
@@ -93,20 +93,36 @@ void main() {
         // nothing to say about them.
         '/test/',
         '**/build/',
-        '/tool/binding_importer/',
         '/tool/extension_host_test/',
       }),
     );
-    expect(pubIgnore, isNot(contains('/tool/binding_generator/')));
-    expect(pubIgnore, isNot(contains('/tool/bindings/')));
-    expect(pubIgnore, isNot(contains('/tool/bindings/contracts/')));
-    expect(pubIgnore, isNot(contains('/tool/bindings/inputs/')));
+    // Binding generation is a dart_vscode maintainer operation: the
+    // framework package holds none of it, so its ignore file has nothing
+    // to say about it either.
+    expect(Directory('tool/bindings').existsSync(), isFalse);
+    expect(Directory('tool/binding_generator').existsSync(), isFalse);
+    for (final line in pubIgnore) {
+      expect(line, isNot(contains('binding')));
+    }
+
+    // dart_vscode ships the generated API layer but never its maintainer
+    // tool/ area: the importer, generator, IR, and pinned inputs stay
+    // repository-only, and its tests stay beside the package per Dart
+    // convention without shipping in the archive.
+    final layerPubIgnore = File(repoPath('packages/dart_vscode/.pubignore'))
+        .readAsLinesSync()
+        .toSet();
+    expect(layerPubIgnore, containsAll({'/tool/', '/test/'}));
+
     // The artifact grows with the number of files it attests, and splitting
     // a module into parts means more files, not more prose. The bound keeps
     // it reviewable; it is not a claim that fewer receipts is better.
     expect(
       File(
-        'tool/bindings/contracts/checkpoint4-extension-host.json',
+        repoPath(
+          'packages/dart_vscode/tool/bindings/contracts/'
+          'checkpoint4-extension-host.json',
+        ),
       ).lengthSync(),
       lessThan(24 * 1024),
     );

@@ -56,7 +56,7 @@ these boundaries. The generated API layer is present immediately after
 `create`, so `dart pub get && dart analyze` succeeds in `host/` before the
 first build.
 Use the [Generated Host API](../reference/generated-host-api.md) for supported
-Dart patterns and consult `coverage.json` after building for exact coverage.
+Dart patterns and the parity report for exact verification coverage.
 
 ## 4. Build and debug
 

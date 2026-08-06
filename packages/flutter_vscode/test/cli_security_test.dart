@@ -2,79 +2,12 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_vscode/src/cli/artifact_writer.dart';
+import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
-import '../tool/binding_generator/generator.dart';
-import '../tool/binding_generator/writer.dart';
-
 void main() {
-  test('generator enforces the framework-safe extension identifier grammar',
-      () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    );
-    final validProject = _readJson(
-      'test/fixtures/host_extension/extension.json',
-    )
-      ..['name'] = 'my-extension2'
-      ..['publisher'] = 'test-publisher3';
-
-    final validGenerated = VSCodeBindingGenerator().generate(
-      inventory: inventory,
-      overrides: overrides,
-      project: validProject,
-    );
-    expect(
-      validGenerated.files['host/lib/generated/host_exports.g.dart'],
-      contains(
-        'const generatedExtensionId = '
-        '"test-publisher3.my-extension2";',
-      ),
-    );
-    expect(
-      validGenerated.files['host/bootstrap.cjs'],
-      contains('const emittedExtensionKey = "e_'),
-    );
-
-    for (final invalid in <(String, String)>[
-      ('name', '../../outside'),
-      ('name', '_starts_wrong'),
-      ('name', 'contains.dot'),
-      ('name', 'Contains-Uppercase'),
-      ('publisher', '../publisher'),
-      ('publisher', '-starts-wrong'),
-      ('publisher', 'contains_underscore'),
-      ('publisher', 'Contains-Uppercase'),
-    ]) {
-      final project = Map<String, Object?>.of(validProject)
-        ..[invalid.$1] = invalid.$2;
-
-      expect(
-        () => VSCodeBindingGenerator().generate(
-          inventory: inventory,
-          overrides: overrides,
-          project: project,
-        ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_PROJECT_MANIFEST',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(contains(invalid.$1), contains(invalid.$2)),
-              ),
-        ),
-        reason: '${invalid.$1}=${invalid.$2}',
-      );
-    }
-  });
-
   test(
     'build rejects a linked host/lib before changing the link target',
     () async {
@@ -111,7 +44,7 @@ void main() {
     timeout: const Timeout(Duration(minutes: 2)),
   );
 
-  test('generated binding writer rejects linked output ancestors', () async {
+  test('the artifact writer rejects linked output ancestors', () async {
     final workspace = await Directory.systemTemp.createTemp(
       'flutter_vscode_linked_writer_',
     );
@@ -126,14 +59,12 @@ void main() {
     await Link(p.join(project.path, 'host')).create(outside.path);
 
     await expectLater(
-      writeGeneratedBindings(
-        VSCodeGeneratedBindings({
-          'host/lib/generated/binding.g.dart': '// generated\n',
-        }),
+      writeProjectArtifacts(
+        {'host/lib/generated/binding.g.dart': '// generated\n'},
         project,
       ),
       throwsA(
-        isA<VSCodeBindingGenerationException>()
+        isA<CliException>()
             .having((error) => error.code, 'code', 'UNSAFE_OUTPUT_PATH')
             .having(
               (error) => error.message,
@@ -352,10 +283,6 @@ String get _dartExecutable {
     }
   }
   throw StateError('Could not resolve dart from PATH for the CLI test.');
-}
-
-Map<String, Object?> _readJson(String path) {
-  return _decodeJson(File(path).readAsStringSync());
 }
 
 Map<String, Object?> _decodeJson(String source) =>

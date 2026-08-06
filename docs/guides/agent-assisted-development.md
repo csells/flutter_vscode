@@ -31,7 +31,7 @@ intent -> edit author-owned Dart -> doctor -> build [--watch] -> test -> package
 
 The generated layer is total: `vscode_dart_layer.g.dart` maps every public
 declaration of the pinned baseline, so the agent never needs to check whether
-a stable symbol is supported — a symbol absent from `coverage.json`'s
+a stable symbol is supported — a symbol absent from the parity report's
 host-verified accounting is unverified, not unsupported. Start with the
 [Generated Host API](../reference/generated-host-api.md). The agent must not
 handwrite a shadow API or edit generated interop; if `flutter_vscode build`

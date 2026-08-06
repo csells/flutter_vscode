@@ -14,7 +14,7 @@ skills under [`agent-skills/`](agent-skills/).
 - Edit `host/lib/**` for commands, providers, events, and VS Code object use.
 - Edit `shared/lib/**` only for runtime-neutral Dart.
 - Edit `views/**` for optional Flutter UI.
-- Never edit `package.json`, `coverage.json`, `host/lib/generated/**`,
+- Never edit `package.json`, `host/lib/generated/**`,
   `host/bootstrap.cjs`, `.vscode/launch.json`, `out/**`, or a VSIX.
 
 ## Mandatory rules

@@ -61,3 +61,15 @@ incoming baseline against the previous one. With one baseline in the
 tree, the upgrade round must keep the outgoing baseline's pinned inputs
 in place while the delta is classified and remove them in the commit
 that ships the new one. `docs/guides/new-baseline.md` records this.
+
+---
+
+Amended 2026-08-06: the baseline constant and the pipeline that moves
+it now live in `package:dart_vscode`, per ADR 0016. The pin is
+`vscodeApiVersion` in
+`packages/dart_vscode/lib/src/contributions/vscode_api_version.dart`;
+the API layer ships as `package:dart_vscode/dart_vscode.dart`; and the
+project-derived files a build emits shrank to `vscode_runtime.g.dart`,
+`host_exports.g.dart`, `host/bootstrap.cjs`, and `package.json`. The
+decision itself — one pinned baseline per release, moved by ordinary
+package versioning — stands unchanged.

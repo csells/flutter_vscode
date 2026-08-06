@@ -1,11 +1,12 @@
 # Moving the Pinned VS Code Baseline
 
-How a maintainer advances the one VS Code release this package pins.
+How a maintainer advances the one VS Code release `dart_vscode` pins.
 The package version *is* the baseline (ADR 0014): a release ships
 exactly one pinned API, projects do not select among several, and an
-author who needs an older API depends on the `flutter_vscode` release
-that shipped it. Moving the baseline is therefore a regenerate-and-
-republish operation, not an additive one.
+author who needs an older API depends on the `dart_vscode` release
+that shipped it. The pipeline lives in `packages/dart_vscode/tool`;
+extension authors never run any of this. Moving the baseline is
+therefore a regenerate-and-republish operation, not an additive one.
 
 `./scripts/test_binding_importer.sh` runs the importer suite and the
 baseline validation in the pinned Node container.
@@ -29,7 +30,8 @@ The `object.sha` of the tag is the pin commit for every input.
 
 ## 2. Fetch and pin the six official inputs
 
-Create `tool/bindings/inputs/vscode/<version>/` and fetch each input
+Create `packages/dart_vscode/tool/bindings/inputs/vscode/<version>/`
+and fetch each input
 from `https://raw.githubusercontent.com/microsoft/vscode/<commit>/...`
 at the canonical repository paths (`tool/binding_importer/src/pins.cjs`
 holds the kind-to-path map and rejects any other source URL):
@@ -62,11 +64,12 @@ node src/cli.cjs \
 
 The importer verifies every pinned checksum before parsing and fails
 closed on inexpressible syntax. The output lands at
-`tool/bindings/ir/vscode-<version>.json`.
+`packages/dart_vscode/tool/bindings/ir/vscode-<version>.json`.
 
 ## 4. Review the delta into Semantic Overrides
 
-Author `tool/bindings/overrides/vscode-<version>.json`. Start from the
+Author `packages/dart_vscode/tool/bindings/overrides/vscode-<version>.json`.
+Start from the
 previous baseline's file with `vscodeVersion` advanced; the root
 evidence hashes only change when the manifest schema, validator, or
 contribution schema inputs changed. Then classify the API delta —
@@ -103,21 +106,22 @@ If the round touched any file receipted by the durable Host Contract
 it repins `artifactSha256` into every checked-in override file:
 
 ```sh
-dart tool/binding_generator/generate.dart --contract .
+dart packages/dart_vscode/tool/binding_generator/generate.dart --contract .
 ```
 
 ## 6. Retarget the package and prove it end to end
 
-Advance `shippedApiTarget` in `lib/src/cli/baselines.dart`, regenerate
-the framework's own layer, rebuild the fixture and both shipped
-extensions, then run the whole suite:
+Advance `vscodeApiVersion` in
+`packages/dart_vscode/lib/src/contributions/vscode_api_version.dart`,
+regenerate the layer and ledgers, rebuild the fixture and both shipped
+extensions, then run every package's suite:
 
 ```sh
-dart tool/binding_generator/generate.dart --contract .
+dart packages/dart_vscode/tool/binding_generator/generate.dart --dart-layer .
+dart packages/dart_vscode/tool/binding_generator/generate.dart --contract .
 ./scripts/build_host_fixture.sh
-flutter test test extensions/coverage_treemap/shared/test \
-  extensions/coverage_treemap/views/treemap_panel/test \
-  extensions/pubspec_lens/shared/test
+(cd packages/dart_vscode && dart test)
+(cd packages/flutter_vscode && flutter test --exclude-tags gate)
 ```
 
 Record the new baseline in `CHANGELOG.md`: for consumers it is a

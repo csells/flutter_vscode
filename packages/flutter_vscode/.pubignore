@@ -8,11 +8,10 @@
 **/build/
 **/node_modules/
 
-# Repository-only fixtures and maintainer tooling. The specs, gate scripts,
+# Repository-only fixtures and harness tooling. The specs, gate scripts,
 # docs, and example extensions live above this package and are never part of
-# the archive.
+# the archive; the generation pipeline lives in packages/dart_vscode.
 /test/
-/tool/binding_importer/
 /tool/extension_host_test/
 
 # Instructions for repository agents are not consumer package assets.
@@ -20,6 +19,4 @@
 /CLAUDE.md
 /CONTEXT.md
 /GEMINI.md
-/tool/bindings/dart-layer-ledger.json
-/tool/bindings/parity-ledger.json
 

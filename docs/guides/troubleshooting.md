@@ -30,9 +30,10 @@ source cannot produce environment-dependent manifests.
 
 The generated layer is total by construction:
 `package:dart_vscode/dart_vscode.dart` maps every public declaration
-of the pinned baseline, so no stable symbol is missing. `coverage.json`
-records behavioral verification, not availability — an entry still `pending`
-there is unverified, not unsupported. Use the symbol through the generated
+of the pinned baseline, so no stable symbol is missing. The
+[parity report](../reference/parity.md) records behavioral verification,
+not availability — an entry still `pending` there is unverified, not
+unsupported. Use the symbol through the generated
 layer as usual. If generation itself fails on a construct it cannot map
 (a `ParityGenerationException` naming the declaration), that is a framework
 defect — report it rather than adding raw `dynamic` interop or a handwritten

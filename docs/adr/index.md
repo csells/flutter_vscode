@@ -19,3 +19,4 @@ rewriting history. Newer decisions supersede older ones where noted.
 - [Generate One API Layer](0013-generate-one-api-layer.md)
 - [Ship One VS Code Baseline per Release](0014-ship-one-vscode-baseline-per-release.md)
 - [Ship the Runtime as a Pure-Dart Package](0015-ship-the-runtime-as-a-pure-dart-package.md)
+- [Make Binding Generation a dart_vscode Maintainer Operation](0016-make-binding-generation-a-dart-vscode-maintainer-operation.md)

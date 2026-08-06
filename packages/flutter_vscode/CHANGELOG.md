@@ -1,6 +1,17 @@
 
 ## Unreleased
 
+- Stop reading binding inputs at build time: generation is a
+  `dart_vscode` maintainer operation (ADR 0016). `build` emits only
+  Project-Derived Artifacts — `package.json`, `host/bootstrap.cjs`, and
+  the two identity-wiring host modules — validating the descriptor
+  through `package:dart_vscode/contributions.dart`, and the published
+  archive carries no generator, IR, or pinned inputs. **Breaking:**
+  projects no longer receive `coverage.json` (the accounting lives in
+  the maintainer coverage ledger and the published parity report), and
+  the build receipt drops the generator and binding-input digests
+  (`schemaVersion` 3), so existing projects rebuild once before
+  packaging.
 - Contribute views, view containers, and configuration from the typed
   manifest (the last author-visible gap the upstream review named).
   `ExtensionManifest` gains `views`, `viewsContainers`, and

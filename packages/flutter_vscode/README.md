@@ -110,8 +110,8 @@ flutter_vscode doctor
 
 `doctor` writes one `[ok]` or `[!!]` line per check — the Dart and
 Flutter SDK probes, plus (inside an Extension Project) the layout, the
-descriptor, and whether this framework version carries its pinned
-binding inputs — and exits nonzero when any check fails.
+descriptor, and whether `package:dart_vscode` (which carries the pinned
+VS Code baseline) resolves — and exits nonzero when any check fails.
 
 Build it:
 
@@ -120,8 +120,10 @@ flutter_vscode build
 ```
 
 `build` deterministically generates the VS Code manifest (`package.json`),
-native interop bindings, the CommonJS bootstrap, the compiled host bundle
-with its source map, and `.vscode/launch.json`. It also fails closed: syntax
+the identity-wiring host modules, the CommonJS bootstrap, the compiled
+host bundle with its source map, and `.vscode/launch.json` — only what is
+derived from the project itself; the VS Code API layer ships inside
+`package:dart_vscode`. It also fails closed: syntax
 errors, layout violations, and host-forbidden imports (`dart:io`, Flutter,
 browser-only libraries in `host/` or `shared/`) are reported with actionable
 error codes.
@@ -408,9 +410,9 @@ flutter analyze
 ```
 
 `ci_gates.sh` runs the repository's CI workflow locally, job by job: it
-regenerates bindings, tests both generators, launches the pinned Extension
-Host fixture, then creates and installs a clean Dart-owned VSIX in an
-isolated VS Code profile.
+verifies the pinned importer, launches the pinned Extension Host fixture,
+then creates and installs a clean Dart-owned VSIX in an isolated VS Code
+profile.
 
 ## Documentation
 

@@ -73,8 +73,8 @@ void main() {
         isNot(contains('generate_vscode_extension')),
         reason: 'the v0 scaffolder executable retires with its source',
       );
-      // Verified before deletion: no v1 source (lib/src/cli,
-      // tool/binding_generator, remaining tests) imports any of these.
+      // Verified before deletion: no v1 source (lib/src/cli, the
+      // dart_vscode binding tool, remaining tests) imports any of these.
       for (final dependency in [
         'build',
         'source_gen',

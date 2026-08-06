@@ -20,7 +20,7 @@ Rules and their enforcement:
   `__flutterVscode.*` keyed by a hash of the extension identity, so two
   generated extensions cannot collide in one host. The namespace
   publishing is emitted from the bootstrap template in
-  `packages/flutter_vscode/tool/binding_generator/templates.dart` (extension-key derivation in
+  `packages/flutter_vscode/lib/src/cli/templates.dart` (extension-key derivation in
   `generator.dart`) and asserted by the generator suite's
   one-identity-hash test.
 - **Activation rollback.** A rejected activation disposes every
@@ -33,7 +33,7 @@ Rules and their enforcement:
   `out/extension.dart.js` and reloads the window (debounced
   `workbench.action.reloadWindow`) when the bundle changes; the
   watcher is disposed through `context.subscriptions`. Emitted from
-  the bootstrap template in `packages/flutter_vscode/tool/binding_generator/templates.dart`;
+  the bootstrap template in `packages/flutter_vscode/lib/src/cli/templates.dart`;
   the lifecycle test enforces
   both sides — the bootstrap source must contain no test-injection
   hooks, and a Development host must request the reload after a
@@ -43,7 +43,7 @@ Rules and their enforcement:
   Extension Host's global WHATWG `fetch` (Node) with method, headers,
   and body support and returns a protocol-safe status+body snapshot
   (`HostFetchResponse`). Proven by a compiled-probe unit test against
-  a local Node server (`test/binding_generator_cli_test.dart`) and by
+  a local Node server (`packages/dart_vscode/test/binding_generator_cli_test.dart`) and by
   the packaged gate's live `hostFetchProbe` command.
 - **Mapped failures.** Synchronous throws, rejected promises, and
   activation failures surface `host/lib/extension.dart:<line>:<column>`
@@ -58,5 +58,5 @@ Rules and their enforcement:
   check" in `test/cli_build_test.dart`.
 - **Toolchain carve-out.** Extension authors never manage Node or npm.
   Maintainer tooling and CI may use pinned Node packages
-  (`packages/flutter_vscode/tool/binding_importer`, `packages/flutter_vscode/tool/extension_host_test`), which are never
+  (`packages/dart_vscode/tool/binding_importer`, `packages/flutter_vscode/tool/extension_host_test`), which are never
   part of the author toolchain.

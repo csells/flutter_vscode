@@ -20,17 +20,20 @@ View runtime).
 
 - `packages/dart_vscode/lib/` the pure-Dart runtime authors' host code
   imports: the generated API layer, `view_protocol`, `host_commands`,
-  `host_runtime`, and `flutter_view_host`.
+  `host_runtime`, `flutter_view_host`, and the `contributions` library
+  (author-data manifest admission plus the pinned `vscodeApiVersion`).
 - `packages/flutter_vscode/lib/` the manifest types, the Flutter View
   runtime, and `lib/src/cli/` command modules (create, build, watch,
   package, doctor, test).
 - `packages/flutter_vscode/bin/flutter_vscode.dart` the canonical CLI.
-- `packages/flutter_vscode/tool/binding_importer/` pinned
+- `packages/dart_vscode/tool/binding_importer/` pinned
   TypeScript-to-IR maintainer tooling.
-- `packages/flutter_vscode/tool/binding_generator/` IR/override-to-Dart
-  and manifest generation.
-- `packages/flutter_vscode/tool/bindings/` pinned inputs, canonical IR,
-  and Semantic Overrides.
+- `packages/dart_vscode/tool/binding_generator/` the maintainer
+  review walk: IR/override validation, the generated API layer, the
+  ledgers, and the Host Contract writer.
+- `packages/dart_vscode/tool/bindings/` pinned inputs, canonical IR,
+  Semantic Overrides, and the maintainer ledgers — repository-only,
+  never published, never read by `flutter_vscode build` (ADR 0016).
 - `packages/flutter_vscode/test/fixtures/host_extension/` real Extension
   Host and Flutter View fixture.
 - `extensions/` shipped example extensions that consume the framework the

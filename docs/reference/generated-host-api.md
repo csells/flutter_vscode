@@ -125,9 +125,8 @@ wiring, disposal), and the view side composes `ViewShell` from
 
 ## Coverage accounting
 
-After `flutter_vscode build`, inspect `coverage.json` for the exact pinned
-accounting. Each host-attributed entry cites a Host Contract artifact
-shipped with the framework. For this slice, one real Extension Host Contract
+The [parity report](parity.md) carries the exact pinned accounting. Each host-attributed entry cites the repository's durable
+Host Contract artifact. For this slice, one real Extension Host Contract
 mechanically attributes 53 reviewed binding IDs after its native behavior
 checks pass; it does not mean the package has 53 independent behavioral
 contracts. The artifact keeps the exact IDs and hashes of the executable

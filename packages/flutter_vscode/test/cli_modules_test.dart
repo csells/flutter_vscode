@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
-import 'package:flutter_vscode/src/cli/baselines.dart';
+import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/doctor_command.dart';
 import 'package:flutter_vscode/src/cli/packaging.dart';
@@ -182,41 +182,20 @@ void main() {
   });
 
   group('baselines', () {
-    test('the package ships exactly one pinned VS Code baseline', () {
-      expect(shippedApiTarget, '1.129.1');
-      final pinned = Directory(p.join('tool', 'bindings', 'inputs', 'vscode'))
-          .listSync()
-          .whereType<Directory>()
-          .map((entry) => p.basename(entry.path))
-          .toList();
+    test('the baseline lives in dart_vscode and the framework carries none',
+        () {
+      expect(vscodeApiVersion, '1.129.1');
+      // Binding generation is a dart_vscode maintainer operation: this
+      // package must hold no generator, IR, or pinned inputs to read.
       expect(
-        pinned,
-        [shippedApiTarget],
-        reason: 'the package version is the baseline: a release ships one '
-            'pinned VS Code API and projects do not select among several',
+        Directory(p.join('tool', 'bindings')).existsSync(),
+        isFalse,
+        reason: 'pinned binding inputs are dart_vscode maintainer state',
       );
-    });
-
-    test('loading returns the shipped pinned inputs', () async {
-      final inputs = await loadBindingInputs(Directory.current);
-
-      expect(inputs.inventory, isNotEmpty);
-      expect(inputs.overrides, isNotEmpty);
-    });
-
-    test('a framework missing its pinned inputs fails closed', () async {
-      final empty = Directory.systemTemp.createTempSync('flutter_vscode_pins_');
-      addTearDown(() => empty.deleteSync(recursive: true));
-
-      await expectLater(
-        loadBindingInputs(empty),
-        throwsA(
-          isA<CliException>().having(
-            (error) => error.code,
-            'code',
-            'MISSING_FRAMEWORK_RESOURCE',
-          ),
-        ),
+      expect(
+        Directory(p.join('tool', 'binding_generator')).existsSync(),
+        isFalse,
+        reason: 'the generator is dart_vscode maintainer tooling',
       );
     });
   });
@@ -295,7 +274,7 @@ void main() {
       expect(report, contains('[ok] Project layout'));
       expect(
         report,
-        contains('[ok] VS Code baseline $shippedApiTarget'),
+        contains('[ok] VS Code baseline $vscodeApiVersion'),
       );
       expect(report, contains('No issues found.'));
     });

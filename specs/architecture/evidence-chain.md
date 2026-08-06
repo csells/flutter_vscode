@@ -6,19 +6,19 @@ keep "verified" meaning something.
 
 ## Receipts and the durable Host Contract
 
-`packages/flutter_vscode/tool/bindings/contracts/checkpoint4-extension-host.json` attests the
+`packages/dart_vscode/tool/bindings/contracts/checkpoint4-extension-host.json` attests the
 real-host evidence run: API and runtime targets, one source receipt
 per load-bearing file (exact SHA-256 — generator, writer, CLI, the
 generated API layer, fixtures, lockfiles, the verifier, its test,
 and the contract writer itself; the artifact's `sources` block is the
 authoritative list, not any count in prose), and the attributed
 binding IDs. It is written only by the
-mechanical regenerator (`packages/flutter_vscode/tool/binding_generator/contract.dart`, invoked
+mechanical regenerator (`packages/dart_vscode/tool/binding_generator/contract.dart`, invoked
 as `generate.dart --contract .`); hand-editing evidence is not a
 supported workflow. Overrides pins are per-baseline: every checked-in
 baseline cites the same checkpoint-4 contract, and the contract writer
 surgically repins the `artifactSha256` in each
-`packages/flutter_vscode/tool/bindings/overrides/vscode-*.json` on every write.
+`packages/dart_vscode/tool/bindings/overrides/vscode-*.json` on every write.
 `packages/flutter_vscode/test/binding_evidence_test.dart` proves the checked-in artifact
 byte-equals regeneration and that the overrides pin matches its bytes;
 the real-host launcher verifies all receipts before VS Code starts and
@@ -31,8 +31,8 @@ contracts (the `evidence.meaning` field states this in the artifact
 itself).
 
 The machine-checked totality artifacts are ledgers, not prose: the
-substrate's `packages/flutter_vscode/tool/bindings/parity-ledger.json` and the ergonomic
-surface's `packages/flutter_vscode/tool/bindings/dart-layer-ledger.json` — both written by
+substrate's `packages/dart_vscode/tool/bindings/parity-ledger.json` and the ergonomic
+surface's `packages/dart_vscode/tool/bindings/dart-layer-ledger.json` — both written by
 one `--dart-layer` run for the one generated API artifact — must each
 byte-equal regeneration and cover exactly the IR
 (`test/parity_layer_test.dart`, `test/dart_layer_test.dart`).

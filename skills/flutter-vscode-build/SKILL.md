@@ -41,7 +41,7 @@ failures print their error code without stopping the watcher; interrupt with
 Ctrl+C.
 
 Do not run npm or edit generated JavaScript, TypeScript, `package.json`,
-`coverage.json`, `host/lib/generated/**`, `host/bootstrap.cjs`, or `out/**`.
+`host/lib/generated/**`, `host/bootstrap.cjs`, or `out/**`.
 
 To produce an installable artifact:
 

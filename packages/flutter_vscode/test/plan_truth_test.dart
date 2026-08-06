@@ -33,14 +33,15 @@ void main() {
   test('every full digest in the plan is current or marked historical', () {
     final currentDigests = <String>{
       for (final artifact in [
-        'tool/bindings/contracts/checkpoint4-extension-host.json',
-        'tool/bindings/ir/vscode-1.129.1.json',
+        '../dart_vscode/tool/bindings/contracts/'
+            'checkpoint4-extension-host.json',
+        '../dart_vscode/tool/bindings/ir/vscode-1.129.1.json',
       ])
         sha256.convert(File(artifact).readAsBytesSync()).toString(),
       for (final machineSource in [
-        'tool/bindings/overrides/vscode-1.129.1.json',
-        'tool/bindings/inputs/vscode/1.129.1/pins.json',
-        'test/fixtures/host_extension/coverage.json',
+        '../dart_vscode/tool/bindings/overrides/vscode-1.129.1.json',
+        '../dart_vscode/tool/bindings/inputs/vscode/1.129.1/pins.json',
+        '../dart_vscode/tool/bindings/coverage-ledger.json',
       ])
         ...RegExp('[0-9a-f]{64}')
             .allMatches(File(machineSource).readAsStringSync())
