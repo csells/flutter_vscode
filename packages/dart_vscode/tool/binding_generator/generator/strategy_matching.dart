@@ -295,11 +295,10 @@ bool _strategyAcceptsDeclaration(
 
 List<Map<String, Object?>> _declarationParameters(
   Map<String, Object?> declaration,
-) =>
-    objectList(
-      declaration['parameters'] ?? const <Object?>[],
-      'declaration.parameters',
-    ).map((value) => objectMap(value, 'declaration parameter')).toList();
+) => objectList(
+  declaration['parameters'] ?? const <Object?>[],
+  'declaration.parameters',
+).map((value) => objectMap(value, 'declaration parameter')).toList();
 
 bool _isProperty(
   Map<String, Object?> declaration, {

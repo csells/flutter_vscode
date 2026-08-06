@@ -31,8 +31,8 @@ const frameworkPackagePath = 'packages/flutter_vscode';
 Map<String, String> hostContractSourcePaths(Directory repositoryRoot) {
   final file = File('${repositoryRoot.path}/$hostContractSourcesPath');
   final decoded = jsonDecode(file.readAsStringSync()) as Map<String, Object?>;
-  final sources =
-      (decoded['sources']! as Map<Object?, Object?>).cast<String, Object?>();
+  final sources = (decoded['sources']! as Map<Object?, Object?>)
+      .cast<String, Object?>();
   return <String, String>{
     for (final entry in sources.entries) entry.key: entry.value! as String,
   };
@@ -53,11 +53,13 @@ String buildHostContractArtifact(Directory repositoryRoot) {
               as Map<Object?, Object?>)
           .cast<String, Object?>();
 
-  final inventory =
-      readJson('$apiPackagePath/tool/bindings/ir/vscode-1.129.1.json');
-  final product = ((inventory['source']! as Map<Object?, Object?>)['product']!
-          as Map<Object?, Object?>)
-      .cast<String, Object?>();
+  final inventory = readJson(
+    '$apiPackagePath/tool/bindings/ir/vscode-1.129.1.json',
+  );
+  final product =
+      ((inventory['source']! as Map<Object?, Object?>)['product']!
+              as Map<Object?, Object?>)
+          .cast<String, Object?>();
 
   final fixtureManifest = readJson(
     '$frameworkPackagePath/test/fixtures/host_extension/package.json',
@@ -65,17 +67,20 @@ String buildHostContractArtifact(Directory repositoryRoot) {
   final fixtureEngines = (fixtureManifest['engines']! as Map<Object?, Object?>)
       .cast<String, Object?>();
 
-  final harnessPackage =
-      readJson('$frameworkPackagePath/tool/extension_host_test/package.json');
+  final harnessPackage = readJson(
+    '$frameworkPackagePath/tool/extension_host_test/package.json',
+  );
   final harnessDependencies =
       (harnessPackage['devDependencies']! as Map<Object?, Object?>)
           .cast<String, Object?>();
 
-  final container =
-      File('$root/$frameworkPackagePath/tool/extension_host_test/Dockerfile')
-          .readAsStringSync();
-  final nodeImage =
-      RegExp(r'^FROM (\S+)$', multiLine: true).firstMatch(container)!.group(1)!;
+  final container = File(
+    '$root/$frameworkPackagePath/tool/extension_host_test/Dockerfile',
+  ).readAsStringSync();
+  final nodeImage = RegExp(
+    r'^FROM (\S+)$',
+    multiLine: true,
+  ).firstMatch(container)!.group(1)!;
 
   final sourcePaths = hostContractSourcePaths(repositoryRoot);
   final sourceIds = sourcePaths.keys.toList()..sort();
@@ -94,8 +99,8 @@ String buildHostContractArtifact(Directory repositoryRoot) {
   final overrides = readJson(
     '$apiPackagePath/tool/bindings/overrides/vscode-1.129.1.json',
   );
-  final entries =
-      (overrides['entries']! as Map<Object?, Object?>).cast<String, Object?>();
+  final entries = (overrides['entries']! as Map<Object?, Object?>)
+      .cast<String, Object?>();
   final attributedBindings = <String>[
     for (final entry in entries.entries)
       if ((entry.value! as Map<Object?, Object?>)['strategy'] !=
@@ -121,22 +126,22 @@ String buildHostContractArtifact(Directory repositoryRoot) {
     'trustBoundary': <String, Object?>{
       'dartToolchain':
           'The locally installed Flutter/Dart SDK and packages resolved '
-              'from the enforced lockfile are trusted; this contract does '
-              'not attest their bytes.',
+          'from the enforced lockfile are trusted; this contract does '
+          'not attest their bytes.',
       'vscodeRuntime':
           'Each gate resolves the exact official VS Code version into a '
-              'new invocation-scoped cache; this contract does not attest '
-              'a predeclared runtime binary digest.',
+          'new invocation-scoped cache; this contract does not attest '
+          'a predeclared runtime binary digest.',
     },
     'sources': sources,
     'evidence': <String, Object?>{
       'kind': 'mechanicalAttribution',
       'meaning':
           'Every listed binding ID is attributed to this one real Extension '
-              'Host Contract by its reviewed Semantic Override; the gate '
-              'passes only after the receipted repository sources and the '
-              'surrounding native behavior pass, without per-member '
-              'observation.',
+          'Host Contract by its reviewed Semantic Override; the gate '
+          'passes only after the receipted repository sources and the '
+          'surrounding native behavior pass, without per-member '
+          'observation.',
       'independentBehavioralContracts': false,
     },
     'attributedBindings': attributedBindings,
@@ -164,8 +169,9 @@ void writeHostContractArtifact(Directory repositoryRoot) {
           .listSync()
           .whereType<File>()
           .where(
-            (file) => RegExp(r'vscode-\d+\.\d+\.\d+\.json$')
-                .hasMatch(file.uri.pathSegments.last),
+            (file) => RegExp(
+              r'vscode-\d+\.\d+\.\d+\.json$',
+            ).hasMatch(file.uri.pathSegments.last),
           )
           .toList()
         ..sort((left, right) => left.path.compareTo(right.path));

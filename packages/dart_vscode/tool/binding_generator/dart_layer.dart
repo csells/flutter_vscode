@@ -124,13 +124,13 @@ final class _DartLayerEmitter {
           break; // Converted on the module root.
         case 'interface' || 'class' || 'enum' || 'typeAlias' || 'namespace':
         case 'property' ||
-              'method' ||
-              'constructor' ||
-              'function' ||
-              'variable' ||
-              'enumMember' ||
-              'indexSignature' ||
-              'callSignature':
+            'method' ||
+            'constructor' ||
+            'function' ||
+            'variable' ||
+            'enumMember' ||
+            'indexSignature' ||
+            'callSignature':
           break; // Converted as part of an owning surface.
         default:
           throw DartLayerGenerationException(
@@ -160,8 +160,10 @@ final class _DartLayerEmitter {
       ..writeln(r'// gains onDidXStream), and lit$ factories flatten')
       ..writeln('// inherited interface members.')
       ..writeln('// Regenerate with:')
-      ..writeln('//   dart tool/binding_generator/generate.dart '
-          '--dart-layer .')
+      ..writeln(
+        '//   dart tool/binding_generator/generate.dart '
+        '--dart-layer .',
+      )
       ..writeln('//')
       ..writeln('// JS `undefined` and `null` both surface as Dart `null`')
       ..writeln('// (documented platform-wide conflation).')
@@ -213,48 +215,48 @@ final class _DartLayerEmitter {
   /// passes through unchanged (boundary-de-js applies to naked scalars
   /// only).
   String? _deJs(String type) => switch (type) {
-        'JSString' => 'String',
-        'JSString?' => 'String?',
-        'JSNumber' => 'num',
-        'JSNumber?' => 'num?',
-        'JSBoolean' => 'bool',
-        'JSBoolean?' => 'bool?',
-        _ => null,
-      };
+    'JSString' => 'String',
+    'JSString?' => 'String?',
+    'JSNumber' => 'num',
+    'JSNumber?' => 'num?',
+    'JSBoolean' => 'bool',
+    'JSBoolean?' => 'bool?',
+    _ => null,
+  };
 
   String _toJsExpression(String dartType, String name) =>
       dartType.endsWith('?') ? '$name?.toJS' : '$name.toJS';
 
   String _fromJsSuffix(String jsType) => switch (jsType) {
-        'JSString' => '.toDart',
-        'JSString?' => '?.toDart',
-        'JSNumber' => '.toDartDouble',
-        'JSNumber?' => '?.toDartDouble',
-        'JSBoolean' => '.toDart',
-        'JSBoolean?' => '?.toDart',
-        _ => '',
-      };
+    'JSString' => '.toDart',
+    'JSString?' => '?.toDart',
+    'JSNumber' => '.toDartDouble',
+    'JSNumber?' => '?.toDartDouble',
+    'JSBoolean' => '.toDart',
+    'JSBoolean?' => '?.toDart',
+    _ => '',
+  };
 
   String _promiseThen(String inner) => switch (inner) {
-        'JSString' => '.then((value) => value.toDart)',
-        'JSString?' => '.then((value) => value?.toDart)',
-        'JSNumber' => '.then((value) => value.toDartDouble)',
-        'JSNumber?' => '.then((value) => value?.toDartDouble)',
-        'JSBoolean' => '.then((value) => value.toDart)',
-        'JSBoolean?' => '.then((value) => value?.toDart)',
-        _ => '',
-      };
+    'JSString' => '.then((value) => value.toDart)',
+    'JSString?' => '.then((value) => value?.toDart)',
+    'JSNumber' => '.then((value) => value.toDartDouble)',
+    'JSNumber?' => '.then((value) => value?.toDartDouble)',
+    'JSBoolean' => '.then((value) => value.toDart)',
+    'JSBoolean?' => '.then((value) => value?.toDart)',
+    _ => '',
+  };
 
   String _rawConvert(String inner) => switch (inner) {
-        'JSString' => '(raw) => (raw! as JSString).toDart',
-        'JSString?' => '(raw) => (raw as JSString?)?.toDart',
-        'JSNumber' => '(raw) => (raw! as JSNumber).toDartDouble',
-        'JSNumber?' => '(raw) => (raw as JSNumber?)?.toDartDouble',
-        'JSBoolean' => '(raw) => (raw! as JSBoolean).toDart',
-        'JSBoolean?' => '(raw) => (raw as JSBoolean?)?.toDart',
-        'JSAny?' => '(raw) => raw',
-        _ => '(raw) => raw as $inner',
-      };
+    'JSString' => '(raw) => (raw! as JSString).toDart',
+    'JSString?' => '(raw) => (raw as JSString?)?.toDart',
+    'JSNumber' => '(raw) => (raw! as JSNumber).toDartDouble',
+    'JSNumber?' => '(raw) => (raw as JSNumber?)?.toDartDouble',
+    'JSBoolean' => '(raw) => (raw! as JSBoolean).toDart',
+    'JSBoolean?' => '(raw) => (raw as JSBoolean?)?.toDart',
+    'JSAny?' => '(raw) => raw',
+    _ => '(raw) => raw as $inner',
+  };
 
   /// Parses a mapped type as an instance of the generic [base]
   /// (`base<inner>` or `base<inner>?`).
@@ -385,7 +387,7 @@ final class _DartLayerEmitter {
       final mutable = declaration['kind'] == 'property'
           ? declaration['readonly'] != true
           : declaration['declarationKind'] != null &&
-              declaration['declarationKind'] != 'const';
+                declaration['declarationKind'] != 'const';
       if (mutable) {
         // A Future-returning getter beside the inherited Event/JSPromise
         // setter is illegal at the package language level; no occurrence
@@ -433,8 +435,8 @@ final class _DartLayerEmitter {
     final optionalArguments = <String>[];
     for (final rawParameter
         in (declaration['parameters'] as List<Object?>?) ?? const <Object?>[]) {
-      final parameter =
-          (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
+      final parameter = (rawParameter! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       var type = mapper.mapType(
         parameter['type'],
         generic: false,
@@ -617,8 +619,8 @@ final class _DartLayerEmitter {
     final forwards = <String>[];
     var converted = false;
     for (final rawParameter in parameters) {
-      final parameter =
-          (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
+      final parameter = (rawParameter! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['rest'] == true) {
         optionalParts.add('List<JSAny?> $parameterName = const []');
@@ -645,8 +647,9 @@ final class _DartLayerEmitter {
       } else {
         forwards.add(parameterName);
       }
-      (parameter['optional'] == true ? optionalParts : requiredParts)
-          .add('$type $parameterName');
+      (parameter['optional'] == true ? optionalParts : requiredParts).add(
+        '$type $parameterName',
+      );
     }
     final clause = [
       requiredParts.join(', '),
@@ -664,7 +667,7 @@ final class _DartLayerEmitter {
     final children = event == null
         ? const <Map<String, Object?>>[]
         : (mapper.childrenByParent[event['id']! as String] ??
-            const <Map<String, Object?>>[]);
+              const <Map<String, Object?>>[]);
     final hasSubscribe = children.any(
       (child) =>
           child['kind'] == 'callSignature' &&
@@ -690,8 +693,9 @@ final class _DartLayerEmitter {
     final name = declaration['name']! as String;
     final children =
         mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
-    final hasCallSignature =
-        children.any((child) => child['kind'] == 'callSignature');
+    final hasCallSignature = children.any(
+      (child) => child['kind'] == 'callSignature',
+    );
     final members = _convertedMembers(
       children.where(parity.isEmitted),
       eraseScopeReferences: false,
@@ -731,8 +735,9 @@ final class _DartLayerEmitter {
     final name = mapper.hashName('JSAnon', declaration['shapeHash']);
     final children =
         mapper.childrenByParent[id] ?? const <Map<String, Object?>>[];
-    final hasCallSignature =
-        children.any((child) => child['kind'] == 'callSignature');
+    final hasCallSignature = children.any(
+      (child) => child['kind'] == 'callSignature',
+    );
     final members = _convertedMembers(
       children.where(parity.isEmitted),
       eraseScopeReferences: true,
@@ -897,8 +902,9 @@ final class _DartLayerEmitter {
       if (!visited.add(ownerId)) {
         return;
       }
-      for (final child in mapper.childrenByParent[ownerId] ??
-          const <Map<String, Object?>>[]) {
+      for (final child
+          in mapper.childrenByParent[ownerId] ??
+              const <Map<String, Object?>>[]) {
         if (!parity.isEmitted(child) || child['static'] == true) {
           continue;
         }
@@ -974,12 +980,11 @@ final class _DartLayerEmitter {
         final composed = <String, Object?>{
           for (var index = 0; index < targetParameters.length; index += 1)
             (targetParameters[index]! as Map<Object?, Object?>)['name']!
-                    as String:
-                index < baseArguments.length
-                    ? (substitution.isEmpty
-                        ? baseArguments[index]
-                        : mapper.substitute(baseArguments[index], substitution))
-                    : {'kind': 'primitive', 'name': 'any'},
+                as String: index < baseArguments.length
+                ? (substitution.isEmpty
+                      ? baseArguments[index]
+                      : mapper.substitute(baseArguments[index], substitution))
+                : {'kind': 'primitive', 'name': 'any'},
         };
         visit(target, composed);
       }
@@ -1049,8 +1054,10 @@ final class _DartLayerEmitter {
     out
       ..writeln('/// The dart-layer view of the VS Code API module object.')
       ..writeln('///')
-      ..writeln('/// Entered from the parity root with '
-          '`VscodeApi(rawVscode).dart`.')
+      ..writeln(
+        '/// Entered from the parity root with '
+        '`VscodeApi(rawVscode).dart`.',
+      )
       ..writeln(
         r'extension type VscodeApiDart(VscodeApi $js) implements VscodeApi {',
       );

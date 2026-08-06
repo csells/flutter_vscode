@@ -246,8 +246,9 @@ String _firstJsonDifferencePath(
     return path;
   }
   if (expected is List<Object?> && actual is List<Object?>) {
-    final sharedLength =
-        expected.length < actual.length ? expected.length : actual.length;
+    final sharedLength = expected.length < actual.length
+        ? expected.length
+        : actual.length;
     for (var index = 0; index < sharedLength; index++) {
       if (jsonEncode(expected[index]) != jsonEncode(actual[index])) {
         return _firstJsonDifferencePath(

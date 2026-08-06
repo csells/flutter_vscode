@@ -59,18 +59,18 @@ String emitCoverageLedger({
     final semantics = excludedByVisibility || excludedByOverride
         ? 'excluded'
         : strategy == null
-            ? 'pending'
-            : 'reviewed';
+        ? 'pending'
+        : 'reviewed';
     final binding = excludedByVisibility || excludedByOverride
         ? 'excluded'
         : strategy == null
-            ? 'pending'
-            : 'emitted';
+        ? 'pending'
+        : 'emitted';
     final host = excludedByVisibility || excludedByOverride
         ? 'notApplicable'
         : strategy == null
-            ? 'pending'
-            : 'verified';
+        ? 'pending'
+        : 'verified';
 
     if (semantics == 'reviewed') {
       semanticsReviewed += 1;
@@ -143,7 +143,8 @@ String emitCoverageLedger({
     'hostContracts': hostContracts,
     'hostEvidence': <String, Object?>{
       'kind': 'mechanicalAttribution',
-      'meaning': '$hostVerified reviewed binding IDs cite one real Extension '
+      'meaning':
+          '$hostVerified reviewed binding IDs cite one real Extension '
           'Host Contract whose receipted gate passed its surrounding native '
           'behavior; the retired per-member observation mechanism no longer '
           'contributes evidence.',

@@ -44,10 +44,10 @@ const _reservedWords = {
 final class IrTypeMapper {
   /// Indexes the IR declarations for emission.
   IrTypeMapper(Map<String, Object?> inventory)
-      : declarations = [
-          for (final declaration in inventory['declarations']! as List<Object?>)
-            (declaration! as Map<Object?, Object?>).cast<String, Object?>(),
-        ] {
+    : declarations = [
+        for (final declaration in inventory['declarations']! as List<Object?>)
+          (declaration! as Map<Object?, Object?>).cast<String, Object?>(),
+      ] {
     for (final declaration in declarations) {
       byId[declaration['id']! as String] = declaration;
       childrenByParent
@@ -433,10 +433,10 @@ final class IrTypeMapper {
     if (parameters.isNotEmpty) {
       final substitutions = <String, Object?>{
         for (var index = 0; index < parameters.length; index += 1)
-          (parameters[index]! as Map<Object?, Object?>)['name']! as String:
-              index < arguments.length
-                  ? arguments[index]
-                  : {'kind': 'primitive', 'name': 'any'},
+          (parameters[index]! as Map<Object?, Object?>)['name']!
+              as String: index < arguments.length
+              ? arguments[index]
+              : {'kind': 'primitive', 'name': 'any'},
       };
       body = substitute(body, substitutions);
     }
@@ -495,7 +495,8 @@ final class IrTypeMapper {
     if (rest.isEmpty) {
       return 'JSAny?';
     }
-    final allStringLiterals = rest.length > 1 &&
+    final allStringLiterals =
+        rest.length > 1 &&
         rest.every(
           (member) => member['kind'] == 'literal' && member['value'] is String,
         );
@@ -611,8 +612,9 @@ final class IrTypeMapper {
   }
 
   String _categoryOfMapped(String mapped) {
-    final bare =
-        mapped.endsWith('?') ? mapped.substring(0, mapped.length - 1) : mapped;
+    final bare = mapped.endsWith('?')
+        ? mapped.substring(0, mapped.length - 1)
+        : mapped;
     if (bare == 'JSString' || bare == 'String') return 'S';
     if (bare == 'JSNumber' || bare == 'num' || bare == 'int') return 'N';
     if (bare == 'JSBoolean' || bare == 'bool') return 'B';
@@ -641,8 +643,8 @@ final class IrTypeMapper {
     var nullable = false;
     final rest = <Map<String, Object?>>[];
     for (final rawMember in type['types']! as List<Object?>) {
-      final member =
-          (rawMember! as Map<Object?, Object?>).cast<String, Object?>();
+      final member = (rawMember! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       if (member['kind'] == 'primitive' &&
           (member['name'] == 'null' || member['name'] == 'undefined')) {
         nullable = true;
@@ -650,7 +652,8 @@ final class IrTypeMapper {
         rest.add(member);
       }
     }
-    final allStringLiterals = rest.length > 1 &&
+    final allStringLiterals =
+        rest.length > 1 &&
         rest.every(
           (member) => member['kind'] == 'literal' && member['value'] is String,
         );
@@ -678,9 +681,9 @@ final class IrTypeMapper {
         final literal = values[index];
         final identifier =
             RegExp(r'^[A-Za-z_$][A-Za-z0-9_$]*$').hasMatch(literal) &&
-                    dartName(literal) == literal
-                ? literal
-                : 'value\$${index + 1}';
+                dartName(literal) == literal
+            ? literal
+            : 'value\$${index + 1}';
         buffer.writeln(
           "  static const $identifier = $wrapperName('$literal');",
         );
@@ -717,8 +720,10 @@ final class IrTypeMapper {
     tupleElements.putIfAbsent(name, () => mapped);
     tupleTypes.putIfAbsent(name, () {
       final buffer = StringBuffer()
-        ..writeln('extension type $name(JSArray<JSAny?> _self) '
-            'implements JSObject {');
+        ..writeln(
+          'extension type $name(JSArray<JSAny?> _self) '
+          'implements JSObject {',
+        );
       for (var index = 0; index < mapped.length; index += 1) {
         final cast = mapped[index] == 'JSAny?' ? '' : ' as ${mapped[index]}';
         buffer.writeln(

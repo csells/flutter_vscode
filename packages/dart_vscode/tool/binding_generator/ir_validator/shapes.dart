@@ -149,7 +149,8 @@ Map<String, Object?> _registeredTypeLiteralShape(
     final kind = member['kind']! as String;
     final name = member['name'];
     final namedMember = kind == 'property' || kind == 'method';
-    final validValues = (!namedMember || (name is String && name.isNotEmpty)) &&
+    final validValues =
+        (!namedMember || (name is String && name.isNotEmpty)) &&
         (!actualKeys.contains('optional') || member['optional'] is bool) &&
         (!actualKeys.contains('readonly') || member['readonly'] is bool) &&
         (!actualKeys.contains('static') || member['static'] is bool) &&
@@ -247,9 +248,10 @@ void _validateRegisteredShapeChildren({
         throw mismatch('$kind ${name ?? ordinal} has no unique child');
       }
       final child = matches.single;
-      final canonical = (jsonDecode(child['canonicalSignature']! as String)
-              as Map<Object?, Object?>)
-          .cast<String, Object?>();
+      final canonical =
+          (jsonDecode(child['canonicalSignature']! as String)
+                  as Map<Object?, Object?>)
+              .cast<String, Object?>();
       if (kind == 'method') {
         canonical
           ..remove('static')

@@ -60,7 +60,7 @@ const parityLiveExemptions = {
       'the rule is the absence of a setter, provable only at compile time',
   'underscore-name':
       'the only baseline sites are deprecated internal fields with no '
-          'stable behavior to observe',
+      'stable behavior to observe',
 };
 
 /// Builds the Parity Layer library and its totality ledger from IR JSON.
@@ -143,13 +143,13 @@ final class ParityEmitter {
         case 'variable' when parent == 'module:vscode':
         case 'interface' || 'class' || 'enum' || 'typeAlias' || 'namespace':
         case 'property' ||
-              'method' ||
-              'constructor' ||
-              'function' ||
-              'variable' ||
-              'enumMember' ||
-              'indexSignature' ||
-              'callSignature':
+            'method' ||
+            'constructor' ||
+            'function' ||
+            'variable' ||
+            'enumMember' ||
+            'indexSignature' ||
+            'callSignature':
           break; // Emitted as part of an owning surface.
         default:
           throw ParityGenerationException(
@@ -182,19 +182,20 @@ final class ParityEmitter {
     _emitRoot(root);
     _buildIntersectionBodies();
 
-    _body = (StringBuffer()
-          ..write(typedefs)
-          ..write(stableTypedefs)
-          ..write(_sortedValues(mapper.tupleTypes))
-          ..write(_sortedValues(mapper.literalWrappers))
-          ..write(_sortedValues(_intersectionTypes))
-          ..write(anonTypes)
-          ..write(enums)
-          ..write(namespaces)
-          ..write(interfaces)
-          ..write(classes)
-          ..write(root))
-        .toString();
+    _body =
+        (StringBuffer()
+              ..write(typedefs)
+              ..write(stableTypedefs)
+              ..write(_sortedValues(mapper.tupleTypes))
+              ..write(_sortedValues(mapper.literalWrappers))
+              ..write(_sortedValues(_intersectionTypes))
+              ..write(anonTypes)
+              ..write(enums)
+              ..write(namespaces)
+              ..write(interfaces)
+              ..write(classes)
+              ..write(root))
+            .toString();
     final library = StringBuffer()
       ..writeln('// GENERATED CODE - DO NOT MODIFY BY HAND.')
       ..writeln('//')
@@ -202,8 +203,10 @@ final class ParityEmitter {
       ..writeln('// (ADR 0012), produced only by Total Mapping Rules. It')
       ..writeln('// ships inlined inside vscode_dart_layer.g.dart;')
       ..writeln('// regenerate that artifact with:')
-      ..writeln('//   dart tool/binding_generator/generate.dart '
-          '--dart-layer .')
+      ..writeln(
+        '//   dart tool/binding_generator/generate.dart '
+        '--dart-layer .',
+      )
       ..writeln('//')
       ..writeln('// JS `undefined` and `null` both surface as Dart `null`')
       ..writeln('// (documented platform-wide conflation).')
@@ -318,8 +321,10 @@ final class ParityEmitter {
         return;
       }
       for (final name in pending) {
-        _intersectionTypes[name] =
-            _buildIntersection(name, mapper.intersectionOperands[name]!);
+        _intersectionTypes[name] = _buildIntersection(
+          name,
+          mapper.intersectionOperands[name]!,
+        );
       }
     }
   }
@@ -353,7 +358,8 @@ final class ParityEmitter {
       if (declaration == null) {
         continue;
       }
-      final children = mapper.childrenByParent[declaration['id']] ??
+      final children =
+          mapper.childrenByParent[declaration['id']] ??
           const <Map<String, Object?>>[];
       for (final child in children) {
         final childName = child['name'];
@@ -363,8 +369,10 @@ final class ParityEmitter {
       }
     }
     final body = StringBuffer()
-      ..writeln('extension type $name(JSObject _self) '
-          'implements ${bases.join(', ')} {');
+      ..writeln(
+        'extension type $name(JSObject _self) '
+        'implements ${bases.join(', ')} {',
+      );
     for (final owners in memberOwners.values) {
       if (owners.length < 2) {
         continue;
@@ -419,10 +427,13 @@ final class ParityEmitter {
   ) {
     final name = declaration['name']! as String;
     typedefs.writeln('typedef $name = int;');
-    final members = mapper.childrenByParent[declaration['id']] ??
+    final members =
+        mapper.childrenByParent[declaration['id']] ??
         const <Map<String, Object?>>[];
-    out.writeln('extension type ${name}Values(JSObject _self) '
-        'implements JSObject {');
+    out.writeln(
+      'extension type ${name}Values(JSObject _self) '
+      'implements JSObject {',
+    );
     for (final member in members.where(isEmitted)) {
       final dartName = mapper.dartName(member['name']! as String);
       final rename = _jsRename(member, dartName);
@@ -438,10 +449,13 @@ final class ParityEmitter {
 
   void _emitNamespace(Map<String, Object?> declaration, StringBuffer out) {
     final typeName = mapper.namespaceTypeName(declaration['name']! as String);
-    out.writeln('extension type $typeName(JSObject _self) '
-        'implements JSObject {');
-    for (final child in mapper.childrenByParent[declaration['id']] ??
-        const <Map<String, Object?>>[]) {
+    out.writeln(
+      'extension type $typeName(JSObject _self) '
+      'implements JSObject {',
+    );
+    for (final child
+        in mapper.childrenByParent[declaration['id']] ??
+            const <Map<String, Object?>>[]) {
       if (!isEmitted(child)) {
         continue;
       }
@@ -495,16 +509,19 @@ final class ParityEmitter {
     final clause = mapper.typeParameterClause(declaration);
     final scopes = mapper.scopesFor(declaration);
     final children = mapper.childrenByParent[id] ?? const [];
-    final hasCallSignature =
-        children.any((child) => child['kind'] == 'callSignature');
+    final hasCallSignature = children.any(
+      (child) => child['kind'] == 'callSignature',
+    );
     final representation = hasCallSignature ? 'JSFunction' : 'JSObject';
     final bases = <String>{
       for (final base in (declaration['extends'] as List<Object?>?) ?? const [])
         mapper.mapType(base, generic: true, scopes: scopes, context: id),
       'JSObject',
     };
-    out.writeln('extension type $name$clause($representation _self) '
-        'implements ${bases.join(', ')} {');
+    out.writeln(
+      'extension type $name$clause($representation _self) '
+      'implements ${bases.join(', ')} {',
+    );
     if (representation == 'JSObject') {
       _emitLiteralFactory(name, children, out);
     }
@@ -574,8 +591,10 @@ final class ParityEmitter {
         mapper.mapType(base, generic: true, scopes: scopes, context: id),
       'JSObject',
     };
-    out.writeln('extension type $name$clause(JSObject _self) '
-        'implements ${bases.join(', ')} {');
+    out.writeln(
+      'extension type $name$clause(JSObject _self) '
+      'implements ${bases.join(', ')} {',
+    );
     _emitMembers(
       children.where((child) => child['static'] != true).toList(),
       out,
@@ -595,9 +614,8 @@ final class ParityEmitter {
     final instantiated = ownerParameters.isEmpty
         ? name
         : '$name<${ownerParameters.map(
-              (parameter) =>
-                  (parameter! as Map<Object?, Object?>)['name']! as String,
-            ).join(', ')}>';
+            (parameter) => (parameter! as Map<Object?, Object?>)['name']! as String,
+          ).join(', ')}>';
     out
       ..writeln('  bool isInstance(JSAny? value) {')
       ..writeln('    if (value == null) return false;')
@@ -655,9 +673,8 @@ final class ParityEmitter {
     final instantiated = ownerParameters.isEmpty
         ? className
         : '$className<${ownerParameters.map(
-              (parameter) =>
-                  (parameter! as Map<Object?, Object?>)['name']! as String,
-            ).join(', ')}>';
+            (parameter) => (parameter! as Map<Object?, Object?>)['name']! as String,
+          ).join(', ')}>';
     final signature = _helperParameters(parameters, scopes, id);
     final trimmed =
         '${signature.local}.sublist(0, ${signature.trimExpression})';
@@ -678,14 +695,18 @@ final class ParityEmitter {
     if (_anonTypes.containsKey(name)) {
       return;
     }
-    final children = mapper.childrenByParent[declaration['id']] ??
+    final children =
+        mapper.childrenByParent[declaration['id']] ??
         const <Map<String, Object?>>[];
-    final hasCallSignature =
-        children.any((child) => child['kind'] == 'callSignature');
+    final hasCallSignature = children.any(
+      (child) => child['kind'] == 'callSignature',
+    );
     final representation = hasCallSignature ? 'JSFunction' : 'JSObject';
     final body = StringBuffer()
-      ..writeln('extension type $name($representation _self) '
-          'implements JSObject {');
+      ..writeln(
+        'extension type $name($representation _self) '
+        'implements JSObject {',
+      );
     if (representation == 'JSObject') {
       _emitLiteralFactory(name, children, body, eraseScopeReferences: true);
     }
@@ -848,8 +869,8 @@ final class ParityEmitter {
     final required = <String>[];
     final optional = <String>[];
     for (final rawParameter in parameters) {
-      final parameter =
-          (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
+      final parameter = (rawParameter! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       var type = mapper.mapType(
         parameter['type'],
         generic: false,
@@ -921,8 +942,10 @@ final class ParityEmitter {
     }
     // Only one operator pair is expressible; later signatures become
     // deterministic named accessors.
-    out.writeln('  $valueType indexGet\$$ordinal($keyType key) => '
-        '_self.getProperty(key.toString().toJS);');
+    out.writeln(
+      '  $valueType indexGet\$$ordinal($keyType key) => '
+      '_self.getProperty(key.toString().toJS);',
+    );
     if (declaration['readonly'] != true) {
       out.writeln(
         '  void indexSet\$$ordinal($keyType key, $valueType value) => '
@@ -981,7 +1004,7 @@ final class ParityEmitter {
   /// Builds a JS-typed helper parameter list with trailing-optional
   /// trimming: optionals are nullable and trailing nulls are not passed.
   ({String clause, String values, String trimExpression, String local})
-      _helperParameters(
+  _helperParameters(
     List<Object?> parameters,
     List<Set<String>> scopes,
     String context, {
@@ -989,10 +1012,10 @@ final class ParityEmitter {
   }) {
     var dollars = 1;
     bool collides(int count) => parameters.any(
-          (parameter) =>
-              (parameter! as Map<Object?, Object?>)['name'] ==
-              'args${r'$' * count}',
-        );
+      (parameter) =>
+          (parameter! as Map<Object?, Object?>)['name'] ==
+          'args${r'$' * count}',
+    );
     while (collides(dollars)) {
       dollars += 1;
     }
@@ -1003,8 +1026,8 @@ final class ParityEmitter {
     var requiredCount = 0;
     var restValues = '';
     for (final rawParameter in parameters) {
-      final parameter =
-          (rawParameter! as Map<Object?, Object?>).cast<String, Object?>();
+      final parameter = (rawParameter! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       final parameterName = mapper.dartName(parameter['name']! as String);
       if (parameter['rest'] == true) {
         optionalParts.add('List<JSAny?> $parameterName = const []');
@@ -1035,8 +1058,10 @@ final class ParityEmitter {
       requiredParts.join(', '),
       if (optionalParts.isNotEmpty) '[${optionalParts.join(', ')}]',
     ].where((part) => part.isNotEmpty).join(', ');
-    final allValues =
-        [values.join(', '), restValues].where((v) => v.isNotEmpty).join(', ');
+    final allValues = [
+      values.join(', '),
+      restValues,
+    ].where((v) => v.isNotEmpty).join(', ');
     final trimExpression = restValues.isNotEmpty
         ? '$local.length'
         : '_trimTrailingNulls($local, $requiredCount)';
@@ -1054,8 +1079,10 @@ final class ParityEmitter {
       ..writeln('///')
       ..writeln('/// The module wrapper is the only root of this layer: no')
       ..writeln('/// generated code resolves names through JS scope.')
-      ..writeln('extension type VscodeApi(JSObject _self) '
-          'implements JSObject {');
+      ..writeln(
+        'extension type VscodeApi(JSObject _self) '
+        'implements JSObject {',
+      );
     for (final declaration in mapper.declarations) {
       if (declaration['parentId'] != 'module:vscode' ||
           !isEmitted(declaration)) {

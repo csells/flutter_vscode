@@ -27,15 +27,16 @@ int _compareIrDeclarations(
   Map<String, Object?> left,
   Map<String, Object?> right,
 ) {
-  final qualified = string(
-    left['qualifiedName'],
-    'inventory declaration.qualifiedName',
-  ).compareTo(
-    string(
-      right['qualifiedName'],
-      'inventory declaration.qualifiedName',
-    ),
-  );
+  final qualified =
+      string(
+        left['qualifiedName'],
+        'inventory declaration.qualifiedName',
+      ).compareTo(
+        string(
+          right['qualifiedName'],
+          'inventory declaration.qualifiedName',
+        ),
+      );
   if (qualified != 0) {
     return qualified;
   }
@@ -82,26 +83,25 @@ void validateIrDeclarationIdentity(
     'enum' ||
     'typeAlias' ||
     'variable' ||
-    'function' =>
-      const {'namespace'},
+    'function' => const {'namespace'},
     'enumMember' => const {'enum'},
     'property' || 'method' => const {'class', 'interface', 'typeLiteral'},
     'constructor' => const {'class'},
     'callSignature' || 'indexSignature' => const {
-        'class',
-        'interface',
-        'typeLiteral',
-      },
+      'class',
+      'interface',
+      'typeLiteral',
+    },
     'typeLiteral' => const {
-        'typeAlias',
-        'variable',
-        'property',
-        'function',
-        'constructor',
-        'callSignature',
-        'method',
-        'indexSignature',
-      },
+      'typeAlias',
+      'variable',
+      'property',
+      'function',
+      'constructor',
+      'callSignature',
+      'method',
+      'indexSignature',
+    },
     _ => const <String>{},
   };
   final acceptsRoot = const {
@@ -153,8 +153,7 @@ void validateIrDeclarationIdentity(
     'class' ||
     'enum' ||
     'typeAlias' ||
-    'variable' =>
-      '$kind:$qualifiedName',
+    'variable' => '$kind:$qualifiedName',
     'enumMember' => 'enumMember:$parentId/${_encodeIrIdPart(name)}',
     'property' =>
       'property:$parentId/${declaration['static'] == true ? r'$static' : r'$instance'}/${_encodeIrIdPart(name)}',
@@ -169,17 +168,18 @@ void validateIrDeclarationIdentity(
     _ => id,
   };
   if (id != expectedId) {
-    final basis = const {
-      'function',
-      'constructor',
-      'callSignature',
-      'method',
-      'indexSignature',
-    }.contains(kind)
+    final basis =
+        const {
+          'function',
+          'constructor',
+          'callSignature',
+          'method',
+          'indexSignature',
+        }.contains(kind)
         ? 'canonicalSignature, qualifiedName, and kind'
         : kind == 'typeLiteral'
-            ? 'parentId and shapeHash'
-            : 'name, qualifiedName, parentId, kind, and flags';
+        ? 'parentId and shapeHash'
+        : 'name, qualifiedName, parentId, kind, and flags';
     throw VSCodeBindingGenerationException(
       'INVALID_GENERATOR_INPUT',
       '$path.id must be derived from $basis as $expectedId.',
@@ -198,7 +198,8 @@ void validateIrDeclarationIdentity(
       parent['visibility'],
       '$path.parentId.visibility',
     );
-    final inheritsVisibility = kind == 'typeLiteral' ||
+    final inheritsVisibility =
+        kind == 'typeLiteral' ||
         kind == 'enumMember' ||
         ((kind == 'property' || kind == 'method') && parentKind != 'class') ||
         kind == 'callSignature' ||
@@ -257,14 +258,16 @@ void validateIrOverloadOrdinals(
     }.contains(declaration['kind'])) {
       continue;
     }
-    final key = '${declaration['kind']}:${declaration['qualifiedName']}:'
+    final key =
+        '${declaration['kind']}:${declaration['qualifiedName']}:'
         '${declaration['static'] == true}';
     groups.putIfAbsent(key, () => []).add(declaration);
   }
   for (final declarations in groups.values) {
     declarations.sort(
-      (left, right) => (left['overloadOrdinal']! as int)
-          .compareTo(right['overloadOrdinal']! as int),
+      (left, right) => (left['overloadOrdinal']! as int).compareTo(
+        right['overloadOrdinal']! as int,
+      ),
     );
     var expected = 0;
     for (final declaration in declarations) {

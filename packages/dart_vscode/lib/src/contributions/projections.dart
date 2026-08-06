@@ -28,10 +28,9 @@ List<Map<String, Object?>> projectCommands(Object? value) {
   };
   for (final rawCommand in objectList(value, 'project.commands')) {
     final command = objectMap(rawCommand, 'project.commands entry');
-    final unknown = command.keys
-        .where((key) => !supportedKeys.contains(key))
-        .toList()
-      ..sort();
+    final unknown =
+        command.keys.where((key) => !supportedKeys.contains(key)).toList()
+          ..sort();
     if (unknown.isNotEmpty) {
       throw ContributionException(
         'INVALID_PROJECT_MANIFEST',
@@ -91,10 +90,11 @@ Map<String, Object?> projectViewsContainers(Object? value) {
         rawContainer,
         'project.viewsContainers.$location entry',
       );
-      final unknown = container.keys
-          .where((key) => !{'id', 'title', 'icon'}.contains(key))
-          .toList()
-        ..sort();
+      final unknown =
+          container.keys
+              .where((key) => !{'id', 'title', 'icon'}.contains(key))
+              .toList()
+            ..sort();
       if (unknown.isNotEmpty) {
         throw ContributionException(
           'INVALID_PROJECT_MANIFEST',
@@ -182,20 +182,21 @@ Map<String, Object?> projectViews(
       'project.views.$location',
     )) {
       final view = objectMap(rawView, 'project.views.$location entry');
-      final unknown = view.keys
-          .where(
-            (key) => !{
-              'id',
-              'name',
-              'icon',
-              'type',
-              'visibility',
-              'initialSize',
-              ...optionalStrings,
-            }.contains(key),
-          )
-          .toList()
-        ..sort();
+      final unknown =
+          view.keys
+              .where(
+                (key) => !{
+                  'id',
+                  'name',
+                  'icon',
+                  'type',
+                  'visibility',
+                  'initialSize',
+                  ...optionalStrings,
+                }.contains(key),
+              )
+              .toList()
+            ..sort();
       if (unknown.isNotEmpty) {
         throw ContributionException(
           'INVALID_PROJECT_MANIFEST',
@@ -276,10 +277,11 @@ Map<String, Object?> projectConfiguration(Object? value) {
     return const {};
   }
   final entry = objectMap(value, 'project.configuration');
-  final unknown = entry.keys
-      .where((key) => !{'title', 'order', 'properties'}.contains(key))
-      .toList()
-    ..sort();
+  final unknown =
+      entry.keys
+          .where((key) => !{'title', 'order', 'properties'}.contains(key))
+          .toList()
+        ..sort();
   if (unknown.isNotEmpty) {
     throw ContributionException(
       'INVALID_PROJECT_MANIFEST',
@@ -330,10 +332,9 @@ Object _projectCommandIcon(Object? value) {
     return value;
   }
   final icon = objectMap(value, 'project.commands entry.icon');
-  final unknown = icon.keys
-      .where((key) => key != 'dark' && key != 'light')
-      .toList()
-    ..sort();
+  final unknown =
+      icon.keys.where((key) => key != 'dark' && key != 'light').toList()
+        ..sort();
   if (unknown.isNotEmpty ||
       !icon.containsKey('dark') ||
       !icon.containsKey('light')) {
@@ -397,7 +398,9 @@ bool isStrictSemanticVersion(String value) {
   if (preRelease == null) {
     return true;
   }
-  return preRelease.split('.').every(
+  return preRelease
+      .split('.')
+      .every(
         (part) =>
             !RegExp(r'^\d+$').hasMatch(part) ||
             part == '0' ||

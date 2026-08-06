@@ -205,7 +205,8 @@ Map<String, Object?> validateIrSource(
             '$productVersion@$productCommit.',
       );
     }
-    final expectedSource = 'https://raw.githubusercontent.com/microsoft/vscode/'
+    final expectedSource =
+        'https://raw.githubusercontent.com/microsoft/vscode/'
         '$productCommit/${entry.value}';
     if (input['source'] != expectedSource) {
       throw VSCodeBindingGenerationException(
@@ -314,32 +315,32 @@ void validateIrDeclarationKeys(
     'namespace' => common,
     'interface' => {...common, 'typeParameters', 'extends'},
     'class' => {
-        ...common,
-        'abstract',
-        'typeParameters',
-        'extends',
-        'implements',
-      },
+      ...common,
+      'abstract',
+      'typeParameters',
+      'extends',
+      'implements',
+    },
     'enum' => {...common, 'constant'},
     'enumMember' => {...common, 'initializer'},
     'typeAlias' => {...common, 'typeParameters', 'type'},
     'variable' => {...common, 'constant', 'declarationKind', 'type'},
     'property' => {
-        ...common,
-        'optional',
-        'readonly',
-        'static',
-        'abstract',
-        'type',
-      },
+      ...common,
+      'optional',
+      'readonly',
+      'static',
+      'abstract',
+      'type',
+    },
     'function' || 'constructor' || 'callSignature' => callable,
     'method' => {...callable, 'static', 'optional', 'abstract'},
     'indexSignature' => {...callable, 'readonly'},
     'typeLiteral' => {...common, 'shapeHash', 'shape'},
     _ => throw VSCodeBindingGenerationException(
-        'INVALID_GENERATOR_INPUT',
-        '$path.kind has unsupported IR declaration kind $kind.',
-      ),
+      'INVALID_GENERATOR_INPUT',
+      '$path.kind has unsupported IR declaration kind $kind.',
+    ),
   };
   validateIrExactKeys(
     declaration,
@@ -379,7 +380,7 @@ void _validateIrDeclarationScalars(
     final kind = declaration['kind'];
     final isNonMergeable =
         const {'class', 'typeAlias', 'enumMember'}.contains(kind) ||
-            (kind == 'variable' && declaration['declarationKind'] != 'var');
+        (kind == 'variable' && declaration['declarationKind'] != 'var');
     if (isNonMergeable) {
       throw VSCodeBindingGenerationException(
         'INVALID_GENERATOR_INPUT',

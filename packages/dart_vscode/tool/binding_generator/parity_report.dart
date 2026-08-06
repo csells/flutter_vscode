@@ -12,8 +12,8 @@ String buildParityReport(
   Map<String, Object?> coverage,
   Map<String, Object?> inventory,
 ) {
-  final summary =
-      (coverage['summary']! as Map<Object?, Object?>).cast<String, Object?>();
+  final summary = (coverage['summary']! as Map<Object?, Object?>)
+      .cast<String, Object?>();
   final entries = (coverage['entries']! as List<Object?>)
       .cast<Map<Object?, Object?>>()
       .map((entry) => entry.cast<String, Object?>())
@@ -23,8 +23,8 @@ String buildParityReport(
   for (final entry in entries) {
     final group = _groupFor(entry['id']! as String);
     final counts = groups.putIfAbsent(group, _GroupCounts.new);
-    final binding =
-        (entry['binding']! as Map<Object?, Object?>).cast<String, Object?>();
+    final binding = (entry['binding']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     switch (binding['status']) {
       case 'emitted':
         counts.emitted += 1;
@@ -65,8 +65,9 @@ String buildParityReport(
     ..writeln('gate.')
     ..writeln();
   final families = [
-    for (final declaration in (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>())
+    for (final declaration
+        in (inventory['declarations']! as List<Object?>)
+            .cast<Map<Object?, Object?>>())
       if (declaration['kind'] == 'namespace') declaration['name']! as String,
   ]..sort();
   _writeWrapped(
@@ -107,20 +108,26 @@ String buildParityReport(
     ..writeln('from the coverage ledger, regenerated and byte-compared by')
     ..writeln('the repository gates.')
     ..writeln()
-    ..writeln('Pinned inventory: $discovered declarations discovered; '
-        '$emitted emitted and host-verified; '
-        '${summary['bindingsExcluded']} excluded '
-        '(reviewed or non-public); $pending pending.')
+    ..writeln(
+      'Pinned inventory: $discovered declarations discovered; '
+      '$emitted emitted and host-verified; '
+      '${summary['bindingsExcluded']} excluded '
+      '(reviewed or non-public); $pending pending.',
+    )
     ..writeln()
-    ..writeln('| Container | Emitted | Reviewed excluded | Non-public | '
-        'Pending |')
+    ..writeln(
+      '| Container | Emitted | Reviewed excluded | Non-public | '
+      'Pending |',
+    )
     ..writeln('| --- | ---: | ---: | ---: | ---: |');
   final names = groups.keys.toList()..sort();
   for (final name in names) {
     final counts = groups[name]!;
-    buffer.writeln('| `$name` | ${counts.emitted} | '
-        '${counts.reviewedExcluded} | ${counts.nonPublic} | '
-        '${counts.pending} |');
+    buffer.writeln(
+      '| `$name` | ${counts.emitted} | '
+      '${counts.reviewedExcluded} | ${counts.nonPublic} | '
+      '${counts.pending} |',
+    );
   }
   buffer
     ..writeln()
@@ -158,8 +165,9 @@ String _groupFor(String entryId) {
   }
   final qualified = entryId.substring(start + marker.length);
   final segmentEnd = qualified.indexOf(RegExp('[.@/]'));
-  final segment =
-      segmentEnd < 0 ? qualified : qualified.substring(0, segmentEnd);
+  final segment = segmentEnd < 0
+      ? qualified
+      : qualified.substring(0, segmentEnd);
   if (segment.isEmpty) {
     return 'vscode (root)';
   }

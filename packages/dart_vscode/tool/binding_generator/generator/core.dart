@@ -69,10 +69,9 @@ final class _SelectedBindings {
   List<Map<String, Object?>> childrenOf(
     Map<String, Object?> parent,
     String strategy,
-  ) =>
-      withStrategy(strategy)
-          .where((candidate) => candidate['parentId'] == id(parent))
-          .toList();
+  ) => withStrategy(
+    strategy,
+  ).where((candidate) => candidate['parentId'] == id(parent)).toList();
 
   Map<String, Object?> singleChildOf(
     Map<String, Object?> parent,
@@ -92,11 +91,10 @@ final class _SelectedBindings {
   Map<String, Object?> parentWithChild(
     String parentStrategy,
     String childStrategy,
-  ) =>
-      singleWhere(
-        parentStrategy,
-        (parent) => childrenOf(parent, childStrategy).isNotEmpty,
-      );
+  ) => singleWhere(
+    parentStrategy,
+    (parent) => childrenOf(parent, childStrategy).isNotEmpty,
+  );
 
   Map<String, Object?> selectedReference(Object? value) {
     final type = objectMap(value, 'selected reference type');
@@ -127,9 +125,9 @@ final class _SelectedBindings {
       string(declaration['id'], 'inventory declaration.id');
 
   String name(Map<String, Object?> declaration) => _dartIdentifier(
-        declaration['name'],
-        'inventory declaration ${id(declaration)}.name',
-      );
+    declaration['name'],
+    'inventory declaration ${id(declaration)}.name',
+  );
 }
 
 /// Generates the reviewed VS Code API slice selected by Semantic Overrides.
@@ -264,8 +262,9 @@ final class VSCodeBindingGenerator {
             '$manifestValidatorSha256.',
       );
     }
-    final commandsContributionSchemaSha256 =
-        validateCommandsContributionSchema(inventory);
+    final commandsContributionSchemaSha256 = validateCommandsContributionSchema(
+      inventory,
+    );
     final overrideCommandsContributionSchemaSha256 = sha256Digest(
       overrides['commandsContributionSchemaSha256'],
       'overrides.commandsContributionSchemaSha256',
@@ -279,8 +278,9 @@ final class VSCodeBindingGenerator {
             'uses $commandsContributionSchemaSha256.',
       );
     }
-    final viewsContributionSchemaSha256 =
-        validateViewsContributionSchemas(inventory);
+    final viewsContributionSchemaSha256 = validateViewsContributionSchemas(
+      inventory,
+    );
     final overrideViewsContributionSchemaSha256 = sha256Digest(
       overrides['viewsContributionSchemaSha256'],
       'overrides.viewsContributionSchemaSha256',
@@ -478,10 +478,11 @@ final class VSCodeBindingGenerator {
     }
 
     final observedHostContracts = hostContractsById.values.toSet();
-    final unusedHostContracts = hostContracts.keys
-        .where((contract) => !observedHostContracts.contains(contract))
-        .toList()
-      ..sort();
+    final unusedHostContracts =
+        hostContracts.keys
+            .where((contract) => !observedHostContracts.contains(contract))
+            .toList()
+          ..sort();
     if (unusedHostContracts.isNotEmpty) {
       throw VSCodeBindingGenerationException(
         'INVALID_OVERRIDE',

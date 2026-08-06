@@ -24,8 +24,7 @@ bool isEcmaScriptTrimWhitespaceCodePoint(int codePoint) {
     0x202F ||
     0x205F ||
     0x3000 ||
-    0xFEFF =>
-      true,
+    0xFEFF => true,
     _ => false,
   };
 }

@@ -413,8 +413,9 @@ void _validateIrType(
       _validateIrSha256(type['shapeHash'], '$path.shapeHash');
       if (hasShape) {
         final actualHash = string(type['shapeHash'], '$path.shapeHash');
-        final expectedHash =
-            sha256.convert(utf8.encode(jsonEncode(type['shape']))).toString();
+        final expectedHash = sha256
+            .convert(utf8.encode(jsonEncode(type['shape'])))
+            .toString();
         if (actualHash != expectedHash) {
           throw VSCodeBindingGenerationException(
             'INVALID_GENERATOR_INPUT',

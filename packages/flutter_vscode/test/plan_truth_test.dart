@@ -31,10 +31,11 @@ void main() {
   });
 
   test('every full digest in the plan is current or marked historical', () {
+    const contractArtifact =
+        '../dart_vscode/tool/bindings/contracts/checkpoint4-extension-host.json';
     final currentDigests = <String>{
       for (final artifact in [
-        '../dart_vscode/tool/bindings/contracts/'
-            'checkpoint4-extension-host.json',
+        contractArtifact,
         '../dart_vscode/tool/bindings/ir/vscode-1.129.1.json',
       ])
         sha256.convert(File(artifact).readAsBytesSync()).toString(),

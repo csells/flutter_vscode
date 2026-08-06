@@ -58,7 +58,8 @@ void _validateIrCanonicalSignatureObject(
       '$path.typeParameters must match the raw type-parameter count.',
     );
   }
-  final localScope = localTypeParameterNames ??
+  final localScope =
+      localTypeParameterNames ??
       List<String?>.filled(typeParameters.length, null);
   final activeScopes = [...inheritedScopes, localScope];
   for (var index = 0; index < typeParameters.length; index += 1) {
@@ -249,61 +250,61 @@ Object? _canonicalizeIrType(
   }
   return switch (kind) {
     'primitive' => <String, Object?>{
-        'kind': kind,
-        'name': type['name'],
-      },
+      'kind': kind,
+      'name': type['name'],
+    },
     'reference' => <String, Object?>{
-        'kind': kind,
-        'name': type['name'],
-        'typeArguments': [
-          for (final argument in objectList(
-            type['typeArguments'],
-            'IR type.typeArguments',
-          ))
-            _canonicalizeIrType(argument, scopes),
-        ],
-      },
+      'kind': kind,
+      'name': type['name'],
+      'typeArguments': [
+        for (final argument in objectList(
+          type['typeArguments'],
+          'IR type.typeArguments',
+        ))
+          _canonicalizeIrType(argument, scopes),
+      ],
+    },
     'array' => <String, Object?>{
-        'kind': kind,
-        'elementType': _canonicalizeIrType(type['elementType'], scopes),
-      },
+      'kind': kind,
+      'elementType': _canonicalizeIrType(type['elementType'], scopes),
+    },
     'union' || 'intersection' => <String, Object?>{
-        'kind': kind,
-        'types': [
-          for (final item in objectList(type['types'], 'IR type.types'))
-            _canonicalizeIrType(item, scopes),
-        ],
-      },
+      'kind': kind,
+      'types': [
+        for (final item in objectList(type['types'], 'IR type.types'))
+          _canonicalizeIrType(item, scopes),
+      ],
+    },
     'literal' => <String, Object?>{
-        'kind': kind,
-        'value': type['value'],
-      },
+      'kind': kind,
+      'value': type['value'],
+    },
     'tuple' => <String, Object?>{
-        'kind': kind,
-        'elements': [
-          for (final elementValue in objectList(
-            type['elements'],
-            'IR type.elements',
-          ))
-            _canonicalizeIrTupleElement(
-              objectMap(elementValue, 'IR tuple element'),
-              scopes,
-            ),
-        ],
-      },
+      'kind': kind,
+      'elements': [
+        for (final elementValue in objectList(
+          type['elements'],
+          'IR type.elements',
+        ))
+          _canonicalizeIrTupleElement(
+            objectMap(elementValue, 'IR tuple element'),
+            scopes,
+          ),
+      ],
+    },
     'operator' => <String, Object?>{
-        'kind': kind,
-        'operator': type['operator'],
-        'type': _canonicalizeIrType(type['type'], scopes),
-      },
+      'kind': kind,
+      'operator': type['operator'],
+      'type': _canonicalizeIrType(type['type'], scopes),
+    },
     'function' => <String, Object?>{
-        'kind': kind,
-        'canonicalSignature': type['canonicalSignature'],
-      },
+      'kind': kind,
+      'canonicalSignature': type['canonicalSignature'],
+    },
     'typeLiteral' => <String, Object?>{
-        'kind': kind,
-        'shapeHash': type['shapeHash'],
-      },
+      'kind': kind,
+      'shapeHash': type['shapeHash'],
+    },
     _ => value,
   };
 }
@@ -509,8 +510,7 @@ String _encodeCanonicalJson(Object? value) {
     }
     keys.sort();
     return '{${[
-      for (final key in keys)
-        '${jsonEncode(key)}:${_encodeCanonicalJson(value[key])}',
+      for (final key in keys) '${jsonEncode(key)}:${_encodeCanonicalJson(value[key])}',
     ].join(',')}}';
   }
   if (value is List<Object?>) {

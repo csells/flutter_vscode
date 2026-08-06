@@ -33,14 +33,17 @@ Future<void> main(List<String> arguments) async {
       await File('$root/$package/lib/src/generated/vscode_dart_layer.g.dart')
           .create(recursive: true)
           .then((file) => file.writeAsString(artifacts.library));
-      await File('$root/$package/tool/bindings/dart-layer-ledger.json')
-          .writeAsString(artifacts.ledger);
-      await File('$root/$package/tool/bindings/parity-ledger.json')
-          .writeAsString(artifacts.parityLedger);
+      await File(
+        '$root/$package/tool/bindings/dart-layer-ledger.json',
+      ).writeAsString(artifacts.ledger);
+      await File(
+        '$root/$package/tool/bindings/parity-ledger.json',
+      ).writeAsString(artifacts.parityLedger);
       // The coverage ledger is maintainer evidence for the shipped slice,
       // regenerated with the layer so the two can never drift apart.
-      await File('$root/$package/tool/bindings/coverage-ledger.json')
-          .writeAsString(
+      await File(
+        '$root/$package/tool/bindings/coverage-ledger.json',
+      ).writeAsString(
         VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
@@ -63,8 +66,9 @@ Future<void> main(List<String> arguments) async {
       final inventory = await _readJson(
         '$root/$package/tool/bindings/ir/vscode-1.129.1.json',
       );
-      await File('$root/docs/reference/parity.md')
-          .writeAsString(buildParityReport(coverage, inventory));
+      await File(
+        '$root/docs/reference/parity.md',
+      ).writeAsString(buildParityReport(coverage, inventory));
       return;
     }
     if (arguments.isNotEmpty && arguments.first == '--contract') {

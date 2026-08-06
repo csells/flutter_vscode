@@ -24,7 +24,7 @@
     },
     "bindingCoverageLedger": {
       "path": "packages/dart_vscode/tool/binding_generator/coverage_ledger.dart",
-      "sha256": "8ce000eb07c88ac97db2521c483c1e48fbb9cdffae56be7b8340c063aba760d6"
+      "sha256": "e7756a1f671d8f9f74be4bd89b4846250727d1ca40fbaa5e3b525fa3d82dd976"
     },
     "bindingGenerator": {
       "path": "packages/dart_vscode/tool/binding_generator/generator.dart",
@@ -32,7 +32,7 @@
     },
     "bindingGeneratorCore": {
       "path": "packages/dart_vscode/tool/binding_generator/generator/core.dart",
-      "sha256": "1adca4091d6b67d03ea39458fda59c47863a1c802b11582be8a94644b6b5f208"
+      "sha256": "86958b7e2125c182b55203f319c5fa1c3e2cdab64044434776e912fc7bd5e1d5"
     },
     "bindingGeneratorOverrideReview": {
       "path": "packages/dart_vscode/tool/binding_generator/generator/override_review.dart",
@@ -44,7 +44,7 @@
     },
     "bindingGeneratorStrategyMatching": {
       "path": "packages/dart_vscode/tool/binding_generator/generator/strategy_matching.dart",
-      "sha256": "f9a3233917c96e57d31d28ee0111a0d336c63434e7469c00be6e3887b1a8235f"
+      "sha256": "86ac43604a0ea77b377468ffe5f80a8240b612c84ecdb91418859bed53820eb5"
     },
     "bindingGeneratorTypePredicates": {
       "path": "packages/dart_vscode/tool/binding_generator/generator/type_predicates.dart",
@@ -52,7 +52,7 @@
     },
     "bindingIrTypeMapper": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_type_mapper.dart",
-      "sha256": "454e124775c0a6ff38cf2df1b728d70d0f802c5601d8e46ac1c7e7595720ff57"
+      "sha256": "60c96487ec4c78111386e5f9ffa8f08de68e8f8a3dbcd5e2fae3829862002a40"
     },
     "bindingIrValidator": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator.dart",
@@ -60,23 +60,23 @@
     },
     "bindingIrValidatorCanonical": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/canonical.dart",
-      "sha256": "5703e3c89c16c1a3021f4d6dbcdbdf68310719569d25ff1d9c31720ed89feeaa"
+      "sha256": "62a3814cd5b3f55818b4f270f022c4d04e6f2042bf471f727a763ae6550675ab"
     },
     "bindingIrValidatorModule": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/module.dart",
-      "sha256": "2ab33276dbafaaa4a962879718c28a07fc23249021d342d1a881c295f4680aca"
+      "sha256": "174b57e670995f462b2d6c91ca57a07ec0964cd01b4c9e3e308fb1d54688cd18"
     },
     "bindingIrValidatorOrdering": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/ordering.dart",
-      "sha256": "ea053819e293b3ea347e1e8253f2bbf3f43554e851c9e482a1f29f566fcc992e"
+      "sha256": "72fa4624b920dde121b41a63775902b53ea2fec3437b30c5e168186e035b6271"
     },
     "bindingIrValidatorShapes": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/shapes.dart",
-      "sha256": "0ad4deb63dcbb332e9dae228efd6bb1d5b1acd2315e5dff2c1612c8731b0a5ef"
+      "sha256": "837b93f7fb9a4dd063efc617b6b1c9d677345bb94c3a21ac9785816a224ee080"
     },
     "bindingIrValidatorTypes": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/types.dart",
-      "sha256": "82ffb1e55f3f8284af6e64e2b0c214070be991416d84a81b83b52b145fbd1c04"
+      "sha256": "02513281a167a100aa84c0ee86dbe691e562b2e30d32d55fdfc867030ab94b12"
     },
     "bindingIrValidatorValues": {
       "path": "packages/dart_vscode/tool/binding_generator/ir_validator/values.dart",
@@ -84,7 +84,7 @@
     },
     "bindingManifestProjection": {
       "path": "packages/dart_vscode/tool/binding_generator/manifest_projection.dart",
-      "sha256": "fd52c209209ba40d98de5053f95dbac0878bb401ccd1a45517125218a9d16aee"
+      "sha256": "cd35b8c5731765f5e4a803999f91049d6b44a70d8a52b024045ee7022a440212"
     },
     "bindingTemplates": {
       "path": "packages/flutter_vscode/lib/src/cli/templates.dart",
@@ -140,7 +140,7 @@
     },
     "contractWriter": {
       "path": "packages/dart_vscode/tool/binding_generator/contract.dart",
-      "sha256": "fc81ed0db62ce4f91cba706fc8e588de7cb65109d1835c422c96c901f035dbf3"
+      "sha256": "9775fb05d73d5cb21b90d3ef3c5dcb399272b39a99f4d0b47ce7f41b14bbb133"
     },
     "contributionsException": {
       "path": "packages/dart_vscode/lib/src/contributions/exception.dart",
@@ -156,11 +156,11 @@
     },
     "contributionsProjections": {
       "path": "packages/dart_vscode/lib/src/contributions/projections.dart",
-      "sha256": "5cdb80a61dc0565f9e7190ce95e7b8b73c0ccc7a6865956867046ccb35e244f3"
+      "sha256": "6543f3fa542a096babc53d1477ef73aa871c1a8b36bd17630b2966c5bfbd4d59"
     },
     "ecmascriptWhitespace": {
       "path": "packages/dart_vscode/lib/src/contributions/ecmascript_whitespace.dart",
-      "sha256": "4069a7bef774faa2f051cdc27dd8e59f99bf222b87e7ba3333047adfbc501e90"
+      "sha256": "a1379b94972edf960e862ab9051705243b7dfa1de5a45b664c3fa70ffa274792"
     },
     "evidenceIntegrityTest": {
       "path": "packages/dart_vscode/test/binding_evidence_test.dart",
