@@ -5,8 +5,8 @@ part of '../binding_generator_test.dart';
 
 String _entryIdForStrategy(Map<String, Object?> entries, String strategy) {
   return entries.entries.singleWhere((entry) {
-    final value =
-        (entry.value! as Map<Object?, Object?>).cast<String, Object?>();
+    final value = (entry.value! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     return value['strategy'] == strategy;
   }).key;
 }
@@ -35,7 +35,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'vscode.d.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vscode-dts/vscode.d.ts',
           'sha256':
               'ee11e767c8ab76f6c0de8dc88222796147a6f0bc82f3a1ec644e41b39b52f2cd',
@@ -48,7 +49,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'extension-manifest-schema.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/workbench/services/extensions/common/'
               'extensionsRegistry.ts',
           'sha256':
@@ -62,7 +64,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'extension-validator.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/platform/extensions/common/'
               'extensionValidator.ts',
           'sha256':
@@ -76,7 +79,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'menusExtensionPoint.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/workbench/services/actions/common/'
               'menusExtensionPoint.ts',
           'sha256':
@@ -90,7 +94,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'strings.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/base/common/strings.ts',
           'sha256':
               'c65ae37d623cf8a1dd0a5083cbb3f09f3433342accdc220c6bb8076aa12a1eec',
@@ -103,7 +108,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'viewsExtensionPoint.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/workbench/api/browser/'
               'viewsExtensionPoint.ts',
           'sha256':
@@ -117,7 +123,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'configurationExtensionPoint.ts',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/src/vs/workbench/api/common/'
               'configurationExtensionPoint.ts',
           'sha256':
@@ -131,7 +138,8 @@ Map<String, Object?> _inventory(List<String> ids) {
           'path': 'LICENSE.txt',
           'version': '1.129.1',
           'commit': '0' * 40,
-          'source': 'https://raw.githubusercontent.com/microsoft/vscode/'
+          'source':
+              'https://raw.githubusercontent.com/microsoft/vscode/'
               '${'0' * 40}/LICENSE.txt',
           'sha256':
               '9480271317925265e806a9a196aaa33410a962fa9d4d1e248a4a5187bc8c9df9',
@@ -462,9 +470,10 @@ Map<String, Object?> _schemaOverrideFor(
 ) {
   final id = declaration['id']! as String;
   final overrides = _overrides({id: 'opaqueJsObject'});
-  final entry = ((overrides['entries']! as Map<Object?, Object?>)[id]!
-          as Map<Object?, Object?>)
-      .cast<String, Object?>();
+  final entry =
+      ((overrides['entries']! as Map<Object?, Object?>)[id]!
+              as Map<Object?, Object?>)
+          .cast<String, Object?>();
   entry['declarationSha256'] = computeDeclarationFingerprint(declaration);
   return overrides;
 }
@@ -473,10 +482,10 @@ Map<String, Object?> _sourceInput(
   Map<String, Object?> inventory,
   String kind,
 ) {
-  final source =
-      (inventory['source']! as Map<Object?, Object?>).cast<String, Object?>();
-  final inputs =
-      (source['inputs']! as List<Object?>).cast<Map<Object?, Object?>>();
+  final source = (inventory['source']! as Map<Object?, Object?>)
+      .cast<String, Object?>();
+  final inputs = (source['inputs']! as List<Object?>)
+      .cast<Map<Object?, Object?>>();
   return inputs
       .singleWhere((candidate) => candidate['kind'] == kind)
       .cast<String, Object?>();
@@ -486,8 +495,9 @@ Map<String, Object?> _unselectedCallable(Map<String, Object?> inventory) {
   final override = _readJson(
     'tool/bindings/overrides/vscode-1.129.1.json',
   );
-  final targets =
-      (override['targets']! as List<Object?>).cast<String>().toSet();
+  final targets = (override['targets']! as List<Object?>)
+      .cast<String>()
+      .toSet();
   final declarations = (inventory['declarations']! as List<Object?>)
       .cast<Map<Object?, Object?>>();
   return declarations
@@ -512,8 +522,9 @@ Map<String, Object?> _unselectedDeclarationOfKind(
   final override = _readJson(
     'tool/bindings/overrides/vscode-1.129.1.json',
   );
-  final targets =
-      (override['targets']! as List<Object?>).cast<String>().toSet();
+  final targets = (override['targets']! as List<Object?>)
+      .cast<String>()
+      .toSet();
   final declarations = (inventory['declarations']! as List<Object?>)
       .cast<Map<Object?, Object?>>();
   final matches = declarations.where(
@@ -549,7 +560,8 @@ Map<String, Object?> _unselectedDeclarationOfKind(
     ..['visibility'] = parent['visibility']
     ..['coverage'] = _pendingCoverage()
     ..remove('occurrenceCount');
-  clone['id'] = 'callSignature:$qualifiedName@'
+  clone['id'] =
+      'callSignature:$qualifiedName@'
       '${_sha256String(clone['canonicalSignature']! as String)}';
   (inventory['declarations']! as List<Object?>).add(clone);
   _sortDeclarationsLikeProducer(inventory);
@@ -595,7 +607,8 @@ Map<String, Object?> _syntheticMethod({
     'optional': canonicalOptional ?? optional,
   });
   return {
-    'id': 'method:vscode.Known.synthetic@'
+    'id':
+        'method:vscode.Known.synthetic@'
         '${_sha256String(canonicalSignature)}',
     'kind': 'method',
     'name': 'synthetic',
@@ -726,55 +739,55 @@ Object? _fixtureCanonicalType(
   }
   return switch (kind) {
     'primitive' => <String, Object?>{
-        'kind': kind,
-        'name': type['name'],
-      },
+      'kind': kind,
+      'name': type['name'],
+    },
     'reference' => <String, Object?>{
-        'kind': kind,
-        'name': type['name'],
-        'typeArguments': [
-          for (final argument in type['typeArguments']! as List<Object?>)
-            _fixtureCanonicalType(argument, scopes),
-        ],
-      },
+      'kind': kind,
+      'name': type['name'],
+      'typeArguments': [
+        for (final argument in type['typeArguments']! as List<Object?>)
+          _fixtureCanonicalType(argument, scopes),
+      ],
+    },
     'array' => <String, Object?>{
-        'kind': kind,
-        'elementType': _fixtureCanonicalType(type['elementType'], scopes),
-      },
+      'kind': kind,
+      'elementType': _fixtureCanonicalType(type['elementType'], scopes),
+    },
     'union' || 'intersection' => <String, Object?>{
-        'kind': kind,
-        'types': [
-          for (final item in type['types']! as List<Object?>)
-            _fixtureCanonicalType(item, scopes),
-        ],
-      },
+      'kind': kind,
+      'types': [
+        for (final item in type['types']! as List<Object?>)
+          _fixtureCanonicalType(item, scopes),
+      ],
+    },
     'literal' => <String, Object?>{
-        'kind': kind,
-        'value': type['value'],
-      },
+      'kind': kind,
+      'value': type['value'],
+    },
     'tuple' => <String, Object?>{
-        'kind': kind,
-        'elements': [
-          for (final value in type['elements']! as List<Object?>)
-            _fixtureCanonicalTupleElement(
-              (value! as Map<Object?, Object?>).cast<String, Object?>(),
-              scopes,
-            ),
-        ],
-      },
+      'kind': kind,
+      'elements': [
+        for (final value in type['elements']! as List<Object?>)
+          _fixtureCanonicalTupleElement(
+            (value! as Map<Object?, Object?>).cast<String, Object?>(),
+            scopes,
+          ),
+      ],
+    },
     'operator' => <String, Object?>{
-        'kind': kind,
-        'operator': type['operator'],
-        'type': _fixtureCanonicalType(type['type'], scopes),
-      },
+      'kind': kind,
+      'operator': type['operator'],
+      'type': _fixtureCanonicalType(type['type'], scopes),
+    },
     'function' => <String, Object?>{
-        'kind': kind,
-        'canonicalSignature': _synchronizeFixtureFunctionType(type, scopes),
-      },
+      'kind': kind,
+      'canonicalSignature': _synchronizeFixtureFunctionType(type, scopes),
+    },
     'typeLiteral' => <String, Object?>{
-        'kind': kind,
-        'shapeHash': type['shapeHash'],
-      },
+      'kind': kind,
+      'shapeHash': type['shapeHash'],
+    },
     _ => throw StateError('Unsupported fixture type kind $kind.'),
   };
 }
@@ -794,8 +807,9 @@ void _sortDeclarationsLikeProducer(Map<String, Object?> inventory) {
   (inventory['declarations']! as List<Object?>).sort((leftValue, rightValue) {
     final left = leftValue! as Map<Object?, Object?>;
     final right = rightValue! as Map<Object?, Object?>;
-    final qualified = (left['qualifiedName']! as String)
-        .compareTo(right['qualifiedName']! as String);
+    final qualified = (left['qualifiedName']! as String).compareTo(
+      right['qualifiedName']! as String,
+    );
     if (qualified != 0) {
       return qualified;
     }
@@ -815,8 +829,9 @@ Map<String, Object?> _soleUnselectedCallable(Map<String, Object?> inventory) {
   final override = _readJson(
     'tool/bindings/overrides/vscode-1.129.1.json',
   );
-  final targets =
-      (override['targets']! as List<Object?>).cast<String>().toSet();
+  final targets = (override['targets']! as List<Object?>)
+      .cast<String>()
+      .toSet();
   final declarations = (inventory['declarations']! as List<Object?>)
       .cast<Map<Object?, Object?>>();
   final callables = declarations.where(
@@ -842,7 +857,7 @@ Map<String, Object?> _soleUnselectedCallable(Map<String, Object?> inventory) {
 }
 
 ({Map<String, Object?> first, Map<String, Object?> second})
-    _sameShapeTypeLiteralReferencePair(Map<String, Object?> inventory) {
+_sameShapeTypeLiteralReferencePair(Map<String, Object?> inventory) {
   final references = <Map<String, Object?>>[];
 
   void visit(Object? value) {
@@ -867,12 +882,12 @@ Map<String, Object?> _soleUnselectedCallable(Map<String, Object?> inventory) {
   }
   for (final first in references) {
     final second = references.cast<Map<String, Object?>?>().firstWhere(
-          (candidate) =>
-              candidate != null &&
-              candidate['id'] != first['id'] &&
-              candidate['shapeHash'] == first['shapeHash'],
-          orElse: () => null,
-        );
+      (candidate) =>
+          candidate != null &&
+          candidate['id'] != first['id'] &&
+          candidate['shapeHash'] == first['shapeHash'],
+      orElse: () => null,
+    );
     if (second != null) {
       return (first: first, second: second);
     }
@@ -881,7 +896,7 @@ Map<String, Object?> _soleUnselectedCallable(Map<String, Object?> inventory) {
 }
 
 ({Map<String, Object?> parent, Map<String, Object?> child})
-    _singlePropertyTypeLiteral(Map<String, Object?> inventory) {
+_singlePropertyTypeLiteral(Map<String, Object?> inventory) {
   final declarations = (inventory['declarations']! as List<Object?>)
       .cast<Map<Object?, Object?>>();
   for (final candidate in declarations) {
@@ -952,18 +967,6 @@ bool _containsRegisteredLiteralReference(Object? value) {
     return true;
   }
   return value.values.any(_containsRegisteredLiteralReference);
-}
-
-Map<String, Object?> _project() {
-  return {
-    'schemaVersion': 1,
-    'name': 'fixture',
-    'displayName': 'Fixture',
-    'description': 'Fixture.',
-    'version': '0.0.0',
-    'publisher': 'test',
-    'activationEvents': <Object?>[],
-  };
 }
 
 Map<String, Object?> _readJson(String path) {

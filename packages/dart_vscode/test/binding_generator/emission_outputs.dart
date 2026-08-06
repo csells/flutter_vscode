@@ -1,82 +1,9 @@
 part of '../binding_generator_test.dart';
 
-/// Generation and what a successful generation actually emits.
+/// Generation and the coverage ledger a successful review emits. The
+/// Project-Derived Artifacts a build emits live in the flutter_vscode CLI
+/// and are pinned by its own suite.
 void registerEmissionOutputsTests() {
-  test('uses the projected ECMAScript trim predicate for required strings', () {
-    final accepted = _project()
-      ..['commands'] = <Object?>[
-        <String, Object?>{
-          'command': 'test.fixture.ping',
-          'title': '\u0085',
-        },
-      ];
-
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: _inventory(['interface:vscode.Known']),
-      overrides: _overrides({
-        'interface:vscode.Known': 'opaqueJsObject',
-      }),
-      project: accepted,
-    );
-    final manifest =
-        (jsonDecode(generated.files['package.json']!) as Map<Object?, Object?>)
-            .cast<String, Object?>();
-    final contributes = (manifest['contributes']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    final commands = contributes['commands']! as List<Object?>;
-    expect(
-      (commands.single! as Map<Object?, Object?>)['title'],
-      '\u0085',
-    );
-
-    final rejected = _project()
-      ..['commands'] = <Object?>[
-        <String, Object?>{
-          'command': 'test.fixture.ping',
-          'title': '\uFEFF',
-        },
-      ];
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: _inventory(['interface:vscode.Known']),
-        overrides: _overrides({
-          'interface:vscode.Known': 'opaqueJsObject',
-        }),
-        project: rejected,
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>().having(
-          (error) => error.code,
-          'code',
-          'INVALID_PROJECT_MANIFEST',
-        ),
-      ),
-    );
-  });
-  test('uses one extension identity hash in Dart exports and bootstrap', () {
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: _inventory(['interface:vscode.Known']),
-      overrides: _overrides({
-        'interface:vscode.Known': 'opaqueJsObject',
-      }),
-      project: _project(),
-    );
-    const key =
-        'e_f4529a9f7129de4b2f063d5b0c34ffb960319d0e59975008828117c7271de9c4';
-
-    expect(
-      generated.files['host/lib/generated/host_exports.g.dart'],
-      allOf(contains('__flutterVscode.hosts.$key'), contains(key)),
-    );
-    expect(
-      generated.files['host/bootstrap.cjs'],
-      allOf(
-        contains('const emittedExtensionKey = "$key";'),
-        contains(".createHash('sha256')"),
-        contains('extensionKey !== emittedExtensionKey'),
-      ),
-    );
-  });
   test('validates the reviewed slice and emits an honest coverage ledger', () {
     final inventory = _readJson(
       'tool/bindings/ir/vscode-1.129.1.json',
@@ -84,64 +11,26 @@ void registerEmissionOutputsTests() {
     final overrides = _readJson(
       'tool/bindings/overrides/vscode-1.129.1.json',
     );
-    final project = _readJson(
-      'test/fixtures/host_extension/extension.json',
-    );
     final generator = VSCodeBindingGenerator();
 
-    final first = generator.generate(
+    final first = generator.generateCoverageLedger(
       inventory: inventory,
       overrides: overrides,
-      project: project,
     );
-    final second = generator.generate(
+    final second = generator.generateCoverageLedger(
       inventory: inventory,
       overrides: overrides,
-      project: project,
     );
 
-    expect(first.files, second.files);
+    expect(first, second, reason: 'the review walk must be deterministic');
     expect(
-      first.files.keys.toSet(),
-      {
-        'host/lib/generated/host_exports.g.dart',
-        'host/lib/generated/vscode_runtime.g.dart',
-        'host/bootstrap.cjs',
-        'package.json',
-        'coverage.json',
-      },
-      reason: 'the retired facade and walking-slice parity must not return',
+      first,
+      File('tool/bindings/coverage-ledger.json').readAsStringSync(),
+      reason: 'the committed maintainer ledger must match a fresh review',
     );
-    final runtime = first.files['host/lib/generated/vscode_runtime.g.dart']!;
-    expect(runtime, contains('installGeneratedHostRuntime'));
-    expect(runtime, contains('stackMappers'));
-    expect(runtime, contains('callbackWrappers'));
-    expect(runtime, isNot(contains('observeHostBindings')));
-    expect(runtime, isNot(contains('observeHostCallback')));
-    final bootstrap = first.files['host/bootstrap.cjs']!;
-    expect(bootstrap, isNot(contains('bindingObservers')));
-    expect(bootstrap, isNot(contains('observedBindingIds')));
-    expect(bootstrap, isNot(contains('FLUTTER_VSCODE_HOST_EVIDENCE_PATH')));
 
-    for (final entry in first.files.entries.where(
-      (entry) => entry.key.endsWith('.dart'),
-    )) {
-      expect(entry.value, isNot(contains('dynamic')), reason: entry.key);
-      expect(entry.value, isNot(contains('dart:js_util')), reason: entry.key);
-      // The runtime module alone may use unsafe property access: its
-      // hostFetch helper builds WHATWG fetch init objects dynamically.
-      if (!entry.key.endsWith('vscode_runtime.g.dart')) {
-        expect(
-          entry.value,
-          isNot(contains('dart:js_interop_unsafe')),
-          reason: entry.key,
-        );
-      }
-    }
-
-    final coverage =
-        (jsonDecode(first.files['coverage.json']!) as Map<Object?, Object?>)
-            .cast<String, Object?>();
+    final coverage = (jsonDecode(first) as Map<Object?, Object?>)
+        .cast<String, Object?>();
     expect(coverage['source'], {
       'vscodeVersion': '1.129.1',
       'inputSha256':
@@ -167,18 +56,19 @@ void registerEmissionOutputsTests() {
       'checkpoint4ExtensionHost': {
         'boundary': 'vscodeExtensionHost',
         'artifact': 'tool/bindings/contracts/checkpoint4-extension-host.json',
-        'artifactSha256': ((pinnedContracts['checkpoint4ExtensionHost']!
-                as Map<Object?, Object?>)['artifactSha256']!)
-            .toString(),
+        'artifactSha256':
+            ((pinnedContracts['checkpoint4ExtensionHost']!
+                    as Map<Object?, Object?>)['artifactSha256']!)
+                .toString(),
       },
     });
     expect(coverage['hostEvidence'], {
       'kind': 'mechanicalAttribution',
       'meaning':
           '53 reviewed binding IDs cite one real Extension Host Contract '
-              'whose receipted gate passed its surrounding native behavior; '
-              'the retired per-member observation mechanism no longer '
-              'contributes evidence.',
+          'whose receipted gate passed its surrounding native behavior; '
+          'the retired per-member observation mechanism no longer '
+          'contributes evidence.',
       'independentBehavioralContracts': false,
     });
     expect(coverage['scope'], {
@@ -210,8 +100,8 @@ void registerEmissionOutputsTests() {
       'hostNotApplicable': 17,
       'hostPending': 2912,
     });
-    final ledgerEntries =
-        (coverage['entries']! as List<Object?>).cast<Map<Object?, Object?>>();
+    final ledgerEntries = (coverage['entries']! as List<Object?>)
+        .cast<Map<Object?, Object?>>();
     expect(ledgerEntries, hasLength(2982));
     expect(
       ledgerEntries.map((entry) => entry['id']).toList(),

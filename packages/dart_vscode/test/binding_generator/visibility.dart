@@ -23,10 +23,9 @@ void registerVisibilityTests() {
     };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -67,10 +66,9 @@ void registerVisibilityTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -117,10 +115,9 @@ void registerVisibilityTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -139,8 +136,9 @@ void registerVisibilityTests() {
   });
   test('rejects excluded producer coverage on a public declaration', () {
     final inventory = _inventory(['interface:vscode.Known']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     declaration['coverage'] = {
       'discovery': 'discovered',
       'semantics': 'excluded',
@@ -150,10 +148,9 @@ void registerVisibilityTests() {
     final overrides = _schemaOverrideFor(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -176,12 +173,11 @@ void registerVisibilityTests() {
     declaration['coverage'] = _pendingCoverage();
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -206,12 +202,11 @@ void registerVisibilityTests() {
       };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -229,99 +224,100 @@ void registerVisibilityTests() {
     final declarations = (inventory['declarations']! as List<Object?>)
         .cast<Map<Object?, Object?>>();
     declarations.firstWhere(
-      (candidate) =>
-          candidate['kind'] == 'method' &&
-          declarations.any(
-            (parent) =>
-                parent['id'] == candidate['parentId'] &&
-                parent['kind'] == 'interface',
+        (candidate) =>
+            candidate['kind'] == 'method' &&
+            declarations.any(
+              (parent) =>
+                  parent['id'] == candidate['parentId'] &&
+                  parent['kind'] == 'interface',
+            ),
+      )
+      ..['visibility'] = 'private'
+      ..['coverage'] = {
+        'discovery': 'discovered',
+        'semantics': 'excluded',
+        'binding': 'excluded',
+        'host': 'notApplicable',
+      };
+
+    expect(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
+        inventory: inventory,
+        overrides: _readJson(
+          'tool/bindings/overrides/vscode-1.129.1.json',
+        ),
+      ),
+      throwsA(
+        isA<VSCodeBindingGenerationException>()
+            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+            .having(
+              (error) => error.message,
+              'message',
+              contains('visibility'),
+            ),
+      ),
+    );
+  });
+  test(
+    'rejects registered type literals that do not inherit owner visibility',
+    () {
+      final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+      final declarations = (inventory['declarations']! as List<Object?>)
+          .cast<Map<Object?, Object?>>();
+      declarations.firstWhere(
+          (candidate) => candidate['kind'] == 'typeLiteral',
+        )
+        ..['visibility'] = 'private'
+        ..['coverage'] = {
+          'discovery': 'discovered',
+          'semantics': 'excluded',
+          'binding': 'excluded',
+          'host': 'notApplicable',
+        };
+
+      expect(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
+          inventory: inventory,
+          overrides: _readJson(
+            'tool/bindings/overrides/vscode-1.129.1.json',
           ),
-    )
-      ..['visibility'] = 'private'
-      ..['coverage'] = {
-        'discovery': 'discovered',
-        'semantics': 'excluded',
-        'binding': 'excluded',
-        'host': 'notApplicable',
-      };
-
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: inventory,
-        overrides: _readJson(
-          'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('visibility'),
-            ),
-      ),
-    );
-  });
-  test('rejects registered type literals that do not inherit owner visibility',
-      () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final declarations = (inventory['declarations']! as List<Object?>)
-        .cast<Map<Object?, Object?>>();
-    declarations.firstWhere(
-      (candidate) => candidate['kind'] == 'typeLiteral',
-    )
-      ..['visibility'] = 'private'
-      ..['coverage'] = {
-        'discovery': 'discovered',
-        'semantics': 'excluded',
-        'binding': 'excluded',
-        'host': 'notApplicable',
-      };
-
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: inventory,
-        overrides: _readJson(
-          'tool/bindings/overrides/vscode-1.129.1.json',
+        throwsA(
+          isA<VSCodeBindingGenerationException>()
+              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+              .having(
+                (error) => error.message,
+                'message',
+                contains('visibility'),
+              ),
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('visibility'),
-            ),
-      ),
-    );
-  });
-  test('rejects registered type-literal references rebound to other owners',
-      () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final pair = _sameShapeTypeLiteralReferencePair(inventory);
-    pair.first['id'] = pair.second['id'];
+      );
+    },
+  );
+  test(
+    'rejects registered type-literal references rebound to other owners',
+    () {
+      final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+      final pair = _sameShapeTypeLiteralReferencePair(inventory);
+      pair.first['id'] = pair.second['id'];
 
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: inventory,
-        overrides: _readJson(
-          'tool/bindings/overrides/vscode-1.129.1.json',
+      expect(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
+          inventory: inventory,
+          overrides: _readJson(
+            'tool/bindings/overrides/vscode-1.129.1.json',
+          ),
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('typeLiteral'), contains('owner')),
-            ),
-      ),
-    );
-  });
+        throwsA(
+          isA<VSCodeBindingGenerationException>()
+              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+              .having(
+                (error) => error.message,
+                'message',
+                allOf(contains('typeLiteral'), contains('owner')),
+              ),
+        ),
+      );
+    },
+  );
 }

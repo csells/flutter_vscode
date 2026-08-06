@@ -3,14 +3,14 @@ import 'package:test/test.dart';
 
 void main() {
   Map<String, Object?> descriptor() => <String, Object?>{
-        'schemaVersion': 1,
-        'name': 'my-extension',
-        'displayName': 'My Extension',
-        'description': 'Demonstrates the manifest projection.',
-        'version': '0.1.0',
-        'publisher': 'example',
-        'activationEvents': <Object?>['onStartupFinished'],
-      };
+    'schemaVersion': 1,
+    'name': 'my-extension',
+    'displayName': 'My Extension',
+    'description': 'Demonstrates the manifest projection.',
+    'version': '0.1.0',
+    'publisher': 'example',
+    'activationEvents': <Object?>['onStartupFinished'],
+  };
 
   test('a valid descriptor projects into the pinned manifest form', () {
     final manifest = ExtensionManifest.fromProjectDescriptor(descriptor());
@@ -47,8 +47,9 @@ void main() {
         ],
       };
 
-    final json = ExtensionManifest.fromProjectDescriptor(project)
-        .toManifestJson(main: './out/bootstrap.cjs');
+    final json = ExtensionManifest.fromProjectDescriptor(
+      project,
+    ).toManifestJson(main: './out/bootstrap.cjs');
 
     final contributes = json['contributes']! as Map<String, Object?>;
     expect(contributes.keys, ['commands', 'viewsContainers', 'views']);
@@ -61,11 +62,12 @@ void main() {
       (descriptor()..['unknown'] = true): 'INVALID_PROJECT_DESCRIPTOR',
       (descriptor()..['schemaVersion'] = 2): 'INVALID_PROJECT_DESCRIPTOR',
       (descriptor()
-        ..['views'] = <String, Object?>{
-          'nowhere': <Object?>[
-            <String, Object?>{'id': 'v', 'name': 'V', 'icon': 'i.svg'},
-          ],
-        }): 'INVALID_PROJECT_MANIFEST',
+            ..['views'] = <String, Object?>{
+              'nowhere': <Object?>[
+                <String, Object?>{'id': 'v', 'name': 'V', 'icon': 'i.svg'},
+              ],
+            }):
+          'INVALID_PROJECT_MANIFEST',
     };
 
     for (final entry in cases.entries) {

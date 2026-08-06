@@ -44,7 +44,8 @@ void main() {
     expect(
       File(_ledgerPath).readAsStringSync(),
       artifacts.ledger,
-      reason: 'Regenerate with: dart tool/binding_generator/generate.dart '
+      reason:
+          'Regenerate with: dart tool/binding_generator/generate.dart '
           '--dart-layer .',
     );
   });
@@ -230,15 +231,16 @@ void main() {
         isNot(contains('external set uri(')),
         reason: 'readonly properties must not emit setters',
       );
-      final selectionGetter =
-          RegExp(r'external\s+Selection\s+get\s+selection;');
+      final selectionGetter = RegExp(
+        r'external\s+Selection\s+get\s+selection;',
+      );
       expect(source, matches(selectionGetter));
     });
   });
 
   test('C-3 every non-exempt construct class has a tagged live probe', () {
     final harness = File(
-      'test/fixtures/host_extension/test/run.cjs',
+      '../flutter_vscode/test/fixtures/host_extension/test/run.cjs',
     ).readAsStringSync();
     final unitSuite = File(
       'test/parity_emitter_unit_test.dart',
@@ -255,7 +257,8 @@ void main() {
       expect(
         harness,
         contains('cc:$constructClass'),
-        reason: 'construct class $constructClass needs a tagged live probe '
+        reason:
+            'construct class $constructClass needs a tagged live probe '
             'in the real-host smoke',
       );
     }
@@ -266,62 +269,71 @@ void main() {
 
   test('V-4 the live smoke covers every API namespace family', () {
     final namespaces = [
-      for (final declaration in (inventory['declarations']! as List<Object?>)
-          .cast<Map<Object?, Object?>>())
+      for (final declaration
+          in (inventory['declarations']! as List<Object?>)
+              .cast<Map<Object?, Object?>>())
         if (declaration['kind'] == 'namespace') declaration['name']! as String,
     ];
     expect(namespaces, isNotEmpty);
     final harness = File(
-      'test/fixtures/host_extension/test/run.cjs',
+      '../flutter_vscode/test/fixtures/host_extension/test/run.cjs',
     ).readAsStringSync();
     for (final namespace in namespaces) {
       expect(
         harness,
         contains("'$namespace'"),
-        reason: 'the real-host smoke must exercise a representative of '
+        reason:
+            'the real-host smoke must exercise a representative of '
             'the $namespace family',
       );
     }
   });
 
-  test('C-4 the parity report states machine-derived two-axis live coverage',
-      () {
-    final report =
-        File(repoPath('docs/reference/parity.md')).readAsStringSync();
-    expect(
-      report,
-      contains('two axes'),
-      reason: 'the report must define live coverage on both axes',
-    );
-    final namespaces = [
-      for (final declaration in (inventory['declarations']! as List<Object?>)
-          .cast<Map<Object?, Object?>>())
-        if (declaration['kind'] == 'namespace') declaration['name']! as String,
-    ];
-    for (final namespace in namespaces) {
+  test(
+    'C-4 the parity report states machine-derived two-axis live coverage',
+    () {
+      final report = File(
+        repoPath('docs/reference/parity.md'),
+      ).readAsStringSync();
       expect(
         report,
-        contains('`$namespace`'),
-        reason: 'the family axis must list the $namespace family, '
-            'derived from the IR',
+        contains('two axes'),
+        reason: 'the report must define live coverage on both axes',
       );
-    }
-    for (final constructClass in parity.parityConstructClasses) {
-      expect(
-        report,
-        contains('`$constructClass`'),
-        reason: 'the construct-class axis must list $constructClass, '
-            'derived from the emitter constant',
-      );
-    }
-    for (final reason in parity.parityLiveExemptions.values) {
-      expect(
-        report,
-        contains(reason),
-        reason: 'every live exemption must carry its recorded reason',
-      );
-    }
-  });
+      final namespaces = [
+        for (final declaration
+            in (inventory['declarations']! as List<Object?>)
+                .cast<Map<Object?, Object?>>())
+          if (declaration['kind'] == 'namespace')
+            declaration['name']! as String,
+      ];
+      for (final namespace in namespaces) {
+        expect(
+          report,
+          contains('`$namespace`'),
+          reason:
+              'the family axis must list the $namespace family, '
+              'derived from the IR',
+        );
+      }
+      for (final constructClass in parity.parityConstructClasses) {
+        expect(
+          report,
+          contains('`$constructClass`'),
+          reason:
+              'the construct-class axis must list $constructClass, '
+              'derived from the emitter constant',
+        );
+      }
+      for (final reason in parity.parityLiveExemptions.values) {
+        expect(
+          report,
+          contains(reason),
+          reason: 'every live exemption must carry its recorded reason',
+        );
+      }
+    },
+  );
 
   test('P-5 unmapped constructs fail generation with an actionable error', () {
     final synthetic = <String, Object?>{

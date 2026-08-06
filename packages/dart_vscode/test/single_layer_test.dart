@@ -84,8 +84,9 @@ void main() {
       reason: 'dart_vscode must hold exactly one generated API artifact',
     );
     expect(
-      File(repoPath('packages/dart_vscode/lib/dart_vscode.dart'))
-          .readAsStringSync(),
+      File(
+        repoPath('packages/dart_vscode/lib/dart_vscode.dart'),
+      ).readAsStringSync(),
       isNot(contains('vscode_parity_layer.g.dart')),
       reason: 'the one API export must not re-export the retired artifact',
     );
@@ -93,13 +94,12 @@ void main() {
 
   test('built project trees carry no standalone parity artifact', () {
     for (final generatedRoot in [
-      'test/fixtures/host_extension/host/lib/generated',
+      '../flutter_vscode/test/fixtures/host_extension/host/lib/generated',
       repoPath('extensions/coverage_treemap/host/lib/generated'),
     ]) {
-      final names = Directory(generatedRoot)
-          .listSync()
-          .whereType<File>()
-          .map((file) => p.basename(file.path));
+      final names = Directory(
+        generatedRoot,
+      ).listSync().whereType<File>().map((file) => p.basename(file.path));
       expect(
         names,
         isNot(contains('vscode_parity_layer.g.dart')),
@@ -108,13 +108,16 @@ void main() {
       expect(
         names,
         isNot(contains('vscode_dart_layer.g.dart')),
-        reason: '$generatedRoot must not carry a copy of the API layer: '
+        reason:
+            '$generatedRoot must not carry a copy of the API layer: '
             'the layer ships in the framework package and projects import '
             'it from there',
       );
     }
     expect(
-      File('lib/src/cli/build_command.dart').readAsStringSync(),
+      File(
+        '../flutter_vscode/lib/src/cli/build_command.dart',
+      ).readAsStringSync(),
       isNot(contains('vscode_parity_layer.g.dart')),
       reason: 'build must emit only the merged artifact',
     );
@@ -129,7 +132,7 @@ void main() {
   group('SL-2: the walking-slice facade and parity sibling retire', () {
     test('built project trees carry no facade or walking-slice parity', () {
       for (final generatedRoot in [
-        'test/fixtures/host_extension/host/lib/generated',
+        '../flutter_vscode/test/fixtures/host_extension/host/lib/generated',
         repoPath('extensions/coverage_treemap/host/lib/generated'),
       ]) {
         final names = Directory(generatedRoot)
@@ -166,7 +169,9 @@ void main() {
         reason: 'the emit dispatch must not name the retired artifacts',
       );
       expect(
-        File('tool/binding_generator/templates.dart').readAsStringSync(),
+        File(
+          '../flutter_vscode/lib/src/cli/templates.dart',
+        ).readAsStringSync(),
         allOf(
           isNot(contains('walkingSliceFacadeTemplate')),
           isNot(contains('walkingSliceParityTemplate')),
@@ -177,9 +182,9 @@ void main() {
 
     test('hosts, scaffold, and view-host template import no facade', () {
       for (final source in [
-        'test/fixtures/host_extension/host/lib/extension.dart',
+        '../flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart',
         repoPath('extensions/coverage_treemap/host/lib/extension.dart'),
-        'lib/src/cli/create_command.dart',
+        '../flutter_vscode/lib/src/cli/create_command.dart',
         repoPath('packages/dart_vscode/lib/src/flutter_view_host.dart'),
       ]) {
         expect(
@@ -229,7 +234,8 @@ void main() {
       expect(
         violations,
         isEmpty,
-        reason: 'living docs must describe the one generated API layer, '
+        reason:
+            'living docs must describe the one generated API layer, '
             'never the retired artifacts: $violations',
       );
     });

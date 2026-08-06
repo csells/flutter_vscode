@@ -9,7 +9,7 @@ import '../tool/binding_generator/contract.dart' as contract_writer;
 /// The repository root: tests run with the package as the working
 /// directory, but the contract receipts repository-relative paths.
 Directory _repositoryRoot() {
-  for (var dir = Directory.current;; dir = dir.parent) {
+  for (var dir = Directory.current; ; dir = dir.parent) {
     final pubspec = File('${dir.path}/pubspec.yaml');
     if (pubspec.existsSync() &&
         pubspec.readAsStringSync().contains('\nworkspace:')) {
@@ -22,29 +22,36 @@ Directory _repositoryRoot() {
 }
 
 void main() {
-  test('the durable Host Contract artifact matches mechanical regeneration',
-      () {
-    final regenerated =
-        contract_writer.buildHostContractArtifact(_repositoryRoot());
-    expect(
-      File(
-        'tool/bindings/contracts/checkpoint4-extension-host.json',
-      ).readAsStringSync(),
-      regenerated,
-      reason: 'The artifact is written only by the mechanical regenerator. '
-          'Refresh it with: '
-          'dart tool/binding_generator/generate.dart --contract .',
-    );
-    final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
-    final contract = (overrides['hostContracts']!
-            as Map<Object?, Object?>)['checkpoint4ExtensionHost']!
-        as Map<Object?, Object?>;
-    expect(
-      sha256.convert(utf8.encode(regenerated)).toString(),
-      contract['artifactSha256'],
-      reason: 'The overrides pin must match the regenerated artifact bytes.',
-    );
-  });
+  test(
+    'the durable Host Contract artifact matches mechanical regeneration',
+    () {
+      final regenerated = contract_writer.buildHostContractArtifact(
+        _repositoryRoot(),
+      );
+      expect(
+        File(
+          'tool/bindings/contracts/checkpoint4-extension-host.json',
+        ).readAsStringSync(),
+        regenerated,
+        reason:
+            'The artifact is written only by the mechanical regenerator. '
+            'Refresh it with: '
+            'dart tool/binding_generator/generate.dart --contract .',
+      );
+      final overrides = _readJson(
+        'tool/bindings/overrides/vscode-1.129.1.json',
+      );
+      final contract =
+          (overrides['hostContracts']!
+                  as Map<Object?, Object?>)['checkpoint4ExtensionHost']!
+              as Map<Object?, Object?>;
+      expect(
+        sha256.convert(utf8.encode(regenerated)).toString(),
+        contract['artifactSha256'],
+        reason: 'The overrides pin must match the regenerated artifact bytes.',
+      );
+    },
+  );
 
   test('the contract writer regenerates a copied tree byte-identically', () {
     final temporary = Directory.systemTemp.createTempSync(
@@ -52,8 +59,9 @@ void main() {
     );
     addTearDown(() => temporary.deleteSync(recursive: true));
     const overridesPath =
-        'packages/flutter_vscode/tool/bindings/overrides/vscode-1.129.1.json';
-    const artifactPath = 'packages/flutter_vscode/tool/bindings/'
+        'packages/dart_vscode/tool/bindings/overrides/vscode-1.129.1.json';
+    const artifactPath =
+        'packages/dart_vscode/tool/bindings/'
         'contracts/checkpoint4-extension-host.json';
     for (final relative in [
       ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
@@ -73,8 +81,9 @@ void main() {
       contract_writer.buildHostContractArtifact(temporary),
       reason: 'the written artifact must equal mechanical regeneration',
     );
-    final writtenOverrides =
-        File('${temporary.path}/$overridesPath').readAsStringSync();
+    final writtenOverrides = File(
+      '${temporary.path}/$overridesPath',
+    ).readAsStringSync();
     expect(
       writtenOverrides,
       contains(sha256.convert(written.readAsBytesSync()).toString()),
@@ -85,12 +94,12 @@ void main() {
         RegExp('"artifactSha256": "[0-9a-f]{64}"'),
         '"artifactSha256": "PIN"',
       ),
-      File('${_repositoryRoot().path}/$overridesPath')
-          .readAsStringSync()
-          .replaceFirst(
-            RegExp('"artifactSha256": "[0-9a-f]{64}"'),
-            '"artifactSha256": "PIN"',
-          ),
+      File(
+        '${_repositoryRoot().path}/$overridesPath',
+      ).readAsStringSync().replaceFirst(
+        RegExp('"artifactSha256": "[0-9a-f]{64}"'),
+        '"artifactSha256": "PIN"',
+      ),
       reason: 'the surgical pin update must change nothing else',
     );
 
@@ -114,7 +123,7 @@ void main() {
     );
     addTearDown(() => temporary.deleteSync(recursive: true));
     const overridesPath =
-        'packages/flutter_vscode/tool/bindings/overrides/vscode-1.129.1.json';
+        'packages/dart_vscode/tool/bindings/overrides/vscode-1.129.1.json';
     for (final relative in [
       ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
       overridesPath,
@@ -125,12 +134,13 @@ void main() {
     }
     final overridesFile = File('${temporary.path}/$overridesPath');
     final original = overridesFile.readAsStringSync();
-    final decoded =
-        (jsonDecode(original) as Map<Object?, Object?>).cast<String, Object?>();
+    final decoded = (jsonDecode(original) as Map<Object?, Object?>)
+        .cast<String, Object?>();
     final contracts = (decoded['hostContracts']! as Map<Object?, Object?>)
         .cast<String, Object?>();
-    contracts['secondExtensionHost'] =
-        jsonDecode(jsonEncode(contracts['checkpoint4ExtensionHost']));
+    contracts['secondExtensionHost'] = jsonDecode(
+      jsonEncode(contracts['checkpoint4ExtensionHost']),
+    );
     overridesFile.writeAsStringSync(
       '${const JsonEncoder.withIndent('  ').convert(decoded)}\n',
     );
@@ -191,31 +201,33 @@ void main() {
       final inventory = _readJson(
         'tool/bindings/ir/vscode-1.129.1.json',
       );
-      final inventoryProduct = ((inventory['source']!
-              as Map<Object?, Object?>)['product']! as Map<Object?, Object?>)
-          .cast<String, Object?>();
+      final inventoryProduct =
+          ((inventory['source']! as Map<Object?, Object?>)['product']!
+                  as Map<Object?, Object?>)
+              .cast<String, Object?>();
       expect(artifactJson['apiTarget'], {
         'version': inventoryProduct['version'],
         'commit': inventoryProduct['commit'],
       });
       final fixtureManifest = _readJson(
-        'test/fixtures/host_extension/package.json',
+        '../flutter_vscode/test/fixtures/host_extension/package.json',
       );
       final fixtureEngines =
           (fixtureManifest['engines']! as Map<Object?, Object?>)
               .cast<String, Object?>();
       final harnessPackage = _readJson(
-        'tool/extension_host_test/package.json',
+        '../flutter_vscode/tool/extension_host_test/package.json',
       );
       final harnessDependencies =
           (harnessPackage['devDependencies']! as Map<Object?, Object?>)
               .cast<String, Object?>();
       final container = File(
-        'tool/extension_host_test/Dockerfile',
+        '../flutter_vscode/tool/extension_host_test/Dockerfile',
       ).readAsStringSync();
-      final nodeImage = RegExp(r'^FROM (\S+)$', multiLine: true)
-          .firstMatch(container)!
-          .group(1)!;
+      final nodeImage = RegExp(
+        r'^FROM (\S+)$',
+        multiLine: true,
+      ).firstMatch(container)!.group(1)!;
       expect(artifactJson['runtimeTarget'], {
         'vscodeVersion': fixtureEngines['vscode'],
         'testElectronVersion': harnessDependencies['@vscode/test-electron'],
@@ -225,12 +237,12 @@ void main() {
       expect(artifactJson['trustBoundary'], {
         'dartToolchain':
             'The locally installed Flutter/Dart SDK and packages resolved '
-                'from the enforced lockfile are trusted; this contract does '
-                'not attest their bytes.',
+            'from the enforced lockfile are trusted; this contract does '
+            'not attest their bytes.',
         'vscodeRuntime':
             'Each gate resolves the exact official VS Code version into a '
-                'new invocation-scoped cache; this contract does not attest '
-                'a predeclared runtime binary digest.',
+            'new invocation-scoped cache; this contract does not attest '
+            'a predeclared runtime binary digest.',
       });
       expect(fixtureEngines['vscode'], overrides['vscodeVersion']);
       final sources = (artifactJson['sources']! as Map<Object?, Object?>)
@@ -244,8 +256,9 @@ void main() {
             .cast<String, Object?>();
         expect(
           source['path'],
-          contract_writer
-              .hostContractSourcePaths(_repositoryRoot())[sourceEntry.key],
+          contract_writer.hostContractSourcePaths(
+            _repositoryRoot(),
+          )[sourceEntry.key],
           reason: sourceEntry.key,
         );
         final sourceFile = File('${_repositoryRoot().path}/${source['path']}');
@@ -259,7 +272,8 @@ void main() {
 
       expect(artifactJson['evidence'], {
         'kind': 'mechanicalAttribution',
-        'meaning': 'Every listed binding ID is attributed to this one real '
+        'meaning':
+            'Every listed binding ID is attributed to this one real '
             'Extension Host Contract by its reviewed Semantic Override; '
             'the gate passes only after the receipted repository sources '
             'and the surrounding native behavior pass, without '
@@ -267,8 +281,8 @@ void main() {
         'independentBehavioralContracts': false,
       });
       expect(artifactJson, isNot(contains('verifiedBindings')));
-      final attributedBindings =
-          (artifactJson['attributedBindings']! as List).cast<String>();
+      final attributedBindings = (artifactJson['attributedBindings']! as List)
+          .cast<String>();
       final expectedBindings = <String>[
         for (final entry in entries.entries)
           if ((entry.value! as Map<Object?, Object?>)['strategy'] !=
@@ -279,8 +293,8 @@ void main() {
     }
 
     for (final entry in entries.entries) {
-      final override =
-          (entry.value! as Map<Object?, Object?>).cast<String, Object?>();
+      final override = (entry.value! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       expect(override, isNot(contains('hostVerified')), reason: entry.key);
       if (override['strategy'] == 'reviewedExcluded') {
         expect(override, isNot(contains('hostContract')), reason: entry.key);
@@ -296,7 +310,7 @@ void main() {
     // The walking-slice facade and its per-member observation plumbing
     // retired with SL-2; the receipted gate carries the host evidence.
     final hostTest = File(
-      'test/fixtures/host_extension/test/run.cjs',
+      '../flutter_vscode/test/fixtures/host_extension/test/run.cjs',
     ).readAsStringSync();
     expect(hostTest, isNot(contains('observeBindings')));
     expect(hostTest, isNot(contains('observedBindingIds')));
@@ -307,13 +321,13 @@ void main() {
     );
 
     final runtime = File(
-      'test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
+      '../flutter_vscode/test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart',
     ).readAsStringSync();
     expect(runtime, isNot(contains('observeHostBindings')));
     expect(runtime, isNot(contains('observeHostCallback')));
 
     final bootstrap = File(
-      'test/fixtures/host_extension/host/bootstrap.cjs',
+      '../flutter_vscode/test/fixtures/host_extension/host/bootstrap.cjs',
     ).readAsStringSync();
     expect(bootstrap, isNot(contains('bindingObservers')));
     expect(bootstrap, isNot(contains('observedBindingIds')));

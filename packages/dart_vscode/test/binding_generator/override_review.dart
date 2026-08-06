@@ -5,14 +5,12 @@ void registerOverrideReviewTests() {
   test('rejects an unsupported Semantic Override schema version', () {
     final overrides = _overrides({
       'interface:vscode.Known': 'opaqueJsObject',
-    })
-      ..['schemaVersion'] = 999;
+    })..['schemaVersion'] = 999;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -32,14 +30,12 @@ void registerOverrideReviewTests() {
   test('rejects unknown top-level Semantic Override fields', () {
     final overrides = _overrides({
       'interface:vscode.Known': 'opaqueJsObject',
-    })
-      ..['unknownPolicy'] = <Object?>[];
+    })..['unknownPolicy'] = <Object?>[];
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -53,22 +49,22 @@ void registerOverrideReviewTests() {
     );
   });
   test('accepts optional reviewed removal metadata', () {
-    final overrides = _overrides({
-      'interface:vscode.Known': 'opaqueJsObject',
-    })
-      ..['removals'] = {
-        'interface:vscode.Removed': {
-          'strategy': 'reviewedRemoval',
-          'declarationSha256': '0' * 64,
-          'reason': 'The upstream stable API removed this declaration.',
-        },
-      };
+    final overrides =
+        _overrides({
+            'interface:vscode.Known': 'opaqueJsObject',
+          })
+          ..['removals'] = {
+            'interface:vscode.Removed': {
+              'strategy': 'reviewedRemoval',
+              'declarationSha256': '0' * 64,
+              'reason': 'The upstream stable API removed this declaration.',
+            },
+          };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       returnsNormally,
     );
@@ -77,24 +73,27 @@ void registerOverrideReviewTests() {
     final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
     final declarations = (inventory['declarations']! as List<Object?>)
         .cast<Map<String, Object?>>();
-    final privateId = declarations.firstWhere(
-      (declaration) => declaration['visibility'] == 'private',
-    )['id']! as String;
-    final overrides = _readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    )..['removals'] = {
-        privateId: {
-          'strategy': 'reviewedRemoval',
-          'declarationSha256': '0' * 64,
-          'reason': 'The declaration is not part of the public inventory.',
-        },
-      };
+    final privateId =
+        declarations.firstWhere(
+              (declaration) => declaration['visibility'] == 'private',
+            )['id']!
+            as String;
+    final overrides =
+        _readJson(
+            'tool/bindings/overrides/vscode-1.129.1.json',
+          )
+          ..['removals'] = {
+            privateId: {
+              'strategy': 'reviewedRemoval',
+              'declarationSha256': '0' * 64,
+              'reason': 'The declaration is not part of the public inventory.',
+            },
+          };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       returnsNormally,
     );
@@ -145,14 +144,12 @@ void registerOverrideReviewTests() {
     for (final malformed in malformedRemovals.entries) {
       final overrides = _overrides({
         'interface:vscode.Known': 'opaqueJsObject',
-      })
-        ..['removals'] = malformed.value;
+      })..['removals'] = malformed.value;
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
-          project: _project(),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -170,8 +167,8 @@ void registerOverrideReviewTests() {
   test('uses ECMAScript trim semantics for reviewed removal reasons', () {
     Map<String, Object?> removalOverrides(String reason) {
       return _overrides({
-        'interface:vscode.Known': 'opaqueJsObject',
-      })
+          'interface:vscode.Known': 'opaqueJsObject',
+        })
         ..['removals'] = {
           'interface:vscode.Removed': {
             'strategy': 'reviewedRemoval',
@@ -182,19 +179,17 @@ void registerOverrideReviewTests() {
     }
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: removalOverrides('\u0085'),
-        project: _project(),
       ),
       returnsNormally,
       reason: 'ECMAScript trim preserves U+0085.',
     );
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: removalOverrides('\uFEFF'),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -212,12 +207,11 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides({
           'interface:vscode.Missing': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -238,12 +232,11 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides({
           'interface:vscode.Known': 'handwrittenDartSnippet',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -295,10 +288,9 @@ void registerOverrideReviewTests() {
         ..addAll(malformed.value);
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
-          project: _project(),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -320,17 +312,17 @@ void registerOverrideReviewTests() {
     final overrides = _overrides({
       'interface:vscode.Known': 'reviewedExcluded',
     });
-    final entry = ((overrides['entries']!
-                as Map<Object?, Object?>)['interface:vscode.Known']!
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final entry =
+        ((overrides['entries']!
+                    as Map<Object?, Object?>)['interface:vscode.Known']!
+                as Map<Object?, Object?>)
+            .cast<String, Object?>();
     entry['reason'] = '   ';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -347,13 +339,12 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           {'interface:vscode.Known': 'opaqueJsObject'},
           vscodeVersion: '1.128.0',
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -374,13 +365,12 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           {'interface:vscode.Known': 'opaqueJsObject'},
           manifestSchemaSha256: '0' * 64,
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -406,13 +396,12 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           {'interface:vscode.Known': 'opaqueJsObject'},
           manifestValidatorSha256: '0' * 64,
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -438,13 +427,12 @@ void registerOverrideReviewTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           {'interface:vscode.Known': 'opaqueJsObject'},
           targets: const [],
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()

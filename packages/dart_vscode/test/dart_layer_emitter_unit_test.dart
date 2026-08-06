@@ -75,12 +75,14 @@ void main() {
           },
         ),
       ];
-      final ledger = jsonDecode(
-        dart_layer.emitDartLayer({
-          'schemaVersion': 1,
-          'declarations': declarations,
-        }).ledger,
-      ) as Map<String, Object?>;
+      final ledger =
+          jsonDecode(
+                dart_layer.emitDartLayer({
+                  'schemaVersion': 1,
+                  'declarations': declarations,
+                }).ledger,
+              )
+              as Map<String, Object?>;
       final dispositions = (ledger['dispositions']! as Map<Object?, Object?>)
           .cast<String, String>();
       expect(dispositions.length, declarations.length);
@@ -96,40 +98,42 @@ void main() {
       expect(dispositions['interface:vscode.Hidden'], 'parity:non-public');
     });
 
-    test('a stream construct without a subscribable Event fails generation',
-        () {
-      // The Event interface exists but declares no call signature: the
-      // stream rule has nothing to subscribe through and must fail with
-      // the consuming declaration id rather than emit broken code.
-      expect(
-        () => dart_layer.emitDartLayer({
-          'schemaVersion': 1,
-          'declarations': [
-            _eventIfaceWithoutCall(),
-            _boxIface,
-            _property(
-              _boxId,
-              'onDidThing',
-              _eventOf(_string),
-              readonly: true,
-            ),
-          ],
-        }),
-        throwsA(
-          isA<dart_layer.DartLayerGenerationException>()
-              .having(
-                (error) => error.declarationId,
-                'declarationId',
-                r'property:interface:vscode.Box/$instance/onDidThing',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('call signature'),
+    test(
+      'a stream construct without a subscribable Event fails generation',
+      () {
+        // The Event interface exists but declares no call signature: the
+        // stream rule has nothing to subscribe through and must fail with
+        // the consuming declaration id rather than emit broken code.
+        expect(
+          () => dart_layer.emitDartLayer({
+            'schemaVersion': 1,
+            'declarations': [
+              _eventIfaceWithoutCall(),
+              _boxIface,
+              _property(
+                _boxId,
+                'onDidThing',
+                _eventOf(_string),
+                readonly: true,
               ),
-        ),
-      );
-    });
+            ],
+          }),
+          throwsA(
+            isA<dart_layer.DartLayerGenerationException>()
+                .having(
+                  (error) => error.declarationId,
+                  'declarationId',
+                  r'property:interface:vscode.Box/$instance/onDidThing',
+                )
+                .having(
+                  (error) => error.message,
+                  'message',
+                  contains('call signature'),
+                ),
+          ),
+        );
+      },
+    );
 
     test('parity-stage totality failures still carry the declaration id', () {
       expect(
@@ -164,44 +168,42 @@ Map<String, Object?> _decl(
   String name,
   String parentId, {
   Map<String, Object?> extra = const {},
-}) =>
-    {
-      'id': '$kind:vscode.$name',
-      'kind': kind,
-      'name': name,
-      'qualifiedName': 'vscode.$name',
-      'parentId': parentId,
-      'visibility': 'public',
-      'deprecated': false,
-      ...extra,
-    };
+}) => {
+  'id': '$kind:vscode.$name',
+  'kind': kind,
+  'name': name,
+  'qualifiedName': 'vscode.$name',
+  'parentId': parentId,
+  'visibility': 'public',
+  'deprecated': false,
+  ...extra,
+};
 
 Map<String, Object?> _iface(
   String name, {
   List<Object?> typeParameters = const [],
   List<Object?> extends$ = const [],
-}) =>
-    _decl(
-      'interface',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': typeParameters,
-        'extends': extends$,
-      },
-    );
+}) => _decl(
+  'interface',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': typeParameters,
+    'extends': extends$,
+  },
+);
 
 Map<String, Object?> _class(String name) => _decl(
-      'class',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': <Object?>[],
-        'extends': <Object?>[],
-        'implements': <Object?>[],
-        'abstract': false,
-      },
-    );
+  'class',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': <Object?>[],
+    'extends': <Object?>[],
+    'implements': <Object?>[],
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _property(
   String owner,
@@ -209,20 +211,19 @@ Map<String, Object?> _property(
   Object? type, {
   bool optional = false,
   bool readonly = false,
-}) =>
-    _decl(
-      'property',
-      name,
-      owner,
-      extra: {
-        'id': 'property:$owner/\$instance/$name',
-        'type': type,
-        'optional': optional,
-        'readonly': readonly,
-        'static': false,
-        'abstract': false,
-      },
-    );
+}) => _decl(
+  'property',
+  name,
+  owner,
+  extra: {
+    'id': 'property:$owner/\$instance/$name',
+    'type': type,
+    'optional': optional,
+    'readonly': readonly,
+    'static': false,
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _method(
   String owner,
@@ -230,85 +231,83 @@ Map<String, Object?> _method(
   List<Object?> parameters = const [],
   Object? returnType = const {'kind': 'primitive', 'name': 'void'},
   int overloadOrdinal = 0,
-}) =>
-    _decl(
-      'method',
-      name,
-      owner,
-      extra: {
-        'id': 'method:$owner.$name@$overloadOrdinal',
-        'parameters': parameters,
-        'returnType': returnType,
-        'typeParameters': <Object?>[],
-        'overloadOrdinal': overloadOrdinal,
-        'optional': false,
-        'static': false,
-        'abstract': false,
-      },
-    );
+}) => _decl(
+  'method',
+  name,
+  owner,
+  extra: {
+    'id': 'method:$owner.$name@$overloadOrdinal',
+    'parameters': parameters,
+    'returnType': returnType,
+    'typeParameters': <Object?>[],
+    'overloadOrdinal': overloadOrdinal,
+    'optional': false,
+    'static': false,
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _param(
   String name,
   Object? type, {
   bool optional = false,
   bool rest = false,
-}) =>
-    {'name': name, 'type': type, 'optional': optional, 'rest': rest};
+}) => {'name': name, 'type': type, 'optional': optional, 'rest': rest};
 
 Map<String, Object?> _thenableOf(Object? argument) => {
-      'kind': 'reference',
-      'name': 'Thenable',
-      'typeArguments': [argument],
-    };
+  'kind': 'reference',
+  'name': 'Thenable',
+  'typeArguments': [argument],
+};
 
 Map<String, Object?> _eventOf(Object? argument) => {
-      'kind': 'reference',
-      'name': 'Event',
-      'typeArguments': [argument],
-    };
+  'kind': 'reference',
+  'name': 'Event',
+  'typeArguments': [argument],
+};
 
 Map<String, Object?> _eventIfaceWithoutCall() => _decl(
-      'interface',
-      'Event',
-      'module:vscode',
-      extra: {
-        'typeParameters': [
-          {'name': 'T'},
-        ],
-        'extends': <Object?>[],
-      },
-    );
+  'interface',
+  'Event',
+  'module:vscode',
+  extra: {
+    'typeParameters': [
+      {'name': 'T'},
+    ],
+    'extends': <Object?>[],
+  },
+);
 
 List<Map<String, Object?>> _eventSupport() => [
-      _eventIfaceWithoutCall(),
-      _decl(
-        'callSignature',
-        r'$call',
-        'interface:vscode.Event',
-        extra: {
-          'id': r'callSignature:interface:vscode.Event.$call@0',
-          'parameters': [
-            _param('listener', {
-              'kind': 'function',
-              'typeParameters': <Object?>[],
-              'parameters': <Object?>[],
-              'returnType': {'kind': 'primitive', 'name': 'any'},
-              'canonicalSignature': '{}',
-            }),
-          ],
-          'returnType': {
-            'kind': 'reference',
-            'name': 'Disposable',
-            'typeArguments': <Object?>[],
-          },
+  _eventIfaceWithoutCall(),
+  _decl(
+    'callSignature',
+    r'$call',
+    'interface:vscode.Event',
+    extra: {
+      'id': r'callSignature:interface:vscode.Event.$call@0',
+      'parameters': [
+        _param('listener', {
+          'kind': 'function',
           'typeParameters': <Object?>[],
-          'overloadOrdinal': 0,
+          'parameters': <Object?>[],
+          'returnType': {'kind': 'primitive', 'name': 'any'},
           'canonicalSignature': '{}',
-        },
-      ),
-      _class('Disposable'),
-      _method('class:vscode.Disposable', 'dispose'),
-    ];
+        }),
+      ],
+      'returnType': {
+        'kind': 'reference',
+        'name': 'Disposable',
+        'typeArguments': <Object?>[],
+      },
+      'typeParameters': <Object?>[],
+      'overloadOrdinal': 0,
+      'canonicalSignature': '{}',
+    },
+  ),
+  _class('Disposable'),
+  _method('class:vscode.Disposable', 'dispose'),
+];
 
 const Map<String, Object?> _string = {'kind': 'primitive', 'name': 'string'};
 const Map<String, Object?> _number = {'kind': 'primitive', 'name': 'number'};

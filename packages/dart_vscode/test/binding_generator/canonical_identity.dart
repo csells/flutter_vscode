@@ -10,12 +10,11 @@ void registerCanonicalIdentityTests() {
         ' ${declaration['canonicalSignature']! as String}';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -32,19 +31,19 @@ void registerCanonicalIdentityTests() {
   test('rejects callable IDs detached from canonicalSignature hashes', () {
     final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
     final declaration = _unselectedCallable(inventory);
-    final signature = (jsonDecode(declaration['canonicalSignature']! as String)
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final signature =
+        (jsonDecode(declaration['canonicalSignature']! as String)
+                as Map<Object?, Object?>)
+            .cast<String, Object?>();
     signature['returnType'] = {'kind': 'primitive', 'name': 'undefined'};
     declaration['canonicalSignature'] = jsonEncode(signature);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -60,8 +59,9 @@ void registerCanonicalIdentityTests() {
 
   test('rejects inline shapes detached from their shapeHash', () {
     final inventory = _inventory(['interface:vscode.Box']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     final shape = <String, Object?>{
       'members': [
         {
@@ -86,10 +86,9 @@ void registerCanonicalIdentityTests() {
     final overrides = _schemaOverrideFor(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -113,12 +112,11 @@ void registerCanonicalIdentityTests() {
     declaration['shapeHash'] = '0' * 64;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -134,9 +132,9 @@ void registerCanonicalIdentityTests() {
 
   final rawCanonicalCases =
       <({String name, Map<String, Object?> Function() declaration})>[
-    (
-      name: 'parameter types',
-      declaration: () => _syntheticMethod(
+        (
+          name: 'parameter types',
+          declaration: () => _syntheticMethod(
             rawParameters: [
               _rawParameter('value', {'kind': 'primitive', 'name': 'string'}),
             ],
@@ -144,17 +142,17 @@ void registerCanonicalIdentityTests() {
               _canonicalParameter({'kind': 'primitive', 'name': 'number'}),
             ],
           ),
-    ),
-    (
-      name: 'return types',
-      declaration: () => _syntheticMethod(
+        ),
+        (
+          name: 'return types',
+          declaration: () => _syntheticMethod(
             rawReturnType: {'kind': 'primitive', 'name': 'string'},
             canonicalReturnType: {'kind': 'primitive', 'name': 'number'},
           ),
-    ),
-    (
-      name: 'type-parameter constraints',
-      declaration: () => _syntheticMethod(
+        ),
+        (
+          name: 'type-parameter constraints',
+          declaration: () => _syntheticMethod(
             rawTypeParameters: [
               {
                 'name': 'T',
@@ -167,15 +165,15 @@ void registerCanonicalIdentityTests() {
               },
             ],
           ),
-    ),
-    (
-      name: 'method flags',
-      declaration: () => _syntheticMethod(
+        ),
+        (
+          name: 'method flags',
+          declaration: () => _syntheticMethod(
             canonicalStatic: true,
             canonicalOptional: true,
           ),
-    ),
-  ];
+        ),
+      ];
 
   for (final testCase in rawCanonicalCases) {
     test('rejects divergent raw and canonical ${testCase.name}', () {
@@ -185,12 +183,11 @@ void registerCanonicalIdentityTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: _overrides({
             'interface:vscode.Known': 'opaqueJsObject',
           }),
-          project: _project(),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -244,12 +241,11 @@ void registerCanonicalIdentityTests() {
     });
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _overrides({
           'interface:vscode.Known': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -298,12 +294,11 @@ void registerCanonicalIdentityTests() {
     });
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _overrides({
           'interface:vscode.Known': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -360,10 +355,9 @@ void registerCanonicalIdentityTests() {
     final overrides = _schemaOverrideFor(parent);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -400,12 +394,11 @@ void registerCanonicalIdentityTests() {
     });
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _overrides({
           'interface:vscode.Known': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -451,12 +444,11 @@ void registerCanonicalIdentityTests() {
     _sortDeclarationsLikeProducer(inventory);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _overrides({
           'interface:vscode.Known': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -476,12 +468,11 @@ void registerCanonicalIdentityTests() {
     pair.child['readonly'] = !(pair.child['readonly']! as bool);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -495,31 +486,32 @@ void registerCanonicalIdentityTests() {
     );
   });
 
-  test('requires registered type-literal declarations to carry their shape',
-      () {
-    final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
-    final pair = _singlePropertyTypeLiteral(inventory);
-    pair.parent.remove('shape');
+  test(
+    'requires registered type-literal declarations to carry their shape',
+    () {
+      final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+      final pair = _singlePropertyTypeLiteral(inventory);
+      pair.parent.remove('shape');
 
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: inventory,
-        overrides: _readJson(
-          'tool/bindings/overrides/vscode-1.129.1.json',
+      expect(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
+          inventory: inventory,
+          overrides: _readJson(
+            'tool/bindings/overrides/vscode-1.129.1.json',
+          ),
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('shape'),
-            ),
-      ),
-    );
-  });
+        throwsA(
+          isA<VSCodeBindingGenerationException>()
+              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
+              .having(
+                (error) => error.message,
+                'message',
+                contains('shape'),
+              ),
+        ),
+      );
+    },
+  );
 
   test('recomputes multi-member type-literal shape hashes from children', () {
     final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
@@ -527,12 +519,11 @@ void registerCanonicalIdentityTests() {
     child['readonly'] = !(child['readonly']! as bool);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -551,12 +542,11 @@ void registerCanonicalIdentityTests() {
     _tamperSignatureChildOfTypeLiteral(inventory);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -576,12 +566,11 @@ void registerCanonicalIdentityTests() {
     child['optional'] = !(child['optional']! as bool);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -597,8 +586,9 @@ void registerCanonicalIdentityTests() {
 
   test('accepts raw types in unscoped inline type-literal shapes', () {
     final inventory = _inventory(['interface:vscode.Known']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     final optionsShape = <String, Object?>{
       'members': [
         {
@@ -667,17 +657,17 @@ void registerCanonicalIdentityTests() {
     final overrides = _overrides({
       'interface:vscode.Known': 'opaqueJsObject',
     });
-    final entry = ((overrides['entries']!
-                as Map<Object?, Object?>)['interface:vscode.Known']!
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final entry =
+        ((overrides['entries']!
+                    as Map<Object?, Object?>)['interface:vscode.Known']!
+                as Map<Object?, Object?>)
+            .cast<String, Object?>();
     entry['declarationSha256'] = computeDeclarationFingerprint(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       returnsNormally,
     );

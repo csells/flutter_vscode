@@ -21,8 +21,7 @@ void _reanchorDeclaration(
     ..['qualifiedName'] = qualifiedName;
   final kind = declaration['kind']! as String;
   declaration['id'] = switch (kind) {
-    'constructor' ||
-    'method' =>
+    'constructor' || 'method' =>
       '$kind:$qualifiedName@${_sha256String(declaration['canonicalSignature']! as String)}',
     'enumMember' => 'enumMember:$parentId/${Uri.encodeComponent(name)}',
     'property' =>
@@ -236,8 +235,9 @@ void _synchronizeDescendantProducerEncodings(
       declaration['id']! as String: declaration.cast<String, Object?>(),
   };
   final changedTypeLiterals = <Map<Object?, Object?>>[];
-  for (final typeLiteral in descendants.reversed
-      .where((candidate) => candidate['kind'] == 'typeLiteral')) {
+  for (final typeLiteral in descendants.reversed.where(
+    (candidate) => candidate['kind'] == 'typeLiteral',
+  )) {
     final literal = typeLiteral.cast<String, Object?>();
     final shape = _rebuildFixtureTypeLiteralShape(
       literal,
@@ -328,8 +328,9 @@ Map<String, Object?> _rebuildFixtureTypeLiteralShape(
   Map<String, Map<String, Object?>> declarationsById,
 ) {
   final oldMembers = [
-    for (final member in (literal['shape']!
-        as Map<Object?, Object?>)['members']! as List<Object?>)
+    for (final member
+        in (literal['shape']! as Map<Object?, Object?>)['members']!
+            as List<Object?>)
       (member! as Map<Object?, Object?>).cast<String, Object?>(),
   ];
   final ordinals = <String, int>{};
@@ -370,13 +371,15 @@ Map<String, Object?> _rebuildFixtureTypeLiteralShape(
         name,
         ordinal,
       );
-      final canonical = (jsonDecode(
-        _fixtureCanonicalSignature(
-          child,
-          _fixtureInheritedScopes(child, declarationsById),
-        ),
-      ) as Map<Object?, Object?>)
-          .cast<String, Object?>();
+      final canonical =
+          (jsonDecode(
+                    _fixtureCanonicalSignature(
+                      child,
+                      _fixtureInheritedScopes(child, declarationsById),
+                    ),
+                  )
+                  as Map<Object?, Object?>)
+              .cast<String, Object?>();
       final member = <String, Object?>{
         'kind': kind,
         'signature': canonical,
@@ -477,9 +480,11 @@ Map<String, String> _reindexProducerSubtree(
     final parentQualifiedName = switch (parentId) {
       'module:vscode' => 'vscode',
       'global:global' => 'global',
-      _ => declarations.singleWhere(
-          (candidate) => candidate['id'] == parentId,
-        )['qualifiedName']! as String,
+      _ =>
+        declarations.singleWhere(
+              (candidate) => candidate['id'] == parentId,
+            )['qualifiedName']!
+            as String,
     };
     final qualifiedName = kind == 'typeLiteral'
         ? '$parentId.\$shape@${declaration['shapeHash']}'
@@ -491,8 +496,7 @@ Map<String, String> _reindexProducerSubtree(
       'class' ||
       'enum' ||
       'typeAlias' ||
-      'variable' =>
-        '$kind:$qualifiedName',
+      'variable' => '$kind:$qualifiedName',
       'enumMember' => 'enumMember:$parentId/${Uri.encodeComponent(name)}',
       'property' =>
         'property:$parentId/${declaration['static'] == true ? r'$static' : r'$instance'}/${Uri.encodeComponent(name)}',
@@ -604,14 +608,16 @@ void _tamperSignatureChildOfTypeLiteral(Map<String, Object?> inventory) {
       continue;
     }
     final child = candidate.cast<String, Object?>();
-    final canonical = (jsonDecode(child['canonicalSignature']! as String)
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final canonical =
+        (jsonDecode(child['canonicalSignature']! as String)
+                as Map<Object?, Object?>)
+            .cast<String, Object?>();
     canonical['returnType'] = {'kind': 'primitive', 'name': 'string'};
     final encodedCanonical = jsonEncode(canonical);
     final id = child['id']! as String;
     child['canonicalSignature'] = encodedCanonical;
-    child['id'] = id.substring(0, id.length - 64) +
+    child['id'] =
+        id.substring(0, id.length - 64) +
         crypto.sha256.convert(utf8.encode(encodedCanonical)).toString();
     child['returnType'] = {'kind': 'primitive', 'name': 'string'};
     return;

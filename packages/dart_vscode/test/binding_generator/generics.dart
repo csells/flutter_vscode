@@ -34,12 +34,9 @@ void registerGenericsTests() {
         );
 
         expect(
-          () => VSCodeBindingGenerator().generate(
+          () => VSCodeBindingGenerator().generateCoverageLedger(
             inventory: inventory,
             overrides: overrides,
-            project: _readJson(
-              'test/fixtures/host_extension/extension.json',
-            ),
           ),
           throwsA(
             isA<VSCodeBindingGenerationException>()
@@ -93,12 +90,9 @@ void registerGenericsTests() {
         );
 
         expect(
-          () => VSCodeBindingGenerator().generate(
+          () => VSCodeBindingGenerator().generateCoverageLedger(
             inventory: inventory,
             overrides: overrides,
-            project: _readJson(
-              'test/fixtures/host_extension/extension.json',
-            ),
           ),
           throwsA(
             isA<VSCodeBindingGenerationException>()
@@ -172,10 +166,9 @@ void registerGenericsTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -219,10 +212,9 @@ void registerGenericsTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -277,10 +269,9 @@ void registerGenericsTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -330,10 +321,9 @@ void registerGenericsTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -367,10 +357,10 @@ void registerGenericsTests() {
     final declaration = declarations
         .singleWhere((candidate) => candidate['id'] == declarationId)
         .cast<String, Object?>();
-    final union =
-        (declaration['type']! as Map<Object?, Object?>).cast<String, Object?>();
-    final types =
-        (union['types']! as List<Object?>).cast<Map<Object?, Object?>>();
+    final union = (declaration['type']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
+    final types = (union['types']! as List<Object?>)
+        .cast<Map<Object?, Object?>>();
     types.first
       ..clear()
       ..addAll(<String, Object?>{
@@ -384,10 +374,9 @@ void registerGenericsTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -407,8 +396,9 @@ void registerGenericsTests() {
 
   test('rejects raw member types in generic-scoped inline shapes', () {
     final inventory = _inventory(['interface:vscode.Box']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     final shape = <String, Object?>{
       'members': [
         {
@@ -443,10 +433,9 @@ void registerGenericsTests() {
     final overrides = _schemaOverrideFor(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -506,10 +495,9 @@ void registerGenericsTests() {
     final overrides = _schemaOverrideFor(parent);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -525,8 +513,9 @@ void registerGenericsTests() {
 
   test('rejects out-of-scope canonical refs in inline generic shapes', () {
     final inventory = _inventory(['interface:vscode.Box']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     final shape = <String, Object?>{
       'members': [
         {
@@ -551,10 +540,9 @@ void registerGenericsTests() {
     final overrides = _schemaOverrideFor(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -570,8 +558,9 @@ void registerGenericsTests() {
 
   test('accepts canonical type parameters in scoped inline shapes', () {
     final inventory = _inventory(['interface:vscode.Known']);
-    final declaration = (inventory['declarations']! as List<Object?>).single!
-        as Map<String, Object?>;
+    final declaration =
+        (inventory['declarations']! as List<Object?>).single!
+            as Map<String, Object?>;
     final shape = <String, Object?>{
       'members': [
         {
@@ -596,17 +585,17 @@ void registerGenericsTests() {
     final overrides = _overrides({
       'interface:vscode.Known': 'opaqueJsObject',
     });
-    final entry = ((overrides['entries']!
-                as Map<Object?, Object?>)['interface:vscode.Known']!
-            as Map<Object?, Object?>)
-        .cast<String, Object?>();
+    final entry =
+        ((overrides['entries']!
+                    as Map<Object?, Object?>)['interface:vscode.Known']!
+                as Map<Object?, Object?>)
+            .cast<String, Object?>();
     entry['declarationSha256'] = computeDeclarationFingerprint(declaration);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _project(),
       ),
       returnsNormally,
     );

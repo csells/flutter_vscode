@@ -79,43 +79,41 @@ Map<String, Object?> _decl(
   String name,
   String parentId, {
   Map<String, Object?> extra = const {},
-}) =>
-    {
-      'id': '$kind:vscode.$name',
-      'kind': kind,
-      'name': name,
-      'qualifiedName': 'vscode.$name',
-      'parentId': parentId,
-      'visibility': 'public',
-      'deprecated': false,
-      ...extra,
-    };
+}) => {
+  'id': '$kind:vscode.$name',
+  'kind': kind,
+  'name': name,
+  'qualifiedName': 'vscode.$name',
+  'parentId': parentId,
+  'visibility': 'public',
+  'deprecated': false,
+  ...extra,
+};
 
 Map<String, Object?> _iface(
   String name, {
   List<Object?> typeParameters = const [],
-}) =>
-    _decl(
-      'interface',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': typeParameters,
-        'extends': <Object?>[],
-      },
-    );
+}) => _decl(
+  'interface',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': typeParameters,
+    'extends': <Object?>[],
+  },
+);
 
 Map<String, Object?> _class(String name) => _decl(
-      'class',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': <Object?>[],
-        'extends': <Object?>[],
-        'implements': <Object?>[],
-        'abstract': false,
-      },
-    );
+  'class',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': <Object?>[],
+    'extends': <Object?>[],
+    'implements': <Object?>[],
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _property(
   String owner,
@@ -123,20 +121,19 @@ Map<String, Object?> _property(
   Object? type, {
   bool optional = false,
   bool readonly = false,
-}) =>
-    _decl(
-      'property',
-      name,
-      owner,
-      extra: {
-        'id': 'property:$owner/\$instance/$name',
-        'type': type,
-        'optional': optional,
-        'readonly': readonly,
-        'static': false,
-        'abstract': false,
-      },
-    );
+}) => _decl(
+  'property',
+  name,
+  owner,
+  extra: {
+    'id': 'property:$owner/\$instance/$name',
+    'type': type,
+    'optional': optional,
+    'readonly': readonly,
+    'static': false,
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _method(
   String owner,
@@ -144,30 +141,28 @@ Map<String, Object?> _method(
   List<Object?> parameters = const [],
   Object? returnType = const {'kind': 'primitive', 'name': 'void'},
   int overloadOrdinal = 0,
-}) =>
-    _decl(
-      'method',
-      name,
-      owner,
-      extra: {
-        'id': 'method:$owner.$name@$overloadOrdinal',
-        'parameters': parameters,
-        'returnType': returnType,
-        'typeParameters': <Object?>[],
-        'overloadOrdinal': overloadOrdinal,
-        'optional': false,
-        'static': false,
-        'abstract': false,
-      },
-    );
+}) => _decl(
+  'method',
+  name,
+  owner,
+  extra: {
+    'id': 'method:$owner.$name@$overloadOrdinal',
+    'parameters': parameters,
+    'returnType': returnType,
+    'typeParameters': <Object?>[],
+    'overloadOrdinal': overloadOrdinal,
+    'optional': false,
+    'static': false,
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _param(
   String name,
   Object? type, {
   bool optional = false,
   bool rest = false,
-}) =>
-    {'name': name, 'type': type, 'optional': optional, 'rest': rest};
+}) => {'name': name, 'type': type, 'optional': optional, 'rest': rest};
 
 const Map<String, Object?> _string = {'kind': 'primitive', 'name': 'string'};
 const Map<String, Object?> _number = {'kind': 'primitive', 'name': 'number'};

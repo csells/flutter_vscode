@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 
 import '../tool/binding_generator/generator.dart';
 
@@ -17,13 +17,10 @@ void main() {
     rules.first['type'] = 'number';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
-        ),
-        project: _readJson(
-          'test/fixtures/host_extension/extension.json',
         ),
       ),
       throwsA(
@@ -45,34 +42,34 @@ void main() {
     );
   });
 
-  test('generator fails closed when integrity-pinned validator body drifts',
-      () {
-    final inventory = _readJson(
-      'tool/bindings/ir/vscode-1.129.1.json',
-    );
-    final validator = (inventory['manifestValidator']! as Map<Object?, Object?>)
-        .cast<String, Object?>();
-    validator['validatorBodySha256'] = '0' * 64;
+  test(
+    'generator fails closed when integrity-pinned validator body drifts',
+    () {
+      final inventory = _readJson(
+        'tool/bindings/ir/vscode-1.129.1.json',
+      );
+      final validator =
+          (inventory['manifestValidator']! as Map<Object?, Object?>)
+              .cast<String, Object?>();
+      validator['validatorBodySha256'] = '0' * 64;
 
-    expect(
-      () => VSCodeBindingGenerator().generate(
-        inventory: inventory,
-        overrides: _readJson(
-          'tool/bindings/overrides/vscode-1.129.1.json',
+      expect(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
+          inventory: inventory,
+          overrides: _readJson(
+            'tool/bindings/overrides/vscode-1.129.1.json',
+          ),
         ),
-        project: _readJson(
-          'test/fixtures/host_extension/extension.json',
+        throwsA(
+          isA<VSCodeBindingGenerationException>().having(
+            (error) => error.message,
+            'message',
+            contains('inventory.manifestValidator.validatorBodySha256'),
+          ),
         ),
-      ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>().having(
-          (error) => error.message,
-          'message',
-          contains('inventory.manifestValidator.validatorBodySha256'),
-        ),
-      ),
-    );
-  });
+      );
+    },
+  );
 }
 
 Map<String, Object?> _readJson(String path) =>

@@ -13,10 +13,9 @@ void registerHostContractTests() {
         .remove('hostContract');
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -34,12 +33,11 @@ void registerHostContractTests() {
   });
   test('accepts the exact durable Host Contract schema', () {
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides({
           'interface:vscode.Known': 'opaqueJsObject',
         }),
-        project: _project(),
       ),
       returnsNormally,
     );
@@ -57,10 +55,9 @@ void registerHostContractTests() {
     };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -77,23 +74,23 @@ void registerHostContractTests() {
     final overrides = _readJson('tool/bindings/overrides/vscode-1.129.1.json');
     final contracts = (overrides['hostContracts']! as Map<Object?, Object?>)
         .cast<String, Object?>();
-    contracts['Checkpoint4ExtensionHost'] =
-        contracts.remove('checkpoint4ExtensionHost');
+    contracts['Checkpoint4ExtensionHost'] = contracts.remove(
+      'checkpoint4ExtensionHost',
+    );
     final entries = (overrides['entries']! as Map<Object?, Object?>)
         .cast<String, Object?>();
     for (final entry in entries.values) {
-      final override =
-          (entry! as Map<Object?, Object?>).cast<String, Object?>();
+      final override = (entry! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       if (override['hostContract'] == 'checkpoint4ExtensionHost') {
         override['hostContract'] = 'Checkpoint4ExtensionHost';
       }
     }
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -111,10 +108,9 @@ void registerHostContractTests() {
     (overrides['hostContracts']! as Map<Object?, Object?>).clear();
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -164,10 +160,9 @@ void registerHostContractTests() {
         ..addAll(malformed.value);
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
-          project: _project(),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()

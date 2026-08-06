@@ -24,13 +24,15 @@ void main() {
     expect(
       File(_libraryPath).readAsStringSync(),
       artifacts.library,
-      reason: 'Regenerate with: dart tool/binding_generator/generate.dart '
+      reason:
+          'Regenerate with: dart tool/binding_generator/generate.dart '
           '--dart-layer .',
     );
     expect(File(_ledgerPath).readAsStringSync(), artifacts.ledger);
     expect(
-      File(repoPath('packages/dart_vscode/lib/dart_vscode.dart'))
-          .readAsStringSync(),
+      File(
+        repoPath('packages/dart_vscode/lib/dart_vscode.dart'),
+      ).readAsStringSync(),
       contains('src/generated/vscode_dart_layer.g.dart'),
       reason: 'the layer must be exported for Extension Authors',
     );
@@ -138,8 +140,7 @@ void main() {
       expect(source, contains('Stream<T> get eventStream'));
     });
 
-    test(
-        'constructor helpers take ordinary Dart scalars '
+    test('constructor helpers take ordinary Dart scalars '
         '(dc:boundary-de-js)', () {
       expect(
         source,
@@ -150,8 +151,7 @@ void main() {
       );
     });
 
-    test(
-        r'lit$ factories include inherited interface members '
+    test(r'lit$ factories include inherited interface members '
         '(dc:flattened-literal-factory)', () {
       final factory = RegExp(
         r'factory DecorationRenderOptionsDart\.lit\$\(\{[^}]*\}\)',
@@ -164,7 +164,8 @@ void main() {
       expect(
         factory!.group(0),
         contains('backgroundColor'),
-        reason: 'the Coverage Treemap discovery: backgroundColor lives on '
+        reason:
+            'the Coverage Treemap discovery: backgroundColor lives on '
             'the superinterface and must appear in the flattened factory',
       );
       expect(factory.group(0), contains('isWholeLine'));

@@ -27,10 +27,9 @@ void registerStrategyDriftTests() {
     commandRegistration['strategy'] = 'commandExecution';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -55,15 +54,14 @@ void registerStrategyDriftTests() {
     final entries = (overrides['entries']! as Map<Object?, Object?>)
         .cast<String, Object?>();
     const htmlId = r'property:interface:vscode.Webview/$instance/html';
-    final html =
-        (entries[htmlId]! as Map<Object?, Object?>).cast<String, Object?>();
+    final html = (entries[htmlId]! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     html['strategy'] = 'stringGetterProjection';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -88,8 +86,8 @@ void registerStrategyDriftTests() {
     final entries = (overrides['entries']! as Map<Object?, Object?>)
         .cast<String, Object?>();
     final propertyId = entries.entries.firstWhere((entry) {
-      final override =
-          (entry.value! as Map<Object?, Object?>).cast<String, Object?>();
+      final override = (entry.value! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       return override['strategy'] == 'intGetterProjection';
     }).key;
     final declarations = (inventory['declarations']! as List<Object?>)
@@ -98,17 +96,16 @@ void registerStrategyDriftTests() {
       (declaration) => declaration['id'] == propertyId,
     );
     property['optional'] = true;
-    final override =
-        (entries[propertyId]! as Map<Object?, Object?>).cast<String, Object?>();
+    final override = (entries[propertyId]! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     override['declarationSha256'] = computeDeclarationFingerprint(
       property.cast<String, Object?>(),
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -148,8 +145,9 @@ void registerStrategyDriftTests() {
             id: entry.key,
             strategy:
                 (entry.value! as Map<Object?, Object?>)['strategy']! as String,
-            expectedStatic: expectedStaticByStrategy[
-                (entry.value! as Map<Object?, Object?>)['strategy']]!,
+            expectedStatic:
+                expectedStaticByStrategy[(entry.value!
+                    as Map<Object?, Object?>)['strategy']]!,
           ),
     ];
 
@@ -163,7 +161,8 @@ void registerStrategyDriftTests() {
       final declaration = declarations
           .singleWhere((candidate) => candidate['id'] == mutation.id)
           .cast<String, Object?>();
-      final producerCanBeStatic = declarations.singleWhere(
+      final producerCanBeStatic =
+          declarations.singleWhere(
             (candidate) => candidate['id'] == declaration['parentId'],
           )['kind'] ==
           'class';
@@ -175,10 +174,9 @@ void registerStrategyDriftTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -243,10 +241,9 @@ void registerStrategyDriftTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -317,9 +314,11 @@ void registerStrategyDriftTests() {
     };
 
     for (final shape in expectedShapes.entries) {
-      for (var parameterIndex = 0;
-          parameterIndex < shape.value.length;
-          parameterIndex += 1) {
+      for (
+        var parameterIndex = 0;
+        parameterIndex < shape.value.length;
+        parameterIndex += 1
+      ) {
         for (final field in const ['optional', 'rest']) {
           final inventory = _readJson(
             'tool/bindings/ir/vscode-1.129.1.json',
@@ -350,12 +349,9 @@ void registerStrategyDriftTests() {
           );
 
           expect(
-            () => VSCodeBindingGenerator().generate(
+            () => VSCodeBindingGenerator().generateCoverageLedger(
               inventory: inventory,
               overrides: overrides,
-              project: _readJson(
-                'test/fixtures/host_extension/extension.json',
-              ),
             ),
             throwsA(
               isA<VSCodeBindingGenerationException>()
@@ -407,10 +403,9 @@ void registerStrategyDriftTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -457,10 +452,9 @@ void registerStrategyDriftTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -499,8 +493,8 @@ void registerStrategyDriftTests() {
     final declaration = declarations
         .singleWhere((candidate) => candidate['id'] == declarationId)
         .cast<String, Object?>();
-    final type =
-        (declaration['type']! as Map<Object?, Object?>).cast<String, Object?>();
+    final type = (declaration['type']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     type['typeArguments'] = <Object?>[
       <String, Object?>{'kind': 'primitive', 'name': 'string'},
     ];
@@ -511,10 +505,9 @@ void registerStrategyDriftTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -557,10 +550,9 @@ void registerStrategyDriftTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -604,10 +596,9 @@ void registerStrategyDriftTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -660,10 +651,9 @@ void registerStrategyDriftTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -719,13 +709,10 @@ void registerStrategyDriftTests() {
         _sortDeclarationsLikeProducer(inventory);
 
         expect(
-          () => VSCodeBindingGenerator().generate(
+          () => VSCodeBindingGenerator().generateCoverageLedger(
             inventory: inventory,
             overrides: _readJson(
               'tool/bindings/overrides/vscode-1.129.1.json',
-            ),
-            project: _readJson(
-              'test/fixtures/host_extension/extension.json',
             ),
           ),
           throwsA(
@@ -755,12 +742,11 @@ void registerStrategyDriftTests() {
     declaration['constant'] = true;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -792,8 +778,8 @@ void registerStrategyDriftTests() {
     final shape =
         (jsonDecode(jsonEncode(literal['shape'])) as Map<Object?, Object?>)
             .cast<String, Object?>();
-    final members =
-        (shape['members']! as List<Object?>).cast<Map<Object?, Object?>>();
+    final members = (shape['members']! as List<Object?>)
+        .cast<Map<Object?, Object?>>();
     members.firstWhere((member) => member['kind'] == 'method')['name'] = null;
     literal['shape'] = shape;
     final shapeHash = _shapeHash(shape);
@@ -803,10 +789,9 @@ void registerStrategyDriftTests() {
     _reindexProducerSubtree(inventory, overrides, oldId);
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()

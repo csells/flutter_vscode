@@ -246,12 +246,14 @@ void main() {
   });
 
   test('the dart-layer emitter no longer touches parity mutable state', () {
-    final source =
-        File('tool/binding_generator/dart_layer.dart').readAsStringSync();
+    final source = File(
+      'tool/binding_generator/dart_layer.dart',
+    ).readAsStringSync();
     expect(
       RegExp(r'eraseScopeReferences\s*=').hasMatch(source),
       isFalse,
-      reason: 'erasure must be threaded as a call parameter; the dart-layer '
+      reason:
+          'erasure must be threaded as a call parameter; the dart-layer '
           'emitter may not assign (or default) an eraseScopeReferences '
           'variable',
     );
@@ -277,39 +279,38 @@ Map<String, Object?> _decl(
   String name,
   String parentId, {
   Map<String, Object?> extra = const {},
-}) =>
-    {
-      'id': '$kind:vscode.$name',
-      'kind': kind,
-      'name': name,
-      'qualifiedName': 'vscode.$name',
-      'parentId': parentId,
-      'visibility': 'public',
-      'deprecated': false,
-      ...extra,
-    };
+}) => {
+  'id': '$kind:vscode.$name',
+  'kind': kind,
+  'name': name,
+  'qualifiedName': 'vscode.$name',
+  'parentId': parentId,
+  'visibility': 'public',
+  'deprecated': false,
+  ...extra,
+};
 
 Map<String, Object?> _iface(String name) => _decl(
-      'interface',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': <Object?>[],
-        'extends': <Object?>[],
-      },
-    );
+  'interface',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': <Object?>[],
+    'extends': <Object?>[],
+  },
+);
 
 Map<String, Object?> _class(String name) => _decl(
-      'class',
-      name,
-      'module:vscode',
-      extra: {
-        'typeParameters': <Object?>[],
-        'extends': <Object?>[],
-        'implements': <Object?>[],
-        'abstract': false,
-      },
-    );
+  'class',
+  name,
+  'module:vscode',
+  extra: {
+    'typeParameters': <Object?>[],
+    'extends': <Object?>[],
+    'implements': <Object?>[],
+    'abstract': false,
+  },
+);
 
 Map<String, Object?> _property(String owner, String name, Object? type) =>
     _decl(
@@ -331,22 +332,25 @@ Map<String, Object?> _method(
   String name, {
   List<Object?> parameters = const [],
   int overloadOrdinal = 0,
-}) =>
-    _decl(
-      'method',
-      name,
-      owner,
-      extra: {
-        'id': 'method:$owner.$name@$overloadOrdinal',
-        'parameters': parameters,
-        'returnType': const {'kind': 'primitive', 'name': 'void'},
-        'typeParameters': <Object?>[],
-        'overloadOrdinal': overloadOrdinal,
-        'optional': false,
-        'static': false,
-        'abstract': false,
-      },
-    );
+}) => _decl(
+  'method',
+  name,
+  owner,
+  extra: {
+    'id': 'method:$owner.$name@$overloadOrdinal',
+    'parameters': parameters,
+    'returnType': const {'kind': 'primitive', 'name': 'void'},
+    'typeParameters': <Object?>[],
+    'overloadOrdinal': overloadOrdinal,
+    'optional': false,
+    'static': false,
+    'abstract': false,
+  },
+);
 
-Map<String, Object?> _param(String name, Object? type) =>
-    {'name': name, 'type': type, 'optional': false, 'rest': false};
+Map<String, Object?> _param(String name, Object? type) => {
+  'name': name,
+  'type': type,
+  'optional': false,
+  'rest': false,
+};

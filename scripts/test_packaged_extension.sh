@@ -62,9 +62,17 @@ rm -f "${PACKAGE_COPY}/pubspec.yaml.bak"
 # nothing here can resolve it from pub.dev. Stage it beside the package and
 # override; this goes away when the two packages ship together.
 mkdir -p "${LAYER_COPY}"
+# Mirror the published archive: the maintainer tool/ area (importer, IR,
+# overrides) and the package tests never ship.
 (
   cd "${REPO_ROOT}/packages/dart_vscode"
-  tar cf - --exclude=.dart_tool --exclude=build .
+  tar cf - \
+    --exclude=.dart_tool \
+    --exclude=build \
+    --exclude=node_modules \
+    --exclude=./tool \
+    --exclude=./test \
+    .
 ) | (cd "${LAYER_COPY}" && tar xf -)
 sed -i.bak '/^resolution: workspace$/d' "${LAYER_COPY}/pubspec.yaml"
 rm -f "${LAYER_COPY}/pubspec.yaml.bak"
@@ -81,8 +89,11 @@ while IFS= read -r manifest; do
   fi
 done < <(find "${VIEW_FIXTURE_ROOT}" -name pubspec.yaml)
 
-test -f "${PACKAGE_COPY}/tool/binding_generator/generator.dart"
-test -f "${PACKAGE_COPY}/tool/bindings/inputs/vscode/1.129.1/pins.json"
+# Binding generation is a dart_vscode maintainer operation: the published
+# flutter_vscode archive must carry no generator, IR, or pinned inputs.
+test ! -e "${PACKAGE_COPY}/tool/binding_generator"
+test ! -e "${PACKAGE_COPY}/tool/bindings"
+test -f "${PACKAGE_COPY}/tool/check_host_imports.dart"
 test ! -e "${PACKAGE_COPY}/test"
 test ! -e "${PACKAGE_COPY}/specs"
 

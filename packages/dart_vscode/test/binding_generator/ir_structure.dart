@@ -6,13 +6,12 @@ void registerIrStructureTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           const {},
           targets: const ['interface:vscode.Known'],
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -33,7 +32,7 @@ void registerIrStructureTests() {
     final generator = VSCodeBindingGenerator();
 
     expect(
-      () => generator.generate(
+      () => generator.generateCoverageLedger(
         inventory: _inventory(['interface:vscode.Known']),
         overrides: _overrides(
           {'interface:vscode.Known': 'opaqueJsObject'},
@@ -42,7 +41,6 @@ void registerIrStructureTests() {
             'interface:vscode.Known',
           ],
         ),
-        project: _project(),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -82,10 +80,9 @@ void registerIrStructureTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -128,17 +125,16 @@ void registerIrStructureTests() {
           .singleWhere((candidate) => candidate['id'] == classId)
           .cast<String, Object?>();
       classDeclaration['abstract'] = true;
-      final classOverride =
-          (entries[classId]! as Map<Object?, Object?>).cast<String, Object?>();
+      final classOverride = (entries[classId]! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       classOverride['declarationSha256'] = computeDeclarationFingerprint(
         classDeclaration,
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -173,8 +169,8 @@ void registerIrStructureTests() {
     final declaration = declarations
         .singleWhere((candidate) => candidate['id'] == declarationId)
         .cast<String, Object?>();
-    final union =
-        (declaration['type']! as Map<Object?, Object?>).cast<String, Object?>();
+    final union = (declaration['type']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     (union['types']! as List<Object?>).removeWhere(
       (candidate) =>
           candidate is Map<Object?, Object?> &&
@@ -188,10 +184,9 @@ void registerIrStructureTests() {
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -218,8 +213,8 @@ void registerIrStructureTests() {
     final declarations = (inventory['declarations']! as List<Object?>)
         .cast<Map<Object?, Object?>>();
     final eventId = entries.entries.singleWhere((entry) {
-      final override =
-          (entry.value! as Map<Object?, Object?>).cast<String, Object?>();
+      final override = (entry.value! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       if (override['strategy'] != 'eventValue') {
         return false;
       }
@@ -231,20 +226,19 @@ void registerIrStructureTests() {
     final event = declarations.singleWhere(
       (declaration) => declaration['id'] == eventId,
     );
-    final type =
-        (event['type']! as Map<Object?, Object?>).cast<String, Object?>();
+    final type = (event['type']! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     type['name'] = 'Thenable';
-    final override =
-        (entries[eventId]! as Map<Object?, Object?>).cast<String, Object?>();
+    final override = (entries[eventId]! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     override['declarationSha256'] = computeDeclarationFingerprint(
       event.cast<String, Object?>(),
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -286,10 +280,9 @@ void registerIrStructureTests() {
       );
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -338,8 +331,8 @@ void registerIrStructureTests() {
     expectRejected('uriArrayObjectField', (declaration) {
       final operator = (declaration['type']! as Map<Object?, Object?>)
           .cast<String, Object?>();
-      final array =
-          (operator['type']! as Map<Object?, Object?>).cast<String, Object?>();
+      final array = (operator['type']! as Map<Object?, Object?>)
+          .cast<String, Object?>();
       final elementType = (array['elementType']! as Map<Object?, Object?>)
           .cast<String, Object?>();
       elementType['name'] = 'TextDocument';
@@ -358,12 +351,11 @@ void registerIrStructureTests() {
     type['name'] = 'string';
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -394,17 +386,16 @@ void registerIrStructureTests() {
         .singleWhere((candidate) => candidate['id'] == id)
         .cast<String, Object?>();
     declaration['deprecated'] = 'future';
-    final override =
-        (entries[id]! as Map<Object?, Object?>).cast<String, Object?>();
+    final override = (entries[id]! as Map<Object?, Object?>)
+        .cast<String, Object?>();
     override['declarationSha256'] = computeDeclarationFingerprint(
       declaration,
     );
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: overrides,
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -421,84 +412,89 @@ void registerIrStructureTests() {
       ),
     );
   });
-  final sourceReceiptCases = <({
-    String name,
-    void Function(Map<String, Object?>, Map<String, Object?>) mutate,
-  })>[
-    (
-      name: 'detached API digest',
-      mutate: (inventory, overrides) {
-        final source = (inventory['source']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        source['inputSha256'] = '0' * 64;
-      },
-    ),
-    (
-      name: 'detached manifest projection digest',
-      mutate: (inventory, overrides) {
-        (inventory['manifestSchema']! as Map<Object?, Object?>)['inputSha256'] =
-            '0' * 64;
-        overrides['manifestSchemaSha256'] = '0' * 64;
-      },
-    ),
-    (
-      name: 'detached manifest-validator projection digest',
-      mutate: (inventory, overrides) {
-        (inventory['manifestValidator']!
-            as Map<Object?, Object?>)['inputSha256'] = '0' * 64;
-        overrides['manifestValidatorSha256'] = '0' * 64;
-      },
-    ),
-    (
-      name: 'detached commands projection digest',
-      mutate: (inventory, overrides) {
-        final schemas =
-            (inventory['contributionSchemas']! as Map<Object?, Object?>)
+  final sourceReceiptCases =
+      <
+        ({
+          String name,
+          void Function(Map<String, Object?>, Map<String, Object?>) mutate,
+        })
+      >[
+        (
+          name: 'detached API digest',
+          mutate: (inventory, overrides) {
+            final source = (inventory['source']! as Map<Object?, Object?>)
                 .cast<String, Object?>();
-        (schemas['commands']! as Map<Object?, Object?>)['inputSha256'] =
-            '0' * 64;
-        overrides['commandsContributionSchemaSha256'] = '0' * 64;
-      },
-    ),
-    (
-      name: 'receipt from another product version',
-      mutate: (inventory, overrides) {
-        final input = _sourceInput(inventory, 'apiDeclarations');
-        input['version'] = '1.128.0';
-      },
-    ),
-    (
-      name: 'noncanonical official source URL',
-      mutate: (inventory, overrides) {
-        final input = _sourceInput(inventory, 'apiDeclarations');
-        input['source'] = 'https://example.invalid/vscode.d.ts';
-      },
-    ),
-    (
-      name: 'missing validation-helper receipt',
-      mutate: (inventory, overrides) {
-        final source = (inventory['source']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        (source['inputs']! as List<Object?>).removeWhere(
-          (value) =>
-              (value! as Map<Object?, Object?>)['kind'] ==
-              'contributionValidationHelperSource',
-        );
-      },
-    ),
-    (
-      name: 'duplicate API receipt',
-      mutate: (inventory, overrides) {
-        final source = (inventory['source']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        (source['inputs']! as List<Object?>).add(
-          Map<String, Object?>.of(
-            _sourceInput(inventory, 'apiDeclarations'),
-          ),
-        );
-      },
-    ),
-  ];
+            source['inputSha256'] = '0' * 64;
+          },
+        ),
+        (
+          name: 'detached manifest projection digest',
+          mutate: (inventory, overrides) {
+            (inventory['manifestSchema']!
+                    as Map<Object?, Object?>)['inputSha256'] =
+                '0' * 64;
+            overrides['manifestSchemaSha256'] = '0' * 64;
+          },
+        ),
+        (
+          name: 'detached manifest-validator projection digest',
+          mutate: (inventory, overrides) {
+            (inventory['manifestValidator']!
+                    as Map<Object?, Object?>)['inputSha256'] =
+                '0' * 64;
+            overrides['manifestValidatorSha256'] = '0' * 64;
+          },
+        ),
+        (
+          name: 'detached commands projection digest',
+          mutate: (inventory, overrides) {
+            final schemas =
+                (inventory['contributionSchemas']! as Map<Object?, Object?>)
+                    .cast<String, Object?>();
+            (schemas['commands']! as Map<Object?, Object?>)['inputSha256'] =
+                '0' * 64;
+            overrides['commandsContributionSchemaSha256'] = '0' * 64;
+          },
+        ),
+        (
+          name: 'receipt from another product version',
+          mutate: (inventory, overrides) {
+            final input = _sourceInput(inventory, 'apiDeclarations');
+            input['version'] = '1.128.0';
+          },
+        ),
+        (
+          name: 'noncanonical official source URL',
+          mutate: (inventory, overrides) {
+            final input = _sourceInput(inventory, 'apiDeclarations');
+            input['source'] = 'https://example.invalid/vscode.d.ts';
+          },
+        ),
+        (
+          name: 'missing validation-helper receipt',
+          mutate: (inventory, overrides) {
+            final source = (inventory['source']! as Map<Object?, Object?>)
+                .cast<String, Object?>();
+            (source['inputs']! as List<Object?>).removeWhere(
+              (value) =>
+                  (value! as Map<Object?, Object?>)['kind'] ==
+                  'contributionValidationHelperSource',
+            );
+          },
+        ),
+        (
+          name: 'duplicate API receipt',
+          mutate: (inventory, overrides) {
+            final source = (inventory['source']! as Map<Object?, Object?>)
+                .cast<String, Object?>();
+            (source['inputs']! as List<Object?>).add(
+              Map<String, Object?>.of(
+                _sourceInput(inventory, 'apiDeclarations'),
+              ),
+            );
+          },
+        ),
+      ];
   for (final testCase in sourceReceiptCases) {
     test('rejects ${testCase.name}', () {
       final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
@@ -508,10 +504,9 @@ void registerIrStructureTests() {
       testCase.mutate(inventory, overrides);
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: overrides,
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -548,12 +543,11 @@ void registerIrStructureTests() {
       )['occurrenceCount'] = 2;
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: _readJson(
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -582,12 +576,11 @@ void registerIrStructureTests() {
         9007199254740992;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -602,42 +595,43 @@ void registerIrStructureTests() {
   });
   final manifestProjectionCases =
       <({String name, void Function(Map<String, Object?>) mutate})>[
-    (
-      name: 'unknown manifest projection fields',
-      mutate: (inventory) {
-        (inventory['manifestSchema']!
-            as Map<Object?, Object?>)['futureSemantics'] = true;
-      },
-    ),
-    (
-      name: 'unprojected nested manifest schema changes',
-      mutate: (inventory) {
-        final schema = (inventory['manifestSchema']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        final properties = (schema['properties']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        final engines = (properties['engines']! as Map<Object?, Object?>)
-            .cast<String, Object?>();
-        final engineProperties =
-            (engines['properties']! as Map<Object?, Object?>)
+        (
+          name: 'unknown manifest projection fields',
+          mutate: (inventory) {
+            (inventory['manifestSchema']!
+                    as Map<Object?, Object?>)['futureSemantics'] =
+                true;
+          },
+        ),
+        (
+          name: 'unprojected nested manifest schema changes',
+          mutate: (inventory) {
+            final schema =
+                (inventory['manifestSchema']! as Map<Object?, Object?>)
+                    .cast<String, Object?>();
+            final properties = (schema['properties']! as Map<Object?, Object?>)
                 .cast<String, Object?>();
-        (engineProperties['vscode']! as Map<Object?, Object?>)['type'] =
-            'number';
-      },
-    ),
-  ];
+            final engines = (properties['engines']! as Map<Object?, Object?>)
+                .cast<String, Object?>();
+            final engineProperties =
+                (engines['properties']! as Map<Object?, Object?>)
+                    .cast<String, Object?>();
+            (engineProperties['vscode']! as Map<Object?, Object?>)['type'] =
+                'number';
+          },
+        ),
+      ];
   for (final testCase in manifestProjectionCases) {
     test('rejects ${testCase.name}', () {
       final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
       testCase.mutate(inventory);
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: _readJson(
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -663,12 +657,11 @@ void registerIrStructureTests() {
     declarations[1] = first;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -698,12 +691,11 @@ void registerIrStructureTests() {
       _sortDeclarationsLikeProducer(inventory);
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: _readJson(
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
@@ -725,11 +717,13 @@ void registerIrStructureTests() {
     final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
     final declarations = (inventory['declarations']! as List<Object?>)
         .cast<Map<Object?, Object?>>();
-    final targets = (_readJson(
-      'tool/bindings/overrides/vscode-1.129.1.json',
-    )['targets']! as List<Object?>)
-        .cast<String>()
-        .toSet();
+    final targets =
+        (_readJson(
+                  'tool/bindings/overrides/vscode-1.129.1.json',
+                )['targets']!
+                as List<Object?>)
+            .cast<String>()
+            .toSet();
     final declaration = declarations.firstWhere(
       (candidate) =>
           candidate['kind'] == 'interface' &&
@@ -742,12 +736,11 @@ void registerIrStructureTests() {
     };
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -766,12 +759,11 @@ void registerIrStructureTests() {
     declaration['overloadOrdinal'] = 99;
 
     expect(
-      () => VSCodeBindingGenerator().generate(
+      () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
         overrides: _readJson(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
-        project: _readJson('test/fixtures/host_extension/extension.json'),
       ),
       throwsA(
         isA<VSCodeBindingGenerationException>()
@@ -806,12 +798,11 @@ void registerIrStructureTests() {
       declaration[testCase.$1] = true;
 
       expect(
-        () => VSCodeBindingGenerator().generate(
+        () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
           overrides: _readJson(
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
-          project: _readJson('test/fixtures/host_extension/extension.json'),
         ),
         throwsA(
           isA<VSCodeBindingGenerationException>()
