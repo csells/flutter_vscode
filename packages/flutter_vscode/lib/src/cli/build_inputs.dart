@@ -80,11 +80,8 @@ List<String> managedArtifactPaths(Directory root) {
   return paths.toSet().toList()..sort();
 }
 
-/// Digests the framework, generator, and pinned inputs for [apiTarget].
-Future<BuildToolIdentity> frameworkToolIdentity(
-  Directory packageRoot,
-  String apiTarget,
-) async =>
+/// Digests the framework sources that produce and package a build.
+Future<BuildToolIdentity> frameworkToolIdentity(Directory packageRoot) async =>
     BuildToolIdentity(
       frameworkSha256: await digestPackagePaths(
         packageRoot: packageRoot,
@@ -93,20 +90,6 @@ Future<BuildToolIdentity> frameworkToolIdentity(
           'lib',
           'pubspec.yaml',
           'tool/check_host_imports.dart',
-        ],
-      ),
-      generatorSha256: await digestPackagePaths(
-        packageRoot: packageRoot,
-        relativePaths: const [
-          'tool/binding_generator',
-        ],
-      ),
-      bindingInputsSha256: await digestPackagePaths(
-        packageRoot: packageRoot,
-        relativePaths: [
-          'tool/bindings/inputs/vscode/$apiTarget',
-          'tool/bindings/ir/vscode-$apiTarget.json',
-          'tool/bindings/overrides/vscode-$apiTarget.json',
         ],
       ),
     );

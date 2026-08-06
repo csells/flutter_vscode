@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/json_object.dart';
@@ -16,8 +17,9 @@ typedef DoctorToolProbe = Future<(bool, String?)> Function(String executable);
 /// and returns the number of failed checks. The project-layout check reuses
 /// [requiredProjectPaths] and [validateProjectLayout] so `doctor` and the
 /// build-time validator can never disagree about what a project needs.
-/// [packageRoot] overrides the installed-package resolution for callers
-/// (such as in-process tests) whose runtime cannot resolve package URIs.
+/// [packageRoot] overrides the installed `dart_vscode` resolution for
+/// callers (such as in-process tests) whose runtime cannot resolve
+/// package URIs.
 Future<int> doctorProject(
   Directory root, {
   StringSink? out,
@@ -66,25 +68,17 @@ Future<int> doctorProject(
       } else {
         await readJsonObject(jsonDescriptor);
       }
-      final frameworkRoot = packageRoot ?? await resolvePackageRoot();
-      final pins = File(
-        p.join(
-          frameworkRoot.path,
-          'tool',
-          'bindings',
-          'inputs',
-          'vscode',
-          shippedApiTarget,
-          'pins.json',
-        ),
-      );
+      // The baseline ships inside package:dart_vscode: resolving that
+      // package proves the generated API layer for the pinned VS Code is
+      // on the build path. No binding inputs exist at author time.
+      final frameworkRoot = packageRoot ?? await resolveDartVscodeRoot();
       checks.add(
         (
-          'VS Code baseline $shippedApiTarget',
-          pins.existsSync(),
-          pins.existsSync()
+          'VS Code baseline $vscodeApiVersion',
+          frameworkRoot.existsSync(),
+          frameworkRoot.existsSync()
               ? null
-              : 'this flutter_vscode is missing its pinned binding inputs',
+              : 'the dart_vscode package did not resolve to a directory',
         ),
       );
     } on Object catch (error) {

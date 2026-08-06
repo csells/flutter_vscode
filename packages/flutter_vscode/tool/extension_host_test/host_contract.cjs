@@ -7,7 +7,7 @@ const path = require('node:path');
 // The one receipt-path definition, read rather than transcribed. Keeping a
 // second copy here would only ever catch someone forgetting to update it.
 const HOST_CONTRACT_SOURCES_PATH =
-  'packages/flutter_vscode/tool/bindings/host-contract-sources.json';
+  'packages/dart_vscode/tool/bindings/host-contract-sources.json';
 
 function readCanonicalSourcePaths(repositoryRoot) {
   const file = path.join(repositoryRoot, HOST_CONTRACT_SOURCES_PATH);

@@ -1,17 +1,14 @@
 import 'dart:io';
 
+import 'package:flutter_vscode/src/cli/artifact_writer.dart';
 import 'package:flutter_vscode/src/cli/baselines.dart';
-import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
+import 'package:flutter_vscode/src/cli/project_artifacts.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 
 /// Scaffolds a new Extension Project named [name] beneath [workspace].
-Future<void> createProject(
-  Directory workspace,
-  String name, {
-  required BindingToolchain toolchain,
-}) async {
+Future<void> createProject(Directory workspace, String name) async {
   if (!RegExp(r'^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$').hasMatch(name)) {
     throw const CliException(
       'Project names must use lowercase_with_underscores.',
@@ -110,13 +107,8 @@ environment:
   );
 
   final project = await readProjectDescriptor(descriptor);
-  final bindingInputs = await loadBindingInputs(packageRoot);
-  final generated = toolchain.generateBindings(
-    inventory: bindingInputs.inventory,
-    overrides: bindingInputs.overrides,
-    project: project,
-  );
-  await toolchain.writeBindings(
+  final generated = emitProjectArtifacts(project);
+  await writeProjectArtifacts(
     {
       for (final entry in generated.entries)
         if (entry.key.startsWith('host/lib/generated/')) entry.key: entry.value,

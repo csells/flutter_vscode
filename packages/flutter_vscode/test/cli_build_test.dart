@@ -34,7 +34,6 @@ void main() {
       expect(build.exitCode, 0, reason: '${build.stdout}\n${build.stderr}');
       for (final path in [
         'package.json',
-        'coverage.json',
         p.join('host', 'bootstrap.cjs'),
         p.join('host', 'lib', 'generated', 'host_exports.g.dart'),
         p.join('host', 'lib', 'generated', 'vscode_runtime.g.dart'),
@@ -59,6 +58,13 @@ void main() {
             'view_protocol.g.dart',
           ),
         ).existsSync(),
+        isFalse,
+      );
+      // The coverage ledger is maintainer evidence for the shipped API
+      // layer, identical for every project; a build emits only artifacts
+      // derived from the project itself.
+      expect(
+        File(p.join(project.path, 'coverage.json')).existsSync(),
         isFalse,
       );
 
@@ -108,7 +114,6 @@ void main() {
       final managedPaths = <String>[
         '.dart_tool/flutter_vscode/build.json',
         '.vscode/launch.json',
-        'coverage.json',
         'host/bootstrap.cjs',
         'host/lib/generated/host_exports.g.dart',
         'host/lib/generated/vscode_runtime.g.dart',

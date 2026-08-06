@@ -107,7 +107,7 @@ String emitCoverageLedger({
         if (strategy != null && !excludedByVisibility)
           'basis': 'semanticOverride',
         if (strategy != null && !excludedByVisibility) 'strategy': strategy,
-        if (exclusionReason != null) 'reason': exclusionReason,
+        'reason': ?exclusionReason,
       },
       'binding': <String, Object?>{
         'status': binding,

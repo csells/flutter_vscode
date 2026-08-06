@@ -5,8 +5,13 @@ import 'contract.dart';
 import 'dart_layer.dart';
 import 'generator.dart';
 import 'parity_report.dart';
-import 'writer.dart';
 
+/// The dart_vscode maintainer entry point.
+///
+/// Extension authors never run this: the generated API layer, its ledgers,
+/// and the evidence artifacts it maintains all ship inside the published
+/// `dart_vscode` package. The maintainer reruns it when moving the pinned
+/// VS Code baseline.
 Future<void> main(List<String> arguments) async {
   try {
     if (arguments.isNotEmpty && arguments.first == '--dart-layer') {
@@ -17,20 +22,30 @@ Future<void> main(List<String> arguments) async {
         );
       }
       final root = arguments[1];
-      final package = '$root/packages/flutter_vscode';
-      const layerPackage = 'packages/dart_vscode';
-      final artifacts = emitDartLayer(
-        await _readJson('$package/tool/bindings/ir/vscode-1.129.1.json'),
+      const package = 'packages/dart_vscode';
+      final inventory = await _readJson(
+        '$root/$package/tool/bindings/ir/vscode-1.129.1.json',
       );
-      final layerFile = '$root/$layerPackage/lib/src/generated'
-          '/vscode_dart_layer.g.dart';
-      await File(layerFile)
+      final overrides = await _readJson(
+        '$root/$package/tool/bindings/overrides/vscode-1.129.1.json',
+      );
+      final artifacts = emitDartLayer(inventory);
+      await File('$root/$package/lib/src/generated/vscode_dart_layer.g.dart')
           .create(recursive: true)
           .then((file) => file.writeAsString(artifacts.library));
-      await File('$package/tool/bindings/dart-layer-ledger.json')
+      await File('$root/$package/tool/bindings/dart-layer-ledger.json')
           .writeAsString(artifacts.ledger);
-      await File('$package/tool/bindings/parity-ledger.json')
+      await File('$root/$package/tool/bindings/parity-ledger.json')
           .writeAsString(artifacts.parityLedger);
+      // The coverage ledger is maintainer evidence for the shipped slice,
+      // regenerated with the layer so the two can never drift apart.
+      await File('$root/$package/tool/bindings/coverage-ledger.json')
+          .writeAsString(
+        VSCodeBindingGenerator().generateCoverageLedger(
+          inventory: inventory,
+          overrides: overrides,
+        ),
+      );
       return;
     }
     if (arguments.isNotEmpty && arguments.first == '--parity') {
@@ -41,11 +56,12 @@ Future<void> main(List<String> arguments) async {
         );
       }
       final root = arguments[1];
+      const package = 'packages/dart_vscode';
       final coverage = await _readJson(
-        '$root/packages/flutter_vscode/test/fixtures/host_extension/coverage.json',
+        '$root/$package/tool/bindings/coverage-ledger.json',
       );
       final inventory = await _readJson(
-        '$root/packages/flutter_vscode/tool/bindings/ir/vscode-1.129.1.json',
+        '$root/$package/tool/bindings/ir/vscode-1.129.1.json',
       );
       await File('$root/docs/reference/parity.md')
           .writeAsString(buildParityReport(coverage, inventory));
@@ -61,15 +77,10 @@ Future<void> main(List<String> arguments) async {
       writeHostContractArtifact(Directory(arguments[1]));
       return;
     }
-    final options = _parseArguments(arguments);
-    final generated = VSCodeBindingGenerator().generate(
-      inventory: await _readJson(options['inventory']!),
-      overrides: await _readJson(options['overrides']!),
-      project: await _readJson(options['project']!),
-    );
-    await writeGeneratedBindings(
-      generated,
-      Directory(options['output-root']!),
+    throw const VSCodeBindingGenerationException(
+      'INVALID_ARGUMENTS',
+      'Usage: generate.dart <--dart-layer|--parity|--contract> '
+          '<repository root>.',
     );
   } on VSCodeBindingGenerationException catch (error) {
     stderr.writeln(error);
@@ -81,42 +92,6 @@ Future<void> main(List<String> arguments) async {
     stderr.writeln('FILE_SYSTEM_ERROR: ${error.message} (${error.path})');
     exitCode = 1;
   }
-}
-
-Map<String, String> _parseArguments(List<String> arguments) {
-  const expected = {'inventory', 'overrides', 'project', 'output-root'};
-  if (arguments.length.isOdd) {
-    throw const VSCodeBindingGenerationException(
-      'INVALID_ARGUMENTS',
-      'Every generator option requires a value.',
-    );
-  }
-  final options = <String, String>{};
-  for (var index = 0; index < arguments.length; index += 2) {
-    final option = arguments[index];
-    if (!option.startsWith('--')) {
-      throw VSCodeBindingGenerationException(
-        'INVALID_ARGUMENTS',
-        'Expected an option, found $option.',
-      );
-    }
-    final name = option.substring(2);
-    if (!expected.contains(name) || options.containsKey(name)) {
-      throw VSCodeBindingGenerationException(
-        'INVALID_ARGUMENTS',
-        'Unknown or duplicate option $option.',
-      );
-    }
-    options[name] = arguments[index + 1];
-  }
-  final missing = expected.difference(options.keys.toSet()).toList()..sort();
-  if (missing.isNotEmpty) {
-    throw VSCodeBindingGenerationException(
-      'INVALID_ARGUMENTS',
-      'Missing required options: ${missing.join(', ')}.',
-    );
-  }
-  return options;
 }
 
 Future<Map<String, Object?>> _readJson(String path) async {

@@ -7,23 +7,17 @@ import 'package:path/path.dart' as p;
 /// Repository-relative location of the deterministic build receipt.
 const buildReceiptPath = '.dart_tool/flutter_vscode/build.json';
 
-/// Identifies the exact framework tooling and pinned API sources for a build.
+/// Identifies the exact framework tooling for a build.
+///
+/// The VS Code API surface is not part of this identity: it ships inside
+/// `package:dart_vscode`, whose resolved version the project's pubspec
+/// already pins the ordinary way.
 final class BuildToolIdentity {
   /// Creates a build-tool identity from deterministic SHA-256 digests.
-  const BuildToolIdentity({
-    required this.frameworkSha256,
-    required this.generatorSha256,
-    required this.bindingInputsSha256,
-  });
+  const BuildToolIdentity({required this.frameworkSha256});
 
   /// Digest of framework sources that orchestrate and package the build.
   final String frameworkSha256;
-
-  /// Digest of the binding generator implementation.
-  final String generatorSha256;
-
-  /// Digest of pinned upstream sources, IR, and Semantic Overrides.
-  final String bindingInputsSha256;
 }
 
 /// Digests every file beneath [relativePaths] in stable path order.
@@ -81,11 +75,9 @@ Future<void> writeBuildReceipt({
   required List<String> artifactPaths,
 }) async {
   final receipt = <String, Object?>{
-    'schemaVersion': 2,
+    'schemaVersion': 3,
     'apiTarget': apiTarget,
     'frameworkSha256': toolIdentity.frameworkSha256,
-    'generatorSha256': toolIdentity.generatorSha256,
-    'bindingInputsSha256': toolIdentity.bindingInputsSha256,
     'inputs': await _digests(projectRoot, inputPaths),
     'artifacts': await _digests(projectRoot, artifactPaths),
   };
@@ -118,17 +110,13 @@ Future<List<String>> validateBuildReceipt({
       !_hasExactKeys(decoded, {
         'apiTarget',
         'artifacts',
-        'bindingInputsSha256',
         'frameworkSha256',
-        'generatorSha256',
         'inputs',
         'schemaVersion',
       }) ||
-      decoded['schemaVersion'] != 2 ||
+      decoded['schemaVersion'] != 3 ||
       decoded['apiTarget'] != apiTarget ||
       !_isSha256(decoded['frameworkSha256']) ||
-      !_isSha256(decoded['generatorSha256']) ||
-      !_isSha256(decoded['bindingInputsSha256']) ||
       decoded['inputs'] is! Map<String, Object?> ||
       decoded['artifacts'] is! Map<String, Object?>) {
     return const ['$buildReceiptPath has an unsupported structure'];
@@ -137,12 +125,6 @@ Future<List<String>> validateBuildReceipt({
   final problems = <String>[];
   if (decoded['frameworkSha256'] != toolIdentity.frameworkSha256) {
     problems.add('flutter_vscode framework changed since build');
-  }
-  if (decoded['generatorSha256'] != toolIdentity.generatorSha256) {
-    problems.add('binding generator changed since build');
-  }
-  if (decoded['bindingInputsSha256'] != toolIdentity.bindingInputsSha256) {
-    problems.add('pinned binding inputs changed since build');
   }
   await _validateGroup(
     projectRoot: projectRoot,

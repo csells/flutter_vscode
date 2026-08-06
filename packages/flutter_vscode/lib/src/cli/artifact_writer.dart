@@ -1,15 +1,15 @@
-/// Safe file writer for deterministic binding artifacts.
+/// Safe file writer for deterministic Project-Derived Artifacts.
 library;
 
 import 'dart:io';
 
+import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:path/path.dart' as p;
 
-import 'generator.dart';
-
-/// Writes [generated] beneath [outputRoot] in stable path order.
-Future<void> writeGeneratedBindings(
-  VSCodeGeneratedBindings generated,
+/// Writes [files] (project-relative POSIX path to contents) beneath
+/// [outputRoot] in stable path order.
+Future<void> writeProjectArtifacts(
+  Map<String, String> files,
   Directory outputRoot,
 ) async {
   final rootPath = p.normalize(p.absolute(outputRoot.path));
@@ -17,25 +17,25 @@ Future<void> writeGeneratedBindings(
   if (rootType == FileSystemEntityType.notFound) {
     await _createRealOutputRoot(outputRoot, rootPath);
   } else if (rootType != FileSystemEntityType.directory) {
-    throw VSCodeBindingGenerationException(
-      'UNSAFE_OUTPUT_PATH',
+    throw CliException(
       'Generated output root must be a real directory: $rootPath.',
+      code: 'UNSAFE_OUTPUT_PATH',
     );
   }
   final realRoot = outputRoot.resolveSymbolicLinksSync();
-  final paths = generated.files.keys.toList()..sort();
+  final paths = files.keys.toList()..sort();
   for (final relativePath in paths) {
     if (p.isAbsolute(relativePath)) {
-      throw VSCodeBindingGenerationException(
-        'INVALID_OUTPUT_PATH',
+      throw CliException(
         'Generated output path must be relative: $relativePath.',
+        code: 'INVALID_OUTPUT_PATH',
       );
     }
     final outputPath = p.normalize(p.join(rootPath, relativePath));
     if (!p.isWithin(rootPath, outputPath)) {
-      throw VSCodeBindingGenerationException(
-        'INVALID_OUTPUT_PATH',
+      throw CliException(
         'Generated output path escapes the output root: $relativePath.',
+        code: 'INVALID_OUTPUT_PATH',
       );
     }
     _validateExistingOutputAncestors(
@@ -48,7 +48,7 @@ Future<void> writeGeneratedBindings(
     final outputPath = p.normalize(p.join(rootPath, relativePath));
     final output = File(outputPath);
     await output.parent.create(recursive: true);
-    await output.writeAsString(generated.files[relativePath]!, flush: true);
+    await output.writeAsString(files[relativePath]!, flush: true);
   }
 }
 
@@ -73,27 +73,27 @@ Future<void> _createRealOutputRoot(
     );
   }
   if (ancestorType != FileSystemEntityType.directory) {
-    throw VSCodeBindingGenerationException(
-      'UNSAFE_OUTPUT_PATH',
+    throw CliException(
       'Generated output root $rootPath has no real existing directory '
-          'ancestor.',
+      'ancestor.',
+      code: 'UNSAFE_OUTPUT_PATH',
     );
   }
   final realAncestor = Directory(existingAncestor).resolveSymbolicLinksSync();
   await outputRoot.create(recursive: true);
   if (FileSystemEntity.typeSync(rootPath, followLinks: false) !=
       FileSystemEntityType.directory) {
-    throw VSCodeBindingGenerationException(
-      'UNSAFE_OUTPUT_PATH',
+    throw CliException(
       'Generated output root was not created as a real directory: $rootPath.',
+      code: 'UNSAFE_OUTPUT_PATH',
     );
   }
   final realRoot = outputRoot.resolveSymbolicLinksSync();
   if (realRoot != realAncestor && !p.isWithin(realAncestor, realRoot)) {
-    throw VSCodeBindingGenerationException(
-      'UNSAFE_OUTPUT_PATH',
+    throw CliException(
       'Generated output root resolves outside its existing directory '
-          'ancestor: $rootPath.',
+      'ancestor: $rootPath.',
+      code: 'UNSAFE_OUTPUT_PATH',
     );
   }
 }
@@ -112,11 +112,11 @@ void _validateExistingOutputAncestors({
       return;
     }
     if (type == FileSystemEntityType.link) {
-      throw VSCodeBindingGenerationException(
-        'UNSAFE_OUTPUT_PATH',
+      throw CliException(
         'Generated output $relativePath uses symbolic-link ancestor '
-            '${p.relative(current, from: rootPath)}. Replace it with a real '
-            'path inside the output root.',
+        '${p.relative(current, from: rootPath)}. Replace it with a real '
+        'path inside the output root.',
+        code: 'UNSAFE_OUTPUT_PATH',
       );
     }
     final isLast = index == segments.length - 1;
@@ -124,20 +124,20 @@ void _validateExistingOutputAncestors({
         (isLast &&
             type != FileSystemEntityType.directory &&
             type != FileSystemEntityType.file)) {
-      throw VSCodeBindingGenerationException(
-        'UNSAFE_OUTPUT_PATH',
+      throw CliException(
         'Generated output $relativePath has an unsupported existing ancestor '
-            '${p.relative(current, from: rootPath)}.',
+        '${p.relative(current, from: rootPath)}.',
+        code: 'UNSAFE_OUTPUT_PATH',
       );
     }
     final resolved = type == FileSystemEntityType.directory
         ? Directory(current).resolveSymbolicLinksSync()
         : File(current).resolveSymbolicLinksSync();
     if (resolved != realRoot && !p.isWithin(realRoot, resolved)) {
-      throw VSCodeBindingGenerationException(
-        'UNSAFE_OUTPUT_PATH',
+      throw CliException(
         'Generated output $relativePath resolves outside $realRoot at '
-            '${p.relative(current, from: rootPath)}.',
+        '${p.relative(current, from: rootPath)}.',
+        code: 'UNSAFE_OUTPUT_PATH',
       );
     }
   }

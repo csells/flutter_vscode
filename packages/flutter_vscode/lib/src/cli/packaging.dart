@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/build_inputs.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
@@ -35,13 +36,10 @@ Future<void> packageProject(Directory root) async {
   validateFlutterViewLayout(root, views);
   final packagedViewFiles = viewOutputFiles(root, views);
   final packageRoot = await resolvePackageRoot();
-  final toolIdentity = await frameworkToolIdentity(
-    packageRoot,
-    shippedApiTarget,
-  );
+  final toolIdentity = await frameworkToolIdentity(packageRoot);
   final receiptProblems = await validateBuildReceipt(
     projectRoot: root,
-    apiTarget: shippedApiTarget,
+    apiTarget: vscodeApiVersion,
     toolIdentity: toolIdentity,
     inputPaths: buildInputPaths(root),
     artifactPaths: managedArtifactPaths(root),

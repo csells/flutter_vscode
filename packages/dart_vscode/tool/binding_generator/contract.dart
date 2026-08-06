@@ -17,9 +17,14 @@ import 'package:crypto/crypto.dart';
 /// forgetting to update a copy, which is a hazard the duplication itself
 /// creates.
 const hostContractSourcesPath =
-    '$frameworkPackagePath/tool/bindings/host-contract-sources.json';
+    '$apiPackagePath/tool/bindings/host-contract-sources.json';
 
-/// Repository-relative location of the published framework package.
+/// Repository-relative location of the published API package, whose
+/// maintainer `tool/` area holds the pinned bindings.
+const apiPackagePath = 'packages/dart_vscode';
+
+/// Repository-relative location of the published framework package, which
+/// holds the Extension Host fixture and harness.
 const frameworkPackagePath = 'packages/flutter_vscode';
 
 /// Reads the repository-relative receipt paths the contract attests.
@@ -49,7 +54,7 @@ String buildHostContractArtifact(Directory repositoryRoot) {
           .cast<String, Object?>();
 
   final inventory =
-      readJson('$frameworkPackagePath/tool/bindings/ir/vscode-1.129.1.json');
+      readJson('$apiPackagePath/tool/bindings/ir/vscode-1.129.1.json');
   final product = ((inventory['source']! as Map<Object?, Object?>)['product']!
           as Map<Object?, Object?>)
       .cast<String, Object?>();
@@ -87,7 +92,7 @@ String buildHostContractArtifact(Directory repositoryRoot) {
   };
 
   final overrides = readJson(
-    '$frameworkPackagePath/tool/bindings/overrides/vscode-1.129.1.json',
+    '$apiPackagePath/tool/bindings/overrides/vscode-1.129.1.json',
   );
   final entries =
       (overrides['entries']! as Map<Object?, Object?>).cast<String, Object?>();
@@ -148,14 +153,14 @@ String buildHostContractArtifact(Directory repositoryRoot) {
 void writeHostContractArtifact(Directory repositoryRoot) {
   final root = repositoryRoot.path;
   final artifact = buildHostContractArtifact(repositoryRoot);
-  final contracts = '$root/$frameworkPackagePath/tool/bindings/contracts';
+  final contracts = '$root/$apiPackagePath/tool/bindings/contracts';
   File('$contracts/checkpoint4-extension-host.json')
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(artifact);
 
   final digest = sha256.convert(utf8.encode(artifact)).toString();
   final overridesFiles =
-      Directory('$root/$frameworkPackagePath/tool/bindings/overrides')
+      Directory('$root/$apiPackagePath/tool/bindings/overrides')
           .listSync()
           .whereType<File>()
           .where(

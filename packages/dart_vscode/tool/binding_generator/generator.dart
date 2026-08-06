@@ -1,15 +1,11 @@
 /// Deterministic Dart binding generation from a pinned VS Code API inventory.
 library;
 
-import 'dart:convert';
-
-import 'package:crypto/crypto.dart';
+import 'package:dart_vscode/src/contributions/exception.dart';
 
 import 'coverage_ledger.dart';
-import 'ecmascript_whitespace.dart';
 import 'ir_validator.dart';
 import 'manifest_projection.dart';
-import 'templates.dart';
 import 'validators.dart';
 
 export 'ir_validator.dart' show computeDeclarationFingerprint;

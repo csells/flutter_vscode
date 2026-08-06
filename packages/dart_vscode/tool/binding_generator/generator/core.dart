@@ -2,30 +2,12 @@ part of '../generator.dart';
 
 // Concerns the generator itself: its failure type, its outputs, and the selected slice it walks.
 
-/// A deterministic generation failure with a stable machine-readable [code].
-final class VSCodeBindingGenerationException implements Exception {
-  /// Creates a generation failure.
-  const VSCodeBindingGenerationException(this.code, this.message);
-
-  /// Stable diagnostic code.
-  final String code;
-
-  /// Actionable diagnostic text.
-  final String message;
-
-  @override
-  String toString() => '$code: $message';
-}
-
-/// Files produced by one binding generation pass.
-final class VSCodeGeneratedBindings {
-  /// Creates an immutable generated-file set.
-  VSCodeGeneratedBindings(Map<String, String> files)
-      : files = Map.unmodifiable(files);
-
-  /// Relative output path to UTF-8 file contents.
-  final Map<String, String> files;
-}
+/// A deterministic generation failure with a stable machine-readable code.
+///
+/// The one failure type is `package:dart_vscode`'s [ContributionException];
+/// this maintainer-tool name survives as an alias so generation diagnostics
+/// and contribution diagnostics stay a single catchable type.
+typedef VSCodeBindingGenerationException = ContributionException;
 
 final class _SelectedBindings {
   _SelectedBindings(this.declarationsById, this.strategiesById);
@@ -193,11 +175,11 @@ final class VSCodeBindingGenerator {
     'webviewPanelCreation',
   };
 
-  /// Validates [overrides] against [inventory] and emits deterministic files.
-  VSCodeGeneratedBindings generate({
+  /// Validates [overrides] against [inventory] with the full walking-slice
+  /// review and returns the maintainer coverage ledger.
+  String generateCoverageLedger({
     required Map<String, Object?> inventory,
     required Map<String, Object?> overrides,
-    required Map<String, Object?> project,
   }) {
     validateInputSchemaVersion(inventory, 'inventory');
     validateInputSchemaVersion(overrides, 'overrides');
@@ -232,7 +214,6 @@ final class VSCodeBindingGenerator {
       },
       subject: 'Semantic Override top-level object',
     );
-    validateProjectDescriptor(project);
     final source = validateIrSource(
       inventory['source'],
       inventory: inventory,
@@ -328,50 +309,6 @@ final class VSCodeBindingGenerator {
             'inventory uses $configurationContributionSchemaSha256.',
       );
     }
-    final projectName = extensionIdentifierComponent(
-      project['name'],
-      'project.name',
-    );
-    final displayName = nonEmptyString(
-      project['displayName'],
-      'project.displayName',
-    );
-    final description = nonEmptyString(
-      project['description'],
-      'project.description',
-    );
-    final projectVersion = string(project['version'], 'project.version');
-    if (!isStrictSemanticVersion(projectVersion)) {
-      throw const VSCodeBindingGenerationException(
-        'INVALID_PROJECT_MANIFEST',
-        'project.version must be a valid semantic version.',
-      );
-    }
-    final publisher = extensionIdentifierComponent(
-      project['publisher'],
-      'project.publisher',
-    );
-    final extensionId = '$publisher.$projectName';
-    final extensionKey = 'e_${sha256.convert(utf8.encode(extensionId))}';
-    final activationEvents = [
-      for (final event in objectList(
-        project['activationEvents'],
-        'project.activationEvents',
-      ))
-        string(event, 'project.activationEvents entry'),
-    ];
-    final commands = projectCommands(project['commands']);
-    final viewsContainers = projectViewsContainers(project['viewsContainers']);
-    final contributedContainers = <String>{
-      for (final entry in viewsContainers.values)
-        for (final container in entry! as List<Map<String, Object?>>)
-          container['id']! as String,
-    };
-    final views = projectViews(
-      project['views'],
-      contributedContainers: contributedContainers,
-    );
-    final configuration = projectConfiguration(project['configuration']);
     final declarations = objectList(
       inventory['declarations'],
       'inventory.declarations',
@@ -559,8 +496,7 @@ final class VSCodeBindingGenerator {
     if (walkingSlice) {
       _validateWalkingSliceStrategies(declarationsById, strategiesById);
     }
-    final runtime = runtimeTemplate(extensionKey);
-    final coverage = emitCoverageLedger(
+    return emitCoverageLedger(
       inventoryVersion: inventoryVersion,
       inputSha256: inputSha256,
       manifestSchemaSha256: manifestSchemaSha256,
@@ -575,45 +511,6 @@ final class VSCodeBindingGenerator {
       hostContracts: hostContracts,
       hostContractsById: hostContractsById,
     );
-
-    const encoder = JsonEncoder.withIndent('  ');
-    final manifest = <String, Object?>{
-      'name': projectName,
-      'displayName': displayName,
-      'description': description,
-      'version': projectVersion,
-      'publisher': publisher,
-      'engines': <String, Object?>{'vscode': inventoryVersion},
-      'main': './out/bootstrap.cjs',
-      'activationEvents': activationEvents,
-      if (commands.isNotEmpty ||
-          viewsContainers.isNotEmpty ||
-          views.isNotEmpty ||
-          configuration.isNotEmpty)
-        'contributes': <String, Object?>{
-          if (commands.isNotEmpty) 'commands': commands,
-          if (viewsContainers.isNotEmpty) 'viewsContainers': viewsContainers,
-          if (views.isNotEmpty) 'views': views,
-          if (configuration.isNotEmpty) 'configuration': configuration,
-        },
-    };
-    final dartExtensionId = jsonEncode(extensionId);
-    final javaScriptExtensionKey = jsonEncode(extensionKey);
-    final hostExports = hostExportsTemplate(
-      dartExtensionId: dartExtensionId,
-      extensionKey: extensionKey,
-    );
-    final bootstrap = bootstrapTemplate(
-      javaScriptExtensionKey: javaScriptExtensionKey,
-    );
-
-    return VSCodeGeneratedBindings({
-      'host/lib/generated/vscode_runtime.g.dart': runtime,
-      'host/lib/generated/host_exports.g.dart': hostExports,
-      'host/bootstrap.cjs': bootstrap,
-      'package.json': '${encoder.convert(manifest)}\n',
-      'coverage.json': coverage,
-    });
   }
 }
 

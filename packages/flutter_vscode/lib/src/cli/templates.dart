@@ -1,9 +1,9 @@
-/// The embedded source templates rendered by the binding generator.
+/// The embedded source templates for Project-Derived Artifacts.
 ///
-/// Each function renders one generated runtime artifact from the
-/// values the generator resolves out of the reviewed inventory
-/// selection. The generated API surface itself is the single
-/// dart-layer artifact emitted by `dart_layer.dart`.
+/// Each function renders one generated file from values derived from the
+/// Extension Project itself (its identity and its manifest). The VS Code
+/// API surface these artifacts wire up lives in `package:dart_vscode`,
+/// generated at maintainer time; nothing here reads binding inputs.
 library;
 
 /// Renders the generated `host_exports.g.dart` module.

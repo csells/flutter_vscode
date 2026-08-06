@@ -1,12 +1,15 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
+import 'package:flutter_vscode/src/cli/artifact_writer.dart';
 import 'package:flutter_vscode/src/cli/baselines.dart';
 import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_inputs.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/json_object.dart';
+import 'package:flutter_vscode/src/cli/project_artifacts.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
 import 'package:path/path.dart' as p;
@@ -44,19 +47,14 @@ Future<void> buildProject(
   final project = dartDescriptor.existsSync()
       ? await readProjectDescriptor(dartDescriptor)
       : await readJsonObject(jsonDescriptor);
-  final bindingInputs = await loadBindingInputs(packageRoot);
-  final generated = toolchain.generateBindings(
-    inventory: bindingInputs.inventory,
-    overrides: bindingInputs.overrides,
-    project: project,
-  );
+  final generated = emitProjectArtifacts(project);
   final generatedRoot = Directory(
     p.join(hostRoot.path, 'lib', 'generated'),
   );
   if (generatedRoot.existsSync()) {
     await generatedRoot.delete(recursive: true);
   }
-  await toolchain.writeBindings(generated, root);
+  await writeProjectArtifacts(generated, root);
   // Framework code is not emitted into projects: the view protocol, the
   // command registration module, and the Flutter View host module are
   // libraries in package:dart_vscode. A project receives only what is
@@ -145,13 +143,10 @@ Future<void> buildProject(
   }
   viewOutputFiles(root, views);
   await _writeLaunchConfiguration(root);
-  final toolIdentity = await frameworkToolIdentity(
-    packageRoot,
-    shippedApiTarget,
-  );
+  final toolIdentity = await frameworkToolIdentity(packageRoot);
   await writeBuildReceipt(
     projectRoot: root,
-    apiTarget: shippedApiTarget,
+    apiTarget: vscodeApiVersion,
     toolIdentity: toolIdentity,
     inputPaths: buildInputPaths(root),
     artifactPaths: managedArtifactPaths(root),

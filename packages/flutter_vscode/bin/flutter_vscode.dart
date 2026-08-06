@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_command.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
@@ -10,16 +11,13 @@ import 'package:flutter_vscode/src/cli/test_command.dart';
 import 'package:flutter_vscode/src/cli/watch_command.dart';
 import 'package:path/path.dart' as p;
 
-import '../tool/binding_generator/dart_layer.dart';
-import '../tool/binding_generator/generator.dart';
-import '../tool/binding_generator/writer.dart';
 import '../tool/check_host_imports.dart';
 
 Future<void> main(List<String> arguments) async {
   try {
     switch (arguments) {
       case ['create', final name]:
-        await createProject(Directory.current, name, toolchain: _toolchain);
+        await createProject(Directory.current, name);
       case ['build']:
         await buildProject(Directory.current, toolchain: _toolchain);
       case ['build', '--watch']:
@@ -45,7 +43,7 @@ Future<void> main(List<String> arguments) async {
   } on CliException catch (error) {
     stderr.writeln('${error.code}: ${error.message}');
     exitCode = error.exitCode;
-  } on VSCodeBindingGenerationException catch (error) {
+  } on ContributionException catch (error) {
     stderr.writeln(error);
     exitCode = 1;
   } on HostDartSyntaxException catch (error) {
@@ -75,24 +73,9 @@ Future<void> main(List<String> arguments) async {
   }
 }
 
-/// Wires the `tool/`-area generator, emitters, and boundary checker into
-/// the in-process command modules under `lib/src/cli/`.
-final _toolchain = BindingToolchain(
-  generateBindings: ({
-    required inventory,
-    required overrides,
-    required project,
-  }) =>
-      VSCodeBindingGenerator()
-          .generate(
-            inventory: inventory,
-            overrides: overrides,
-            project: project,
-          )
-          .files,
-  writeBindings: (files, outputRoot) =>
-      writeGeneratedBindings(VSCodeGeneratedBindings(files), outputRoot),
-  emitDartLayerLibrary: (inventory) => emitDartLayer(inventory).library,
+/// Wires the `tool/`-area boundary checker into the in-process command
+/// modules under `lib/src/cli/`.
+const _toolchain = BindingToolchain(
   checkHostImports: _guardedCheckHostImports,
   formatImportViolations: formatHostImportViolations,
 );

@@ -35,7 +35,7 @@ function createCanonicalRepository() {
   );
   const sources = {};
   const definitionPath =
-    'packages/flutter_vscode/tool/bindings/host-contract-sources.json';
+    'packages/dart_vscode/tool/bindings/host-contract-sources.json';
   for (const [sourceId, sourcePath] of Object.entries(canonicalSourcePaths)) {
     // The definition is itself receipted, so the synthetic tree needs the real
     // JSON there rather than a placeholder: the verifier parses it.
@@ -54,7 +54,7 @@ test('Host Contract source receipts reject a canonical source rebound', () => {
   const repositoryRoot = path.resolve(__dirname, '../../../..');
   const artifact = JSON.parse(fs.readFileSync(path.join(
     repositoryRoot,
-    'packages/flutter_vscode/tool/bindings/contracts',
+    'packages/dart_vscode/tool/bindings/contracts',
     'checkpoint4-extension-host.json',
   ), 'utf8'));
   for (const receipt of Object.values(artifact.sources)) {

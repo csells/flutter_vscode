@@ -2,63 +2,12 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
-import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:path/path.dart' as p;
 
-/// The one VS Code baseline this `flutter_vscode` release ships bindings for.
-///
-/// The package version *is* the baseline. A project builds against whatever
-/// this release pins; it does not choose. The maintainer moves the baseline
-/// by importing newer pinned inputs, regenerating, and publishing, so an
-/// author who needs an older VS Code API depends on the `flutter_vscode`
-/// release that shipped it — ordinary package versioning rather than a
-/// selector inside the package.
-const shippedApiTarget = '1.129.1';
-
-/// The pinned binding inputs this release ships.
-final class BindingInputs {
-  /// Creates the shipped inputs.
-  const BindingInputs({required this.inventory, required this.overrides});
-
-  /// The imported canonical IR for the shipped baseline.
-  final Map<String, Object?> inventory;
-
-  /// The same-version Semantic Override file for the shipped baseline.
-  final Map<String, Object?> overrides;
-}
-
-/// Loads the pinned binding inputs shipped with this package.
-Future<BindingInputs> loadBindingInputs(Directory packageRoot) async {
-  final inventoryFile = File(
-    p.join(
-      packageRoot.path,
-      'tool',
-      'bindings',
-      'ir',
-      'vscode-$shippedApiTarget.json',
-    ),
-  );
-  final overridesFile = File(
-    p.join(
-      packageRoot.path,
-      'tool',
-      'bindings',
-      'overrides',
-      'vscode-$shippedApiTarget.json',
-    ),
-  );
-  if (!inventoryFile.existsSync() || !overridesFile.existsSync()) {
-    throw const CliException(
-      'This flutter_vscode installation is missing its pinned binding '
-      'inputs for VS Code $shippedApiTarget.',
-      code: 'MISSING_FRAMEWORK_RESOURCE',
-    );
-  }
-  return BindingInputs(
-    inventory: await readJsonObject(inventoryFile),
-    overrides: await readJsonObject(overridesFile),
-  );
-}
+// The VS Code baseline itself lives in package:dart_vscode as
+// `vscodeApiVersion`: the API layer, contribution semantics, and manifest
+// engines pin all ship there and move together. This module only locates
+// installed package roots.
 
 /// Locates the installed `dart_vscode` package root.
 ///
@@ -81,8 +30,8 @@ Future<Directory> resolveDartVscodeRoot() async {
 
 /// Locates the installed flutter_vscode package root.
 ///
-/// The pinned baseline, generator sources, and framework resources the
-/// commands read all live beneath this directory.
+/// The framework sources the build receipt digests live beneath this
+/// directory.
 Future<Directory> resolvePackageRoot() async {
   final library = await Isolate.resolvePackageUri(
     Uri.parse('package:flutter_vscode/manifest.dart'),

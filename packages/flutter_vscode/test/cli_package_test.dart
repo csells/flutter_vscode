@@ -263,10 +263,13 @@ void main() {
       );
       final receipt =
           jsonDecode(await receiptFile.readAsString()) as Map<String, Object?>;
+      // The framework digest is the only tool identity left: binding
+      // generation is a dart_vscode maintainer operation, so a build has
+      // no generator or pinned-input identity of its own.
+      expect(receipt, isNot(contains('generatorSha256')));
+      expect(receipt, isNot(contains('bindingInputsSha256')));
       const identities = <String, String>{
         'frameworkSha256': 'flutter_vscode framework changed since build',
-        'generatorSha256': 'binding generator changed since build',
-        'bindingInputsSha256': 'pinned binding inputs changed since build',
       };
 
       for (final identity in identities.entries) {
