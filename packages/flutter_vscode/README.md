@@ -261,6 +261,16 @@ Typed view-to-host requests plug into the same call: pass `operations: [myOperat
 
 Debugging works the same way: `flutter_vscode build`, press **F5**, and run **Show Flutter Panel** in the Extension Development Host — the panel renders your Flutter app. Host-side behavior is debugged exactly as in the Dart-only case. For the view side, run **Developer: Open Webview Developer Tools** in the development host to get the browser console, network, and element inspectors for the Flutter web runtime inside the panel.
 
+## Using pub.dev packages
+
+Extension Projects are ordinary Dart and Flutter packages, so the ecosystem comes with you.
+
+`host/` and `shared/` can depend on any web-compatible pure Dart package — parsers, models, codecs, protocol logic. The shipped Pubspec Lens example does its constraint math with [`pub_semver`](https://pub.dev/packages/pub_semver) and its span-preserving parsing with [`yaml`](https://pub.dev/packages/yaml), declared in its `shared/pubspec.yaml` like any Dart dependency. The build's boundary check enforces what the Extension Host can actually run: it walks every import reachable from the host entrypoint and rejects `dart:io`, Flutter, and browser-only libraries with actionable error codes. Only what the bundle imports is checked, so test-only dependencies never trip it.
+
+Views can depend on any Flutter package that works on the web. The shipped Coverage Treemap example renders its summary charts with [`fl_chart`](https://pub.dev/packages/fl_chart), running unmodified inside a VS Code webview. Keep runtime assets local: the webview CSP blocks network fonts and images, so avoid packages that fetch resources at runtime, or bundle their assets instead.
+
+This is the core reuse story: logic your team already ships as Dart packages — and the pub.dev ecosystem around it — becomes VS Code extension code without a rewrite.
+
 ## Shipped example extensions
 
 Complete, working extensions built with this workflow live in [`extensions/`](../../extensions/README.md). They double as reference implementations for the patterns above and are held to the same bar as the framework: built only through the CLI, each proven in a real Extension Host by its own gate (`scripts/test_coverage_extension.sh`, `scripts/test_pubspec_lens.sh`).

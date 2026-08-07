@@ -14,7 +14,26 @@ Build VS Code extensions in Dart and Flutter. This repository is a pub workspace
 | [`skills/`](skills/README.md) | agent skills for extension authors — copied into an extension project as `agent-skills/` |
 | `scripts/` | the per-gate real-host scripts the CI workflow runs as steps, plus `ci_gates.sh` to run the whole workflow locally |
 
-Start with the [package README](packages/flutter_vscode/README.md) to build an extension, or the [quickstart](docs/guides/quickstart.md).
+## Build an extension
+
+The full walkthrough is the [package README](packages/flutter_vscode/README.md); the [quickstart](docs/guides/quickstart.md) is the guided version. The short form:
+
+```sh
+dart pub global activate --source path \
+  /path/to/flutter_vscode/packages/flutter_vscode
+
+flutter_vscode create my_extension
+cd my_extension
+flutter_vscode build
+```
+
+Open the project in VS Code and press F5 to run it in an Extension Development Host. From there, by topic:
+
+- [a Dart-only extension](packages/flutter_vscode/README.md#your-first-extension-dart-only) — the typed manifest, commands, providers, and the `doctor`/`build`/`test`/`package` loop
+- [the VS Code API from Dart](packages/flutter_vscode/README.md#reaching-the-rest-of-the-vs-code-api) — every namespace, class, enum, and callback of the pinned baseline, typed; reference in the [Generated Host API](docs/reference/generated-host-api.md)
+- [adding a Flutter View](packages/flutter_vscode/README.md#adding-a-flutter-view) — a Flutter web app in a webview panel, and [showing it from Host Dart](packages/flutter_vscode/README.md#showing-the-view-from-host-dart)
+- [pub.dev packages](packages/flutter_vscode/README.md#using-pubdev-packages) — web-compatible Dart packages in `host/` and `shared/`, Flutter UI packages in views
+- [debugging both sides](packages/flutter_vscode/README.md#debugging-the-flutter-view) — F5, terminal-launched development hosts, webview developer tools
 
 ## Working in this repository
 
