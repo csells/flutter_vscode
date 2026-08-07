@@ -1,7 +1,6 @@
 'use strict';
 
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 const {
   downloadAndUnzipVSCode,
@@ -9,6 +8,7 @@ const {
 } = require('@vscode/test-electron');
 const {installVsix} = require('./packaged_driver.cjs');
 const {renderStabilityFlags} = require('./electron_flags.cjs');
+const {makeShortProfileRoot} = require('./short_profile_root.cjs');
 
 const packageRoot = path.resolve(__dirname, '../..');
 const driverRoot = path.join(
@@ -52,9 +52,7 @@ async function main() {
     throw new Error(`Packaged fixture does not exist: ${vsixPath}`);
   }
 
-  const profileRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'flutter-vscode-packaged-host-'),
-  );
+  const profileRoot = makeShortProfileRoot('fv-pkg-');
   const extensionsDir = path.join(profileRoot, 'extensions');
   const userDataDir = path.join(profileRoot, 'user-data');
   fs.mkdirSync(extensionsDir, {recursive: true});

@@ -10,7 +10,12 @@ TEMP_ROOT="$(cd "${TEMP_ROOT}" && pwd -P)"
 CACHE_ROOT="${TEMP_ROOT}/vscode-test-cache"
 
 cleanup() {
-  rm -rf "${TEMP_ROOT}"
+  # Best-effort: a containerized VS Code writes its cache as root, so
+  # the runner user may be unable to delete it. The next invocation
+  # mktemps a fresh root either way, and a failing rm inside an EXIT
+  # trap must not overwrite a green gate's exit status.
+  rm -rf "${TEMP_ROOT}" 2>/dev/null ||
+    echo "[cleanup] left ${TEMP_ROOT} behind (container-owned files)" >&2
 }
 trap cleanup EXIT
 

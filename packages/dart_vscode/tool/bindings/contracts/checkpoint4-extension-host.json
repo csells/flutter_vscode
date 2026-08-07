@@ -264,7 +264,7 @@
     },
     "runner": {
       "path": "scripts/test_host_extension.sh",
-      "sha256": "18b99127fabfc9b16ef8b1f2eae1ed701d6574ca123babd024d6bdc976c2d0c5"
+      "sha256": "e1048d6f68b140c946cdcb4a61b073ab39bc82df6bb2211df3d93370e62636b0"
     },
     "test": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/test/run.cjs",
