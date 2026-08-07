@@ -39,3 +39,6 @@ review-notes.md
 # Build receipts emitted into the example Extension Projects by
 # `flutter_vscode build`. The fixture's copy is a committed test input.
 extensions/*/coverage.json
+
+# flutter test --coverage output, anywhere in the workspace
+coverage/
