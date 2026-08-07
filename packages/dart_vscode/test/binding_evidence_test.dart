@@ -77,7 +77,7 @@ void main() {
     addTearDown(() => temporary.deleteSync(recursive: true));
     const overridesPath =
         'packages/dart_vscode/tool/bindings/overrides/vscode-1.129.1.json';
-    final artifactPath = contract_writer.contractArtifactPath;
+    const artifactPath = contract_writer.contractArtifactPath;
     for (final relative in [
       ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
       overridesPath,
