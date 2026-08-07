@@ -9,8 +9,8 @@ One generated layer reaches the VS Code API: a mechanically generated,
 complete typed Dart mapping of every public declaration in the pinned
 VS Code baseline this release ships (1.129.1), with a Dart-first
 ergonomic surface in the same artifact. The package version *is* the
-baseline — you import the layer from `package:flutter_vscode`, and the
-release you depend on decides which VS Code API you get.
+baseline — the layer ships in `package:dart_vscode`, and the release you
+depend on decides which VS Code API you get.
 
 ## Getting started
 
@@ -18,7 +18,8 @@ You need the Dart and Flutter SDKs and VS Code. The CLI is currently
 unreleased, so activate it from your checkout of this repository:
 
 ```sh
-dart pub global activate --source path /path/to/flutter_vscode
+dart pub global activate --source path \
+  /path/to/flutter_vscode/packages/flutter_vscode
 ```
 
 After this Dart-host release is published, the install command will become
@@ -67,38 +68,39 @@ const extension = ExtensionManifest(
 
 The CLI parses this declaration as data — project code is never executed —
 while the scaffolded root `pubspec.yaml` gives the author's editor full
-completion and type-checking over the same constant.
+completion and type-checking over the same constant. Commands are one
+contribution surface among several: views, view containers, and
+configuration settings declare the same way — the shipped Pubspec Lens
+example contributes its dependencies tree and its `registryUrl` setting
+entirely from `extension.dart`.
 
 The build generates against the one VS Code baseline this release pins,
 which also fixes the generated `engines.vscode` value. A project does not
 choose a baseline: depend on the `flutter_vscode` release that ships the
 API you need, exactly as you would pin any other package.
-[Moving the Pinned VS Code Baseline](docs/guides/new-baseline.md)
+[Moving the Pinned VS Code Baseline](../../docs/guides/new-baseline.md)
 documents how a maintainer advances it.
 
 Behavior lives in `host/lib/extension.dart`. The scaffold already uses the
 VS Code API through the generated layer — it registers the contributed
-command and a hover provider, and parks both registrations in
-`context.subscriptions` so VS Code disposes them:
+command and a hover provider, and hands both registrations to
+`context.own` (from `package:dart_vscode/host_commands.dart`), which
+parks them in `context.subscriptions` so VS Code disposes them:
 
 ```dart
 final context = ExtensionContext(rawContext);
 final vscode = VscodeApi(rawVscode);
 
 final hello = (() => helloMessage.toJS).toJS;
-context.subscriptions.toDart.add(
-  JSAnon_ffa2e03c40a2(
-    vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
-  ),
+context.own(
+  vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
 );
 
 final provider = HoverProvider.lit$(
   provideHover: toHostCallback(provideHover),
 );
-context.subscriptions.toDart.add(
-  JSAnon_ffa2e03c40a2(
-    vscode.languages.registerHoverProvider('json'.toJS, provider),
-  ),
+context.own(
+  vscode.languages.registerHoverProvider('json'.toJS, provider),
 );
 ```
 
@@ -203,8 +205,8 @@ their least upper bound with typed `isInstance`/`cast` narrowing helpers.
 `api.dart` enters the Dart-first surface of the same artifact — `Future`
 returns, broadcast `Stream` event accessors, plain `String`/`num`/`bool`
 boundaries. See the
-[Generated Host API](docs/reference/generated-host-api.md) and the
-[parity report](docs/reference/parity.md).
+[Generated Host API](../../docs/reference/generated-host-api.md) and the
+[parity report](../../docs/reference/parity.md).
 
 ### Test it
 
@@ -250,7 +252,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_vscode:
-    path: /path/to/flutter_vscode
+    path: /path/to/flutter_vscode/packages/flutter_vscode
 ```
 
 ```dart
@@ -291,8 +293,9 @@ blocks.
 ```
 
 `flutter_vscode build` now also compiles the view with webview-safe settings
-into `out/views/main_panel/` and generates the versioned view protocol into
-`package:dart_vscode/view_protocol.dart`. No Node, npm, or manual web
+into `out/views/main_panel/`. The versioned protocol the host and view
+speak is a shipped library — `package:dart_vscode/view_protocol.dart` —
+never copied or generated into your project. No Node, npm, or manual web
 tooling is involved, and `package` bundles the view assets into the VSIX.
 
 ### Showing the view from Host Dart
@@ -308,9 +311,9 @@ Add a command to `extension.dart`:
   ],
 ```
 
-For view-bearing projects, `build` also generates
-`package:dart_vscode/flutter_view_host.dart`: the framework-owned
-hosting module. Opening the view from the command is one call —
+Hosting is the framework-owned module
+`package:dart_vscode/flutter_view_host.dart`, shipped like the rest of
+the runtime. Opening the view from the command is one call —
 `FlutterViewHost.open` owns panel creation, resource-root scoping,
 session identifiers, CSP-correct HTML, and disposal:
 
@@ -326,12 +329,10 @@ final showPanel = (() {
     onClosed: () => viewHost = null,
   );
 }).toJS;
-context.subscriptions.toDart.add(
-  JSAnon_ffa2e03c40a2(
-    vscode.commands.registerCommand(
-      'my-extension.showPanel',
-      toHostCallback(showPanel),
-    ),
+context.own(
+  vscode.commands.registerCommand(
+    'my-extension.showPanel',
+    toHostCallback(showPanel),
   ),
 );
 ```
@@ -348,7 +349,7 @@ shell created.
 `FlutterViewHost` builds on `window.createWebviewPanel` with scripts
 enabled and resource roots scoped to your built view — VS Code's own
 webview primitives, surfaced with Dart types. See the
-[architecture docs](docs/architecture/index.md).
+[architecture docs](../../docs/architecture/index.md).
 
 ### Debugging the Flutter View
 
@@ -363,7 +364,7 @@ runtime inside the panel.
 ## Shipped example extensions
 
 Complete, working extensions built with this workflow live in
-[`extensions/`](extensions/README.md). They double as reference
+[`extensions/`](../../extensions/README.md). They double as reference
 implementations for the patterns above and are held to the same bar
 as the framework: built only through the CLI, proven in a real
 Extension Host by `scripts/test_coverage_extension.sh`.
@@ -384,7 +385,7 @@ webview, themed with VS Code's own colors.
 ![The Coverage Treemap extension: covered and uncovered lines
 highlighted in the editor, a live status-bar percentage, and the
 Flutter-rendered treemap panel with donut and bar-chart
-summaries](docs/assets/coverage-treemap.png)
+summaries](../../docs/assets/coverage-treemap.png)
 
 **Pubspec Lens** is the Host-Only counterpart: dependency
 intelligence for `pubspec.yaml` — hovers, a CodeLens that bumps any
@@ -398,7 +399,7 @@ a Flutter View when you need custom drawing.
 ![The Pubspec Lens extension: an outdated dependency underlined in
 pubspec.yaml with its diagnostic in the Problems panel and an
 "Update to ^3.4.2" CodeLens above the pinned
-constraint](docs/assets/pubspec-lens.png)
+constraint](../../docs/assets/pubspec-lens.png)
 
 ## Repository validation
 
@@ -409,17 +410,21 @@ flutter analyze
 ./scripts/ci_gates.sh
 ```
 
-`ci_gates.sh` runs the repository's CI workflow locally, job by job: it
-verifies the pinned importer, launches the pinned Extension Host fixture,
-then creates and installs a clean Dart-owned VSIX in an isolated VS Code
-profile.
+`ci_gates.sh` runs the repository's CI workflow locally, job by job —
+the checks, test, and gate jobs in runner-like containers, then, on
+macOS, the desktop job natively: all five real-host gates run again
+with no container and no xvfb, the platform Extension Authors actually
+develop on. Every gate script also accepts
+`FLUTTER_VSCODE_GATE_NATIVE=1` to run its native variant standalone.
+The coverage gate asserts the Flutter View's painted first frame, not
+just protocol boot.
 
 ## Documentation
 
-- [Documentation Index](docs/index.md)
-- [Quickstart](docs/guides/quickstart.md)
-- [Architecture](docs/architecture/index.md)
-- [Generated Host API](docs/reference/generated-host-api.md)
-- [API Parity Report](docs/reference/parity.md)
-- [Generated File Ownership](docs/guides/generated-file-ownership.md)
-- [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
+- [Documentation Index](../../docs/index.md)
+- [Quickstart](../../docs/guides/quickstart.md)
+- [Architecture](../../docs/architecture/index.md)
+- [Generated Host API](../../docs/reference/generated-host-api.md)
+- [API Parity Report](../../docs/reference/parity.md)
+- [Generated File Ownership](../../docs/guides/generated-file-ownership.md)
+- [Agent-Assisted Development](../../docs/guides/agent-assisted-development.md)

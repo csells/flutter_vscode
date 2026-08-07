@@ -67,14 +67,16 @@ VS Code's native Test Coverage API and does not write
 
 The real-host gate for this extension is
 `scripts/test_coverage_extension.sh`: it packages the VSIX, installs
-it into the pinned Extension Host in Docker, opens a workspace with a
-known tracefile, and asserts both the parsed snapshot and that the
-Flutter View boots and serves the snapshot operation over the view
-protocol in a real webview.
+it into the pinned Extension Host — in Docker, and natively on macOS
+with `FLUTTER_VSCODE_GATE_NATIVE=1` — opens a workspace with a known
+tracefile, and asserts the parsed snapshot, that the Flutter View
+boots and serves the snapshot operation over the view protocol in a
+real webview, and that the view confirms a painted first frame (the
+signal an occluded or throttled webview never produces).
 
 `flutter_vscode package` writes the installable VSIX under `build/`.
 
-Plan and status: [`specs/plans/coverage-treemap.md`](../specs/plans/archive/coverage-treemap.md).
+Plan and status: [`specs/plans/archive/coverage-treemap.md`](../specs/plans/archive/coverage-treemap.md).
 
 ## pubspec_lens
 
@@ -147,8 +149,9 @@ backwards: the comparison is against the constraint's lower bound,
 so there is nothing to suggest.
 
 The real-host gate is `scripts/test_pubspec_lens.sh`: it packages
-the VSIX, installs it into the pinned Extension Host in Docker,
-serves a deterministic fake pub.dev from inside the host, and
+the VSIX, installs it into the pinned Extension Host — in Docker, and
+natively on macOS with `FLUTTER_VSCODE_GATE_NATIVE=1` — serves a
+deterministic fake pub.dev from inside the host, and
 asserts the hover, the single diagnostic, a lens on each trailing
 pin (and none on the current one), both CodeLens edits, and the tree
 snapshot. The extension contributes its dependencies view and its

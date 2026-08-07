@@ -13,7 +13,7 @@ workspace: one `dart pub get` at the root resolves every package, and
 | [`extensions/`](extensions/README.md) | shipped example extensions, built only through the public CLI |
 | [`docs/`](docs/index.md) | guides, reference, architecture, and ADRs |
 | [`specs/`](specs/vision/vision.md) | vision, architecture notes, and plan history |
-| `scripts/` | per-gate real-host scripts the CI workflow runs as steps, plus `ci_gates.sh` to run the whole workflow locally |
+| `scripts/` | per-gate real-host scripts the CI workflow runs as steps — each accepts `FLUTTER_VSCODE_GATE_NATIVE=1` on macOS — plus `ci_gates.sh` to run the whole workflow locally |
 
 Start with the [package README](packages/flutter_vscode/README.md) to build
 an extension, or the [quickstart](docs/guides/quickstart.md).
@@ -29,10 +29,16 @@ them deleted.
 ## Working in this repository
 
 ```sh
-dart pub get                                    # resolves every workspace package
-flutter analyze                                 # covers the whole tree
-cd packages/flutter_vscode && flutter test      # the framework suite
-./scripts/ci_gates.sh          # the whole CI workflow, locally, in Docker
+dart pub get                # resolves every workspace package
+flutter analyze             # covers the whole tree
+cd packages/dart_vscode && dart test              # the API package suite
+cd packages/flutter_vscode && flutter test --exclude-tags gate  # fast suite
+./scripts/ci_gates.sh       # the whole CI workflow locally: containers
+                            # plus, on macOS, the five native desktop gates
 ```
+
+(Plain `flutter test` in `packages/flutter_vscode` also runs the
+gate-tagged workflow test — the full Docker CI run — which is rarely what
+you want mid-loop.)
 
 Each example package owns its own tests; run them in their directory.

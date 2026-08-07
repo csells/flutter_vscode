@@ -44,4 +44,4 @@ cp -r agent-skills/* .cursor/skills/
 
 - [Agent-Assisted Development](../docs/guides/agent-assisted-development.md)
 - [Generated Host API](../docs/reference/generated-host-api.md)
-- [Consumer AGENTS.md template](../docs/templates/consumer-agents.md)
+- [Extension Author AGENTS.md template](../docs/templates/consumer-agents.md)
