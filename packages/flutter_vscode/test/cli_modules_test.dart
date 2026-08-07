@@ -202,6 +202,34 @@ void main() {
     );
   });
 
+  group('host import boundary', () {
+    test('the checker is CLI implementation, not a toolchain seam', () {
+      // One adapter ever justified no seam: the BindingToolchain existed
+      // only because the checker lived outside lib/. With the checker in
+      // lib/src/cli the seam, its bin-side wiring shim, and the duplicate
+      // exception type all fail the deletion test.
+      expect(
+        File(
+          p.join('lib', 'src', 'cli', 'check_host_imports.dart'),
+        ).existsSync(),
+        isTrue,
+        reason: 'the boundary checker is ordinary CLI implementation',
+      );
+      expect(
+        File(
+          p.join('lib', 'src', 'cli', 'binding_toolchain.dart'),
+        ).existsSync(),
+        isFalse,
+        reason: 'the toolchain seam fails the deletion test',
+      );
+      expect(
+        File(p.join('tool', 'check_host_imports.dart')).existsSync(),
+        isFalse,
+        reason: 'nothing under tool/ feeds the build path anymore',
+      );
+    });
+  });
+
   group('doctor', () {
     test(
       'doctor and layout validation share one required-paths list',

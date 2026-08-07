@@ -50,7 +50,7 @@ Rules and their enforcement:
   frames, never only `.dart.js` frames (real-host gate assertions).
 - **Import boundary.** Host and shared Dart cannot import Flutter,
   browser-only libraries, or unsupported platform APIs; enforced by
-  `packages/flutter_vscode/tool/check_host_imports.dart` in the CLI build path and
+  `packages/flutter_vscode/lib/src/cli/check_host_imports.dart` in the CLI build path and
   `test/host_import_guard_test.dart`. The build's sweep deliberately
   skips package `test/` directories — author tests may depend on
   `package:test` and never execute inside the Extension Host — proven

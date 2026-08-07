@@ -132,7 +132,7 @@
     },
     "cli": {
       "path": "packages/flutter_vscode/bin/flutter_vscode.dart",
-      "sha256": "14c47e7de3737311164916866a217367fc217bd61915451be819ba89927790c1"
+      "sha256": "b974e0b142361dba59484be0c52301f3f47ab221757bd57a8d33b53468952da1"
     },
     "container": {
       "path": "packages/flutter_vscode/tool/extension_host_test/Dockerfile",
@@ -228,7 +228,7 @@
     },
     "generatedRuntime": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/vscode_runtime.g.dart",
-      "sha256": "625b42fa01e85bcb4330cea7514da492a489496fa5025d827a8dbceaffc18ca4"
+      "sha256": "1ea6ebbbfc198b9ef3194c4a2e9e37efec81ab945ce5721fe6cdacfb5d3d0c91"
     },
     "harnessPackage": {
       "path": "packages/flutter_vscode/tool/extension_host_test/package.json",
@@ -244,11 +244,11 @@
     },
     "hostContractSources": {
       "path": "packages/dart_vscode/tool/bindings/host-contract-sources.json",
-      "sha256": "d3b2d32527a9ca68f0663f280e88048d00cafb09ccb394074fe9fb5f908db452"
+      "sha256": "ce96d4be8eb8a6cef4fd9c41029b40ea302bde04249b42889166007dc83c8e9c"
     },
     "hostImportChecker": {
-      "path": "packages/flutter_vscode/tool/check_host_imports.dart",
-      "sha256": "674c1ad4d98a52215a95252c9dd9c3ca4ee5dad0b78f026416f1258899d5aa31"
+      "path": "packages/flutter_vscode/lib/src/cli/check_host_imports.dart",
+      "sha256": "69c0e96cf548e51dcb85e533f20caadce09bc79e1970f49008638b7cb7ee6808"
     },
     "hostRuntime": {
       "path": "packages/dart_vscode/lib/src/host_runtime.dart",

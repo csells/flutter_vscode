@@ -5,6 +5,7 @@ import 'package:analyzer/dart/analysis/features.dart';
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/source/line_info.dart';
+import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:path/path.dart' as p;
 
 const _allowedDartLibraries = {
@@ -25,30 +26,6 @@ const _prohibitedPackages = {
   'web',
 };
 
-/// Checks the reachable imports of a Dart Extension Host entrypoint.
-void main(List<String> arguments) {
-  final options = _Options.parse(arguments);
-  if (options == null) {
-    stderr.writeln(
-      'Usage: dart run tool/check_host_imports.dart '
-      '--entrypoint <file> --package-config <file>',
-    );
-    exitCode = 64;
-    return;
-  }
-
-  final violations = checkHostImports(
-    entrypoint: File(options.entrypoint),
-    packageConfig: File(options.packageConfig),
-  );
-  if (violations.isEmpty) {
-    return;
-  }
-
-  stderr.write(formatHostImportViolations(violations));
-  exitCode = 1;
-}
-
 /// Returns dependency-boundary violations reachable from [entrypoint].
 List<String> checkHostImports({
   required File entrypoint,
@@ -58,29 +35,6 @@ List<String> checkHostImports({
     entrypoint: entrypoint,
     packageConfig: packageConfig,
   ).check();
-}
-
-/// A syntax diagnostic found before Host Dart dependency checks can run.
-final class HostDartSourceException implements Exception {
-  /// Creates a source diagnostic at an exact location.
-  const HostDartSourceException({
-    required this.path,
-    required this.line,
-    required this.column,
-    required this.message,
-  });
-
-  /// Absolute path to the malformed Dart source.
-  final String path;
-
-  /// One-based source line.
-  final int line;
-
-  /// One-based source column.
-  final int column;
-
-  /// Analyzer problem message.
-  final String message;
 }
 
 /// Formats [violations] as an actionable command-line diagnostic.
@@ -170,7 +124,7 @@ final class _HostImportGuard {
     if (parsed.errors.isNotEmpty) {
       final diagnostic = parsed.errors.first;
       final location = parsed.lineInfo.getLocation(diagnostic.offset);
-      throw HostDartSourceException(
+      throw HostDartSyntaxException(
         path: normalizedPath,
         line: location.lineNumber,
         column: location.columnNumber,
@@ -267,36 +221,5 @@ final class _HostImportGuard {
       return null;
     }
     return File.fromUri(libraryRoot.resolve(segments.skip(1).join('/')));
-  }
-}
-
-final class _Options {
-  const _Options({required this.entrypoint, required this.packageConfig});
-
-  final String entrypoint;
-  final String packageConfig;
-
-  static _Options? parse(List<String> arguments) {
-    String? entrypoint;
-    String? packageConfig;
-    for (var index = 0; index < arguments.length; index += 1) {
-      final argument = arguments[index];
-      if (index + 1 >= arguments.length) {
-        return null;
-      }
-      switch (argument) {
-        case '--entrypoint':
-          entrypoint = arguments[index + 1];
-        case '--package-config':
-          packageConfig = arguments[index + 1];
-        default:
-          return null;
-      }
-      index += 1;
-    }
-    if (entrypoint == null || packageConfig == null) {
-      return null;
-    }
-    return _Options(entrypoint: entrypoint, packageConfig: packageConfig);
   }
 }

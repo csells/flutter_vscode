@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:dart_vscode/contributions.dart';
-import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_command.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/create_command.dart';
@@ -11,17 +10,15 @@ import 'package:flutter_vscode/src/cli/test_command.dart';
 import 'package:flutter_vscode/src/cli/watch_command.dart';
 import 'package:path/path.dart' as p;
 
-import '../tool/check_host_imports.dart';
-
 Future<void> main(List<String> arguments) async {
   try {
     switch (arguments) {
       case ['create', final name]:
         await createProject(Directory.current, name);
       case ['build']:
-        await buildProject(Directory.current, toolchain: _toolchain);
+        await buildProject(Directory.current);
       case ['build', '--watch']:
-        await buildWatch(Directory.current, toolchain: _toolchain);
+        await buildWatch(Directory.current);
       case ['package']:
         await packageProject(Directory.current);
       case ['doctor']:
@@ -70,33 +67,5 @@ Future<void> main(List<String> arguments) async {
       '${error.message}',
     );
     exitCode = 1;
-  }
-}
-
-/// Wires the `tool/`-area boundary checker into the in-process command
-/// modules under `lib/src/cli/`.
-const _toolchain = BindingToolchain(
-  checkHostImports: _guardedCheckHostImports,
-  formatImportViolations: formatHostImportViolations,
-);
-
-/// Converts the boundary checker's syntax diagnostics into the CLI-owned
-/// exception type the command modules render.
-List<String> _guardedCheckHostImports({
-  required File entrypoint,
-  required File packageConfig,
-}) {
-  try {
-    return checkHostImports(
-      entrypoint: entrypoint,
-      packageConfig: packageConfig,
-    );
-  } on HostDartSourceException catch (error) {
-    throw HostDartSyntaxException(
-      path: error.path,
-      line: error.line,
-      column: error.column,
-      message: error.message,
-    );
   }
 }

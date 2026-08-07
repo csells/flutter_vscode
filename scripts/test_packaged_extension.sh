@@ -93,7 +93,8 @@ done < <(find "${VIEW_FIXTURE_ROOT}" -name pubspec.yaml)
 # flutter_vscode archive must carry no generator, IR, or pinned inputs.
 test ! -e "${PACKAGE_COPY}/tool/binding_generator"
 test ! -e "${PACKAGE_COPY}/tool/bindings"
-test -f "${PACKAGE_COPY}/tool/check_host_imports.dart"
+test -f "${PACKAGE_COPY}/lib/src/cli/check_host_imports.dart"
+test ! -e "${PACKAGE_COPY}/tool/check_host_imports.dart"
 test ! -e "${PACKAGE_COPY}/test"
 test ! -e "${PACKAGE_COPY}/specs"
 

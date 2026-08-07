@@ -89,7 +89,6 @@ Future<BuildToolIdentity> frameworkToolIdentity(Directory packageRoot) async =>
           'bin/flutter_vscode.dart',
           'lib',
           'pubspec.yaml',
-          'tool/check_host_imports.dart',
         ],
       ),
     );

@@ -59,7 +59,7 @@
     "harnessPackageLock": "packages/flutter_vscode/tool/extension_host_test/package-lock.json",
     "hostCommandsTemplate": "packages/dart_vscode/lib/src/host_commands.dart",
     "hostContractSources": "packages/dart_vscode/tool/bindings/host-contract-sources.json",
-    "hostImportChecker": "packages/flutter_vscode/tool/check_host_imports.dart",
+    "hostImportChecker": "packages/flutter_vscode/lib/src/cli/check_host_imports.dart",
     "hostRuntime": "packages/dart_vscode/lib/src/host_runtime.dart",
     "launcher": "packages/flutter_vscode/tool/extension_host_test/run.cjs",
     "projectArtifacts": "packages/flutter_vscode/lib/src/cli/project_artifacts.dart",

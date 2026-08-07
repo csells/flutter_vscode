@@ -4,9 +4,9 @@ import 'dart:io';
 import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/artifact_writer.dart';
 import 'package:flutter_vscode/src/cli/baselines.dart';
-import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_inputs.dart';
 import 'package:flutter_vscode/src/cli/build_receipt.dart';
+import 'package:flutter_vscode/src/cli/check_host_imports.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:flutter_vscode/src/cli/project_artifacts.dart';
@@ -15,10 +15,7 @@ import 'package:flutter_vscode/src/cli/project_layout.dart';
 import 'package:path/path.dart' as p;
 
 /// Builds the Extension Project at [root] into runnable host artifacts.
-Future<void> buildProject(
-  Directory root, {
-  required BindingToolchain toolchain,
-}) async {
+Future<void> buildProject(Directory root) async {
   validateProjectLayout(root);
   final dartDescriptor = File(p.join(root.path, 'extension.dart'));
   final jsonDescriptor = File(p.join(root.path, 'extension.json'));
@@ -81,14 +78,13 @@ Future<void> buildProject(
       hostRoot: hostRoot,
       sharedRoot: Directory(p.join(root.path, 'shared')),
       packageConfig: guardPackageConfig,
-      toolchain: toolchain,
     );
   } finally {
     await guardPackageConfig.delete();
   }
   if (violations.isNotEmpty) {
     throw CliException(
-      toolchain.formatImportViolations(violations).trimRight(),
+      formatHostImportViolations(violations).trimRight(),
       code: 'HOST_IMPORT_BOUNDARY_VIOLATION',
     );
   }
@@ -207,7 +203,6 @@ List<String> _checkHostAndSharedImports({
   required Directory hostRoot,
   required Directory sharedRoot,
   required File packageConfig,
-  required BindingToolchain toolchain,
 }) {
   final sources = <File>[];
   for (final sourceRoot in [hostRoot, sharedRoot]) {
@@ -234,7 +229,7 @@ List<String> _checkHostAndSharedImports({
   final violations = <String>{};
   for (final source in sources) {
     violations.addAll(
-      toolchain.checkHostImports(
+      checkHostImports(
         entrypoint: source,
         packageConfig: packageConfig,
       ),

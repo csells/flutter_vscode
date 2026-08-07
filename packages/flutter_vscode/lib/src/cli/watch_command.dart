@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flutter_vscode/src/cli/binding_toolchain.dart';
 import 'package:flutter_vscode/src/cli/build_command.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
@@ -11,13 +10,10 @@ import 'package:path/path.dart' as p;
 ///
 /// Runs until the process is interrupted; the returned future never
 /// completes.
-Future<void> buildWatch(
-  Directory root, {
-  required BindingToolchain toolchain,
-}) async {
+Future<void> buildWatch(Directory root) async {
   Future<void> buildOnce() async {
     try {
-      await buildProject(root, toolchain: toolchain);
+      await buildProject(root);
     } on CliException catch (error) {
       stderr.writeln('${error.code}: ${error.message}');
     } on HostDartSyntaxException catch (error) {

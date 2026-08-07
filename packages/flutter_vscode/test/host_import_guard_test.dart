@@ -1,10 +1,9 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_vscode/src/cli/check_host_imports.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
-
-import '../tool/check_host_imports.dart';
 
 void main() {
   test('rejects a transitive unsupported SDK import', () async {
