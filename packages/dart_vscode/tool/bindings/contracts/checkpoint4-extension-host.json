@@ -160,7 +160,7 @@
     },
     "evidenceIntegrityTest": {
       "path": "packages/dart_vscode/test/binding_evidence_test.dart",
-      "sha256": "100e598afa0b1460d555892cdfa34dd1428df0d9b5251000a35739ddfbdcfb00"
+      "sha256": "f8858135c63dd0a261cbce6f3c0bc394c7f4b9a51038dc57f56539fd819dc86f"
     },
     "fixtureHost": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart",
