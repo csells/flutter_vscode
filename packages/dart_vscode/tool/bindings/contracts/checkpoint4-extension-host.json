@@ -228,11 +228,11 @@
     },
     "harnessPackage": {
       "path": "packages/flutter_vscode/tool/extension_host_test/package.json",
-      "sha256": "32d5071739df28d53105a2f12420f755c7df66e879fc8aae92d344faa3849928"
+      "sha256": "65a48420effe210d3151998bd52fb8b1c35ebe0b276d3133b47f9b7a4034cd9b"
     },
     "harnessPackageLock": {
       "path": "packages/flutter_vscode/tool/extension_host_test/package-lock.json",
-      "sha256": "49110093992e26017594e551b921f29d64f626dddb4a24071657ed73fa8cfce7"
+      "sha256": "67542e37852ce2ff021693e31fcda45df43e6f8e05da0426174c5b10e7cbdf71"
     },
     "hostCommandsTemplate": {
       "path": "packages/dart_vscode/lib/src/host_commands.dart",
