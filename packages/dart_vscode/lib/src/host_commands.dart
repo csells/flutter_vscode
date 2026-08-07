@@ -26,6 +26,20 @@ import 'package:dart_vscode/host_runtime.dart';
 /// promise with mapped Dart stack frames.
 typedef CommandHandler = FutureOr<Object?> Function(List<Object?> arguments);
 
+/// Registration ownership through the activation context.
+extension ExtensionContextOwnership on ExtensionContext {
+  /// Pushes [registration] onto [subscriptions], so the context owns its
+  /// lifetime and disposes it at deactivation.
+  ///
+  /// Accepts any VS Code registration object (a JS value with `dispose`).
+  /// This is the one place that names the generated structural type of
+  /// the subscriptions array: its name is a hash of an anonymous IR
+  /// shape, so authored code must never depend on it.
+  void own(JSObject registration) {
+    subscriptions.toDart.add(JSAnon_ffa2e03c40a2(registration));
+  }
+}
+
 /// Registers ordinary-Dart command handlers with VS Code.
 ///
 /// One instance holds the two ambient values every registration needs
@@ -79,7 +93,7 @@ final class ExtensionCommands {
           .toJS,
     );
     final registration = api.commands.registerCommand(name, callback);
-    context.subscriptions.toDart.add(JSAnon_ffa2e03c40a2(registration));
+    context.own(registration);
     return registration;
   }
 

@@ -127,6 +127,9 @@ import 'package:${projectName}_host/generated/host_exports.g.dart';
 // raw activation module with VscodeApi(rawVscode), or enter the
 // Dart-first ergonomics layer over it with VscodeApi(rawVscode).dart.
 import 'package:dart_vscode/dart_vscode.dart';
+// Framework Modules: ExtensionCommands and context.own for registration
+// ownership.
+import 'package:dart_vscode/host_commands.dart';
 // Runtime helpers: toHostPromise, toHostCallback, hostFetch.
 import 'package:dart_vscode/host_runtime.dart';
 import 'package:${projectName}_shared/shared.dart';
@@ -143,10 +146,8 @@ class _Extension {
     final vscode = VscodeApi(rawVscode);
 
     final hello = (() => helloMessage.toJS).toJS;
-    context.subscriptions.toDart.add(
-      JSAnon_ffa2e03c40a2(
-        vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
-      ),
+    context.own(
+      vscode.commands.registerCommand(_helloCommand, toHostCallback(hello)),
     );
 
     final provideHover =
@@ -169,10 +170,8 @@ class _Extension {
     final provider = HoverProvider.lit\$(
       provideHover: toHostCallback(provideHover),
     );
-    context.subscriptions.toDart.add(
-      JSAnon_ffa2e03c40a2(
-        vscode.languages.registerHoverProvider('json'.toJS, provider),
-      ),
+    context.own(
+      vscode.languages.registerHoverProvider('json'.toJS, provider),
     );
     return Future<JSAny?>.value(null).toJS;
   }

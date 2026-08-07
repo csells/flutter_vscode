@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:dart_vscode/dart_vscode.dart' as parity;
 import 'package:dart_vscode/flutter_view_host.dart';
+import 'package:dart_vscode/host_commands.dart';
 import 'package:dart_vscode/host_runtime.dart';
 import 'package:dart_vscode/view_protocol.dart';
 import 'package:flutter_vscode_host_fixture/generated/host_exports.g.dart';
@@ -1049,7 +1050,7 @@ String _secureToken() {
 
 /// Adds [registration] to the native extension subscription collection.
 void _addSubscription(parity.ExtensionContext context, JSObject registration) {
-  context.subscriptions.toDart.add(parity.JSAnon_ffa2e03c40a2(registration));
+  context.own(registration);
 }
 
 String _html(String value) => value

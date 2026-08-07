@@ -93,6 +93,9 @@ async function main() {
       launchArgs: [
         `--extensions-dir=${extensionsDir}`,
         `--user-data-dir=${userDataDir}`,
+        // Surfaces webview renderer console output (CSP violations,
+        // resource failures, JS errors) in the harness log.
+        '--enable-logging',
       ],
     });
   } finally {

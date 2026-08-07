@@ -29,24 +29,25 @@ This file is the root index for AI and contributor documentation.
 ## Root Project Documents
 
 - [README](README.md)
-- [CHANGELOG](CHANGELOG.md)
+- [dart_vscode CHANGELOG](packages/dart_vscode/CHANGELOG.md)
+- [flutter_vscode CHANGELOG](packages/flutter_vscode/CHANGELOG.md)
 
 ## Mandatory Baseline Rules
 
-- Project type is a Flutter package that provides code generation and runtime utilities.
+- Project type is a pub workspace monorepo publishing two packages: `dart_vscode`, the pure-Dart typed VS Code API and extension runtime, and `flutter_vscode`, the CLI and Flutter View runtime for building VS Code extensions in Dart.
 - Keep the binding pipeline, runtime modules, and platform-conditional view implementations separated.
 - Use `very_good_analysis` and follow Effective Dart conventions.
 - Prefer `package:web` and `dart:js_interop`; do not add `dart:js_util`.
 - For generation errors, provide actionable user-facing failures.
 - Keep documentation and examples aligned with API behavior.
 
-## Consumer Agent Toolkit
+## Extension Author Toolkit
 
 Extension authors (not package contributors) use:
 
 - [Agent-Assisted Development](docs/guides/agent-assisted-development.md)
 - [Generated Host API](docs/reference/generated-host-api.md)
-- [Consumer AGENTS.md template](docs/templates/consumer-agents.md)
+- [Extension Author AGENTS.md template](docs/templates/consumer-agents.md)
 - Skills in [`skills/`](skills/) — copy into an extension project as `agent-skills/`
   when they are not already present
 

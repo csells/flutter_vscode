@@ -164,7 +164,7 @@
     },
     "fixtureHost": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/extension.dart",
-      "sha256": "cc49b8984850f91faab4b37955b887281684d5544669ca710af42f05dc9f94a2"
+      "sha256": "26f01cb83c9417465f36995f724b923cf54707c2960ab7ef0d54115d4afebb9b"
     },
     "fixtureHostPackage": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/pubspec.yaml",
@@ -236,7 +236,7 @@
     },
     "hostCommandsTemplate": {
       "path": "packages/dart_vscode/lib/src/host_commands.dart",
-      "sha256": "6dc0bfb5131f77ba0b832e7e243e1fe725d4b9995120b6b4f623ebcfce09034b"
+      "sha256": "dbe07100b9958941d68f3c0c60af8a589a25154ebf8cd96dd43128df3ffd76f3"
     },
     "hostContractSources": {
       "path": "packages/dart_vscode/tool/bindings/host-contract-sources.json",

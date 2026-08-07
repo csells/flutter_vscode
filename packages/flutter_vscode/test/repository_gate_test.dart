@@ -50,6 +50,30 @@ void main() {
       expect(commands, contains(gate));
     }
 
+    // Kali's review: real webview bugs were found on desktop. Every gate
+    // that exercises a live VS Code must therefore run natively on macOS
+    // too, not only inside the Linux container.
+    final desktopCommands = [
+      for (final step in steps('desktop'))
+        if (step['run'] != null) step['run']! as String,
+    ].join('\n');
+    expect(
+      desktopCommands,
+      contains('./scripts/test_host_extension_native.sh'),
+    );
+    for (final gate in [
+      './scripts/test_coverage_extension.sh',
+      './scripts/test_pubspec_lens.sh',
+      './scripts/test_breakpoints.sh',
+      './scripts/test_packaged_extension.sh',
+    ]) {
+      expect(
+        desktopCommands,
+        contains('FLUTTER_VSCODE_GATE_NATIVE=1 $gate'),
+        reason: '$gate must also prove the desktop platform',
+      );
+    }
+
     final testSuiteDirectories = {
       for (final step in steps('test'))
         if (step['working-directory'] != null)
@@ -66,6 +90,31 @@ void main() {
         testSuiteDirectories,
         contains(suite),
         reason: 'the $suite suite must run as its own test-job step',
+      );
+    }
+  });
+
+  test('generated structural names stay behind Framework Modules', () {
+    // JSAnon_* names are hashes of anonymous IR shapes: a baseline bump
+    // can rename them, so any authored file that names one breaks on
+    // maintenance the author never asked for. The one place allowed to
+    // name them is the Framework Module that exists to hide them
+    // (context.own in package:dart_vscode/host_commands.dart).
+    final authored = <String>[
+      repoPath('packages/dart_vscode/lib/src/host_runtime.dart'),
+      repoPath('packages/dart_vscode/lib/src/flutter_view_host.dart'),
+      'lib/src/cli/create_command.dart',
+      'test/fixtures/host_extension/host/lib/extension.dart',
+      repoPath('extensions/pubspec_lens/host/lib/extension.dart'),
+      repoPath('extensions/coverage_treemap/host/lib/extension.dart'),
+    ];
+    for (final path in authored) {
+      expect(
+        File(path).readAsStringSync(),
+        isNot(contains('JSAnon_')),
+        reason:
+            '$path must own registrations via context.own, not the '
+            'generated structural name',
       );
     }
   });
@@ -115,8 +164,8 @@ void main() {
       containsAll({
         // The specs, gate scripts, docs, and example extensions live above
         // this package, so the archive never sees them and `.pubignore` has
-        // nothing to say about them. Nothing under tool/ is a consumer
-        // asset either.
+        // nothing to say about them. Nothing under tool/ is an
+        // Extension Author asset either.
         '/test/',
         '**/build/',
         '/tool/',
@@ -149,7 +198,7 @@ void main() {
     );
   });
 
-  test('shipped example extensions honor the consumer guardrails', () {
+  test('shipped example extensions honor the Extension Author guardrails', () {
     final areaReadme = File(
       repoPath('extensions/README.md'),
     ).readAsStringSync();

@@ -138,3 +138,15 @@ jobs:
       # Electron window runs headed on the runner's virtual display.
       - name: Run the pinned Extension Host gate natively
         run: ./scripts/test_host_extension_native.sh
+
+      - name: Coverage Treemap real-host gate natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_coverage_extension.sh
+
+      - name: Pubspec Lens real-host gate natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_pubspec_lens.sh
+
+      - name: Breakpoints bind natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_breakpoints.sh
+
+      - name: Packaged extension end to end natively
+        run: FLUTTER_VSCODE_GATE_NATIVE=1 ./scripts/test_packaged_extension.sh

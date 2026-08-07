@@ -19,7 +19,7 @@ supported workflow. Overrides pins are per-baseline: every checked-in
 baseline cites the same checkpoint-4 contract, and the contract writer
 surgically repins the `artifactSha256` in each
 `packages/dart_vscode/tool/bindings/overrides/vscode-*.json` on every write.
-`packages/flutter_vscode/test/binding_evidence_test.dart` proves the checked-in artifact
+`packages/dart_vscode/test/binding_evidence_test.dart` proves the checked-in artifact
 byte-equals regeneration and that the overrides pin matches its bytes;
 the real-host launcher verifies all receipts before VS Code starts and
 again before accepting evidence (`packages/flutter_vscode/tool/extension_host_test/run.cjs`,

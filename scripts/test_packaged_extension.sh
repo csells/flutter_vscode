@@ -126,15 +126,31 @@ CLI="${PUB_CACHE_ROOT}/bin/flutter_vscode"
   PUB_CACHE="${PUB_CACHE_ROOT}" "${CLI}" package
 )
 
-docker build \
-  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
-  --tag "${IMAGE_NAME}" \
-  "${REPO_ROOT}"
+HARNESS="${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test"
+if [[ "${FLUTTER_VSCODE_GATE_NATIVE:-0}" == "1" ]]; then
+  # Same driver, same pinned VS Code, natively on the host OS — the
+  # desktop platform Extension Authors actually develop on.
+  (cd "${HARNESS}" && npm ci --no-audit --no-fund)
+else
+  docker build \
+    --file "${HARNESS}/Dockerfile" \
+    --tag "${IMAGE_NAME}" \
+    "${REPO_ROOT}"
+fi
 
 run_packaged_project() {
   local project_root="$1"
   local command_result="$2"
   local require_view="$3"
+
+  if [[ "${FLUTTER_VSCODE_GATE_NATIVE:-0}" == "1" ]]; then
+    VSCODE_TEST_CACHE_PATH="${CACHE_ROOT}" \
+      FLUTTER_VSCODE_PACKAGED_PROJECT="${project_root}" \
+      FLUTTER_VSCODE_PACKAGED_COMMAND_RESULT="${command_result}" \
+      FLUTTER_VSCODE_PACKAGED_REQUIRE_VIEW="${require_view}" \
+      node "${HARNESS}/run_packaged.cjs"
+    return
+  fi
 
   docker run --rm --init --shm-size=1g \
     --volume "${REPO_ROOT}:/workspace:ro" \

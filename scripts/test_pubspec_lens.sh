@@ -3,6 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="${SCRIPT_DIR}/.."
+HARNESS="${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test"
 IMAGE_NAME="flutter-vscode-host-test:local"
 EXTENSION_ROOT="${REPO_ROOT}/extensions/pubspec_lens"
 TEMP_ROOT="$(mktemp -d "${TMPDIR:-/tmp}/flutter-vscode-pubspec-lens.XXXXXX")"
@@ -47,18 +48,28 @@ EOF
   dart "${REPO_ROOT}/packages/flutter_vscode/bin/flutter_vscode.dart" package
 )
 
-docker build \
-  --file "${REPO_ROOT}/packages/flutter_vscode/tool/extension_host_test/Dockerfile" \
-  --tag "${IMAGE_NAME}" \
-  "${REPO_ROOT}"
+if [[ "${FLUTTER_VSCODE_GATE_NATIVE:-0}" == "1" ]]; then
+  # Same driver, same pinned VS Code, natively on the host OS — the
+  # desktop platform Extension Authors actually develop on.
+  (cd "${HARNESS}" && npm ci --no-audit --no-fund)
+  VSCODE_TEST_CACHE_PATH="${CACHE_ROOT}" \
+    FLUTTER_VSCODE_PUBSPEC_LENS_PROJECT="${EXTENSION_ROOT}" \
+    FLUTTER_VSCODE_PUBSPEC_LENS_WORKSPACE="${WORKSPACE}" \
+    node "${HARNESS}/run_pubspec_lens.cjs"
+else
+  docker build \
+    --file "${HARNESS}/Dockerfile" \
+    --tag "${IMAGE_NAME}" \
+    "${REPO_ROOT}"
 
-docker run --rm --init --shm-size=1g \
-  --volume "${REPO_ROOT}:/workspace:ro" \
-  --volume "${WORKSPACE}:/pubspec-workspace" \
-  --volume "${CACHE_ROOT}:/vscode-test-cache" \
-  --env VSCODE_TEST_CACHE_PATH=/vscode-test-cache \
-  --env FLUTTER_VSCODE_PUBSPEC_LENS_PROJECT=/workspace/extensions/pubspec_lens \
-  --env FLUTTER_VSCODE_PUBSPEC_LENS_WORKSPACE=/pubspec-workspace \
-  --workdir /test-run \
-  "${IMAGE_NAME}" \
-  xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run_pubspec_lens.cjs
+  docker run --rm --init --shm-size=1g \
+    --volume "${REPO_ROOT}:/workspace:ro" \
+    --volume "${WORKSPACE}:/pubspec-workspace" \
+    --volume "${CACHE_ROOT}:/vscode-test-cache" \
+    --env VSCODE_TEST_CACHE_PATH=/vscode-test-cache \
+    --env FLUTTER_VSCODE_PUBSPEC_LENS_PROJECT=/workspace/extensions/pubspec_lens \
+    --env FLUTTER_VSCODE_PUBSPEC_LENS_WORKSPACE=/pubspec-workspace \
+    --workdir /test-run \
+    "${IMAGE_NAME}" \
+    xvfb-run -a node /workspace/packages/flutter_vscode/tool/extension_host_test/run_pubspec_lens.cjs
+fi

@@ -126,7 +126,7 @@ void main() {
   /// SL-2: the walking-slice facade and its parity-slice sibling retire.
   ///
   /// The generator stops emitting `vscode_facade.g.dart` and
-  /// `vscode_parity.g.dart`; every consumer (fixture host, example host,
+  /// `vscode_parity.g.dart`; every importer (fixture host, example host,
   /// scaffold, FlutterViewHost template) speaks the single layer plus the
   /// runtime and host-exports modules.
   group('SL-2: the walking-slice facade and parity sibling retire', () {

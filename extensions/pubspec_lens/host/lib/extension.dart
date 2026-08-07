@@ -230,12 +230,7 @@ final class _PubspecLensController {
       }
       final name = report.dependency.nameSpan;
       final end = report.dependency.constraintSpan ?? name;
-      final range = _api.Range.new$$2(
-        name.startLine,
-        name.startColumn,
-        end.endLine,
-        end.endColumn,
-      );
+      final range = _rangeOf(name, end);
       // Severity is Information by design: a newer release existing
       // is advice about the ecosystem, not a defect in this file.
       final diagnostic = _api.Diagnostic.new$(
@@ -292,12 +287,7 @@ final class _PubspecLensController {
               final name = report.dependency.nameSpan;
               return _api.Hover.new$(
                 _api.MarkdownString.new$(buffer.toString()),
-                _api.Range.new$$2(
-                  name.startLine,
-                  name.startColumn,
-                  name.endLine,
-                  name.endColumn,
-                ),
+                _rangeOf(name),
               );
             })
             .toJS;
@@ -329,12 +319,7 @@ final class _PubspecLensController {
                 final name = report.dependency.nameSpan;
                 lenses.add(
                   _api.CodeLens.new$(
-                    _api.Range.new$$2(
-                      name.startLine,
-                      name.startColumn,
-                      name.endLine,
-                      name.endColumn,
-                    ),
+                    _rangeOf(name),
                     vs.CommandDart.lit$(
                       command: 'pubspec-lens.update',
                       title: 'Update to $suggested',
@@ -407,12 +392,7 @@ final class _PubspecLensController {
     final edit = _api.WorkspaceEdit.new$()
       ..replace(
         analysis.uri,
-        _api.Range.new$$2(
-          span.startLine,
-          span.startColumn,
-          span.endLine,
-          span.endColumn,
-        ),
+        _rangeOf(span),
         report.verdict.suggestedConstraint!,
       );
     final applied = await _api.workspace.applyEdit(edit);
@@ -488,8 +468,20 @@ final class _PubspecLensController {
     }
   }
 
+  /// Projects one [SpanLocation] (or a [start]..[end] pair) into a VS Code
+  /// range.
+  vs.Range _rangeOf(SpanLocation start, [SpanLocation? end]) {
+    final last = end ?? start;
+    return _api.Range.new$$2(
+      start.startLine,
+      start.startColumn,
+      last.endLine,
+      last.endColumn,
+    );
+  }
+
   void _subscribe(JSObject registration) {
-    _context.subscriptions.toDart.add(vs.JSAnon_ffa2e03c40a2(registration));
+    _context.own(registration);
   }
 }
 

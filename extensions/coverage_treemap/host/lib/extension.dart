@@ -151,9 +151,7 @@ final class _CoverageController {
   void _refreshOnEvent(Object? _) => unawaited(_refresh());
 
   void _subscribeParity(JSObject registration) {
-    _context.subscriptions.toDart.add(
-      parity.JSAnon_ffa2e03c40a2(registration),
-    );
+    _context.own(registration);
   }
 
   Future<void> _refresh() async {

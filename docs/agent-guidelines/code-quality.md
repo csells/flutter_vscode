@@ -11,7 +11,7 @@
   cross-runtime protocol in separate modules.
 - Keep Flutter View/browser adapters platform-specific and the protocol core
   transport-independent.
-- Prefer deep typed interfaces over string-keyed maps and generic dispatchers.
+- Prefer deep typed interfaces over string-keyed maps and generic dispatchers. One carve-out: at JSON boundaries — the maintainer binding pipeline validating raw IR is the canonical case — string-keyed maps are the correct representation, and typed interfaces begin at the published API surface.
 
 ## Naming
 
