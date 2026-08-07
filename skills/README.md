@@ -1,13 +1,10 @@
-# Dart-Host v1 Agent Skills
+# Agent Skills
 
-These portable guides describe the current Dart-owned Extension Project
-workflow created by `flutter_vscode create`. Each directory contains one plain
-Markdown `SKILL.md` that can be used by any coding agent.
-
+These portable guides describe the Extension Project workflow created by `flutter_vscode create`. Each directory contains one plain Markdown `SKILL.md` that can be used by any coding agent.
 
 ## Install in an Extension Project
 
-From this package repository, copy the v1 consumer guide and live skills:
+From this package repository, copy the Extension Author guide and the skills:
 
 ```sh
 cp docs/templates/consumer-agents.md ./AGENTS.md
@@ -17,8 +14,7 @@ cp -r skills/* agent-skills/
 
 ## Wire into your agent tool
 
-`agent-skills/` is tool-neutral. If your product expects skills in a different
-path, copy or symlink:
+`agent-skills/` is tool-neutral. If your product expects skills in a different path, copy or symlink:
 
 ```sh
 # Example: Cursor (optional)
