@@ -12,8 +12,8 @@ import 'package:dart_vscode/src/contributions/vscode_api_version.dart';
 /// Construction validates every field the way the pinned platform would at
 /// extension load, so a descriptor that constructs successfully produces a
 /// `package.json` the pinned VS Code accepts.
-final class ExtensionManifest {
-  ExtensionManifest._({
+final class ManifestProjection {
+  ManifestProjection._({
     required this.name,
     required this.displayName,
     required this.description,
@@ -30,7 +30,7 @@ final class ExtensionManifest {
   ///
   /// Throws a [ContributionException] with a stable diagnostic code when the
   /// descriptor would be rejected by the pinned platform.
-  factory ExtensionManifest.fromProjectDescriptor(
+  factory ManifestProjection.fromProjectDescriptor(
     Map<String, Object?> project,
   ) {
     validateProjectDescriptor(project);
@@ -76,7 +76,7 @@ final class ExtensionManifest {
       contributedContainers: contributedContainers,
     );
     final configuration = projectConfiguration(project['configuration']);
-    return ExtensionManifest._(
+    return ManifestProjection._(
       name: name,
       displayName: displayName,
       description: description,

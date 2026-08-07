@@ -13,7 +13,7 @@ void main() {
   };
 
   test('a valid descriptor projects into the pinned manifest form', () {
-    final manifest = ExtensionManifest.fromProjectDescriptor(descriptor());
+    final manifest = ManifestProjection.fromProjectDescriptor(descriptor());
 
     expect(manifest.extensionId, 'example.my-extension');
     final json = manifest.toManifestJson(main: './out/bootstrap.cjs');
@@ -47,7 +47,7 @@ void main() {
         ],
       };
 
-    final json = ExtensionManifest.fromProjectDescriptor(
+    final json = ManifestProjection.fromProjectDescriptor(
       project,
     ).toManifestJson(main: './out/bootstrap.cjs');
 
@@ -72,7 +72,7 @@ void main() {
 
     for (final entry in cases.entries) {
       expect(
-        () => ExtensionManifest.fromProjectDescriptor(entry.key),
+        () => ManifestProjection.fromProjectDescriptor(entry.key),
         throwsA(
           isA<ContributionException>().having(
             (error) => error.code,
@@ -96,7 +96,7 @@ void main() {
         ],
       };
     expect(
-      () => ExtensionManifest.fromProjectDescriptor(badId),
+      () => ManifestProjection.fromProjectDescriptor(badId),
       throwsA(isA<ContributionException>()),
     );
 
@@ -107,7 +107,7 @@ void main() {
         ],
       };
     expect(
-      ExtensionManifest.fromProjectDescriptor(whitespaceTitle).viewsContainers,
+      ManifestProjection.fromProjectDescriptor(whitespaceTitle).viewsContainers,
       isNotEmpty,
     );
   });

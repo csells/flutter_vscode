@@ -111,8 +111,11 @@ Future<int> doctorProject(
 Future<(bool, String?)> _probeToolVersion(String executable) async {
   try {
     final result = await Process.run(executable, const ['--version']);
-    final banner =
-        '${result.stdout}${result.stderr}'.trim().split('\n').first.trim();
+    final banner = '${result.stdout}${result.stderr}'
+        .trim()
+        .split('\n')
+        .first
+        .trim();
     return (result.exitCode == 0, banner);
   } on ProcessException {
     return (false, 'not found on PATH');

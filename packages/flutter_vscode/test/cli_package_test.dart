@@ -192,9 +192,9 @@ void main() {
       final descriptor = File(p.join(project.path, 'extension.dart'));
       descriptor.writeAsStringSync(
         descriptor.readAsStringSync().replaceFirst(
-              'My Extension',
-              r'My\u0001Extension',
-            ),
+          'My Extension',
+          r'My\u0001Extension',
+        ),
       );
       final build = await Process.run(
         'dart',

@@ -68,9 +68,11 @@ void main() {
         isFalse,
       );
 
-      final manifest = jsonDecode(
-        File(p.join(project.path, 'package.json')).readAsStringSync(),
-      ) as Map<String, Object?>;
+      final manifest =
+          jsonDecode(
+                File(p.join(project.path, 'package.json')).readAsStringSync(),
+              )
+              as Map<String, Object?>;
       expect(manifest['main'], './out/bootstrap.cjs');
       expect(manifest['name'], 'my-extension');
       expect(manifest['engines'], <String, Object?>{'vscode': '1.129.1'});
@@ -127,10 +129,12 @@ void main() {
           path: await File(p.join(project.path, path)).readAsBytes(),
       };
       File(p.join(project.path, 'package.json')).writeAsStringSync('{}\n');
-      File(p.join(project.path, 'host', 'lib', 'generated', 'stale.g.dart'))
-          .writeAsStringSync('// stale\n');
-      File(p.join(project.path, 'out', 'stale.js'))
-          .writeAsStringSync('// stale\n');
+      File(
+        p.join(project.path, 'host', 'lib', 'generated', 'stale.g.dart'),
+      ).writeAsStringSync('// stale\n');
+      File(
+        p.join(project.path, 'out', 'stale.js'),
+      ).writeAsStringSync('// stale\n');
 
       final secondBuild = await Process.run(
         'dart',
@@ -342,8 +346,9 @@ Map<String, Object?> _createExtension() {
       );
       expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
       final project = Directory(p.join(workspace.path, 'my_extension'));
-      File(p.join(project.path, 'host', 'lib', 'extension.dart'))
-          .writeAsStringSync("import 'dart:io';\nvoid main() {}\n");
+      File(
+        p.join(project.path, 'host', 'lib', 'extension.dart'),
+      ).writeAsStringSync("import 'dart:io';\nvoid main() {}\n");
 
       final build = await Process.run(
         'dart',
@@ -381,8 +386,9 @@ Map<String, Object?> _createExtension() {
       );
       expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
       final project = Directory(p.join(workspace.path, 'my_extension'));
-      File(p.join(project.path, 'host', 'lib', 'extension.dart'))
-          .writeAsStringSync("import 'dart:js_interop'\nvoid main() {}\n");
+      File(
+        p.join(project.path, 'host', 'lib', 'extension.dart'),
+      ).writeAsStringSync("import 'dart:js_interop'\nvoid main() {}\n");
 
       final build = await Process.run(
         'dart',
@@ -426,10 +432,12 @@ Map<String, Object?> _createExtension() {
       );
       expect(create.exitCode, 0, reason: '${create.stdout}\n${create.stderr}');
       final project = Directory(p.join(workspace.path, 'my_extension'));
-      File(p.join(project.path, 'host', 'lib', 'unused_platform.dart'))
-          .writeAsStringSync("import 'dart:io';\n");
-      File(p.join(project.path, 'shared', 'lib', 'unused_browser.dart'))
-          .writeAsStringSync("import 'package:web/web.dart';\n");
+      File(
+        p.join(project.path, 'host', 'lib', 'unused_platform.dart'),
+      ).writeAsStringSync("import 'dart:io';\n");
+      File(
+        p.join(project.path, 'shared', 'lib', 'unused_browser.dart'),
+      ).writeAsStringSync("import 'package:web/web.dart';\n");
 
       final build = await Process.run(
         'dart',

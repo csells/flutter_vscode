@@ -6,7 +6,7 @@
   package's maintainer `tool/` area, never published and never read at
   build time (ADR 0016). A new `contributions` library exposes the
   pinned platform's author-data admission semantics —
-  `ExtensionManifest` validates an Extension Project descriptor and
+  `ManifestProjection` validates an Extension Project descriptor and
   projects its `package.json` form — plus `vscodeApiVersion`, the one
   place the shipped baseline is named.
 

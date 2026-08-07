@@ -10,8 +10,9 @@ void main() {
     // There is no aggregate script; the workflow lists what CI runs, and
     // scripts/ci_gates.sh mirrors it locally. A suite or gate missing here
     // is a suite or gate CI silently stopped running.
-    final workflow =
-        File(repoPath('.github/workflows/test.yml')).readAsStringSync();
+    final workflow = File(
+      repoPath('.github/workflows/test.yml'),
+    ).readAsStringSync();
 
     expect(workflow, contains('flutter analyze'));
     expect(
@@ -76,7 +77,8 @@ void main() {
       expect(
         fixture,
         isNot(contains(skeleton)),
-        reason: 'only adversity machinery may stay fixture-owned; '
+        reason:
+            'only adversity machinery may stay fixture-owned; '
             '"$skeleton" belongs to FlutterViewHost',
       );
     }
@@ -109,9 +111,9 @@ void main() {
     // tool/ area: the importer, generator, IR, and pinned inputs stay
     // repository-only, and its tests stay beside the package per Dart
     // convention without shipping in the archive.
-    final layerPubIgnore = File(repoPath('packages/dart_vscode/.pubignore'))
-        .readAsLinesSync()
-        .toSet();
+    final layerPubIgnore = File(
+      repoPath('packages/dart_vscode/.pubignore'),
+    ).readAsLinesSync().toSet();
     expect(layerPubIgnore, containsAll({'/tool/', '/test/'}));
 
     // The artifact grows with the number of files it attests, and splitting
@@ -129,8 +131,9 @@ void main() {
   });
 
   test('shipped example extensions honor the consumer guardrails', () {
-    final areaReadme =
-        File(repoPath('extensions/README.md')).readAsStringSync();
+    final areaReadme = File(
+      repoPath('extensions/README.md'),
+    ).readAsStringSync();
     expect(
       areaReadme,
       contains('consumes the framework the way an Extension'),
@@ -141,8 +144,9 @@ void main() {
       contains('extensions/'),
       reason: 'the root README must route readers to the shipped examples',
     );
-    final workflow =
-        File(repoPath('.github/workflows/test.yml')).readAsStringSync();
+    final workflow = File(
+      repoPath('.github/workflows/test.yml'),
+    ).readAsStringSync();
     expect(
       workflow,
       contains('test_coverage_extension.sh'),
@@ -153,8 +157,9 @@ void main() {
       contains('test_pubspec_lens.sh'),
       reason: 'CI must run the pubspec-lens gate',
     );
-    final extensionDirs =
-        Directory(repoPath('extensions')).listSync().whereType<Directory>();
+    final extensionDirs = Directory(
+      repoPath('extensions'),
+    ).listSync().whereType<Directory>();
     expect(extensionDirs, isNotEmpty);
     for (final extension in extensionDirs) {
       for (final root in ['host', 'shared']) {
@@ -173,7 +178,8 @@ void main() {
           expect(
             source,
             isNot(contains("import 'package:flutter_vscode/src/")),
-            reason: '${entity.path} must consume the published package '
+            reason:
+                '${entity.path} must consume the published package '
                 'surface, never the framework internals (guardrail)',
           );
         }
@@ -211,8 +217,9 @@ void main() {
   });
 
   test('packaged E2E activates the pub-filtered framework contents', () {
-    final packagedGate =
-        File(repoPath('scripts/test_packaged_extension.sh')).readAsStringSync();
+    final packagedGate = File(
+      repoPath('scripts/test_packaged_extension.sh'),
+    ).readAsStringSync();
 
     expect(
       packagedGate,
@@ -297,10 +304,12 @@ void main() {
   });
 
   test('Host fixture resolves the receipted root package before its CLI', () {
-    final builder =
-        File(repoPath('scripts/build_host_fixture.sh')).readAsStringSync();
+    final builder = File(
+      repoPath('scripts/build_host_fixture.sh'),
+    ).readAsStringSync();
     const repositoryRoot = r'${REPO_ROOT}';
-    const resolution = 'flutter pub get --enforce-lockfile --no-example '
+    const resolution =
+        'flutter pub get --enforce-lockfile --no-example '
         '--directory="$repositoryRoot"';
     const packageBin = 'packages/flutter_vscode/bin/flutter_vscode.dart';
     const cli = 'dart "$repositoryRoot/$packageBin" build';
@@ -336,13 +345,15 @@ void main() {
     expect(
       repositoryFiles.exitCode,
       0,
-      reason: 'git failed in ${repositoryRoot.path}:\n'
+      reason:
+          'git failed in ${repositoryRoot.path}:\n'
           '${repositoryFiles.stdout}\n${repositoryFiles.stderr}',
     );
     expect(
       (repositoryFiles.stdout as String).trim(),
       'pubspec.lock',
-      reason: 'pubspec.lock must be committed, not merely untracked and '
+      reason:
+          'pubspec.lock must be committed, not merely untracked and '
           'unignored, so a fresh checkout satisfies --enforce-lockfile.',
     );
 
@@ -354,13 +365,15 @@ void main() {
     expect(
       committedFiles.exitCode,
       0,
-      reason: 'git failed in ${repositoryRoot.path}:\n'
+      reason:
+          'git failed in ${repositoryRoot.path}:\n'
           '${committedFiles.stdout}\n${committedFiles.stderr}',
     );
     expect(
       (committedFiles.stdout as String).trim(),
       'pubspec.lock',
-      reason: 'pubspec.lock must exist in the HEAD tree, not merely the '
+      reason:
+          'pubspec.lock must exist in the HEAD tree, not merely the '
           'index, so a fresh checkout satisfies --enforce-lockfile.',
     );
   });
@@ -374,21 +387,24 @@ void main() {
     expect(
       File(repoPath('docs/reference/parity.md')).readAsStringSync(),
       contains('defect'),
-      reason: "the report must state the vision's missing-path-is-a-defect "
+      reason:
+          "the report must state the vision's missing-path-is-a-defect "
           'rule',
     );
   });
 
   test('generated Host API guide registers providers synchronously', () {
-    final guide = File(repoPath('docs/reference/generated-host-api.md'))
-        .readAsStringSync();
+    final guide = File(
+      repoPath('docs/reference/generated-host-api.md'),
+    ).readAsStringSync();
 
     expect(guide, isNot(contains('Future<JSAny?>(()')));
     expect(guide, contains('Future<JSAny?>.value(null).toJS'));
     expect(
       guide.indexOf('registerCommand'),
       lessThan(guide.indexOf('Future<JSAny?>.value(null).toJS')),
-      reason: 'the activation example must register through the single '
+      reason:
+          'the activation example must register through the single '
           "layer's registerCommand before returning its settled future",
     );
     expect(guide, contains('toHostCallback'));

@@ -16,17 +16,18 @@ Future<Map<String, Object?>> _parse(String source) async {
 }
 
 Matcher _throwsActionably(String fragment) => throwsA(
-      isA<FormatException>().having(
-        (error) => error.message,
-        'message',
-        contains(fragment),
-      ),
-    );
+  isA<FormatException>().having(
+    (error) => error.message,
+    'message',
+    contains(fragment),
+  ),
+);
 
 void main() {
-  test('parses the typed manifest declaration into the descriptor map',
-      () async {
-    final project = await _parse('''
+  test(
+    'parses the typed manifest declaration into the descriptor map',
+    () async {
+      final project = await _parse('''
 import 'package:flutter_vscode/manifest.dart';
 
 /// Dart-owned extension metadata consumed by `flutter_vscode build`.
@@ -48,29 +49,30 @@ const extension = ExtensionManifest(
 );
 ''');
 
-    expect(project, <String, Object?>{
-      'schemaVersion': 1,
-      'name': 'my-extension',
-      'displayName': 'My Extension',
-      'description': 'A VS Code extension written in Dart.',
-      'version': '0.0.1',
-      'publisher': 'local',
-      'activationEvents': <Object?>['onLanguage:json'],
-      'commands': <Object?>[
-        <String, Object?>{
-          'command': 'my-extension.hello',
-          'title': 'Say Hello from Dart',
-        },
-        <String, Object?>{
-          'command': 'my-extension.bye',
-          'title': 'Say Goodbye',
-        },
-      ],
-      'viewsContainers': <String, Object?>{},
-      'views': <String, Object?>{},
-      'configuration': null,
-    });
-  });
+      expect(project, <String, Object?>{
+        'schemaVersion': 1,
+        'name': 'my-extension',
+        'displayName': 'My Extension',
+        'description': 'A VS Code extension written in Dart.',
+        'version': '0.0.1',
+        'publisher': 'local',
+        'activationEvents': <Object?>['onLanguage:json'],
+        'commands': <Object?>[
+          <String, Object?>{
+            'command': 'my-extension.hello',
+            'title': 'Say Hello from Dart',
+          },
+          <String, Object?>{
+            'command': 'my-extension.bye',
+            'title': 'Say Goodbye',
+          },
+        ],
+        'viewsContainers': <String, Object?>{},
+        'views': <String, Object?>{},
+        'configuration': null,
+      });
+    },
+  );
 
   test('parses view, container, and configuration declarations', () async {
     final project = await _parse(r'''
@@ -396,9 +398,10 @@ ExtensionManifest createManifest() => throw UnimplementedError();
       expect(get.exitCode, 0, reason: '${get.stdout}\n${get.stderr}');
       final descriptor = File(p.join(project.path, 'extension.dart'));
       descriptor.writeAsStringSync(
-        descriptor
-            .readAsStringSync()
-            .replaceFirst("version: '0.0.1'", 'version: 1'),
+        descriptor.readAsStringSync().replaceFirst(
+          "version: '0.0.1'",
+          'version: 1',
+        ),
       );
 
       final analyze = await Process.run(
@@ -410,7 +413,8 @@ ExtensionManifest createManifest() => throw UnimplementedError();
       expect(
         analyze.exitCode,
         isNot(0),
-        reason: 'A wrongly typed descriptor must fail dart analyze.\n'
+        reason:
+            'A wrongly typed descriptor must fail dart analyze.\n'
             '${analyze.stdout}\n${analyze.stderr}',
       );
       expect('${analyze.stdout}', contains('argument_type_not_assignable'));

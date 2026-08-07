@@ -160,7 +160,7 @@ Future<void> buildProject(
 /// project that is a member of a pub workspace resolves into the workspace
 /// root instead, so this walks upward the way the Dart toolchain does.
 File _findPackageConfig(Directory start) {
-  for (var directory = start;; directory = directory.parent) {
+  for (var directory = start; ; directory = directory.parent) {
     final candidate = File(
       p.join(directory.path, '.dart_tool', 'package_config.json'),
     );
@@ -276,18 +276,18 @@ Future<void> _writeLaunchConfiguration(Directory root) async {
   await file.parent.create(recursive: true);
   await file.writeAsString(
     '${encoder.convert(<String, Object?>{
-          'version': '0.2.0',
-          'configurations': <Object?>[
-            <String, Object?>{
-              'name': 'Run Extension',
-              'type': 'extensionHost',
-              'request': 'launch',
-              'args': <String>[
-                r'--extensionDevelopmentPath=${workspaceFolder}',
-              ],
-              'outFiles': <String>[r'${workspaceFolder}/out/**/*.js'],
-            },
+      'version': '0.2.0',
+      'configurations': <Object?>[
+        <String, Object?>{
+          'name': 'Run Extension',
+          'type': 'extensionHost',
+          'request': 'launch',
+          'args': <String>[
+            r'--extensionDevelopmentPath=${workspaceFolder}',
           ],
-        })}\n',
+          'outFiles': <String>[r'${workspaceFolder}/out/**/*.js'],
+        },
+      ],
+    })}\n',
   );
 }

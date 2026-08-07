@@ -54,8 +54,8 @@ const _expectedModuleDeclarations = <String, List<String>>{
     'void validateProjectDescriptor(',
     'bool isStrictSemanticVersion(',
   ],
-  'lib/src/contributions/extension_manifest.dart': [
-    'final class ExtensionManifest {',
+  'lib/src/contributions/manifest_projection.dart': [
+    'final class ManifestProjection {',
   ],
   'lib/src/contributions/ecmascript_whitespace.dart': [
     'bool isEcmaScriptFalsyOrWhitespace(',

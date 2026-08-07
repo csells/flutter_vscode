@@ -28,7 +28,6 @@ void main() {
         );
       }
       const deletedDirectories = [
-        'example',
         'tool/legacy-agent-skills',
       ];
       for (final path in deletedDirectories) {
@@ -36,6 +35,30 @@ void main() {
           Directory(path).existsSync(),
           isFalse,
           reason: '$path/ belongs to the deleted v0 pipeline',
+        );
+      }
+      // The v0 example was a buildable legacy project (lib/, launch
+      // config, handwritten TypeScript, generated .g.part sources).
+      // Today's example/ is the pub-convention doc snippet only; any of
+      // the v0 shapes returning is the regression this pin exists for.
+      expect(
+        Directory('example/lib').existsSync(),
+        isFalse,
+        reason: 'example/lib belongs to the deleted v0 pipeline',
+      );
+      expect(
+        File('example/pubspec.yaml').existsSync(),
+        isFalse,
+        reason: 'the example is a doc snippet, not a buildable project',
+      );
+      final exampleSources = Directory(
+        'example',
+      ).listSync(recursive: true).whereType<File>().map((file) => file.path);
+      for (final source in exampleSources) {
+        expect(
+          source,
+          isNot(anyOf(endsWith('.ts'), endsWith('.g.part'))),
+          reason: 'v0 example sources must not return',
         );
       }
     });
@@ -113,8 +136,9 @@ void main() {
     });
 
     test('CI runs no v0 steps', () {
-      final aggregate =
-          File(repoPath('.github/workflows/test.yml')).readAsStringSync();
+      final aggregate = File(
+        repoPath('.github/workflows/test.yml'),
+      ).readAsStringSync();
       for (final retired in [
         'build_runner',
         'check_dart_generator',

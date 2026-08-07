@@ -191,8 +191,8 @@ Future<String> _digest(File file) async =>
 
 /// Resolves the project-relative POSIX path [relativePath] beneath [root].
 File projectFile(Directory root, String relativePath) => File(
-      p.joinAll([root.path, ...p.posix.split(relativePath)]),
-    );
+  p.joinAll([root.path, ...p.posix.split(relativePath)]),
+);
 
 String _relativePackagePath(Directory root, String path) =>
     p.relative(path, from: root.path).split(p.separator).join('/');

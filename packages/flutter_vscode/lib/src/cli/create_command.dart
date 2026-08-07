@@ -96,8 +96,9 @@ publish_to: none
 environment:
   sdk: ^3.12.0
 ''');
-  File(p.join(root.path, 'host', 'lib', 'extension.dart'))
-      .writeAsStringSync(_hostEntrypoint(name, manifestName));
+  File(
+    p.join(root.path, 'host', 'lib', 'extension.dart'),
+  ).writeAsStringSync(_hostEntrypoint(name, manifestName));
   File(p.join(root.path, 'shared', 'lib', 'shared.dart')).writeAsStringSync(
     [
       '/// Shared values used by host and views.',
@@ -117,7 +118,8 @@ environment:
   );
 }
 
-String _hostEntrypoint(String projectName, String manifestName) => '''
+String _hostEntrypoint(String projectName, String manifestName) =>
+    '''
 import 'dart:js_interop';
 
 import 'package:${projectName}_host/generated/host_exports.g.dart';

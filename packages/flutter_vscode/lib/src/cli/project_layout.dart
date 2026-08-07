@@ -31,11 +31,11 @@ const List<String> requiredProjectPaths = [
 
 /// Returns the [requiredProjectPaths] entries missing beneath [root].
 List<String> missingRequiredProjectPaths(Directory root) => [
-      for (final relative in requiredProjectPaths)
-        if (FileSystemEntity.typeSync(p.join(root.path, relative)) ==
-            FileSystemEntityType.notFound)
-          relative,
-    ];
+  for (final relative in requiredProjectPaths)
+    if (FileSystemEntity.typeSync(p.join(root.path, relative)) ==
+        FileSystemEntityType.notFound)
+      relative,
+];
 
 /// Validates that every managed path beneath [root] is a real, in-tree
 /// file-system entry before the toolchain reads or replaces it.

@@ -40,8 +40,9 @@ void main() {
         final nodeHarness = File(p.join(temporary.path, 'harness.cjs'));
         // The fixture host package is a member of the repository's pub
         // workspace, so it resolves through the workspace root's config.
-        final hostPackageConfig =
-            repoPath(p.join('.dart_tool', 'package_config.json'));
+        final hostPackageConfig = repoPath(
+          p.join('.dart_tool', 'package_config.json'),
+        );
         final extensionKey = RegExp(r'stackMappers\.(e_[0-9a-f]{64})')
             .firstMatch(
               File(

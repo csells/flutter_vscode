@@ -17,6 +17,6 @@ ViewShellSessionSource defaultViewShellSessionSource() {
 
 /// The default [ViewShell] theme source over the live webview document.
 ViewShellThemeSource defaultViewShellThemeSource() => ViewShellThemeSource(
-      read: readVSCodeTheme,
-      changes: watchVSCodeTheme(),
-    );
+  read: readVSCodeTheme,
+  changes: watchVSCodeTheme(),
+);

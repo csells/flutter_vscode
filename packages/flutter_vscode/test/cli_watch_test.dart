@@ -43,10 +43,10 @@ void main() {
           .transform(utf8.decoder)
           .transform(const LineSplitter())
           .listen((line) {
-        if (line.startsWith('Built ')) {
-          builds.add(line);
-        }
-      });
+            if (line.startsWith('Built ')) {
+              builds.add(line);
+            }
+          });
 
       await builds.stream.first.timeout(
         const Duration(minutes: 5),
@@ -56,8 +56,9 @@ void main() {
       );
 
       final rebuild = builds.stream.first;
-      File(p.join(project.path, 'shared', 'lib', 'shared.dart'))
-          .writeAsStringSync(
+      File(
+        p.join(project.path, 'shared', 'lib', 'shared.dart'),
+      ).writeAsStringSync(
         "const helloMessage = 'Hello from the watcher';\n",
       );
       await rebuild.timeout(

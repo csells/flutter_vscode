@@ -20,7 +20,7 @@ import 'package:flutter_vscode/src/cli/templates.dart';
 /// Throws a `ContributionException` with a stable diagnostic code when the
 /// descriptor would be rejected by the pinned platform.
 Map<String, String> emitProjectArtifacts(Map<String, Object?> project) {
-  final manifest = ExtensionManifest.fromProjectDescriptor(project);
+  final manifest = ManifestProjection.fromProjectDescriptor(project);
   final extensionId = manifest.extensionId;
   final extensionKey = 'e_${sha256.convert(utf8.encode(extensionId))}';
   const encoder = JsonEncoder.withIndent('  ');

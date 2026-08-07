@@ -5,10 +5,11 @@ import 'dart:io';
 /// Implementations throw `HostDartSyntaxException`
 /// (`package:flutter_vscode/src/cli/cli_exception.dart`) for malformed
 /// sources and return boundary violations otherwise.
-typedef CheckHostImports = List<String> Function({
-  required File entrypoint,
-  required File packageConfig,
-});
+typedef CheckHostImports =
+    List<String> Function({
+      required File entrypoint,
+      required File packageConfig,
+    });
 
 /// Formats boundary [violations] as an actionable diagnostic.
 typedef FormatImportViolations = String Function(List<String> violations);

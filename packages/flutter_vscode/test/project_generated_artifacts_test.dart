@@ -41,7 +41,8 @@ void main() {
       expect(
         names,
         projectDerivedArtifacts,
-        reason: '$project must carry no framework source: the protocol, the '
+        reason:
+            '$project must carry no framework source: the protocol, the '
             'command module, and the Flutter View host module are libraries '
             'in package:vscode_dart, not files copied into every project',
       );
@@ -54,7 +55,8 @@ void main() {
       expect(
         shared.existsSync(),
         isFalse,
-        reason: '$project must not receive a copy of the view protocol; both '
+        reason:
+            '$project must not receive a copy of the view protocol; both '
             'runtimes type against the one published library',
       );
     }

@@ -42,7 +42,8 @@ void main() {
       expect(
         options.existsSync(),
         isTrue,
-        reason: '${package.path} needs analysis_options.yaml so standalone '
+        reason:
+            '${package.path} needs analysis_options.yaml so standalone '
             'dart analyze enforces the strict lint set',
       );
       expect(
@@ -53,7 +54,8 @@ void main() {
       expect(
         File(p.join(package.path, 'pubspec.yaml')).readAsStringSync(),
         contains('very_good_analysis'),
-        reason: '${package.path} must depend on very_good_analysis so the '
+        reason:
+            '${package.path} must depend on very_good_analysis so the '
             'include resolves in standalone analysis',
       );
     }
@@ -82,8 +84,9 @@ void main() {
       );
       // Violates only the strict set (prefer_single_quotes), never the
       // default analyzer, so failure proves the include resolved.
-      File(p.join(copy.path, 'lib', 'probe.dart'))
-          .writeAsStringSync('final String probe = "double quoted";\n');
+      File(
+        p.join(copy.path, 'lib', 'probe.dart'),
+      ).writeAsStringSync('final String probe = "double quoted";\n');
 
       final resolve = await Process.run(
         'dart',
@@ -103,13 +106,15 @@ void main() {
       expect(
         analysis.exitCode,
         isNot(0),
-        reason: 'The strict lint set is not active in nested packages: '
+        reason:
+            'The strict lint set is not active in nested packages: '
             'the probe passed analysis.\n${analysis.stdout}',
       );
       expect(
         '${analysis.stdout}',
         contains('prefer_single_quotes'),
-        reason: 'The failure must come from the strict set, not from an '
+        reason:
+            'The failure must come from the strict set, not from an '
             'unrelated diagnostic.\n${analysis.stdout}',
       );
     },

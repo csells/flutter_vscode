@@ -159,10 +159,9 @@ final class VSCodeThemeSnapshot {
 
   @override
   int get hashCode => Object.hash(
-        kind,
-        Object.hashAllUnordered([
-          for (final entry in colors.entries)
-            Object.hash(entry.key, entry.value),
-        ]),
-      );
+    kind,
+    Object.hashAllUnordered([
+      for (final entry in colors.entries) Object.hash(entry.key, entry.value),
+    ]),
+  );
 }

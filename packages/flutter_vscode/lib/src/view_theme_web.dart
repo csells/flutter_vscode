@@ -112,22 +112,24 @@ ThemeData vsCodeThemeData(VSCodeThemeSnapshot snapshot) {
   final editorForeground = Color(snapshot.editorForeground ?? 0xFFD4D4D4);
   final buttonBackground = Color(snapshot.buttonBackground ?? 0xFF0E639C);
   final buttonForeground = Color(snapshot.buttonForeground ?? 0xFFFFFFFF);
-  final widgetBackground =
-      Color(snapshot.color('editorWidget-background') ?? 0xFF252526);
+  final widgetBackground = Color(
+    snapshot.color('editorWidget-background') ?? 0xFF252526,
+  );
   final panelBorder = Color(snapshot.panelBorder ?? 0xFF454545);
   final focusBorder = Color(snapshot.focusBorder ?? 0xFF007FD4);
   final listHoverBackground = Color(snapshot.listHoverBackground ?? 0xFF2A2D2E);
-  final colorScheme = ColorScheme.fromSeed(
-    seedColor: buttonBackground,
-    brightness: brightness,
-  ).copyWith(
-    primary: buttonBackground,
-    onPrimary: buttonForeground,
-    surface: editorBackground,
-    onSurface: editorForeground,
-    surfaceContainer: widgetBackground,
-    outline: panelBorder,
-  );
+  final colorScheme =
+      ColorScheme.fromSeed(
+        seedColor: buttonBackground,
+        brightness: brightness,
+      ).copyWith(
+        primary: buttonBackground,
+        onPrimary: buttonForeground,
+        surface: editorBackground,
+        onSurface: editorForeground,
+        surfaceContainer: widgetBackground,
+        outline: panelBorder,
+      );
   return ThemeData(
     colorScheme: colorScheme,
     scaffoldBackgroundColor: editorBackground,

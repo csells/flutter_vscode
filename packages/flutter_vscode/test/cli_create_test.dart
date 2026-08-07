@@ -115,7 +115,8 @@ void main() {
     expect(
       rootPubspec.existsSync(),
       isTrue,
-      reason: 'The project root needs a pubspec so the typed descriptor '
+      reason:
+          'The project root needs a pubspec so the typed descriptor '
           'resolves package:flutter_vscode/manifest.dart in the editor.',
     );
     expect(rootPubspec.readAsStringSync(), contains('flutter_vscode:'));

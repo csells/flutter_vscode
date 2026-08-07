@@ -205,8 +205,9 @@ void main() {
       final receipt = _decodeJson(await receiptFile.readAsString());
       final artifacts = (receipt['artifacts']! as Map<Object?, Object?>)
           .cast<String, Object?>();
-      artifacts['package.json'] =
-          sha256.convert(await manifestFile.readAsBytes()).toString();
+      artifacts['package.json'] = sha256
+          .convert(await manifestFile.readAsBytes())
+          .toString();
       await receiptFile.writeAsString('${encoder.convert(receipt)}\n');
       final outside = File(p.join(workspace.path, 'escaped-0.0.1.vsix'));
       await outside.writeAsString('do not change\n');
@@ -232,8 +233,9 @@ void main() {
         ..['name'] = 'my-extension'
         ..['version'] = '0/../../../escaped-version';
       await manifestFile.writeAsString('${encoder.convert(manifest)}\n');
-      artifacts['package.json'] =
-          sha256.convert(await manifestFile.readAsBytes()).toString();
+      artifacts['package.json'] = sha256
+          .convert(await manifestFile.readAsBytes())
+          .toString();
       await receiptFile.writeAsString('${encoder.convert(receipt)}\n');
       final versionEscape = File(
         p.join(workspace.path, 'escaped-version.vsix'),
@@ -261,16 +263,17 @@ void main() {
 }
 
 String get _cliPath => p.join(
-      Directory.current.path,
-      'bin',
-      'flutter_vscode.dart',
-    );
+  Directory.current.path,
+  'bin',
+  'flutter_vscode.dart',
+);
 
 String get _dartExecutable {
   final executableName = Platform.isWindows ? 'dart.exe' : 'dart';
   final pathSeparator = Platform.isWindows ? ';' : ':';
-  for (final directory
-      in (Platform.environment['PATH'] ?? '').split(pathSeparator)) {
+  for (final directory in (Platform.environment['PATH'] ?? '').split(
+    pathSeparator,
+  )) {
     final flutterSdkCandidate = File(
       p.join(directory, 'cache', 'dart-sdk', 'bin', executableName),
     );

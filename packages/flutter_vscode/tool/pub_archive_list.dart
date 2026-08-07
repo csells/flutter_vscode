@@ -20,8 +20,9 @@ Future<void> main() async {
     return;
   }
   final lines = const LineSplitter().convert(result.stdout as String);
-  final entryPattern =
-      RegExp(r'^((?:(?:│   )|(?:    ))*)[├└]── (.+?)( \([^()]+\))?$');
+  final entryPattern = RegExp(
+    r'^((?:(?:│   )|(?:    ))*)[├└]── (.+?)( \([^()]+\))?$',
+  );
   final directoryStack = <String>[];
   var sawTree = false;
   var emitted = 0;

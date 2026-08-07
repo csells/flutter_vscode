@@ -7,13 +7,15 @@ import 'package:analyzer/dart/ast/ast.dart';
 const _manifestLibrary = 'package:flutter_vscode/manifest.dart';
 
 /// The actionable declaration every descriptor error points back to.
-const _guidance = 'Declare a single top-level '
+const _guidance =
+    'Declare a single top-level '
     'const extension = ExtensionManifest(...) using the types from '
     "'$_manifestLibrary'; the CLI parses it as data and never executes "
     'project code.';
 
 /// The literal-value rules shared by every argument position.
-const _literalRules = 'extension.dart manifest values must be constant '
+const _literalRules =
+    'extension.dart manifest values must be constant '
     'literals; references, interpolation, function calls, and collection '
     'control flow are not supported.';
 

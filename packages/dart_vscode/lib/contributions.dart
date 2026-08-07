@@ -7,5 +7,5 @@
 library;
 
 export 'src/contributions/exception.dart' show ContributionException;
-export 'src/contributions/extension_manifest.dart' show ExtensionManifest;
+export 'src/contributions/manifest_projection.dart' show ManifestProjection;
 export 'src/contributions/vscode_api_version.dart' show vscodeApiVersion;

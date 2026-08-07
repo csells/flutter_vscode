@@ -58,7 +58,8 @@ void main() {
           ),
         ).existsSync(),
         isFalse,
-        reason: 'the host imports package:dart_vscode/view_protocol.dart '
+        reason:
+            'the host imports package:dart_vscode/view_protocol.dart '
             'directly; there is no re-export of a copy',
       );
       final viewOutput = Directory(
@@ -82,11 +83,12 @@ void main() {
         isFalse,
       );
 
-      final firstViewFiles = viewOutput
-          .listSync(recursive: true, followLinks: false)
-          .whereType<File>()
-          .toList()
-        ..sort((left, right) => left.path.compareTo(right.path));
+      final firstViewFiles =
+          viewOutput
+              .listSync(recursive: true, followLinks: false)
+              .whereType<File>()
+              .toList()
+            ..sort((left, right) => left.path.compareTo(right.path));
       final firstViewPaths = [
         for (final file in firstViewFiles)
           p.relative(file.path, from: viewOutput.path),
@@ -107,11 +109,12 @@ void main() {
         0,
         reason: '${repeatedBuild.stdout}\n${repeatedBuild.stderr}',
       );
-      final repeatedViewFiles = viewOutput
-          .listSync(recursive: true, followLinks: false)
-          .whereType<File>()
-          .toList()
-        ..sort((left, right) => left.path.compareTo(right.path));
+      final repeatedViewFiles =
+          viewOutput
+              .listSync(recursive: true, followLinks: false)
+              .whereType<File>()
+              .toList()
+            ..sort((left, right) => left.path.compareTo(right.path));
       final repeatedViewPaths = [
         for (final file in repeatedViewFiles)
           p.relative(file.path, from: viewOutput.path),
@@ -146,11 +149,12 @@ void main() {
       );
       final firstBytes = await vsix.readAsBytes();
       final archive = ZipDecoder().decodeBytes(firstBytes);
-      final outputFiles = viewOutput
-          .listSync(recursive: true, followLinks: false)
-          .whereType<File>()
-          .toList()
-        ..sort((left, right) => left.path.compareTo(right.path));
+      final outputFiles =
+          viewOutput
+              .listSync(recursive: true, followLinks: false)
+              .whereType<File>()
+              .toList()
+            ..sort((left, right) => left.path.compareTo(right.path));
       final expectedViewEntries = <String>[
         for (final file in outputFiles)
           'extension/${p.relative(file.path, from: project.path).split(p.separator).join('/')}',

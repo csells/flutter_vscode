@@ -30,9 +30,9 @@ void main() {
         layerCopy,
       );
       File(p.join(layerCopy.path, 'pubspec.yaml')).writeAsStringSync(
-        File(p.join(layerCopy.path, 'pubspec.yaml'))
-            .readAsStringSync()
-            .replaceAll('resolution: workspace\n', ''),
+        File(
+          p.join(layerCopy.path, 'pubspec.yaml'),
+        ).readAsStringSync().replaceAll('resolution: workspace\n', ''),
       );
       copiedManifest.writeAsStringSync(
         '${copiedManifest.readAsStringSync().replaceAll('resolution: workspace\n', '')}\n'

@@ -24,7 +24,8 @@ void main() {
     expect(
       sha256.convert(File(planPath).readAsBytesSync()).toString(),
       archivedPlanSha256,
-      reason: 'The archive is a frozen historical record; edits to it are '
+      reason:
+          'The archive is a frozen historical record; edits to it are '
           'forbidden by design. If a change is genuinely intended, update '
           'archivedPlanSha256 in the same commit and say why.',
     );
@@ -63,8 +64,9 @@ void main() {
           continue;
         }
         final contextStart = index - 3 < 0 ? 0 : index - 3;
-        final contextEnd =
-            index + 4 > planLines.length ? planLines.length : index + 4;
+        final contextEnd = index + 4 > planLines.length
+            ? planLines.length
+            : index + 4;
         final context = planLines
             .sublist(contextStart, contextEnd)
             .join('\n')
@@ -78,7 +80,8 @@ void main() {
     expect(
       violations,
       isEmpty,
-      reason: 'Each digest must match current tree state or sit within three '
+      reason:
+          'Each digest must match current tree state or sit within three '
           'lines of a historical marker '
           '(${historicalMarkers.join(', ')}). Stale digests: $violations',
     );
@@ -93,17 +96,17 @@ void main() {
     expect(
       plan,
       isNot(contains('every red and green landed as its own commit')),
-      reason: 'The chronology header may claim only what git corroborates: '
+      reason:
+          'The chronology header may claim only what git corroborates: '
           'per-item commits exist for ledger entries 1, 5, and 6, while '
           'entries 2, 3, and 4 used uncommitted discrimination mutations.',
     );
   });
 
   test('active plans do not claim completion over unchecked items', () {
-    final planFiles = Directory(repoPath('specs/plans'))
-        .listSync()
-        .whereType<File>()
-        .where((file) => file.path.endsWith('.md'));
+    final planFiles = Directory(
+      repoPath('specs/plans'),
+    ).listSync().whereType<File>().where((file) => file.path.endsWith('.md'));
     for (final file in planFiles) {
       final text = file.readAsStringSync();
       final status = text
@@ -121,7 +124,8 @@ void main() {
         expect(
           unchecked,
           isTrue,
-          reason: '${file.path} says In progress but every item is checked '
+          reason:
+              '${file.path} says In progress but every item is checked '
               '— update the status line',
         );
       }
@@ -137,7 +141,8 @@ void main() {
       expect(
         plan,
         isNot(contains('- [ ]')),
-        reason: 'The status line may not claim completion while any '
+        reason:
+            'The status line may not claim completion while any '
             'checklist item anywhere in the plan is unchecked.',
       );
     }

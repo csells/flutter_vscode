@@ -35,7 +35,7 @@
     "contractWriter": "packages/dart_vscode/tool/binding_generator/contract.dart",
     "contributionsException": "packages/dart_vscode/lib/src/contributions/exception.dart",
     "contributionsJsonValues": "packages/dart_vscode/lib/src/contributions/json_values.dart",
-    "contributionsManifest": "packages/dart_vscode/lib/src/contributions/extension_manifest.dart",
+    "contributionsManifest": "packages/dart_vscode/lib/src/contributions/manifest_projection.dart",
     "contributionsProjections": "packages/dart_vscode/lib/src/contributions/projections.dart",
     "ecmascriptWhitespace": "packages/dart_vscode/lib/src/contributions/ecmascript_whitespace.dart",
     "evidenceIntegrityTest": "packages/dart_vscode/test/binding_evidence_test.dart",

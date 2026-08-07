@@ -39,7 +39,8 @@ final class ViewShellSessionSource {
   /// host-initiated calls.
   final Future<FlutterViewSession> Function(
     Iterable<ViewOperationBinding> operations,
-  ) connect;
+  )
+  connect;
 
   /// Releases the underlying transport after the session has closed.
   final Future<void> Function()? release;
@@ -58,8 +59,8 @@ final class ViewShell {
     VSCodeThemeSnapshot theme,
     Stream<VSCodeThemeSnapshot> themeChanges,
     Future<void> Function()? release,
-  )   : _theme = theme,
-        _release = release {
+  ) : _theme = theme,
+      _release = release {
     _themeSubscription = themeChanges.listen((snapshot) {
       if (snapshot == _theme) {
         return;

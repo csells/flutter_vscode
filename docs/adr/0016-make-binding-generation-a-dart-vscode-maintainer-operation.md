@@ -34,7 +34,7 @@ What each party owns:
 - `package:dart_vscode` (published) owns everything pinned to the
   VS Code baseline: the generated API layer, the runtime libraries, and
   a `contributions` library holding the independently reviewed
-  author-data admission mirrors (`ExtensionManifest`), the ECMAScript
+  author-data admission mirrors (`ManifestProjection`), the ECMAScript
   whitespace lowering, and `vscodeApiVersion` — the one place the
   baseline is named.
 - `packages/dart_vscode/tool` (repository-only) owns the importer, IR,
@@ -60,7 +60,7 @@ git history. It simply is not a package asset.
   pinned inputs, and `dart_vscode` publishes without its `tool/` area;
   the packaged-extension gate asserts both.
 - Descriptor admission is available as an ordinary library:
-  `ExtensionManifest.fromProjectDescriptor` validates and projects
+  `ManifestProjection.fromProjectDescriptor` validates and projects
   without any binding inputs, and its deep test suite needs only
   descriptors.
 - `coverage.json` disappears from projects; behavioral-verification

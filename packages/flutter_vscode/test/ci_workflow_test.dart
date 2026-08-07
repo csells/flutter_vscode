@@ -40,7 +40,8 @@ void main() {
       expect(
         docker.exitCode,
         0,
-        reason: 'this gate needs a running Docker daemon; a missing one is a '
+        reason:
+            'this gate needs a running Docker daemon; a missing one is a '
             'failure, never a skip',
       );
 
@@ -78,9 +79,11 @@ void main() {
       final scratch = Directory(p.join(checkout, '.ci-scratch'))
         ..createSync(recursive: true);
 
-      final workflow = loadYaml(
-        File(repoPath('.github/workflows/test.yml')).readAsStringSync(),
-      ) as YamlMap;
+      final workflow =
+          loadYaml(
+                File(repoPath('.github/workflows/test.yml')).readAsStringSync(),
+              )
+              as YamlMap;
       final jobs = workflow['jobs'] as YamlMap;
       final pinnedFlutter = _pinnedFlutterVersion(jobs);
 
@@ -135,13 +138,15 @@ void main() {
             final result = await Process.run(
               'bash',
               ['-lc', command],
-              workingDirectory:
-                  relative == null ? checkout : p.join(checkout, relative),
+              workingDirectory: relative == null
+                  ? checkout
+                  : p.join(checkout, relative),
             );
             expect(
               result.exitCode,
               0,
-              reason: 'workflow job "${job.key}", step "${step['name']}" '
+              reason:
+                  'workflow job "${job.key}", step "${step['name']}" '
                   'failed natively\n${result.stdout}\n${result.stderr}',
             );
             executed += 1;
@@ -172,7 +177,8 @@ void main() {
           expect(
             result.exitCode,
             0,
-            reason: 'workflow job "${job.key}", step "${step['name']}" failed\n'
+            reason:
+                'workflow job "${job.key}", step "${step['name']}" failed\n'
                 '${result.stdout}\n${result.stderr}',
           );
           executed += 1;
@@ -182,13 +188,15 @@ void main() {
       expect(
         executed,
         declared,
-        reason: 'every `run:` step in the workflow must have been executed; '
+        reason:
+            'every `run:` step in the workflow must have been executed; '
             'a workflow that grew steps this test skipped would pass falsely',
       );
       expect(
         declared,
         greaterThanOrEqualTo(20),
-        reason: 'the workflow lost run steps; if that was deliberate, '
+        reason:
+            'the workflow lost run steps; if that was deliberate, '
             'update this floor with the change that removed them',
       );
     },

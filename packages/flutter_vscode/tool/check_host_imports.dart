@@ -211,7 +211,8 @@ final class _HostImportGuard {
       return;
     }
     final location = lineInfo.getLocation(uriLiteral.offset);
-    final sourceLocation = '${p.relative(source.path, from: _packageRoot)}:'
+    final sourceLocation =
+        '${p.relative(source.path, from: _packageRoot)}:'
         '${location.lineNumber}:${location.columnNumber}';
 
     if (importUri.startsWith('dart:')) {

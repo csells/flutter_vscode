@@ -5,14 +5,14 @@ import 'package:test/test.dart';
 
 void main() {
   Map<String, Object?> descriptor() => <String, Object?>{
-        'schemaVersion': 1,
-        'name': 'fixture',
-        'displayName': 'Fixture',
-        'description': 'Fixture.',
-        'version': '0.0.0',
-        'publisher': 'test',
-        'activationEvents': <Object?>[],
-      };
+    'schemaVersion': 1,
+    'name': 'fixture',
+    'displayName': 'Fixture',
+    'description': 'Fixture.',
+    'version': '0.0.0',
+    'publisher': 'test',
+    'activationEvents': <Object?>[],
+  };
 
   test('emits exactly the Project-Derived Artifacts', () {
     final files = emitProjectArtifacts(descriptor());
@@ -25,7 +25,8 @@ void main() {
         'host/bootstrap.cjs',
         'package.json',
       },
-      reason: 'the API surface ships in package:dart_vscode; a build emits '
+      reason:
+          'the API surface ships in package:dart_vscode; a build emits '
           'only what is derived from the project itself',
     );
     expect(files, emitProjectArtifacts(descriptor()));
@@ -54,8 +55,9 @@ void main() {
   });
 
   test('the generated runtime wires the dart_vscode host runtime', () {
-    final runtime = emitProjectArtifacts(descriptor())['host/lib/generated/'
-        'vscode_runtime.g.dart']!;
+    final runtime =
+        emitProjectArtifacts(descriptor())['host/lib/generated/'
+            'vscode_runtime.g.dart']!;
 
     expect(runtime, contains('installGeneratedHostRuntime'));
     expect(runtime, contains('stackMappers'));
@@ -72,8 +74,9 @@ void main() {
     expect(bootstrap, isNot(contains('observedBindingIds')));
     expect(bootstrap, isNot(contains('FLUTTER_VSCODE_HOST_EVIDENCE_PATH')));
 
-    for (final entry
-        in files.entries.where((entry) => entry.key.endsWith('.dart'))) {
+    for (final entry in files.entries.where(
+      (entry) => entry.key.endsWith('.dart'),
+    )) {
       expect(entry.value, isNot(contains('dynamic')), reason: entry.key);
       expect(entry.value, isNot(contains('dart:js_util')), reason: entry.key);
       // The runtime module alone may use unsafe property access: its
@@ -122,9 +125,11 @@ void main() {
   });
 
   test('decodes as JSON and matches the projected manifest shape', () {
-    final manifest = jsonDecode(
-      emitProjectArtifacts(descriptor())['package.json']!,
-    ) as Map<String, Object?>;
+    final manifest =
+        jsonDecode(
+              emitProjectArtifacts(descriptor())['package.json']!,
+            )
+            as Map<String, Object?>;
     expect(manifest['engines'], {'vscode': '1.129.1'});
     expect(manifest.containsKey('contributes'), isFalse);
   });

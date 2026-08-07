@@ -26,7 +26,7 @@ void main() {
 
   test('enforces the framework-safe extension identifier grammar', () {
     expect(
-      ExtensionManifest.fromProjectDescriptor(
+      ManifestProjection.fromProjectDescriptor(
         descriptor()
           ..['name'] = 'my-extension2'
           ..['publisher'] = 'test-publisher3',
@@ -45,7 +45,7 @@ void main() {
       ('publisher', 'Contains-Uppercase'),
     ]) {
       expect(
-        () => ExtensionManifest.fromProjectDescriptor(
+        () => ManifestProjection.fromProjectDescriptor(
           descriptor()..[invalid.$1] = invalid.$2,
         ),
         throwsContribution(
@@ -59,7 +59,7 @@ void main() {
 
   test('rejects unknown project descriptor fields', () {
     expect(
-      () => ExtensionManifest.fromProjectDescriptor(
+      () => ManifestProjection.fromProjectDescriptor(
         descriptor()..['contributes'] = <String, Object?>{},
       ),
       throwsContribution('INVALID_PROJECT_DESCRIPTOR', contains('contributes')),
@@ -68,7 +68,7 @@ void main() {
 
   test('rejects an unsupported project descriptor schema version', () {
     expect(
-      () => ExtensionManifest.fromProjectDescriptor(
+      () => ManifestProjection.fromProjectDescriptor(
         descriptor()..['schemaVersion'] = 999,
       ),
       throwsContribution(
@@ -80,7 +80,7 @@ void main() {
 
   test('rejects a manifest version that is not strict SemVer', () {
     expect(
-      () => ExtensionManifest.fromProjectDescriptor(
+      () => ManifestProjection.fromProjectDescriptor(
         descriptor()..['version'] = '01.02.03',
       ),
       throwsContribution(
@@ -91,7 +91,7 @@ void main() {
   });
 
   test('projects command contributions from Dart-owned project data', () {
-    final manifest = ExtensionManifest.fromProjectDescriptor(
+    final manifest = ManifestProjection.fromProjectDescriptor(
       descriptor()
         ..['commands'] = <Object?>[
           <String, Object?>{
@@ -113,7 +113,7 @@ void main() {
 
   test('projects view and configuration contributions from Dart-owned data', () {
     final contributes =
-        ExtensionManifest.fromProjectDescriptor(
+        ManifestProjection.fromProjectDescriptor(
               descriptor()
                 ..['viewsContainers'] = <String, Object?>{
                   'activitybar': <Object?>[
@@ -195,7 +195,7 @@ void main() {
     ];
     for (final project in broken) {
       expect(
-        () => ExtensionManifest.fromProjectDescriptor(project),
+        () => ManifestProjection.fromProjectDescriptor(project),
         throwsA(
           isA<ContributionException>().having(
             (error) => error.code,
@@ -213,7 +213,7 @@ void main() {
   test('rejects whitespace-only required command contribution strings', () {
     for (final field in ['command', 'title']) {
       expect(
-        () => ExtensionManifest.fromProjectDescriptor(
+        () => ManifestProjection.fromProjectDescriptor(
           descriptor()
             ..['commands'] = <Object?>[
               <String, Object?>{
@@ -235,7 +235,7 @@ void main() {
   test('uses the projected ECMAScript trim predicate for required strings', () {
     // U+0085 is Dart whitespace but not ECMAScript trim whitespace: the
     // pinned host accepts it, so admission must too.
-    final commands = ExtensionManifest.fromProjectDescriptor(
+    final commands = ManifestProjection.fromProjectDescriptor(
       descriptor()
         ..['commands'] = <Object?>[
           <String, Object?>{'command': 'test.fixture.ping', 'title': '\u0085'},
@@ -244,7 +244,7 @@ void main() {
     expect(commands.single['title'], '');
 
     expect(
-      () => ExtensionManifest.fromProjectDescriptor(
+      () => ManifestProjection.fromProjectDescriptor(
         descriptor()
           ..['commands'] = <Object?>[
             <String, Object?>{
@@ -281,7 +281,7 @@ void main() {
           'icon': <String, Object?>{'dark': '', 'light': ''},
         },
       ];
-      final manifest = ExtensionManifest.fromProjectDescriptor(
+      final manifest = ManifestProjection.fromProjectDescriptor(
         descriptor()..['commands'] = commands,
       ).toManifestJson(main: './out/bootstrap.cjs');
 
@@ -295,7 +295,7 @@ void main() {
   test('rejects command icon objects without both theme paths', () {
     for (final lonePath in ['dark', 'light']) {
       expect(
-        () => ExtensionManifest.fromProjectDescriptor(
+        () => ManifestProjection.fromProjectDescriptor(
           descriptor()
             ..['commands'] = <Object?>[
               <String, Object?>{
@@ -315,7 +315,7 @@ void main() {
   });
 
   test('emits a complete manifest from project data and the pinned engine', () {
-    final manifest = ExtensionManifest.fromProjectDescriptor(
+    final manifest = ManifestProjection.fromProjectDescriptor(
       descriptor(),
     ).toManifestJson(main: './out/bootstrap.cjs');
 

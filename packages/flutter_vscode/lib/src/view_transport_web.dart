@@ -8,12 +8,10 @@ import 'package:web/web.dart' as web;
 /// Acquires and owns the transport for one VS Code-hosted Flutter View.
 final class VSCodeViewBootstrap {
   VSCodeViewBootstrap._({
-    required String sessionId,
-    required String bootstrapNonce,
-    required _VSCodeApi api,
-  })  : _sessionId = sessionId,
-        _bootstrapNonce = bootstrapNonce,
-        _api = api;
+    required this._sessionId,
+    required this._bootstrapNonce,
+    required this._api,
+  });
 
   factory VSCodeViewBootstrap._create() {
     final sessionId = _requiredMetadata(sessionMetaName);
@@ -78,21 +76,22 @@ final class VSCodeViewBootstrap {
     final transport = _VSCodeWebviewTransport(_api);
     _transport = transport;
     late final Future<FlutterViewSession> attempt;
-    attempt = FlutterViewSession.connect(
-      transport: transport,
-      sessionId: _sessionId,
-      bootstrapNonce: _bootstrapNonce,
-      operations: operations,
-    ).onError<Object>((error, stackTrace) {
-      if (identical(_connection, attempt)) {
-        _connection = null;
-        unawaited(transport.close());
-        if (identical(_transport, transport)) {
-          _transport = null;
-        }
-      }
-      Error.throwWithStackTrace(error, stackTrace);
-    });
+    attempt =
+        FlutterViewSession.connect(
+          transport: transport,
+          sessionId: _sessionId,
+          bootstrapNonce: _bootstrapNonce,
+          operations: operations,
+        ).onError<Object>((error, stackTrace) {
+          if (identical(_connection, attempt)) {
+            _connection = null;
+            unawaited(transport.close());
+            if (identical(_transport, transport)) {
+              _transport = null;
+            }
+          }
+          Error.throwWithStackTrace(error, stackTrace);
+        });
     _connection = attempt;
     return attempt;
   }

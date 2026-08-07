@@ -182,39 +182,72 @@ void main() {
   });
 
   group('baselines', () {
-    test('the baseline lives in dart_vscode and the framework carries none',
-        () {
-      expect(vscodeApiVersion, '1.129.1');
-      // Binding generation is a dart_vscode maintainer operation: this
-      // package must hold no generator, IR, or pinned inputs to read.
-      expect(
-        Directory(p.join('tool', 'bindings')).existsSync(),
-        isFalse,
-        reason: 'pinned binding inputs are dart_vscode maintainer state',
-      );
-      expect(
-        Directory(p.join('tool', 'binding_generator')).existsSync(),
-        isFalse,
-        reason: 'the generator is dart_vscode maintainer tooling',
-      );
-    });
+    test(
+      'the baseline lives in dart_vscode and the framework carries none',
+      () {
+        expect(vscodeApiVersion, '1.129.1');
+        // Binding generation is a dart_vscode maintainer operation: this
+        // package must hold no generator, IR, or pinned inputs to read.
+        expect(
+          Directory(p.join('tool', 'bindings')).existsSync(),
+          isFalse,
+          reason: 'pinned binding inputs are dart_vscode maintainer state',
+        );
+        expect(
+          Directory(p.join('tool', 'binding_generator')).existsSync(),
+          isFalse,
+          reason: 'the generator is dart_vscode maintainer tooling',
+        );
+      },
+    );
   });
 
   group('doctor', () {
-    test('doctor and layout validation share one required-paths list',
-        () async {
-      for (final broken in requiredProjectPaths) {
-        final root = await _scaffoldProject();
-        final target = p.join(root.path, p.joinAll(p.posix.split(broken)));
-        if (FileSystemEntity.typeSync(target) ==
-            FileSystemEntityType.directory) {
-          Directory(target).deleteSync(recursive: true);
-        } else {
-          File(target).deleteSync();
-        }
+    test(
+      'doctor and layout validation share one required-paths list',
+      () async {
+        for (final broken in requiredProjectPaths) {
+          final root = await _scaffoldProject();
+          final target = p.join(root.path, p.joinAll(p.posix.split(broken)));
+          if (FileSystemEntity.typeSync(target) ==
+              FileSystemEntityType.directory) {
+            Directory(target).deleteSync(recursive: true);
+          } else {
+            File(target).deleteSync();
+          }
 
-        final missing = missingRequiredProjectPaths(root);
-        expect(missing, contains(broken), reason: broken);
+          final missing = missingRequiredProjectPaths(root);
+          expect(missing, contains(broken), reason: broken);
+
+          final out = StringBuffer();
+          final failures = await doctorProject(
+            root,
+            out: out,
+            probeTool: (executable) async => (true, 'stubbed $executable'),
+            packageRoot: Directory.current,
+          );
+          final report = out.toString();
+          expect(failures, greaterThan(0), reason: broken);
+          expect(report, contains('[!!] Project layout'), reason: broken);
+          for (final path in missing) {
+            expect(report, contains(path), reason: broken);
+          }
+        }
+      },
+    );
+
+    test(
+      'doctor reports the shared validator verdict on unsafe layouts',
+      () async {
+        final workspace = await Directory.systemTemp.createTemp(
+          'flutter_vscode_modules_doctor_',
+        );
+        addTearDown(() => workspace.delete(recursive: true));
+        final root = await _scaffoldProject(workspace: workspace);
+        final outside = Directory(p.join(workspace.path, 'outside_views'))
+          ..createSync();
+        final views = Directory(p.join(root.path, 'views'))..deleteSync();
+        await Link(views.path).create(outside.path);
 
         final out = StringBuffer();
         final failures = await doctorProject(
@@ -223,40 +256,13 @@ void main() {
           probeTool: (executable) async => (true, 'stubbed $executable'),
           packageRoot: Directory.current,
         );
+
+        expect(failures, greaterThan(0));
         final report = out.toString();
-        expect(failures, greaterThan(0), reason: broken);
-        expect(report, contains('[!!] Project layout'), reason: broken);
-        for (final path in missing) {
-          expect(report, contains(path), reason: broken);
-        }
-      }
-    });
-
-    test('doctor reports the shared validator verdict on unsafe layouts',
-        () async {
-      final workspace = await Directory.systemTemp.createTemp(
-        'flutter_vscode_modules_doctor_',
-      );
-      addTearDown(() => workspace.delete(recursive: true));
-      final root = await _scaffoldProject(workspace: workspace);
-      final outside = Directory(p.join(workspace.path, 'outside_views'))
-        ..createSync();
-      final views = Directory(p.join(root.path, 'views'))..deleteSync();
-      await Link(views.path).create(outside.path);
-
-      final out = StringBuffer();
-      final failures = await doctorProject(
-        root,
-        out: out,
-        probeTool: (executable) async => (true, 'stubbed $executable'),
-        packageRoot: Directory.current,
-      );
-
-      expect(failures, greaterThan(0));
-      final report = out.toString();
-      expect(report, contains('[!!] Project layout'));
-      expect(report, contains('symbolic-link'));
-    });
+        expect(report, contains('[!!] Project layout'));
+        expect(report, contains('symbolic-link'));
+      },
+    );
 
     test('doctor passes a healthy scaffold with stubbed tools', () async {
       final root = await _scaffoldProject();
@@ -298,7 +304,8 @@ Map<String, List<int>> _vsixContents() {
     'extension/package.json',
     'extension/out/bootstrap.cjs',
   ];
-  const manifest = '<?xml version="1.0" encoding="utf-8"?>\n'
+  const manifest =
+      '<?xml version="1.0" encoding="utf-8"?>\n'
       '<PackageManifest Version="2.0.0" />\n';
   return <String, List<int>>{
     '[Content_Types].xml': utf8.encode(
@@ -312,7 +319,8 @@ Map<String, List<int>> _vsixContents() {
 
 /// Creates a scaffold-shaped Extension Project without running the CLI.
 Future<Directory> _scaffoldProject({Directory? workspace}) async {
-  final parent = workspace ??
+  final parent =
+      workspace ??
       await Directory.systemTemp.createTemp('flutter_vscode_modules_project_');
   if (workspace == null) {
     addTearDown(() => parent.delete(recursive: true));
@@ -333,17 +341,21 @@ const extension = ExtensionManifest(
   activationEvents: [],
 );
 ''');
-  File(p.join(root.path, 'host', 'lib', 'extension.dart'))
-      .writeAsStringSync('void main() {}\n');
-  File(p.join(root.path, 'shared', 'lib', 'shared.dart'))
-      .writeAsStringSync("const helloMessage = 'Hello from Dart';\n");
+  File(
+    p.join(root.path, 'host', 'lib', 'extension.dart'),
+  ).writeAsStringSync('void main() {}\n');
+  File(
+    p.join(root.path, 'shared', 'lib', 'shared.dart'),
+  ).writeAsStringSync("const helloMessage = 'Hello from Dart';\n");
   return root;
 }
 
 Matcher _throwsCliException(String code, {String? containing}) => throwsA(
-      isA<CliException>().having((error) => error.code, 'code', code).having(
-            (error) => error.message,
-            'message',
-            containing == null ? isNotEmpty : contains(containing),
-          ),
-    );
+  isA<CliException>()
+      .having((error) => error.code, 'code', code)
+      .having(
+        (error) => error.message,
+        'message',
+        containing == null ? isNotEmpty : contains(containing),
+      ),
+);

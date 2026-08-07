@@ -21,8 +21,10 @@ Future<void> buildWatch(
     } on CliException catch (error) {
       stderr.writeln('${error.code}: ${error.message}');
     } on HostDartSyntaxException catch (error) {
-      final source =
-          p.relative(error.path, from: root.path).split(p.separator).join('/');
+      final source = p
+          .relative(error.path, from: root.path)
+          .split(p.separator)
+          .join('/');
       stderr.writeln(
         'INVALID_HOST_DART: $source:${error.line}:${error.column}: '
         '${error.message}',
@@ -61,10 +63,13 @@ Future<void> buildWatch(
   for (final view in discoverViews(root)) {
     watchTree(p.join(view.root.path, 'lib'));
   }
-  root.watch().where((event) {
-    final name = p.basename(event.path);
-    return name == 'extension.dart' || name == 'extension.json';
-  }).listen(events.add);
+  root
+      .watch()
+      .where((event) {
+        final name = p.basename(event.path);
+        return name == 'extension.dart' || name == 'extension.json';
+      })
+      .listen(events.add);
 
   var pending = false;
   var running = false;

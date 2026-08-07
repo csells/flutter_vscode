@@ -16,7 +16,7 @@ final Directory repositoryRoot = _findRepositoryRoot();
 String repoPath(String relative) => p.join(repositoryRoot.path, relative);
 
 Directory _findRepositoryRoot() {
-  for (var directory = Directory.current;; directory = directory.parent) {
+  for (var directory = Directory.current; ; directory = directory.parent) {
     final manifest = File(p.join(directory.path, 'pubspec.yaml'));
     if (manifest.existsSync() &&
         manifest.readAsStringSync().contains('\nworkspace:')) {

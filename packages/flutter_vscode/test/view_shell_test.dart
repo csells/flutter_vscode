@@ -4,9 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_vscode/view.dart';
 
 VSCodeThemeSnapshot _theme(int editorBackground) => VSCodeThemeSnapshot(
-      kind: VSCodeThemeKind.dark,
-      colors: {'editor-background': editorBackground},
-    );
+  kind: VSCodeThemeKind.dark,
+  colors: {'editor-background': editorBackground},
+);
 
 ViewOperation<Object?, Object?> _identityOperation(String name) =>
     ViewOperation<Object?, Object?>(
@@ -72,26 +72,30 @@ final class _ShellFixture {
 
 void main() {
   group('ViewShell.connect', () {
-    test('exposes the connected session and the initial theme snapshot',
-        () async {
-      final fixture = await _ShellFixture.connect();
-      addTearDown(fixture.close);
+    test(
+      'exposes the connected session and the initial theme snapshot',
+      () async {
+        final fixture = await _ShellFixture.connect();
+        addTearDown(fixture.close);
 
-      expect(fixture.shell.theme, _theme(0xFF101010));
-      expect(fixture.shell.session.subscriptionCount, 1);
-      expect(fixture.shell.session.activeNonce, isNotNull);
-    });
+        expect(fixture.shell.theme, _theme(0xFF101010));
+        expect(fixture.shell.session.subscriptionCount, 1);
+        expect(fixture.shell.session.activeNonce, isNotNull);
+      },
+    );
 
-    test('passes view operations through to the host-callable allowlist',
-        () async {
-      final echo = _identityOperation('view.echo');
-      final fixture = await _ShellFixture.connect(
-        operations: [echo.bind((value) => value)],
-      );
-      addTearDown(fixture.close);
+    test(
+      'passes view operations through to the host-callable allowlist',
+      () async {
+        final echo = _identityOperation('view.echo');
+        final fixture = await _ShellFixture.connect(
+          operations: [echo.bind((value) => value)],
+        );
+        addTearDown(fixture.close);
 
-      expect(await fixture.host.call(echo, {'ping': 1}), {'ping': 1});
-    });
+        expect(await fixture.host.call(echo, {'ping': 1}), {'ping': 1});
+      },
+    );
   });
 
   group('ViewShell theme stream', () {
@@ -137,8 +141,9 @@ void main() {
       addTearDown(fixture.close);
 
       final payloads = <Object?>[];
-      final listener =
-          fixture.shell.events('fixture.push').listen(payloads.add);
+      final listener = fixture.shell
+          .events('fixture.push')
+          .listen(payloads.add);
       addTearDown(listener.cancel);
       await fixture.host.emitEvent('fixture.push', {'run': 1});
       await pumpEventQueue();

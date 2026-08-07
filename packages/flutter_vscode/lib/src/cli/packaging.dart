@@ -117,7 +117,8 @@ Future<void> packageProject(Directory root) async {
     'extension.vsixmanifest',
     ...artifacts.keys,
   ]);
-  final vsixManifest = '''
+  final vsixManifest =
+      '''
 <?xml version="1.0" encoding="utf-8"?>
 <PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
   <Metadata>
@@ -139,7 +140,7 @@ Future<void> packageProject(Directory root) async {
   </Assets>
 </PackageManifest>
 '''
-      .trimLeft();
+          .trimLeft();
 
   final contents = <String, List<int>>{
     '[Content_Types].xml': utf8.encode(contentTypes),
@@ -177,14 +178,17 @@ String contentTypesForParts(List<String> partPaths) {
   final extraDefaults = <String, String>{};
   final overrides = <String, String>{};
   for (final path in partPaths.toSet().toList()..sort()) {
-    final extension =
-        p.posix.extension(path).replaceFirst('.', '').toLowerCase();
+    final extension = p.posix
+        .extension(path)
+        .replaceFirst('.', '')
+        .toLowerCase();
     if (extension.isEmpty) {
       final basename = p.posix.basename(path);
-      overrides[_opcPartName(path)] =
-          basename == 'NOTICES' || basename == '.last_build_id'
-              ? 'text/plain'
-              : 'application/octet-stream';
+      overrides[_opcPartName(
+        path,
+      )] = basename == 'NOTICES' || basename == '.last_build_id'
+          ? 'text/plain'
+          : 'application/octet-stream';
       continue;
     }
     if (!defaults.containsKey(extension)) {
@@ -220,27 +224,27 @@ String contentTypesForParts(List<String> partPaths) {
 }
 
 String _contentTypeForExtension(String extension) => switch (extension) {
-      'bin' || 'data' || 'frag' || 'symbols' => 'application/octet-stream',
-      'css' => 'text/css',
-      'gif' => 'image/gif',
-      'gz' => 'application/gzip',
-      'htm' || 'html' => 'text/html',
-      'ico' => 'image/x-icon',
-      'jpeg' || 'jpg' => 'image/jpeg',
-      'mjs' => 'application/javascript',
-      'otf' => 'font/otf',
-      'png' => 'image/png',
-      'svg' => 'image/svg+xml',
-      'ttf' => 'font/ttf',
-      'txt' || 'md' => 'text/plain',
-      'wasm' => 'application/wasm',
-      'webmanifest' => 'application/manifest+json',
-      'webp' => 'image/webp',
-      'woff' => 'font/woff',
-      'woff2' => 'font/woff2',
-      'xml' => 'application/xml',
-      _ => 'application/octet-stream',
-    };
+  'bin' || 'data' || 'frag' || 'symbols' => 'application/octet-stream',
+  'css' => 'text/css',
+  'gif' => 'image/gif',
+  'gz' => 'application/gzip',
+  'htm' || 'html' => 'text/html',
+  'ico' => 'image/x-icon',
+  'jpeg' || 'jpg' => 'image/jpeg',
+  'mjs' => 'application/javascript',
+  'otf' => 'font/otf',
+  'png' => 'image/png',
+  'svg' => 'image/svg+xml',
+  'ttf' => 'font/ttf',
+  'txt' || 'md' => 'text/plain',
+  'wasm' => 'application/wasm',
+  'webmanifest' => 'application/manifest+json',
+  'webp' => 'image/webp',
+  'woff' => 'font/woff',
+  'woff2' => 'font/woff2',
+  'xml' => 'application/xml',
+  _ => 'application/octet-stream',
+};
 
 String _opcPartName(String path) =>
     '/${p.posix.split(path).map(Uri.encodeComponent).join('/')}';
@@ -313,14 +317,14 @@ void validateAssembledVsix(
 
 /// Whether every rune of [source] is legal in an XML 1.0 document.
 bool containsOnlyXml10Characters(String source) => source.runes.every(
-      (character) =>
-          character == 0x9 ||
-          character == 0xa ||
-          character == 0xd ||
-          (character >= 0x20 && character <= 0xd7ff) ||
-          (character >= 0xe000 && character <= 0xfffd) ||
-          (character >= 0x10000 && character <= 0x10ffff),
-    );
+  (character) =>
+      character == 0x9 ||
+      character == 0xa ||
+      character == 0xd ||
+      (character >= 0x20 && character <= 0xd7ff) ||
+      (character >= 0xe000 && character <= 0xfffd) ||
+      (character >= 0x10000 && character <= 0x10ffff),
+);
 
 bool _listsEqual<T>(List<T> left, List<T> right) {
   if (left.length != right.length) {
