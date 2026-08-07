@@ -6,6 +6,7 @@ const {
   repositoryRoot,
   verifyHostContractSourceFiles,
 } = require('./host_contract.cjs');
+const {renderStabilityFlags} = require('./electron_flags.cjs');
 
 const packageRoot = path.resolve(__dirname, '../..');
 const fixtureRoot = path.join(
@@ -41,7 +42,11 @@ async function main() {
     // --enable-logging surfaces webview renderer console output (CSP
     // violations, resource failures, JS errors); without it a view that
     // fails to boot times out silently.
-    launchArgs: ['--disable-extensions', '--enable-logging'],
+    launchArgs: [
+      '--disable-extensions',
+      '--enable-logging',
+      ...renderStabilityFlags,
+    ],
   });
 
   console.log('[host-test] launching activation-failure host');
@@ -59,7 +64,7 @@ async function main() {
     extensionTestsEnv: {
       FLUTTER_VSCODE_HOST_TEST_FAIL_ACTIVATION: '1',
     },
-    launchArgs: ['--disable-extensions'],
+    launchArgs: ['--disable-extensions', ...renderStabilityFlags],
   });
 }
 

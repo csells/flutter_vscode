@@ -15,6 +15,8 @@ const {
   runTests,
 } = require('@vscode/test-electron');
 
+const {renderStabilityFlags} = require('./electron_flags.cjs');
+
 const packageRoot = path.resolve(__dirname, '../..');
 
 function installVsix(vsixPath, vscodeExecutablePath, extensionsDir, userDataDir) {
@@ -125,6 +127,7 @@ async function runPackagedDriver({
         // Surfaces webview renderer console output (CSP violations,
         // resource failures, JS errors) in the harness log.
         '--enable-logging',
+        ...renderStabilityFlags,
       ],
     });
   } finally {

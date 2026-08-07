@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('node:fs');
+const {renderStabilityFlags} = require('./electron_flags.cjs');
 const os = require('node:os');
 const path = require('node:path');
 const {runTests} = require('@vscode/test-electron');
@@ -63,6 +64,7 @@ async function main() {
         '--disable-extensions',
         `--user-data-dir=${path.join(profileRoot, 'user-data')}`,
         `--inspect-extensions=${inspectPort}`,
+        ...renderStabilityFlags,
       ],
     });
   } finally {
