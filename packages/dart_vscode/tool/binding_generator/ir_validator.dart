@@ -7,9 +7,9 @@ library;
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:dart_vscode/src/contributions/json_values.dart';
 
 import 'generator.dart';
-import 'validators.dart';
 
 part 'ir_validator/module.dart';
 part 'ir_validator/ordering.dart';

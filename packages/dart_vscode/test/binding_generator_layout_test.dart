@@ -72,7 +72,6 @@ const _expectedModuleDeclarations = <String, List<String>>{
   'tool/binding_generator/validators.dart': [
     'String sha256Digest(',
     'int integerOrDefault(',
-    'int integer(',
   ],
 };
 
@@ -99,6 +98,26 @@ void main() {
       }
     });
   }
+
+  test('validators.dart is maintainer scalars, not a pass-through', () {
+    // After the contributions split this module briefly re-exported the
+    // shared JSON coercion helpers; every tool module now imports
+    // `json_values.dart` (and the whitespace lowering) directly, so the
+    // deletion test holds: removing the re-exports makes nothing reappear.
+    final source = File(
+      'tool/binding_generator/validators.dart',
+    ).readAsStringSync();
+    expect(
+      RegExp('^export ', multiLine: true).hasMatch(source),
+      isFalse,
+      reason: 'validators.dart must not re-export the contributions helpers',
+    );
+    expect(
+      source,
+      isNot(contains('int integer(')),
+      reason: 'integer() was dead code kept alive by this suite',
+    );
+  });
 
   test('generator.dart keeps only the entangled walking-slice band', () {
     final lineCount = File(

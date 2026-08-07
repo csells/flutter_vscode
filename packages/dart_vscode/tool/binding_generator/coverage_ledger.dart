@@ -5,6 +5,8 @@ library;
 
 import 'dart:convert';
 
+import 'package:dart_vscode/src/contributions/json_values.dart';
+
 import 'validators.dart';
 
 /// Emits the deterministic coverage ledger, `coverage.json`.

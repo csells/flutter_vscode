@@ -6,6 +6,8 @@ library;
 
 import 'dart:convert';
 
+import 'package:dart_vscode/src/contributions/json_values.dart';
+
 import 'generator.dart';
 import 'validators.dart';
 

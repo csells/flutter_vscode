@@ -1,7 +1,9 @@
 /// Deterministic Dart binding generation from a pinned VS Code API inventory.
 library;
 
+import 'package:dart_vscode/src/contributions/ecmascript_whitespace.dart';
 import 'package:dart_vscode/src/contributions/exception.dart';
+import 'package:dart_vscode/src/contributions/json_values.dart';
 
 import 'coverage_ledger.dart';
 import 'ir_validator.dart';
