@@ -2,8 +2,8 @@
 
 const fs = require('node:fs');
 const {renderStabilityFlags} = require('./electron_flags.cjs');
-const os = require('node:os');
 const path = require('node:path');
+const {makeShortProfileRoot} = require('./short_profile_root.cjs');
 const {runTests} = require('@vscode/test-electron');
 
 const packageRoot = path.resolve(__dirname, '../..');
@@ -28,6 +28,14 @@ const mapPath =
   process.env.FLUTTER_VSCODE_BREAKPOINT_MAP_PATH ??
   path.join(fixtureRoot, 'out', 'extension.dart.js.map');
 
+// The driver runs inside the pinned Extension Host and its inspector helper
+// runs outside every node_modules directory, so neither can resolve the
+// harness's dependencies by walking up from its own file. Resolve the entry
+// points here — where the harness's node_modules (or the container image's
+// NODE_PATH) is reachable — and hand the paths over through the test env.
+const traceMappingPath = require.resolve('@jridgewell/trace-mapping');
+const cdpClientPath = require.resolve('chrome-remote-interface');
+
 async function main() {
   if (!fs.existsSync(mapPath)) {
     throw new Error(
@@ -39,11 +47,7 @@ async function main() {
     `[breakpoint-test] launching VS Code ${vscodeVersion} with ` +
       `--inspect-extensions=${inspectPort}`,
   );
-  // A short temp profile keeps VS Code's IPC socket path under the OS
-  // limit even when the repository lives at a deep path.
-  const profileRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), 'flutter-vscode-breakpoint-host-'),
-  );
+  const profileRoot = makeShortProfileRoot('fv-bp-');
   try {
     // The fixture and the driver both load as development extensions: the
     // fixture provides the compiled Dart host under test; the driver arms a
@@ -59,6 +63,8 @@ async function main() {
       extensionTestsEnv: {
         FLUTTER_VSCODE_BREAKPOINT_INSPECT_PORT: String(inspectPort),
         FLUTTER_VSCODE_BREAKPOINT_MAP_PATH: mapPath,
+        FLUTTER_VSCODE_BREAKPOINT_TRACE_MAPPING_PATH: traceMappingPath,
+        FLUTTER_VSCODE_BREAKPOINT_CDP_CLIENT_PATH: cdpClientPath,
       },
       launchArgs: [
         '--disable-extensions',

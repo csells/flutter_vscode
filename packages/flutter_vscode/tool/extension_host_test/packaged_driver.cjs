@@ -7,7 +7,6 @@
 
 const childProcess = require('node:child_process');
 const fs = require('node:fs');
-const os = require('node:os');
 const path = require('node:path');
 const {
   downloadAndUnzipVSCode,
@@ -16,6 +15,7 @@ const {
 } = require('@vscode/test-electron');
 
 const {renderStabilityFlags} = require('./electron_flags.cjs');
+const {makeShortProfileRoot} = require('./short_profile_root.cjs');
 
 const packageRoot = path.resolve(__dirname, '../..');
 
@@ -89,9 +89,7 @@ async function runPackagedDriver({
     );
   }
 
-  const profileRoot = fs.mkdtempSync(
-    path.join(os.tmpdir(), `flutter-vscode-${logTag}-host-`),
-  );
+  const profileRoot = makeShortProfileRoot(`fv-${logTag}-`);
   const extensionsDir = path.join(profileRoot, 'extensions');
   const userDataDir = path.join(profileRoot, 'user-data');
   fs.mkdirSync(extensionsDir, {recursive: true});

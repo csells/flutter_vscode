@@ -1,88 +1,70 @@
 'use strict';
 
-// Hand-rolled Source Map v3 mappings decoding (base64 VLQ) so the driver can
-// run inside the pinned Extension Host with zero npm dependencies.
+// Source Map v3 queries for the breakpoint driver, delegating decoding to
+// @jridgewell/trace-mapping — the maintained decoder the bundler ecosystem
+// standardized on. The library's entry point arrives via
+// FLUTTER_VSCODE_BREAKPOINT_TRACE_MAPPING_PATH because this module loads
+// inside the pinned Extension Host, where the harness's node_modules
+// directory is not on the require resolution path; run_breakpoint.cjs
+// resolves the path and passes it through extensionTestsEnv.
 
-const BASE64 =
-  'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
-const CHAR_TO_INTEGER = new Map(
-  [...BASE64].map((char, index) => [char, index]),
-);
+const traceMappingPath =
+  process.env.FLUTTER_VSCODE_BREAKPOINT_TRACE_MAPPING_PATH;
+if (!traceMappingPath) {
+  throw new Error(
+    'FLUTTER_VSCODE_BREAKPOINT_TRACE_MAPPING_PATH is required — ' +
+      'run this driver through run_breakpoint.cjs',
+  );
+}
+const {TraceMap, originalPositionFor, eachMapping} = require(traceMappingPath);
 
 /**
- * Decodes a Source Map v3 `mappings` string into flat segments.
+ * Opens a Source Map v3 document for position queries.
  *
- * Every returned segment carries 0-based `generatedLine`, `generatedColumn`,
- * `sourceIndex`, `originalLine`, and `originalColumn`. Segments without
- * source information (1-value VLQ groups) are skipped; name indices are
- * ignored because breakpoint binding only needs positions.
+ * Every line and column crossing this interface is 0-based, matching the
+ * Chrome DevTools Protocol; the 1-based line convention trace-mapping
+ * inherits from the source-map library stays inside this module.
  */
-function decodeMappings(mappings) {
-  const segments = [];
-  let sourceIndex = 0;
-  let originalLine = 0;
-  let originalColumn = 0;
-  let generatedLine = 0;
-  for (const lineText of mappings.split(';')) {
-    let generatedColumn = 0;
-    for (const segmentText of lineText.split(',')) {
-      if (segmentText === '') {
-        continue;
-      }
-      const values = [];
-      let value = 0;
-      let shift = 0;
-      for (const char of segmentText) {
-        const integer = CHAR_TO_INTEGER.get(char);
-        if (integer === undefined) {
-          throw new Error(`Invalid VLQ character in mappings: ${char}`);
+function openSourceMap(map) {
+  const tracer = new TraceMap(map);
+  return {
+    /** Source strings with `sourceRoot` applied, in map order. */
+    sources: tracer.resolvedSources,
+
+    /** Every generated position that maps to `line` of `source`. */
+    generatedPositionsFor(source, line) {
+      const positions = [];
+      eachMapping(tracer, (mapping) => {
+        if (mapping.source === source && mapping.originalLine === line + 1) {
+          positions.push({
+            lineNumber: mapping.generatedLine - 1,
+            columnNumber: mapping.generatedColumn,
+          });
         }
-        value += (integer & 31) << shift;
-        if ((integer & 32) !== 0) {
-          shift += 5;
-        } else {
-          values.push((value & 1) === 1 ? -(value >>> 1) : value >>> 1);
-          value = 0;
-          shift = 0;
-        }
+      });
+      return positions;
+    },
+
+    /**
+     * The original position covering a generated position: the mapping on
+     * the generated line with the greatest column not exceeding the queried
+     * column. Returns null when no mapping covers the position.
+     */
+    originalFor(lineNumber, columnNumber) {
+      const original = originalPositionFor(tracer, {
+        line: lineNumber + 1,
+        column: columnNumber,
+      });
+      if (original.source === null) {
+        return null;
       }
-      generatedColumn += values[0];
-      if (values.length >= 4) {
-        sourceIndex += values[1];
-        originalLine += values[2];
-        originalColumn += values[3];
-        segments.push({
-          generatedLine,
-          generatedColumn,
-          sourceIndex,
-          originalLine,
-          originalColumn,
-        });
-      }
-    }
-    generatedLine += 1;
-  }
-  return segments;
+      return {
+        source: original.source,
+        lineNumber: original.line - 1,
+        columnNumber: original.column,
+      };
+    },
+  };
 }
 
-/**
- * Finds the segment covering a generated position: the segment on the same
- * generated line with the greatest column that does not exceed the queried
- * column (standard source-map lookup semantics). Returns null when the line
- * has no covering segment.
- */
-function findOriginal(segments, generatedLine, generatedColumn) {
-  let best = null;
-  for (const segment of segments) {
-    if (
-      segment.generatedLine === generatedLine &&
-      segment.generatedColumn <= generatedColumn &&
-      (best === null || segment.generatedColumn > best.generatedColumn)
-    ) {
-      best = segment;
-    }
-  }
-  return best;
-}
-
-module.exports = {decodeMappings, findOriginal};
+module.exports = {openSourceMap};

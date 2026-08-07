@@ -10,6 +10,8 @@
     "test:lifecycle": "node --test bootstrap_lifecycle.test.cjs"
   },
   "devDependencies": {
-    "@vscode/test-electron": "3.0.0"
+    "@jridgewell/trace-mapping": "0.3.31",
+    "@vscode/test-electron": "3.0.0",
+    "chrome-remote-interface": "0.34.0"
   }
 }

@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const vscode = require('vscode');
-const {decodeMappings, findOriginal} = require('./source_map.cjs');
+const {openSourceMap} = require('./source_map.cjs');
 
 const fixtureExtensionId = 'flutter-vscode-test.host-extension-fixture';
 const eventCountCommandId = 'flutter-vscode.host-test.openEventCount';
@@ -56,30 +56,22 @@ function loadSourceMap() {
   );
   const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
   assert.equal(map.version, 3, 'Expected a Source Map v3 document');
-  const dartSourceIndexes = map.sources
-    .map((source, index) => ({source, index}))
-    .filter((entry) => entry.source.endsWith(dartSourceSuffix));
+  const sourceMap = openSourceMap(map);
+  const dartSources = sourceMap.sources.filter((source) =>
+    source.endsWith(dartSourceSuffix),
+  );
   assert.equal(
-    dartSourceIndexes.length,
+    dartSources.length,
     1,
     `Expected exactly one map source ending with ${dartSourceSuffix}`,
   );
-  const [dartSource] = dartSourceIndexes;
-  const sourceRoot = map.sourceRoot ?? '';
-  const dartSourcePath = path.resolve(
-    path.dirname(mapPath),
-    sourceRoot + dartSource.source,
-  );
+  const [dartSource] = dartSources;
+  const dartSourcePath = path.resolve(path.dirname(mapPath), dartSource);
   assert.ok(
     fs.existsSync(dartSourcePath),
     `The mapped Dart source does not exist: ${dartSourcePath}`,
   );
-  return {
-    mapPath,
-    segments: decodeMappings(map.mappings),
-    dartSourceIndex: dartSource.index,
-    dartSourcePath,
-  };
+  return {mapPath, sourceMap, dartSource, dartSourcePath};
 }
 
 function chooseDartLine(dartSourcePath) {
@@ -96,18 +88,14 @@ function chooseDartLine(dartSourcePath) {
 }
 
 async function run() {
-  const {mapPath, segments, dartSourceIndex, dartSourcePath} = loadSourceMap();
+  const {mapPath, sourceMap, dartSource, dartSourcePath} = loadSourceMap();
   const {lineIndex, lineText} = chooseDartLine(dartSourcePath);
   const expectedDartLine = lineIndex + 1;
   console.log(
     `[breakpoint-test] target Dart line ${expectedDartLine}: ${lineText}`,
   );
 
-  const candidates = segments.filter(
-    (segment) =>
-      segment.sourceIndex === dartSourceIndex &&
-      segment.originalLine === lineIndex,
-  );
+  const candidates = sourceMap.generatedPositionsFor(dartSource, lineIndex);
   assert.ok(
     candidates.length > 0,
     `${mapPath} maps no generated code to Dart line ${expectedDartLine}`,
@@ -125,6 +113,12 @@ async function run() {
 
   const inspectPort = Number(
     process.env.FLUTTER_VSCODE_BREAKPOINT_INSPECT_PORT ?? '9339',
+  );
+  const cdpClientPath = process.env.FLUTTER_VSCODE_BREAKPOINT_CDP_CLIENT_PATH;
+  assert.ok(
+    cdpClientPath,
+    'FLUTTER_VSCODE_BREAKPOINT_CDP_CLIENT_PATH is required — run this ' +
+      'driver through run_breakpoint.cjs',
   );
   const helperPath = path.join(__dirname, 'inspector_helper.cjs');
   assert.ok(
@@ -144,13 +138,11 @@ async function run() {
     JSON.stringify({
       inspectPort,
       scriptUrlSuffix: generatedScriptSuffix,
-      breakpointLocations: candidates.map((candidate) => ({
-        lineNumber: candidate.generatedLine,
-        columnNumber: candidate.generatedColumn,
-      })),
+      breakpointLocations: candidates,
       armedPath,
       resultPath,
       pauseTimeoutMs: 45000,
+      cdpClientPath,
     }),
   );
 
@@ -182,15 +174,14 @@ async function run() {
     );
     const boundBreakpoints = armed.breakpoints.filter((breakpoint) =>
       breakpoint.resolvedLocations.some((location) => {
-        const original = findOriginal(
-          segments,
+        const original = sourceMap.originalFor(
           location.lineNumber,
           location.columnNumber,
         );
         return (
           original !== null &&
-          original.sourceIndex === dartSourceIndex &&
-          original.originalLine === lineIndex
+          original.source === dartSource &&
+          original.lineNumber === lineIndex
         );
       }),
     );
@@ -229,8 +220,7 @@ async function run() {
       result.pausedLocation.url.endsWith(generatedScriptSuffix),
       `Paused in an unexpected script: ${result.pausedLocation.url}`,
     );
-    const pausedOriginal = findOriginal(
-      segments,
+    const pausedOriginal = sourceMap.originalFor(
       result.pausedLocation.lineNumber,
       result.pausedLocation.columnNumber,
     );
@@ -239,11 +229,11 @@ async function run() {
       'The paused generated location has no source-map entry',
     );
     assert.equal(
-      pausedOriginal.sourceIndex,
-      dartSourceIndex,
+      pausedOriginal.source,
+      dartSource,
       'The paused location maps to a source other than the fixture host',
     );
-    const matchedDartLine = pausedOriginal.originalLine + 1;
+    const matchedDartLine = pausedOriginal.lineNumber + 1;
     assert.equal(
       matchedDartLine,
       expectedDartLine,
