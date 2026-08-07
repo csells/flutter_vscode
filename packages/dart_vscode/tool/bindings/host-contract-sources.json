@@ -19,7 +19,6 @@
     "bindingIrValidatorTypes": "packages/dart_vscode/tool/binding_generator/ir_validator/types.dart",
     "bindingIrValidatorValues": "packages/dart_vscode/tool/binding_generator/ir_validator/values.dart",
     "bindingManifestProjection": "packages/dart_vscode/tool/binding_generator/manifest_projection.dart",
-    "bindingTemplates": "packages/flutter_vscode/lib/src/cli/templates.dart",
     "bindingValidators": "packages/dart_vscode/tool/binding_generator/validators.dart",
     "bindingWriter": "packages/flutter_vscode/lib/src/cli/artifact_writer.dart",
     "bootstrapLifecycleTest": "packages/flutter_vscode/tool/extension_host_test/bootstrap_lifecycle.test.cjs",

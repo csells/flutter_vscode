@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter_vscode/src/cli/project_artifacts.dart';
 import 'package:test/test.dart';
@@ -13,6 +14,16 @@ void main() {
     'publisher': 'test',
     'activationEvents': <Object?>[],
   };
+
+  test('emission is one module: the templates are implementation', () {
+    // templates.dart had exactly one importer, so its seam separated
+    // nothing; the template bodies now live behind emitProjectArtifacts.
+    expect(
+      File('lib/src/cli/templates.dart').existsSync(),
+      isFalse,
+      reason: 'the single-importer template module fails the deletion test',
+    );
+  });
 
   test('emits exactly the Project-Derived Artifacts', () {
     final files = emitProjectArtifacts(descriptor());

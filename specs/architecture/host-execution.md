@@ -20,7 +20,7 @@ Rules and their enforcement:
   `__flutterVscode.*` keyed by a hash of the extension identity, so two
   generated extensions cannot collide in one host. The namespace
   publishing is emitted from the bootstrap template in
-  `packages/flutter_vscode/lib/src/cli/templates.dart` (extension-key derivation in
+  `packages/flutter_vscode/lib/src/cli/project_artifacts.dart` (extension-key derivation in
   `generator.dart`) and asserted by the generator suite's
   one-identity-hash test.
 - **Activation rollback.** A rejected activation disposes every
@@ -33,7 +33,7 @@ Rules and their enforcement:
   `out/extension.dart.js` and reloads the window (debounced
   `workbench.action.reloadWindow`) when the bundle changes; the
   watcher is disposed through `context.subscriptions`. Emitted from
-  the bootstrap template in `packages/flutter_vscode/lib/src/cli/templates.dart`;
+  the bootstrap template in `packages/flutter_vscode/lib/src/cli/project_artifacts.dart`;
   the lifecycle test enforces
   both sides — the bootstrap source must contain no test-injection
   hooks, and a Development host must request the reload after a

@@ -62,8 +62,8 @@ a regenerate-and-republish operation, documented in
    (`packages/dart_vscode/test/binding_generator_cli_test.dart`).
    Project artifacts (runtime module, host exports, bootstrap,
    manifest) are not generated here: `flutter_vscode build` emits them
-   from the project descriptor alone, via the templates in
-   `packages/flutter_vscode/lib/src/cli/templates.dart` and the
+   from the project descriptor alone, via
+   `packages/flutter_vscode/lib/src/cli/project_artifacts.dart` and the
    contributions library — an extension author never runs this
    pipeline.
 6. **Generated API Layer** — `packages/dart_vscode/tool/binding_generator/dart_layer.dart`

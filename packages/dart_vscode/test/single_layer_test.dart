@@ -170,7 +170,7 @@ void main() {
       );
       expect(
         File(
-          '../flutter_vscode/lib/src/cli/templates.dart',
+          '../flutter_vscode/lib/src/cli/project_artifacts.dart',
         ).readAsStringSync(),
         allOf(
           isNot(contains('walkingSliceFacadeTemplate')),
