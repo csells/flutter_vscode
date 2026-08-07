@@ -7,7 +7,10 @@ const os = require('node:os');
 const path = require('node:path');
 const test = require('node:test');
 
-const {verifyHostContractSourceFiles} = require('./host_contract.cjs');
+const {
+  contractArtifactPath,
+  verifyHostContractSourceFiles,
+} = require('./host_contract.cjs');
 
 const contractId = 'checkpoint4ExtensionHost';
 const contract = {
@@ -15,10 +18,7 @@ const contract = {
   id: contractId,
   boundary: 'vscodeExtensionHost',
 };
-const canonicalArtifactPath = path.resolve(
-  __dirname,
-  '../../../dart_vscode/tool/bindings/contracts/checkpoint4-extension-host.json',
-);
+const canonicalArtifactPath = contractArtifactPath;
 const canonicalSourcePaths = Object.fromEntries(
   Object.entries(JSON.parse(
     fs.readFileSync(canonicalArtifactPath, 'utf8'),
@@ -50,13 +50,32 @@ function createCanonicalRepository() {
   return {repositoryRoot, contract: {...contract, sources}};
 }
 
+test('the verifier module owns the evidence paths', () => {
+  // Eight hand-built spellings of these paths across two languages broke
+  // twice in one week; every .cjs reader must cross this one seam instead.
+  const owner = require('./host_contract.cjs');
+  assert.equal(typeof owner.repositoryRoot, 'string');
+  assert.equal(typeof owner.hostContractSourcesPath, 'string');
+  assert.equal(typeof owner.contractArtifactPath, 'string');
+  assert.ok(path.isAbsolute(owner.hostContractSourcesPath));
+  assert.ok(path.isAbsolute(owner.contractArtifactPath));
+  assert.ok(fs.existsSync(owner.hostContractSourcesPath));
+  assert.ok(fs.existsSync(owner.contractArtifactPath));
+  const sources = JSON.parse(
+    fs.readFileSync(owner.hostContractSourcesPath, 'utf8'),
+  ).sources;
+  assert.equal(
+    path.join(owner.repositoryRoot, sources.hostContractSources),
+    owner.hostContractSourcesPath,
+    'the sources definition must receipt itself at the exported path',
+  );
+});
+
 test('Host Contract source receipts reject a canonical source rebound', () => {
   const repositoryRoot = path.resolve(__dirname, '../../../..');
-  const artifact = JSON.parse(fs.readFileSync(path.join(
-    repositoryRoot,
-    'packages/dart_vscode/tool/bindings/contracts',
-    'checkpoint4-extension-host.json',
-  ), 'utf8'));
+  const artifact = JSON.parse(
+    fs.readFileSync(contractArtifactPath, 'utf8'),
+  );
   for (const receipt of Object.values(artifact.sources)) {
     receipt.sha256 = crypto
       .createHash('sha256')

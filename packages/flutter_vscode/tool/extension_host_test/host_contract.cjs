@@ -4,10 +4,16 @@ const crypto = require('node:crypto');
 const fs = require('node:fs');
 const path = require('node:path');
 
-// The one receipt-path definition, read rather than transcribed. Keeping a
-// second copy here would only ever catch someone forgetting to update it.
+// This module owns the evidence paths for every .cjs reader: the one
+// receipt-path definition is read rather than transcribed, and the
+// artifact and repository-root resolutions are exported so no caller
+// hand-builds them again.
+const REPOSITORY_ROOT = path.resolve(__dirname, '../../../..');
 const HOST_CONTRACT_SOURCES_PATH =
   'packages/dart_vscode/tool/bindings/host-contract-sources.json';
+const CONTRACT_ARTIFACT_PATH =
+  'packages/dart_vscode/tool/bindings/contracts/' +
+  'checkpoint4-extension-host.json';
 
 function readCanonicalSourcePaths(repositoryRoot) {
   const file = path.join(repositoryRoot, HOST_CONTRACT_SOURCES_PATH);
@@ -136,4 +142,13 @@ function verifyHostContractSourceFiles({contractId, contract, repositoryRoot}) {
 
 module.exports = {
   verifyHostContractSourceFiles,
+  repositoryRoot: REPOSITORY_ROOT,
+  hostContractSourcesPath: path.join(
+    REPOSITORY_ROOT,
+    ...HOST_CONTRACT_SOURCES_PATH.split('/'),
+  ),
+  contractArtifactPath: path.join(
+    REPOSITORY_ROOT,
+    ...CONTRACT_ARTIFACT_PATH.split('/'),
+  ),
 };

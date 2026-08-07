@@ -3,12 +3,6 @@ import 'dart:io';
 
 import 'package:crypto/crypto.dart';
 
-/// Repository-relative receipt paths attested by the checkpoint-4 contract.
-///
-/// The same canonical map is duplicated on purpose in
-/// `tool/extension_host_test/host_contract.cjs` and
-/// `test/binding_evidence_test.dart`; each copy cross-checks the others
-/// through the byte-identical artifact they all validate.
 /// Repository-relative location of the one receipt-path definition.
 ///
 /// The contract writer, the Dart evidence suite, and the in-container
@@ -18,6 +12,14 @@ import 'package:crypto/crypto.dart';
 /// creates.
 const hostContractSourcesPath =
     '$apiPackagePath/tool/bindings/host-contract-sources.json';
+
+/// Repository-relative location of the durable checkpoint-4 artifact.
+///
+/// This module owns the spelling for every Dart reader, the same way
+/// `tool/extension_host_test/host_contract.cjs` owns it for every
+/// JavaScript reader; hand-joining it anywhere else is a defect.
+const contractArtifactPath =
+    '$apiPackagePath/tool/bindings/contracts/checkpoint4-extension-host.json';
 
 /// Repository-relative location of the published API package, whose
 /// maintainer `tool/` area holds the pinned bindings.
@@ -158,8 +160,7 @@ String buildHostContractArtifact(Directory repositoryRoot) {
 void writeHostContractArtifact(Directory repositoryRoot) {
   final root = repositoryRoot.path;
   final artifact = buildHostContractArtifact(repositoryRoot);
-  final contracts = '$root/$apiPackagePath/tool/bindings/contracts';
-  File('$contracts/checkpoint4-extension-host.json')
+  File('$root/$contractArtifactPath')
     ..parent.createSync(recursive: true)
     ..writeAsStringSync(artifact);
 

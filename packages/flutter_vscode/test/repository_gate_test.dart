@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import '../../dart_vscode/tool/binding_generator/contract.dart'
+    as contract_writer;
 import 'support/repository.dart';
 
 void main() {
@@ -120,12 +122,7 @@ void main() {
     // a module into parts means more files, not more prose. The bound keeps
     // it reviewable; it is not a claim that fewer receipts is better.
     expect(
-      File(
-        repoPath(
-          'packages/dart_vscode/tool/bindings/contracts/'
-          'checkpoint4-extension-host.json',
-        ),
-      ).lengthSync(),
+      File(repoPath(contract_writer.contractArtifactPath)).lengthSync(),
       lessThan(24 * 1024),
     );
   });

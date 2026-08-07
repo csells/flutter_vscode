@@ -22,6 +22,22 @@ Directory _repositoryRoot() {
 }
 
 void main() {
+  test('the contract writer owns the repo-relative artifact path', () {
+    // Same seam discipline as the .cjs verifier: readers cross the
+    // writer's exported const instead of hand-joining a ninth spelling.
+    expect(
+      contract_writer.contractArtifactPath,
+      '${contract_writer.apiPackagePath}'
+      '/tool/bindings/contracts/checkpoint4-extension-host.json',
+    );
+    expect(
+      File(
+        '${_repositoryRoot().path}/${contract_writer.contractArtifactPath}',
+      ).existsSync(),
+      isTrue,
+    );
+  });
+
   test(
     'the durable Host Contract artifact matches mechanical regeneration',
     () {
@@ -30,7 +46,8 @@ void main() {
       );
       expect(
         File(
-          'tool/bindings/contracts/checkpoint4-extension-host.json',
+          '${_repositoryRoot().path}/'
+          '${contract_writer.contractArtifactPath}',
         ).readAsStringSync(),
         regenerated,
         reason:
@@ -60,9 +77,7 @@ void main() {
     addTearDown(() => temporary.deleteSync(recursive: true));
     const overridesPath =
         'packages/dart_vscode/tool/bindings/overrides/vscode-1.129.1.json';
-    const artifactPath =
-        'packages/dart_vscode/tool/bindings/'
-        'contracts/checkpoint4-extension-host.json';
+    final artifactPath = contract_writer.contractArtifactPath;
     for (final relative in [
       ...contract_writer.hostContractSourcePaths(_repositoryRoot()).values,
       overridesPath,

@@ -3,6 +3,9 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
+import '../../dart_vscode/tool/binding_generator/contract.dart'
+    as contract_writer;
+
 import 'support/repository.dart';
 
 /// The archived plan's frozen bytes. Changing the archive requires
@@ -32,8 +35,7 @@ void main() {
   });
 
   test('every full digest in the plan is current or marked historical', () {
-    const contractArtifact =
-        '../dart_vscode/tool/bindings/contracts/checkpoint4-extension-host.json';
+    const contractArtifact = '../../${contract_writer.contractArtifactPath}';
     final currentDigests = <String>{
       for (final artifact in [
         contractArtifact,
