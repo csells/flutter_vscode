@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -45,7 +46,7 @@ void main() {
       expect(output, contains('[ok] Dart SDK'));
       expect(output, contains('[ok] Flutter SDK'));
       expect(output, contains('[ok] Project layout'));
-      expect(output, contains('[ok] VS Code baseline 1.129.1'));
+      expect(output, contains('[ok] VS Code baseline $vscodeApiVersion'));
       expect(output, contains('No issues found'));
     },
     timeout: const Timeout(Duration(minutes: 5)),
@@ -99,7 +100,10 @@ void main() {
       final doctor = await _cli(['doctor'], workingDirectory: project.path);
 
       expect(doctor.exitCode, 0, reason: '${doctor.stdout}\n${doctor.stderr}');
-      expect('${doctor.stdout}', contains('[ok] VS Code baseline 1.129.1'));
+      expect(
+        '${doctor.stdout}',
+        contains('[ok] VS Code baseline $vscodeApiVersion'),
+      );
     },
     timeout: const Timeout(Duration(minutes: 5)),
   );

@@ -13,19 +13,7 @@ void registerIrStructureTests() {
           targets: const ['interface:vscode.Known'],
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'MISSING_OVERRIDE',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('interface:vscode.Known'),
-            ),
-      ),
+      _throwsGeneration('MISSING_OVERRIDE', contains('interface:vscode.Known')),
     );
   });
   test('rejects duplicate targets instead of silently collapsing them', () {
@@ -42,18 +30,9 @@ void registerIrStructureTests() {
           ],
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'DUPLICATE_TARGET_ID',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('interface:vscode.Known'),
-            ),
+      _throwsGeneration(
+        'DUPLICATE_TARGET_ID',
+        contains('interface:vscode.Known'),
       ),
     );
   });
@@ -84,18 +63,9 @@ void registerIrStructureTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(enumMemberId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(enumMemberId),
       ),
     );
   });
@@ -136,19 +106,7 @@ void registerIrStructureTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(classId),
-              ),
-        ),
+        _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(classId)),
         reason: constructorStrategy,
       );
     }
@@ -188,18 +146,9 @@ void registerIrStructureTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(declarationId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(declarationId),
       ),
     );
   });
@@ -240,19 +189,7 @@ void registerIrStructureTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(eventId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(eventId)),
     );
   });
   test('rejects incompatible relationships between selected strategies', () {
@@ -284,18 +221,9 @@ void registerIrStructureTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: strategy,
       );
@@ -357,18 +285,9 @@ void registerIrStructureTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'STALE_SEMANTIC_OVERRIDE',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(r'property:class:vscode.Position/$instance/line'),
-            ),
+      _throwsGeneration(
+        'STALE_SEMANTIC_OVERRIDE',
+        contains(r'property:class:vscode.Position/$instance/line'),
       ),
     );
   });
@@ -397,18 +316,9 @@ void registerIrStructureTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('.deprecated'), contains('future')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('.deprecated'), contains('future')),
       ),
     );
   });
@@ -508,18 +418,9 @@ void registerIrStructureTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('inventory.source'),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          contains('inventory.source'),
         ),
       );
     });
@@ -549,18 +450,9 @@ void registerIrStructureTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('occurrenceCount'),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          contains('occurrenceCount'),
         ),
       );
     });
@@ -582,15 +474,7 @@ void registerIrStructureTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('safe integer'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('safe integer')),
     );
   });
   final manifestProjectionCases =
@@ -633,18 +517,9 @@ void registerIrStructureTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('inventory.manifestSchema'),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          contains('inventory.manifestSchema'),
         ),
       );
     });
@@ -663,15 +538,7 @@ void registerIrStructureTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('sort order'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('sort order')),
     );
   });
   final incompatibleParentCases = <(String, String, String)>[
@@ -697,19 +564,7 @@ void registerIrStructureTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('parentId'),
-              ),
-        ),
+        _throwsGeneration('INVALID_GENERATOR_INPUT', contains('parentId')),
       );
     });
   }
@@ -742,14 +597,9 @@ void registerIrStructureTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('extends'), contains('reference')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('extends'), contains('reference')),
       ),
     );
   });
@@ -765,15 +615,7 @@ void registerIrStructureTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('overloadOrdinal'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('overloadOrdinal')),
     );
   });
   final contextFlagCases = <(String, String)>[
@@ -804,19 +646,7 @@ void registerIrStructureTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(testCase.$1),
-              ),
-        ),
+        _throwsGeneration('INVALID_GENERATOR_INPUT', contains(testCase.$1)),
       );
     });
   }

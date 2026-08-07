@@ -139,12 +139,12 @@ Future<void> buildProject(Directory root) async {
   }
   viewOutputFiles(root, views);
   await _writeLaunchConfiguration(root);
-  final toolIdentity = await frameworkToolIdentity(packageRoot);
+  final frameworkDigest = await frameworkSha256(packageRoot);
   await writeBuildReceipt(
     projectRoot: root,
     apiTarget: vscodeApiVersion,
-    toolIdentity: toolIdentity,
-    inputPaths: buildInputPaths(root),
+    frameworkSha256: frameworkDigest,
+    inputPaths: buildInputPaths(root, views),
     artifactPaths: managedArtifactPaths(root),
   );
   stdout.writeln('Built ${root.path}');

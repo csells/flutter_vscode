@@ -27,15 +27,7 @@ void registerVisibilityTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'UNKNOWN_TARGET_ID')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('public'),
-            ),
-      ),
+      _throwsGeneration('UNKNOWN_TARGET_ID', contains('public')),
     );
   });
   test('rejects inherited shape on constructed interface projections', () {
@@ -70,18 +62,9 @@ void registerVisibilityTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(declarationId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(declarationId),
         ),
         reason: strategy,
       );
@@ -119,18 +102,9 @@ void registerVisibilityTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(declarationId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(declarationId),
       ),
     );
   });
@@ -152,15 +126,7 @@ void registerVisibilityTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('.coverage'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('.coverage')),
     );
   });
   test('rejects pending producer coverage on a non-public declaration', () {
@@ -179,15 +145,7 @@ void registerVisibilityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('.coverage'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('.coverage')),
     );
   });
   test('rejects non-public top-level producer declarations', () {
@@ -208,15 +166,7 @@ void registerVisibilityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('visibility'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('visibility')),
     );
   });
   test('rejects interface members that do not inherit visibility', () {
@@ -247,15 +197,7 @@ void registerVisibilityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('visibility'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('visibility')),
     );
   });
   test(
@@ -282,15 +224,7 @@ void registerVisibilityTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-              .having(
-                (error) => error.message,
-                'message',
-                contains('visibility'),
-              ),
-        ),
+        _throwsGeneration('INVALID_GENERATOR_INPUT', contains('visibility')),
       );
     },
   );
@@ -308,14 +242,9 @@ void registerVisibilityTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(contains('typeLiteral'), contains('owner')),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          allOf(contains('typeLiteral'), contains('owner')),
         ),
       );
     },

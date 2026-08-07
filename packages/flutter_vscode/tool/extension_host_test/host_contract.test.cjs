@@ -9,6 +9,7 @@ const test = require('node:test');
 
 const {
   contractArtifactPath,
+  repositoryRoot,
   verifyHostContractSourceFiles,
 } = require('./host_contract.cjs');
 
@@ -72,7 +73,6 @@ test('the verifier module owns the evidence paths', () => {
 });
 
 test('Host Contract source receipts reject a canonical source rebound', () => {
-  const repositoryRoot = path.resolve(__dirname, '../../../..');
   const artifact = JSON.parse(
     fs.readFileSync(contractArtifactPath, 'utf8'),
   );

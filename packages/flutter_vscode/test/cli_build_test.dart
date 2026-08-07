@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -75,7 +76,10 @@ void main() {
               as Map<String, Object?>;
       expect(manifest['main'], './out/bootstrap.cjs');
       expect(manifest['name'], 'my-extension');
-      expect(manifest['engines'], <String, Object?>{'vscode': '1.129.1'});
+      expect(
+        manifest['engines'],
+        <String, Object?>{'vscode': vscodeApiVersion},
+      );
       expect(
         Directory(p.join(project.path, 'node_modules')).existsSync(),
         isFalse,

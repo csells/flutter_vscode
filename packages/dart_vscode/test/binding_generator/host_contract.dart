@@ -17,17 +17,12 @@ void registerHostContractTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('interface:vscode.Known'),
-                contains('Host Contract'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_OVERRIDE',
+        allOf(
+          contains('interface:vscode.Known'),
+          contains('Host Contract'),
+        ),
       ),
     );
   });
@@ -59,14 +54,9 @@ void registerHostContractTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('unusedContract'), contains('not cited')),
-            ),
+      _throwsGeneration(
+        'INVALID_OVERRIDE',
+        allOf(contains('unusedContract'), contains('not cited')),
       ),
     );
   });
@@ -92,14 +82,9 @@ void registerHostContractTests() {
         inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('must be lower camel case'),
-            ),
+      _throwsGeneration(
+        'INVALID_OVERRIDE',
+        contains('must be lower camel case'),
       ),
     );
   });
@@ -112,14 +97,9 @@ void registerHostContractTests() {
         inventory: _readJson('tool/bindings/ir/vscode-1.129.1.json'),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('at least one executable Host Contract'),
-            ),
+      _throwsGeneration(
+        'INVALID_OVERRIDE',
+        contains('at least one executable Host Contract'),
       ),
     );
   });
@@ -164,15 +144,7 @@ void registerHostContractTests() {
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-              .having(
-                (error) => error.message,
-                'message',
-                contains('Host Contract'),
-              ),
-        ),
+        _throwsGeneration('INVALID_OVERRIDE', contains('Host Contract')),
         reason: malformed.key,
       );
     }

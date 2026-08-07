@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dart_vscode/contributions.dart';
 import 'package:flutter_vscode/src/cli/project_artifacts.dart';
 import 'package:test/test.dart';
 
@@ -172,7 +173,7 @@ void main() {
               emitProjectArtifacts(descriptor())['package.json']!,
             )
             as Map<String, Object?>;
-    expect(manifest['engines'], {'vscode': '1.129.1'});
+    expect(manifest['engines'], {'vscode': vscodeApiVersion});
     expect(manifest.containsKey('contributes'), isFalse);
   });
 }

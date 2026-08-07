@@ -1,14 +1,13 @@
 'use strict';
 
-const childProcess = require('node:child_process');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const {
   downloadAndUnzipVSCode,
-  resolveCliArgsFromVSCodeExecutablePath,
   runTests,
 } = require('@vscode/test-electron');
+const {installVsix} = require('./packaged_driver.cjs');
 
 const packageRoot = path.resolve(__dirname, '../..');
 const driverRoot = path.join(
@@ -46,42 +45,6 @@ if (
   throw new Error('Packaged fixture has no contributed Flutter View command');
 }
 
-function installVsix(vscodeExecutablePath, extensionsDir, userDataDir) {
-  const [cliPath, ...cliArguments] =
-    resolveCliArgsFromVSCodeExecutablePath(vscodeExecutablePath, {
-      reuseMachineInstall: true,
-    });
-  const result = childProcess.spawnSync(
-    cliPath,
-    [
-      ...cliArguments,
-      '--install-extension',
-      vsixPath,
-      '--force',
-      `--extensions-dir=${extensionsDir}`,
-      `--user-data-dir=${userDataDir}`,
-    ],
-    {
-      encoding: 'utf8',
-      stdio: 'pipe',
-    },
-  );
-
-  if (result.error) {
-    throw result.error;
-  }
-  if (result.status !== 0) {
-    throw new Error(
-      [
-        `VS Code CLI failed to install ${vsixPath}.`,
-        result.stdout,
-        result.stderr,
-      ].join('\n'),
-    );
-  }
-  process.stdout.write(result.stdout);
-  process.stderr.write(result.stderr);
-}
 
 async function main() {
   if (!fs.existsSync(vsixPath)) {
@@ -112,7 +75,7 @@ async function main() {
     });
 
     console.log(`[packaged-host-test] installing ${vsixPath}`);
-    installVsix(vscodeExecutablePath, extensionsDir, userDataDir);
+    installVsix(vsixPath, vscodeExecutablePath, extensionsDir, userDataDir);
 
     console.log('[packaged-host-test] launching separate development driver');
     await runTests({

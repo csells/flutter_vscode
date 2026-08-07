@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/contract.dart' as contract_writer;
+import 'support/json.dart';
 
 /// The repository root: tests run with the package as the working
 /// directory, but the contract receipts repository-relative paths.
@@ -55,7 +56,7 @@ void main() {
             'Refresh it with: '
             'dart tool/binding_generator/generate.dart --contract .',
       );
-      final overrides = _readJson(
+      final overrides = readJsonObject(
         'tool/bindings/overrides/vscode-1.129.1.json',
       );
       final contract =
@@ -179,7 +180,7 @@ void main() {
   });
 
   test('every emitted binding cites an executable real-host contract', () {
-    final overrides = _readJson(
+    final overrides = readJsonObject(
       'tool/bindings/overrides/vscode-1.129.1.json',
     );
     final contracts = (overrides['hostContracts']! as Map<Object?, Object?>)
@@ -205,7 +206,7 @@ void main() {
         contract['artifactSha256'],
         reason: contractEntry.key,
       );
-      final artifactJson = _readJson(artifact.path);
+      final artifactJson = readJsonObject(artifact.path);
       expect(artifactJson['schemaVersion'], 1);
       expect(artifactJson['id'], contractEntry.key);
       expect(artifactJson['boundary'], 'vscodeExtensionHost');
@@ -213,7 +214,7 @@ void main() {
         artifactJson['sourceRepository'],
         'https://github.com/SlowGen/flutter_vscode',
       );
-      final inventory = _readJson(
+      final inventory = readJsonObject(
         'tool/bindings/ir/vscode-1.129.1.json',
       );
       final inventoryProduct =
@@ -224,13 +225,13 @@ void main() {
         'version': inventoryProduct['version'],
         'commit': inventoryProduct['commit'],
       });
-      final fixtureManifest = _readJson(
+      final fixtureManifest = readJsonObject(
         '../flutter_vscode/test/fixtures/host_extension/package.json',
       );
       final fixtureEngines =
           (fixtureManifest['engines']! as Map<Object?, Object?>)
               .cast<String, Object?>();
-      final harnessPackage = _readJson(
+      final harnessPackage = readJsonObject(
         '../flutter_vscode/tool/extension_host_test/package.json',
       );
       final harnessDependencies =
@@ -349,7 +350,3 @@ void main() {
     expect(bootstrap, isNot(contains('FLUTTER_VSCODE_HOST_EVIDENCE_PATH')));
   });
 }
-
-Map<String, Object?> _readJson(String path) =>
-    (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
-        .cast<String, Object?>();

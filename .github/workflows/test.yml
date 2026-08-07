@@ -16,6 +16,7 @@ jobs:
         with:
           flutter-version: 3.44.6
           channel: stable
+          cache: true
 
       # One resolve at the workspace root covers every package in the
       # repository; without it the nested packages analyze as unresolved.
@@ -54,6 +55,7 @@ jobs:
         with:
           flutter-version: 3.44.6
           channel: stable
+          cache: true
 
       - name: Resolve the workspace
         run: flutter pub get
@@ -88,6 +90,7 @@ jobs:
         with:
           flutter-version: 3.44.6
           channel: stable
+          cache: true
 
       - name: Resolve the workspace
         run: flutter pub get
@@ -128,6 +131,7 @@ jobs:
         with:
           flutter-version: 3.44.6
           channel: stable
+          cache: true
 
       # No Docker and no xvfb: macOS runners have neither, and the point of
       # this job is the platform every author actually develops on. The

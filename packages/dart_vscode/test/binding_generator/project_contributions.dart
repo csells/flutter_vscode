@@ -20,18 +20,9 @@ void registerProjectContributionsTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('Commands'), contains('unprojected change')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('Commands'), contains('unprojected change')),
       ),
     );
   });
@@ -54,14 +45,9 @@ void registerProjectContributionsTests() {
           inventory: inventory,
           overrides: _overrides({'interface:vscode.Known': 'opaqueJsObject'}),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(contains(schema), contains('unprojected change')),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          allOf(contains(schema), contains('unprojected change')),
         ),
         reason: schema,
       );
@@ -87,26 +73,17 @@ void registerProjectContributionsTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains(
-                  'First differing path: '
-                  'inventory.contributionSchemas.commands.validation.icon.'
-                  'objectRequiredStringProperties[1]',
-                ),
-                contains('Regenerate the IR'),
-                contains('update the generator projection'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains(
+            'First differing path: '
+            'inventory.contributionSchemas.commands.validation.icon.'
+            'objectRequiredStringProperties[1]',
+          ),
+          contains('Regenerate the IR'),
+          contains('update the generator projection'),
+        ),
       ),
     );
   });
@@ -139,19 +116,7 @@ void registerProjectContributionsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(mutatedId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(mutatedId)),
     );
   });
 }

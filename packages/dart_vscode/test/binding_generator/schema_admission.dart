@@ -13,18 +13,9 @@ void registerSchemaAdmissionTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'UNSUPPORTED_INPUT_SCHEMA_VERSION',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('inventory.schemaVersion'),
-            ),
+      _throwsGeneration(
+        'UNSUPPORTED_INPUT_SCHEMA_VERSION',
+        contains('inventory.schemaVersion'),
       ),
     );
   });
@@ -39,18 +30,9 @@ void registerSchemaAdmissionTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('inventory'), contains('futureSemantic')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('inventory'), contains('futureSemantic')),
       ),
     );
   });
@@ -67,18 +49,9 @@ void registerSchemaAdmissionTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('inventory.source'), contains('futureSemantic')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('inventory.source'), contains('futureSemantic')),
       ),
     );
   });
@@ -125,21 +98,12 @@ void registerSchemaAdmissionTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(
-                  contains(testCase.inventoryPath),
-                  contains('lowercase SHA-256'),
-                ),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          allOf(
+            contains(testCase.inventoryPath),
+            contains('lowercase SHA-256'),
+          ),
         ),
         reason: testCase.overrideField,
       );
@@ -154,21 +118,12 @@ void registerSchemaAdmissionTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: malformedOverride,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('overrides.manifestSchemaSha256'),
-                contains('lowercase SHA-256'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains('overrides.manifestSchemaSha256'),
+          contains('lowercase SHA-256'),
+        ),
       ),
     );
 
@@ -183,21 +138,12 @@ void registerSchemaAdmissionTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('inventory.source.inputSha256'),
-                contains('lowercase SHA-256'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains('inventory.source.inputSha256'),
+          contains('lowercase SHA-256'),
+        ),
       ),
     );
   });
@@ -228,21 +174,12 @@ void registerSchemaAdmissionTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(
-                  contains('inventory.declarations'),
-                  contains('futureSemantic'),
-                ),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          allOf(
+            contains('inventory.declarations'),
+            contains('futureSemantic'),
+          ),
         ),
       );
     },
@@ -269,18 +206,9 @@ void registerSchemaAdmissionTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('.coverage'), contains('inference')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('.coverage'), contains('inference')),
       ),
     );
   });
@@ -320,18 +248,9 @@ void registerSchemaAdmissionTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('.elementType'), contains('futureTypeMeaning')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('.elementType'), contains('futureTypeMeaning')),
       ),
     );
   });
@@ -366,21 +285,12 @@ void registerSchemaAdmissionTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('.parameters[0]'),
-                contains('futureParameterMeaning'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains('.parameters[0]'),
+          contains('futureParameterMeaning'),
+        ),
       ),
     );
   });
@@ -418,21 +328,12 @@ void registerSchemaAdmissionTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(
-                  contains('.typeParameters[0]'),
-                  contains('futureTypeParameterMeaning'),
-                ),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          allOf(
+            contains('.typeParameters[0]'),
+            contains('futureTypeParameterMeaning'),
+          ),
         ),
       );
     },
@@ -463,21 +364,12 @@ void registerSchemaAdmissionTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('.canonicalSignature'),
-                contains('futureSignatureMeaning'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains('.canonicalSignature'),
+          contains('futureSignatureMeaning'),
+        ),
       ),
     );
   });
@@ -508,21 +400,12 @@ void registerSchemaAdmissionTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'INVALID_GENERATOR_INPUT',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('.initializer'),
-                contains('futureInitializerMeaning'),
-              ),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(
+          contains('.initializer'),
+          contains('futureInitializerMeaning'),
+        ),
       ),
     );
   });

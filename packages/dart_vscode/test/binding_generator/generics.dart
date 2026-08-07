@@ -38,18 +38,9 @@ void registerGenericsTests() {
             inventory: inventory,
             overrides: overrides,
           ),
-          throwsA(
-            isA<VSCodeBindingGenerationException>()
-                .having(
-                  (error) => error.code,
-                  'code',
-                  'WALKING_SLICE_PROFILE_MISMATCH',
-                )
-                .having(
-                  (error) => error.message,
-                  'message',
-                  contains(mutatedId),
-                ),
+          _throwsGeneration(
+            'WALKING_SLICE_PROFILE_MISMATCH',
+            contains(mutatedId),
           ),
           reason: '$strategy with $typeParameterCount type parameters',
         );
@@ -94,18 +85,9 @@ void registerGenericsTests() {
             inventory: inventory,
             overrides: overrides,
           ),
-          throwsA(
-            isA<VSCodeBindingGenerationException>()
-                .having(
-                  (error) => error.code,
-                  'code',
-                  'WALKING_SLICE_PROFILE_MISMATCH',
-                )
-                .having(
-                  (error) => error.message,
-                  'message',
-                  contains(mutatedId),
-                ),
+          _throwsGeneration(
+            'WALKING_SLICE_PROFILE_MISMATCH',
+            contains(mutatedId),
           ),
           reason: '$strategy type parameter $field',
         );
@@ -170,18 +152,9 @@ void registerGenericsTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: '${mutation.strategy}: ${mutation.id}',
       );
@@ -216,18 +189,9 @@ void registerGenericsTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: strategy,
       );
@@ -273,18 +237,9 @@ void registerGenericsTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: declarationId,
       );
@@ -325,19 +280,7 @@ void registerGenericsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(mutatedId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(mutatedId)),
     );
   });
 
@@ -378,18 +321,9 @@ void registerGenericsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(declarationId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(declarationId),
       ),
     );
   });
@@ -437,14 +371,9 @@ void registerGenericsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('.shape.members[0].type'),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        contains('.shape.members[0].type'),
       ),
     );
   });
@@ -499,14 +428,9 @@ void registerGenericsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('.canonicalSignature'), contains('T')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('.canonicalSignature'), contains('T')),
       ),
     );
   });
@@ -544,14 +468,9 @@ void registerGenericsTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('typeParameter'), contains('index')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('typeParameter'), contains('index')),
       ),
     );
   });

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_vscode/src/cli/artifact_writer.dart';
 import 'package:flutter_vscode/src/cli/cli_exception.dart';
+import 'package:flutter_vscode/src/cli/json_object.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -195,14 +196,19 @@ void main() {
       expect(build.exitCode, 0, reason: '${build.stdout}\n${build.stderr}');
 
       final manifestFile = File(p.join(project.path, 'package.json'));
-      final manifest = _decodeJson(await manifestFile.readAsString())
-        ..['name'] = '../../escaped';
+      final manifest = decodeJsonObject(
+        await manifestFile.readAsString(),
+        'package.json',
+      )..['name'] = '../../escaped';
       const encoder = JsonEncoder.withIndent('  ');
       await manifestFile.writeAsString('${encoder.convert(manifest)}\n');
       final receiptFile = File(
         p.join(project.path, '.dart_tool', 'flutter_vscode', 'build.json'),
       );
-      final receipt = _decodeJson(await receiptFile.readAsString());
+      final receipt = decodeJsonObject(
+        await receiptFile.readAsString(),
+        'build.json',
+      );
       final artifacts = (receipt['artifacts']! as Map<Object?, Object?>)
           .cast<String, Object?>();
       artifacts['package.json'] = sha256
@@ -287,6 +293,3 @@ String get _dartExecutable {
   }
   throw StateError('Could not resolve dart from PATH for the CLI test.');
 }
-
-Map<String, Object?> _decodeJson(String source) =>
-    (jsonDecode(source) as Map<Object?, Object?>).cast<String, Object?>();

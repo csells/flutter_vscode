@@ -16,14 +16,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('canonicalSignature'),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        contains('canonicalSignature'),
       ),
     );
   });
@@ -45,14 +40,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('.id'), contains('canonicalSignature')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('.id'), contains('canonicalSignature')),
       ),
     );
   });
@@ -90,15 +80,7 @@ void registerCanonicalIdentityTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('shapeHash'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('shapeHash')),
     );
   });
 
@@ -118,15 +100,7 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('qualifiedName'),
-            ),
-      ),
+      _throwsGeneration('INVALID_GENERATOR_INPUT', contains('qualifiedName')),
     );
   });
 
@@ -189,18 +163,9 @@ void registerCanonicalIdentityTests() {
             'interface:vscode.Known': 'opaqueJsObject',
           }),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'INVALID_GENERATOR_INPUT',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains('canonicalSignature'),
-              ),
+        _throwsGeneration(
+          'INVALID_GENERATOR_INPUT',
+          contains('canonicalSignature'),
         ),
       );
     });
@@ -247,14 +212,9 @@ void registerCanonicalIdentityTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('canonicalSignature'),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        contains('canonicalSignature'),
       ),
     );
   });
@@ -300,14 +260,9 @@ void registerCanonicalIdentityTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('typeParameter'), contains('index')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('typeParameter'), contains('index')),
       ),
     );
   });
@@ -359,14 +314,9 @@ void registerCanonicalIdentityTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('outerTypeParameter'), contains('depth')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('outerTypeParameter'), contains('depth')),
       ),
     );
   });
@@ -400,14 +350,9 @@ void registerCanonicalIdentityTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('typeLiteral:missing'), contains('declaration')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('typeLiteral:missing'), contains('declaration')),
       ),
     );
   });
@@ -450,14 +395,9 @@ void registerCanonicalIdentityTests() {
           'interface:vscode.Known': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('typeLiteral'), contains('inbound')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('typeLiteral'), contains('inbound')),
       ),
     );
   });
@@ -474,14 +414,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('shapeHash'), contains('children')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('shapeHash'), contains('children')),
       ),
     );
   });
@@ -500,15 +435,7 @@ void registerCanonicalIdentityTests() {
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-              .having(
-                (error) => error.message,
-                'message',
-                contains('shape'),
-              ),
-        ),
+        _throwsGeneration('INVALID_GENERATOR_INPUT', contains('shape')),
       );
     },
   );
@@ -525,14 +452,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('shapeHash'), contains('children')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('shapeHash'), contains('children')),
       ),
     );
   });
@@ -548,14 +470,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('shapeHash'), contains('children')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('shapeHash'), contains('children')),
       ),
     );
   });
@@ -572,14 +489,9 @@ void registerCanonicalIdentityTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('shapeHash'), contains('children')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('shapeHash'), contains('children')),
       ),
     );
   });

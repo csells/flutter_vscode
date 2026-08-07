@@ -40,21 +40,12 @@ String validateManifestSchema(Map<String, Object?> inventory) {
       'publisher': <String, Object?>{'type': 'string'},
     },
   };
-  final projection = Map<String, Object?>.of(schema)..remove('inputSha256');
-  if (jsonEncode(projection) != jsonEncode(expectedProjection)) {
-    final differingPath = _firstJsonDifferencePath(
-      expectedProjection,
-      projection,
-      'inventory.manifestSchema',
-    );
-    throw VSCodeBindingGenerationException(
-      'INVALID_GENERATOR_INPUT',
-      'Pinned manifest schema contains an unprojected change. First '
-          'differing path: $differingPath. Regenerate the IR from the pinned '
-          'input; if upstream changed, review and update the generator '
-          'projection before retrying.',
-    );
-  }
+  _expectReviewedProjection(
+    schema,
+    expectedProjection,
+    'inventory.manifestSchema',
+    subject: 'Pinned manifest schema',
+  );
   return inputSha256;
 }
 
@@ -119,21 +110,12 @@ String validateManifestValidator(Map<String, Object?> inventory) {
       'semverValidImplementation': 'unprojectedExternal',
     },
   };
-  final projection = Map<String, Object?>.of(validator)..remove('inputSha256');
-  if (jsonEncode(projection) != jsonEncode(expectedProjection)) {
-    final differingPath = _firstJsonDifferencePath(
-      expectedProjection,
-      projection,
-      'inventory.manifestValidator',
-    );
-    throw VSCodeBindingGenerationException(
-      'INVALID_GENERATOR_INPUT',
-      'Pinned manifest validator contains an unprojected change. '
-          'First differing path: $differingPath. Regenerate the IR from the '
-          'pinned input; if upstream changed, review and update the generator '
-          'projection before retrying.',
-    );
-  }
+  _expectReviewedProjection(
+    validator,
+    expectedProjection,
+    'inventory.manifestValidator',
+    subject: 'Pinned manifest validator',
+  );
   return inputSha256;
 }
 
@@ -201,21 +183,12 @@ String validateCommandsContributionSchema(
       },
     },
   };
-  final projection = Map<String, Object?>.of(commands)..remove('inputSha256');
-  if (jsonEncode(projection) != jsonEncode(expectedProjection)) {
-    final differingPath = _firstJsonDifferencePath(
-      expectedProjection,
-      projection,
-      'inventory.contributionSchemas.commands',
-    );
-    throw VSCodeBindingGenerationException(
-      'INVALID_GENERATOR_INPUT',
-      'Commands contribution schema contains an unprojected change. '
-          'First differing path: $differingPath. Regenerate the IR from the '
-          'pinned inputs; if upstream changed, review and update the generator '
-          'projection before retrying.',
-    );
-  }
+  _expectReviewedProjection(
+    commands,
+    expectedProjection,
+    'inventory.contributionSchemas.commands',
+    subject: 'Commands contribution schema',
+  );
   return inputSha256;
 }
 
@@ -429,17 +402,18 @@ String validateConfigurationContributionSchema(
 void _expectReviewedProjection(
   Map<String, Object?> actual,
   Map<String, Object?> expected,
-  String path,
-) {
+  String path, {
+  String? subject,
+}) {
   final projection = Map<String, Object?>.of(actual)..remove('inputSha256');
   if (jsonEncode(projection) != jsonEncode(expected)) {
     final differingPath = _firstJsonDifferencePath(expected, projection, path);
     throw VSCodeBindingGenerationException(
       'INVALID_GENERATOR_INPUT',
-      'Contribution schema at $path contains an unprojected change. First '
-          'differing path: $differingPath. Regenerate the IR from the pinned '
-          'inputs; if upstream changed, review and update the generator '
-          'projection before retrying.',
+      '${subject ?? 'Contribution schema at $path'} contains an unprojected '
+          'change. First differing path: $differingPath. Regenerate the IR '
+          'from the pinned inputs; if upstream changed, review and update '
+          'the generator projection before retrying.',
     );
   }
 }

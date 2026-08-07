@@ -36,12 +36,12 @@ Future<void> packageProject(Directory root) async {
   validateFlutterViewLayout(root, views);
   final packagedViewFiles = viewOutputFiles(root, views);
   final packageRoot = await resolvePackageRoot();
-  final toolIdentity = await frameworkToolIdentity(packageRoot);
+  final frameworkDigest = await frameworkSha256(packageRoot);
   final receiptProblems = await validateBuildReceipt(
     projectRoot: root,
     apiTarget: vscodeApiVersion,
-    toolIdentity: toolIdentity,
-    inputPaths: buildInputPaths(root),
+    frameworkSha256: frameworkDigest,
+    inputPaths: buildInputPaths(root, views),
     artifactPaths: managedArtifactPaths(root),
   );
   if (receiptProblems.isNotEmpty) {

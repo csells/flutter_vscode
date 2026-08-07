@@ -31,18 +31,9 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(commandExecutionId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(commandExecutionId),
       ),
     );
   });
@@ -63,19 +54,7 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(htmlId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(htmlId)),
     );
   });
   test('rejects an optional member reviewed as a required projection', () {
@@ -107,19 +86,7 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(propertyId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(propertyId)),
     );
   });
   test('rejects static drift for every emitted method strategy', () {
@@ -245,18 +212,9 @@ void registerStrategyDriftTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: '${mutation.strategy}: ${mutation.id}',
       );
@@ -353,18 +311,9 @@ void registerStrategyDriftTests() {
               inventory: inventory,
               overrides: overrides,
             ),
-            throwsA(
-              isA<VSCodeBindingGenerationException>()
-                  .having(
-                    (error) => error.code,
-                    'code',
-                    'WALKING_SLICE_PROFILE_MISMATCH',
-                  )
-                  .having(
-                    (error) => error.message,
-                    'message',
-                    contains(mutatedId),
-                  ),
+            _throwsGeneration(
+              'WALKING_SLICE_PROFILE_MISMATCH',
+              contains(mutatedId),
             ),
             reason: '${shape.key} parameter $parameterIndex $field',
           );
@@ -407,18 +356,9 @@ void registerStrategyDriftTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: mutation.key,
       );
@@ -456,19 +396,7 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(mutatedId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(mutatedId)),
     );
   });
   test('rejects Webview message events detached from their emitted value', () {
@@ -509,18 +437,9 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(declarationId),
-            ),
+      _throwsGeneration(
+        'WALKING_SLICE_PROFILE_MISMATCH',
+        contains(declarationId),
       ),
     );
   });
@@ -554,19 +473,7 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'WALKING_SLICE_PROFILE_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains(mutatedId),
-            ),
-      ),
+      _throwsGeneration('WALKING_SLICE_PROFILE_MISMATCH', contains(mutatedId)),
     );
   });
   test('rejects inconsistent emitted disposal member names', () {
@@ -600,18 +507,9 @@ void registerStrategyDriftTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: declarationId,
       );
@@ -655,18 +553,9 @@ void registerStrategyDriftTests() {
           inventory: inventory,
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having(
-                (error) => error.code,
-                'code',
-                'WALKING_SLICE_PROFILE_MISMATCH',
-              )
-              .having(
-                (error) => error.message,
-                'message',
-                contains(mutatedId),
-              ),
+        _throwsGeneration(
+          'WALKING_SLICE_PROFILE_MISMATCH',
+          contains(mutatedId),
         ),
         reason: declarationId,
       );
@@ -715,19 +604,7 @@ void registerStrategyDriftTests() {
               'tool/bindings/overrides/vscode-1.129.1.json',
             ),
           ),
-          throwsA(
-            isA<VSCodeBindingGenerationException>()
-                .having(
-                  (error) => error.code,
-                  'code',
-                  'INVALID_GENERATOR_INPUT',
-                )
-                .having(
-                  (error) => error.message,
-                  'message',
-                  contains(field),
-                ),
-          ),
+          _throwsGeneration('INVALID_GENERATOR_INPUT', contains(field)),
         );
       });
     }
@@ -748,14 +625,9 @@ void registerStrategyDriftTests() {
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('constant'), contains('declarationKind')),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        allOf(contains('constant'), contains('declarationKind')),
       ),
     );
   });
@@ -793,14 +665,9 @@ void registerStrategyDriftTests() {
         inventory: inventory,
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_GENERATOR_INPUT')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('unsupported member schema'),
-            ),
+      _throwsGeneration(
+        'INVALID_GENERATOR_INPUT',
+        contains('unsupported member schema'),
       ),
     );
   });

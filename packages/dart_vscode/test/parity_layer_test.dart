@@ -1,17 +1,12 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/parity_layer.dart' as parity;
-
+import 'support/json.dart';
 import 'support/repository.dart';
 
 const _ledgerPath = 'tool/bindings/parity-ledger.json';
-
-Map<String, Object?> _readJson(String path) =>
-    (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
-        .cast<String, Object?>();
 
 /// Returns the source of exactly one `extension type <name><...>(` block.
 String _typeBlock(String source, String name) {
@@ -34,7 +29,7 @@ String _typeBlock(String source, String name) {
 }
 
 void main() {
-  final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+  final inventory = readJsonObject('tool/bindings/ir/vscode-1.129.1.json');
 
   test('P-1 checked-in substrate ledger matches mechanical regeneration', () {
     // The standalone parity artifact retired into the self-contained
@@ -51,7 +46,7 @@ void main() {
   });
 
   test('P-2 every public declaration is emitted or explicitly erased', () {
-    final ledger = _readJson(_ledgerPath);
+    final ledger = readJsonObject(_ledgerPath);
     final dispositions = (ledger['dispositions']! as Map<Object?, Object?>)
         .cast<String, String>();
     const allowedErasures = {

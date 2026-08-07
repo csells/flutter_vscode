@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
+import 'package:yaml/yaml.dart';
 
 import '../../dart_vscode/tool/binding_generator/contract.dart'
     as contract_writer;
@@ -11,18 +12,32 @@ void main() {
   test('the workflow is the one aggregate: every suite and gate is a step', () {
     // There is no aggregate script; the workflow lists what CI runs, and
     // scripts/ci_gates.sh mirrors it locally. A suite or gate missing here
-    // is a suite or gate CI silently stopped running.
-    final workflow = File(
+    // is a suite or gate CI silently stopped running. The YAML is parsed
+    // rather than grepped: a working-directory that only feeds the checks
+    // job's publish dry-run must not satisfy a suite requirement.
+    final source = File(
       repoPath('.github/workflows/test.yml'),
     ).readAsStringSync();
+    final workflow = loadYaml(source) as YamlMap;
+    final jobs = workflow['jobs'] as YamlMap;
 
-    expect(workflow, contains('flutter analyze'));
+    List<YamlMap> steps(String job) =>
+        ((jobs[job] as YamlMap)['steps'] as YamlList)
+            .whereType<YamlMap>()
+            .toList();
+    final commands = [
+      for (final job in jobs.keys)
+        for (final step in steps(job as String))
+          if (step['run'] != null) step['run']! as String,
+    ].join('\n');
+
+    expect(commands, contains('flutter analyze'));
     expect(
-      workflow,
+      commands,
       contains('dart pub publish --dry-run --ignore-warnings'),
     );
-    expect(workflow, contains('git diff --exit-code'));
-    expect(workflow, contains('git status --porcelain'));
+    expect(commands, contains('git diff --exit-code'));
+    expect(commands, contains('git status --porcelain'));
     for (final gate in [
       './scripts/test_binding_importer.sh',
       './scripts/test_host_extension.sh',
@@ -32,8 +47,14 @@ void main() {
       './scripts/test_breakpoints.sh',
       './scripts/test_host_extension_native.sh',
     ]) {
-      expect(workflow, contains(gate));
+      expect(commands, contains(gate));
     }
+
+    final testSuiteDirectories = {
+      for (final step in steps('test'))
+        if (step['working-directory'] != null)
+          step['working-directory']! as String,
+    };
     for (final suite in [
       'packages/dart_vscode',
       'packages/flutter_vscode',
@@ -42,9 +63,9 @@ void main() {
       'extensions/coverage_treemap/views/treemap_panel',
     ]) {
       expect(
-        workflow,
-        contains('working-directory: $suite'),
-        reason: 'the $suite suite must run as its own workflow step',
+        testSuiteDirectories,
+        contains(suite),
+        reason: 'the $suite suite must run as its own test-job step',
       );
     }
   });
@@ -94,10 +115,11 @@ void main() {
       containsAll({
         // The specs, gate scripts, docs, and example extensions live above
         // this package, so the archive never sees them and `.pubignore` has
-        // nothing to say about them.
+        // nothing to say about them. Nothing under tool/ is a consumer
+        // asset either.
         '/test/',
         '**/build/',
-        '/tool/extension_host_test/',
+        '/tool/',
       }),
     );
     // Binding generation is a dart_vscode maintainer operation: the

@@ -1,9 +1,9 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/dart_layer.dart' as dart_layer;
+import 'support/json.dart';
 import 'support/repository.dart';
 
 final String _libraryPath = repoPath(
@@ -12,12 +12,8 @@ final String _libraryPath = repoPath(
 const _ledgerPath = 'tool/bindings/dart-layer-ledger.json';
 const _parityLedgerPath = 'tool/bindings/parity-ledger.json';
 
-Map<String, Object?> _readJson(String path) =>
-    (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
-        .cast<String, Object?>();
-
 void main() {
-  final inventory = _readJson('tool/bindings/ir/vscode-1.129.1.json');
+  final inventory = readJsonObject('tool/bindings/ir/vscode-1.129.1.json');
 
   test('D-1 checked-in dart layer matches mechanical regeneration', () {
     final artifacts = dart_layer.emitDartLayer(inventory);
@@ -39,11 +35,12 @@ void main() {
   });
 
   test('D-2 every parity declaration receives a dart-layer disposition', () {
-    final ledger = _readJson(_ledgerPath);
+    final ledger = readJsonObject(_ledgerPath);
     final dispositions = (ledger['dispositions']! as Map<Object?, Object?>)
         .cast<String, String>();
     final parityDispositions =
-        (_readJson(_parityLedgerPath)['dispositions']! as Map<Object?, Object?>)
+        (readJsonObject(_parityLedgerPath)['dispositions']!
+                as Map<Object?, Object?>)
             .cast<String, String>();
     const allowed = {
       'emitted',

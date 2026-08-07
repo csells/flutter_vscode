@@ -4,7 +4,10 @@ import 'package:flutter_vscode/src/cli/build_receipt.dart';
 import 'package:flutter_vscode/src/cli/project_layout.dart';
 
 /// Enumerates the author-owned inputs a build reads, in stable order.
-List<String> buildInputPaths(Directory root) {
+///
+/// [views] is the already-discovered Flutter View list; callers hold it
+/// from their own layout validation, so the tree is walked once.
+List<String> buildInputPaths(Directory root, List<FlutterView> views) {
   final paths = <String>[];
   for (final descriptor in ['extension.dart', 'extension.json']) {
     if (projectFile(root, descriptor).existsSync()) {
@@ -36,7 +39,7 @@ List<String> buildInputPaths(Directory root) {
       }
     }
   }
-  for (final view in discoverViews(root)) {
+  for (final view in views) {
     for (final file in safeFiles(
       view.root,
       description: 'Flutter View ${view.name} source tree',
@@ -81,14 +84,11 @@ List<String> managedArtifactPaths(Directory root) {
 }
 
 /// Digests the framework sources that produce and package a build.
-Future<BuildToolIdentity> frameworkToolIdentity(Directory packageRoot) async =>
-    BuildToolIdentity(
-      frameworkSha256: await digestPackagePaths(
-        packageRoot: packageRoot,
-        relativePaths: const [
-          'bin/flutter_vscode.dart',
-          'lib',
-          'pubspec.yaml',
-        ],
-      ),
-    );
+///
+/// The VS Code API surface is not part of this identity: it ships inside
+/// `package:dart_vscode`, whose resolved version the project's pubspec
+/// already pins the ordinary way.
+Future<String> frameworkSha256(Directory packageRoot) => digestPackagePaths(
+  packageRoot: packageRoot,
+  relativePaths: const ['bin/flutter_vscode.dart', 'lib', 'pubspec.yaml'],
+);

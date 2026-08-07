@@ -1,13 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/generator.dart';
+import 'support/json.dart';
 
 void main() {
   test('generator fails closed when a projected manifest predicate drifts', () {
-    final inventory = _readJson(
+    final inventory = readJsonObject(
       'tool/bindings/ir/vscode-1.129.1.json',
     );
     final validator = (inventory['manifestValidator']! as Map<Object?, Object?>)
@@ -19,7 +17,7 @@ void main() {
     expect(
       () => VSCodeBindingGenerator().generateCoverageLedger(
         inventory: inventory,
-        overrides: _readJson(
+        overrides: readJsonObject(
           'tool/bindings/overrides/vscode-1.129.1.json',
         ),
       ),
@@ -45,7 +43,7 @@ void main() {
   test(
     'generator fails closed when integrity-pinned validator body drifts',
     () {
-      final inventory = _readJson(
+      final inventory = readJsonObject(
         'tool/bindings/ir/vscode-1.129.1.json',
       );
       final validator =
@@ -56,7 +54,7 @@ void main() {
       expect(
         () => VSCodeBindingGenerator().generateCoverageLedger(
           inventory: inventory,
-          overrides: _readJson(
+          overrides: readJsonObject(
             'tool/bindings/overrides/vscode-1.129.1.json',
           ),
         ),
@@ -71,7 +69,3 @@ void main() {
     },
   );
 }
-
-Map<String, Object?> _readJson(String path) =>
-    (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
-        .cast<String, Object?>();

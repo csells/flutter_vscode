@@ -45,7 +45,7 @@ final class ManifestProjection {
       'publisher',
       'activationEvents',
     ]) {
-      if (!project.containsKey(field) || project[field] == null) {
+      if (project[field] == null) {
         throw ContributionException(
           'INVALID_PROJECT_MANIFEST',
           'project.$field is required.',

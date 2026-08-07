@@ -969,6 +969,14 @@ bool _containsRegisteredLiteralReference(Object? value) {
   return value.values.any(_containsRegisteredLiteralReference);
 }
 
+/// Matches a [VSCodeBindingGenerationException] with [code], and
+/// optionally a [message] matcher.
+Matcher _throwsGeneration(String code, [Object? message]) => throwsA(
+  isA<VSCodeBindingGenerationException>()
+      .having((error) => error.code, 'code', code)
+      .having((error) => error.message, 'message', message ?? anything),
+);
+
 Map<String, Object?> _readJson(String path) {
   return (jsonDecode(File(path).readAsStringSync()) as Map<Object?, Object?>)
       .cast<String, Object?>();

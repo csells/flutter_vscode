@@ -4,7 +4,7 @@ import 'package:path/path.dart' as p;
 
 /// The repository root of this checkout.
 ///
-/// Tests run with `packages/flutter_vscode` as the working directory, but
+/// Tests run with `packages/dart_vscode` as the working directory, but
 /// plenty of what they assert about lives above it: the gate scripts, the
 /// docs and specs, the shipped example extensions, the CI workflow, and the
 /// pub workspace's single `.dart_tool/package_config.json`. Resolving the

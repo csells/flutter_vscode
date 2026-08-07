@@ -7,19 +7,6 @@ import 'package:path/path.dart' as p;
 /// Repository-relative location of the deterministic build receipt.
 const buildReceiptPath = '.dart_tool/flutter_vscode/build.json';
 
-/// Identifies the exact framework tooling for a build.
-///
-/// The VS Code API surface is not part of this identity: it ships inside
-/// `package:dart_vscode`, whose resolved version the project's pubspec
-/// already pins the ordinary way.
-final class BuildToolIdentity {
-  /// Creates a build-tool identity from deterministic SHA-256 digests.
-  const BuildToolIdentity({required this.frameworkSha256});
-
-  /// Digest of framework sources that orchestrate and package the build.
-  final String frameworkSha256;
-}
-
 /// Digests every file beneath [relativePaths] in stable path order.
 ///
 /// Directory inputs are recursive so newly added transitive tool sources
@@ -70,14 +57,14 @@ Future<String> digestPackagePaths({
 Future<void> writeBuildReceipt({
   required Directory projectRoot,
   required String apiTarget,
-  required BuildToolIdentity toolIdentity,
+  required String frameworkSha256,
   required List<String> inputPaths,
   required List<String> artifactPaths,
 }) async {
   final receipt = <String, Object?>{
     'schemaVersion': 3,
     'apiTarget': apiTarget,
-    'frameworkSha256': toolIdentity.frameworkSha256,
+    'frameworkSha256': frameworkSha256,
     'inputs': await _digests(projectRoot, inputPaths),
     'artifacts': await _digests(projectRoot, artifactPaths),
   };
@@ -91,7 +78,7 @@ Future<void> writeBuildReceipt({
 Future<List<String>> validateBuildReceipt({
   required Directory projectRoot,
   required String apiTarget,
-  required BuildToolIdentity toolIdentity,
+  required String frameworkSha256,
   required List<String> inputPaths,
   required List<String> artifactPaths,
 }) async {
@@ -123,7 +110,7 @@ Future<List<String>> validateBuildReceipt({
   }
 
   final problems = <String>[];
-  if (decoded['frameworkSha256'] != toolIdentity.frameworkSha256) {
+  if (decoded['frameworkSha256'] != frameworkSha256) {
     problems.add('flutter_vscode framework changed since build');
   }
   await _validateGroup(

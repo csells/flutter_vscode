@@ -59,21 +59,22 @@ sed -i.bak '/^resolution: workspace$/d' "${PACKAGE_COPY}/pubspec.yaml"
 rm -f "${PACKAGE_COPY}/pubspec.yaml.bak"
 
 # `dart_vscode` carries the generated VS Code API and is not published yet, so
-# nothing here can resolve it from pub.dev. Stage it beside the package and
-# override; this goes away when the two packages ship together.
+# nothing here can resolve it from pub.dev. Stage it beside the package from
+# pub's own archive selection — the same mechanism as PACKAGE_COPY — so the
+# E2E installs exactly what the published archive would contain; this goes
+# away when the two packages ship together.
 mkdir -p "${LAYER_COPY}"
-# Mirror the published archive: the maintainer tool/ area (importer, IR,
-# overrides) and the package tests never ship.
-(
-  cd "${REPO_ROOT}/packages/dart_vscode"
-  tar cf - \
-    --exclude=.dart_tool \
-    --exclude=build \
-    --exclude=node_modules \
-    --exclude=./tool \
-    --exclude=./test \
-    .
-) | (cd "${LAYER_COPY}" && tar xf -)
+LAYER_LIST="${TEMP_ROOT}/dart-vscode-archive-files.txt"
+LAYER_ROOT="${REPO_ROOT}/packages/dart_vscode"
+(cd "${LAYER_ROOT}" && dart "${PACKAGE_ROOT}/tool/pub_archive_list.dart") \
+  > "${LAYER_LIST}"
+grep -qx "pubspec.yaml" "${LAYER_LIST}"
+while IFS= read -r archived_file; do
+  mkdir -p "${LAYER_COPY}/$(dirname "${archived_file}")"
+  cp "${LAYER_ROOT}/${archived_file}" "${LAYER_COPY}/${archived_file}"
+done < "${LAYER_LIST}"
+test ! -e "${LAYER_COPY}/tool"
+test ! -e "${LAYER_COPY}/test"
 sed -i.bak '/^resolution: workspace$/d' "${LAYER_COPY}/pubspec.yaml"
 rm -f "${LAYER_COPY}/pubspec.yaml.bak"
 printf '\ndependency_overrides:\n  dart_vscode:\n    path: %s\n' \

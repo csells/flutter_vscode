@@ -12,18 +12,9 @@ void registerOverrideReviewTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'UNSUPPORTED_INPUT_SCHEMA_VERSION',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('overrides.schemaVersion'),
-            ),
+      _throwsGeneration(
+        'UNSUPPORTED_INPUT_SCHEMA_VERSION',
+        contains('overrides.schemaVersion'),
       ),
     );
   });
@@ -37,14 +28,9 @@ void registerOverrideReviewTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('top-level'), contains('unknownPolicy')),
-            ),
+      _throwsGeneration(
+        'INVALID_OVERRIDE',
+        allOf(contains('top-level'), contains('unknownPolicy')),
       ),
     );
   });
@@ -151,15 +137,7 @@ void registerOverrideReviewTests() {
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-              .having(
-                (error) => error.message,
-                'message',
-                contains('removal'),
-              ),
-        ),
+        _throwsGeneration('INVALID_OVERRIDE', contains('removal')),
         reason: malformed.key,
       );
     }
@@ -191,15 +169,7 @@ void registerOverrideReviewTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: removalOverrides('\uFEFF'),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('non-empty reason'),
-            ),
-      ),
+      _throwsGeneration('INVALID_OVERRIDE', contains('non-empty reason')),
       reason: 'ECMAScript trim removes U+FEFF.',
     );
   });
@@ -213,18 +183,9 @@ void registerOverrideReviewTests() {
           'interface:vscode.Missing': 'opaqueJsObject',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'UNKNOWN_OVERRIDE_ID',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('interface:vscode.Missing'),
-            ),
+      _throwsGeneration(
+        'UNKNOWN_OVERRIDE_ID',
+        contains('interface:vscode.Missing'),
       ),
     );
   });
@@ -238,21 +199,12 @@ void registerOverrideReviewTests() {
           'interface:vscode.Known': 'handwrittenDartSnippet',
         }),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'UNKNOWN_OVERRIDE_STRATEGY',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('interface:vscode.Known'),
-                contains('handwrittenDartSnippet'),
-              ),
-            ),
+      _throwsGeneration(
+        'UNKNOWN_OVERRIDE_STRATEGY',
+        allOf(
+          contains('interface:vscode.Known'),
+          contains('handwrittenDartSnippet'),
+        ),
       ),
     );
   });
@@ -292,17 +244,12 @@ void registerOverrideReviewTests() {
           inventory: _inventory(['interface:vscode.Known']),
           overrides: overrides,
         ),
-        throwsA(
-          isA<VSCodeBindingGenerationException>()
-              .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-              .having(
-                (error) => error.message,
-                'message',
-                allOf(
-                  contains('interface:vscode.Known'),
-                  contains('exactly'),
-                ),
-              ),
+        _throwsGeneration(
+          'INVALID_OVERRIDE',
+          allOf(
+            contains('interface:vscode.Known'),
+            contains('exactly'),
+          ),
         ),
         reason: malformed.key,
       );
@@ -324,15 +271,7 @@ void registerOverrideReviewTests() {
         inventory: _inventory(['interface:vscode.Known']),
         overrides: overrides,
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having((error) => error.code, 'code', 'INVALID_OVERRIDE')
-            .having(
-              (error) => error.message,
-              'message',
-              contains('non-empty reason'),
-            ),
-      ),
+      _throwsGeneration('INVALID_OVERRIDE', contains('non-empty reason')),
     );
   });
   test('rejects Semantic Overrides for a different VS Code pin', () {
@@ -346,18 +285,9 @@ void registerOverrideReviewTests() {
           vscodeVersion: '1.128.0',
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'OVERRIDE_VERSION_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(contains('1.128.0'), contains('1.129.1')),
-            ),
+      _throwsGeneration(
+        'OVERRIDE_VERSION_MISMATCH',
+        allOf(contains('1.128.0'), contains('1.129.1')),
       ),
     );
   });
@@ -372,23 +302,14 @@ void registerOverrideReviewTests() {
           manifestSchemaSha256: '0' * 64,
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'MANIFEST_SCHEMA_PIN_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('0' * 64),
-                contains(
-                  'feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa',
-                ),
-              ),
-            ),
+      _throwsGeneration(
+        'MANIFEST_SCHEMA_PIN_MISMATCH',
+        allOf(
+          contains('0' * 64),
+          contains(
+            'feddc98984b755a95644674910aa8c671e3259f137698c581ec7e2837cb058aa',
+          ),
+        ),
       ),
     );
   });
@@ -403,23 +324,14 @@ void registerOverrideReviewTests() {
           manifestValidatorSha256: '0' * 64,
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'MANIFEST_VALIDATOR_PIN_MISMATCH',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              allOf(
-                contains('0' * 64),
-                contains(
-                  'e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1',
-                ),
-              ),
-            ),
+      _throwsGeneration(
+        'MANIFEST_VALIDATOR_PIN_MISMATCH',
+        allOf(
+          contains('0' * 64),
+          contains(
+            'e8ae92aa491ab138b6f625acbbcbd7c53ff187098066ff13aebb64615202dde1',
+          ),
+        ),
       ),
     );
   });
@@ -434,19 +346,7 @@ void registerOverrideReviewTests() {
           targets: const [],
         ),
       ),
-      throwsA(
-        isA<VSCodeBindingGenerationException>()
-            .having(
-              (error) => error.code,
-              'code',
-              'UNUSED_OVERRIDE',
-            )
-            .having(
-              (error) => error.message,
-              'message',
-              contains('interface:vscode.Known'),
-            ),
-      ),
+      _throwsGeneration('UNUSED_OVERRIDE', contains('interface:vscode.Known')),
     );
   });
 }

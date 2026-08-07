@@ -326,7 +326,9 @@ List<File> viewOutputFiles(Directory root, List<FlutterView> views) {
       ),
     );
   }
-  if (!_setsEqual(actualNames, expectedNames)) {
+  // The loop above admits only expected names, so subset is guaranteed
+  // and equality reduces to cardinality.
+  if (actualNames.length != expectedNames.length) {
     final missing = expectedNames.difference(actualNames).toList()..sort();
     throw CliException(
       'Flutter View output is missing: ${missing.join(', ')}.',
@@ -340,6 +342,3 @@ List<File> viewOutputFiles(Directory root, List<FlutterView> views) {
 /// Returns [file]'s path relative to [root] with POSIX separators.
 String relativeProjectPath(Directory root, File file) =>
     p.relative(file.path, from: root.path).split(p.separator).join('/');
-
-bool _setsEqual(Set<String> left, Set<String> right) =>
-    left.length == right.length && left.containsAll(right);

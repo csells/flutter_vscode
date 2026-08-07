@@ -13,6 +13,22 @@ import 'package:crypto/crypto.dart';
 const hostContractSourcesPath =
     '$apiPackagePath/tool/bindings/host-contract-sources.json';
 
+/// The one VS Code baseline the pinned inputs on disk carry.
+///
+/// File names under `tool/bindings` embed this version; the shipped
+/// constant in `lib/src/contributions/vscode_api_version.dart` is the
+/// authority, and the importer's baseline validation refuses a tree where
+/// the two drift.
+const pinnedBaseline = '1.129.1';
+
+/// Repository-relative location of the pinned canonical IR.
+const pinnedInventoryPath =
+    '$apiPackagePath/tool/bindings/ir/vscode-$pinnedBaseline.json';
+
+/// Repository-relative location of the pinned Semantic Overrides.
+const pinnedOverridesPath =
+    '$apiPackagePath/tool/bindings/overrides/vscode-$pinnedBaseline.json';
+
 /// Repository-relative location of the durable checkpoint-4 artifact.
 ///
 /// This module owns the spelling for every Dart reader, the same way
@@ -55,9 +71,7 @@ String buildHostContractArtifact(Directory repositoryRoot) {
               as Map<Object?, Object?>)
           .cast<String, Object?>();
 
-  final inventory = readJson(
-    '$apiPackagePath/tool/bindings/ir/vscode-1.129.1.json',
-  );
+  final inventory = readJson(pinnedInventoryPath);
   final product =
       ((inventory['source']! as Map<Object?, Object?>)['product']!
               as Map<Object?, Object?>)
@@ -98,9 +112,7 @@ String buildHostContractArtifact(Directory repositoryRoot) {
       },
   };
 
-  final overrides = readJson(
-    '$apiPackagePath/tool/bindings/overrides/vscode-1.129.1.json',
-  );
+  final overrides = readJson(pinnedOverridesPath);
   final entries = (overrides['entries']! as Map<Object?, Object?>)
       .cast<String, Object?>();
   final attributedBindings = <String>[
