@@ -256,7 +256,7 @@
     },
     "projectArtifacts": {
       "path": "packages/flutter_vscode/lib/src/cli/project_artifacts.dart",
-      "sha256": "545c964c3dc3ba83869c27fb6fe47689013282298e24dd05a1e2de1205ad2229"
+      "sha256": "47997d4c92d0795d23ff6b82a9c6738a9849d59e32c90d617120003bc156efbc"
     },
     "projectDescriptor": {
       "path": "packages/flutter_vscode/lib/src/cli/project_descriptor.dart",

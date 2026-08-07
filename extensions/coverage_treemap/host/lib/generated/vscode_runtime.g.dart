@@ -5,10 +5,14 @@ import 'dart:js_interop';
 
 import 'package:dart_vscode/host_runtime.dart';
 
-@JS('__flutterVscode.stackMappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f')
+@JS(
+  '__flutterVscode.stackMappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f',
+)
 external JSString _mapHostStack(JSString stack);
 
-@JS('__flutterVscode.callbackWrappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f')
+@JS(
+  '__flutterVscode.callbackWrappers.e_fd2880b059dc6684df43c2921c1e75f9b7b263154503300a7223562915d8051f',
+)
 external JSFunction _wrapHostCallback(JSFunction callback);
 
 /// Binds this extension's JavaScript globals into the framework runtime.
@@ -16,6 +20,6 @@ external JSFunction _wrapHostCallback(JSFunction callback);
 /// Only the two globals are per-extension; the code that uses them lives in
 /// `package:dart_vscode/host_runtime.dart`.
 void installGeneratedHostRuntime() => installHostRuntime(
-      mapStack: (stack) => _mapHostStack(stack.toJS),
-      wrapCallback: (callback) => _wrapHostCallback(callback),
-    );
+  mapStack: (stack) => _mapHostStack(stack.toJS),
+  wrapCallback: (callback) => _wrapHostCallback(callback),
+);

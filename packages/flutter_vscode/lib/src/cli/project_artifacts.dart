@@ -200,6 +200,9 @@ exports.deactivate = () => host.deactivate();
 
 /// Renders the generated runtime module, `vscode_runtime.g.dart`.
 String _runtimeTemplate(String extensionKey) {
+  // The body is written in the exact style the pinned SDK's formatter
+  // produces, so `dart format` over an Extension Project cannot dirty it
+  // and a rebuild reproduces the receipted bytes either way.
   return '''
 // GENERATED CODE - DO NOT MODIFY BY HAND.
 // ignore_for_file: unnecessary_lambdas
@@ -208,10 +211,14 @@ import 'dart:js_interop';
 
 import 'package:dart_vscode/host_runtime.dart';
 
-@JS('__flutterVscode.stackMappers.$extensionKey')
+@JS(
+  '__flutterVscode.stackMappers.$extensionKey',
+)
 external JSString _mapHostStack(JSString stack);
 
-@JS('__flutterVscode.callbackWrappers.$extensionKey')
+@JS(
+  '__flutterVscode.callbackWrappers.$extensionKey',
+)
 external JSFunction _wrapHostCallback(JSFunction callback);
 
 /// Binds this extension's JavaScript globals into the framework runtime.
@@ -219,8 +226,8 @@ external JSFunction _wrapHostCallback(JSFunction callback);
 /// Only the two globals are per-extension; the code that uses them lives in
 /// `package:dart_vscode/host_runtime.dart`.
 void installGeneratedHostRuntime() => installHostRuntime(
-      mapStack: (stack) => _mapHostStack(stack.toJS),
-      wrapCallback: (callback) => _wrapHostCallback(callback),
-    );
+  mapStack: (stack) => _mapHostStack(stack.toJS),
+  wrapCallback: (callback) => _wrapHostCallback(callback),
+);
 ''';
 }

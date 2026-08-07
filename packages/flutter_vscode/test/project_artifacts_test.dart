@@ -102,6 +102,37 @@ void main() {
     }
   });
 
+  test('emitted Dart modules are formatter-stable', () async {
+    // An Extension Author running `dart format .` must not dirty
+    // Framework-Managed Artifacts, and a rebuild must reproduce the
+    // receipted bytes even after such a format: the templates are written
+    // in the exact style the pinned SDK's formatter produces.
+    final temporary = await Directory.systemTemp.createTemp(
+      'flutter_vscode_template_format_',
+    );
+    addTearDown(() => temporary.delete(recursive: true));
+    final files = emitProjectArtifacts(descriptor());
+    for (final entry in files.entries.where(
+      (entry) => entry.key.endsWith('.dart'),
+    )) {
+      final artifact = File('${temporary.path}/${entry.key.split('/').last}')
+        ..writeAsStringSync(entry.value);
+      final result = await Process.run('dart', [
+        'format',
+        '--output=none',
+        '--set-exit-if-changed',
+        artifact.path,
+      ]);
+      expect(
+        result.exitCode,
+        0,
+        reason:
+            '${entry.key} must already be formatted:\n'
+            '${result.stdout}\n${result.stderr}',
+      );
+    }
+  });
+
   test('emits the manifest byte-for-byte from project data and the pin', () {
     expect(
       emitProjectArtifacts(descriptor())['package.json'],
