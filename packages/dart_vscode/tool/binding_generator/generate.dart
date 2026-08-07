@@ -5,6 +5,7 @@ import 'contract.dart';
 import 'dart_layer.dart';
 import 'generator.dart';
 import 'parity_report.dart';
+import 'sdk_format.dart';
 
 /// The dart_vscode maintainer entry point.
 ///
@@ -33,7 +34,10 @@ Future<void> main(List<String> arguments) async {
               'vscode_dart_layer.g.dart',
             )
             .create(recursive: true)
-            .then((file) => file.writeAsString(artifacts.library));
+            .then(
+              (file) async =>
+                  file.writeAsString(await formatWithSdk(artifacts.library)),
+            );
         await File(
           '$bindings/dart-layer-ledger.json',
         ).writeAsString(artifacts.ledger);

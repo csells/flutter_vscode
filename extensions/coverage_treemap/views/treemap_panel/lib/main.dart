@@ -16,6 +16,26 @@ import 'package:treemap_panel/treemap.dart';
 Future<void> main() async {
   final shell = await ViewShell.connect();
   runFlutterView(TreemapApp(shell: shell));
+  unawaited(_confirmFirstFrame(shell));
+}
+
+/// Reports the first completed frame to Host Dart.
+///
+/// An occluded or throttled webview connects but never completes a
+/// frame, so the desktop and container gates await this confirmation
+/// rather than trusting the connection alone. Failure to deliver the
+/// report leaves the host's gate timeout to tell the story; the view
+/// itself keeps rendering.
+Future<void> _confirmFirstFrame(ViewShell shell) async {
+  await WidgetsBinding.instance.endOfFrame;
+  try {
+    await firstFramePaintedOperation.callThrough(
+      shell.session.operationCaller,
+      true,
+    );
+  } on Object {
+    // Diagnostic-only from the view's perspective.
+  }
 }
 
 /// Root widget themed from the host VS Code color theme.

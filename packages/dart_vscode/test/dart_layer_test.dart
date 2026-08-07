@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:test/test.dart';
 
 import '../tool/binding_generator/dart_layer.dart' as dart_layer;
+import '../tool/binding_generator/sdk_format.dart';
 import 'support/json.dart';
 import 'support/repository.dart';
 
@@ -13,13 +14,34 @@ const _ledgerPath = 'tool/bindings/dart-layer-ledger.json';
 const _parityLedgerPath = 'tool/bindings/parity-ledger.json';
 
 void main() {
+  test('the generated layer is formatter-canonical', () async {
+    // A wholesale `dart format lib` must be a no-op on the generated
+    // artifact, and a regeneration must reproduce receipted bytes either
+    // way: the emitter formats its output through the pinned dart_style,
+    // so canonical-by-construction is the invariant and any SDK/dart_style
+    // divergence surfaces here as a red test, not a receipts incident.
+    final result = await Process.run('dart', [
+      'format',
+      '--output=none',
+      '--set-exit-if-changed',
+      _libraryPath,
+    ]);
+    expect(
+      result.exitCode,
+      0,
+      reason:
+          'the committed generated layer must already be formatted:\n'
+          '${result.stdout}\n${result.stderr}',
+    );
+  });
+
   final inventory = readJsonObject('tool/bindings/ir/vscode-1.129.1.json');
 
-  test('D-1 checked-in dart layer matches mechanical regeneration', () {
+  test('D-1 checked-in dart layer matches mechanical regeneration', () async {
     final artifacts = dart_layer.emitDartLayer(inventory);
     expect(
       File(_libraryPath).readAsStringSync(),
-      artifacts.library,
+      await formatWithSdk(artifacts.library),
       reason:
           'Regenerate with: dart tool/binding_generator/generate.dart '
           '--dart-layer .',
@@ -119,7 +141,7 @@ void main() {
       expect(
         source,
         contains(
-          'Future<T?> showInformationMessage<T extends JSAny?>(String message',
+          'Future<T?> showInformationMessage<T extends JSAny?>(',
         ),
       );
       expect(source, contains('.toDart.then((value) => value?.toDart)'));

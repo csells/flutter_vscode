@@ -58,6 +58,7 @@ final class _CoverageController {
   parity.Terminal? _terminal;
   ThemeReport? _lastThemeReport;
   final Completer<String> _firstSnapshotServed = Completer<String>();
+  final Completer<void> _firstFramePainted = Completer<void>();
 
   Future<JSAny?> start() async {
     _coveredType = _lineDecoration('diffEditor.insertedTextBackground');
@@ -89,8 +90,17 @@ final class _CoverageController {
             'The Flutter View did not serve a snapshot within 120s.',
           ),
         );
+        await _firstFramePainted.future.timeout(
+          const Duration(seconds: 300),
+          onTimeout: () => throw StateError(
+            'The Flutter View connected but never confirmed a painted '
+            'first frame within 300s: an occluded or throttled webview '
+            'renders nothing.',
+          ),
+        );
         return jsonEncode(<String, Object?>{
           'viewConnected': true,
+          'firstFramePainted': true,
           'lcovPath': lcovPath,
         });
       })
@@ -280,6 +290,11 @@ final class _CoverageController {
             _firstSnapshotServed.complete(snapshot.lcovPath);
           }
           return snapshot;
+        }),
+        firstFramePaintedOperation.bind((painted) {
+          if (painted && !_firstFramePainted.isCompleted) {
+            _firstFramePainted.complete();
+          }
         }),
         themeReportOperation.bind((report) {
           _lastThemeReport = report;

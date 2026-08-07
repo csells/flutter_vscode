@@ -55,11 +55,17 @@ sequence or schedule. Rough dependency order below.
 
 ## Engineering debt (from the audits)
 
-- The CSP served into a live webview is not parsed by any real-host
-  gate; the policy itself is framework-owned and byte-asserted via the
-  emitted view-host module template.
+- Windows real-host gate: no gate proves the platform a real share of
+  Extension Authors develop on. The native-mode gate scripts are
+  already platform-agnostic bash-plus-node and the harness resolves
+  the win32 VS Code build; a `windows-latest` job needs bash-via-git
+  (or a PowerShell port of the thin scripts) and one person with a
+  Windows machine to run the matrix once before trusting it in CI —
+  shipping the job unexecuted would be green-by-hope.
 
-- Gate cache unification: extend the coverage-extension gate's
-  FLUTTER_VSCODE_TEST_CACHE support to every real-host gate so runs
-  stop re-downloading VS Code — minutes saved per run, trivial
-  change.
+(Resolved on the project-hardening branch: the live-webview CSP is now
+asserted from the served document by the fixture's render observation,
+and gate cache policy was decided rather than unified — the attesting
+gates keep invocation-scoped caches because the Host Contract records
+`cachePolicy: freshInvocationScoped`, while the example-extension
+gates honor `FLUTTER_VSCODE_TEST_CACHE`.)

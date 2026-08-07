@@ -46,6 +46,11 @@ async function run() {
   assert.equal(typeof viewJson, 'string');
   const viewReport = JSON.parse(viewJson);
   assert.equal(viewReport.viewConnected, true);
+  assert.equal(
+    viewReport.firstFramePainted,
+    true,
+    'the view must confirm a painted first frame, not just a connection',
+  );
   assert.equal(viewReport.lcovPath, 'coverage/lcov.info');
 
   console.log('[coverage-treemap-test] verifying host-to-view snapshot push');

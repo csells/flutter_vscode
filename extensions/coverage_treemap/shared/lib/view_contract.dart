@@ -19,6 +19,9 @@ const snapshotPushStreamName = 'coverageTreemap.snapshotPush';
 /// Operation name the view calls after applying a pushed snapshot.
 const pushReceivedOperationName = 'coverageTreemap.pushReceived';
 
+/// Operation name the view calls after its first frame completes.
+const firstFramePaintedOperationName = 'coverageTreemap.firstFramePainted';
+
 /// One node of the protocol-safe coverage tree.
 ///
 /// A file node has no [children]; a directory node aggregates its
@@ -188,3 +191,15 @@ final ViewOperation<int, void> pushReceivedOperation = ViewOperation.noResult(
   encodeArguments: ViewValueKind.integer.encode,
   decodeArguments: ViewValueKind.integer.decode,
 );
+
+/// Confirms the view painted its first frame.
+///
+/// This is the signal occlusion throttling suppresses: a throttled
+/// webview connects and exchanges data but never completes a frame, so
+/// the gates assert paint, not just boot.
+final ViewOperation<bool, void> firstFramePaintedOperation =
+    ViewOperation.noResult(
+      firstFramePaintedOperationName,
+      encodeArguments: ViewValueKind.boolean.encode,
+      decodeArguments: ViewValueKind.boolean.decode,
+    );

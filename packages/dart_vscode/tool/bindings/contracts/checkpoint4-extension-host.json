@@ -216,7 +216,7 @@
     },
     "generatedDartLayer": {
       "path": "packages/dart_vscode/lib/src/generated/vscode_dart_layer.g.dart",
-      "sha256": "a7d1aa1210f395dd349e0d6334ab7d2ea98ddebd9c2247e7bf403bfa37067a50"
+      "sha256": "95135d28c9dc3a718709057aed0cd14c13ce995b0960d19a3c6123e811143a02"
     },
     "generatedHostExports": {
       "path": "packages/flutter_vscode/test/fixtures/host_extension/host/lib/generated/host_exports.g.dart",
