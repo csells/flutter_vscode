@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter_vscode/src/cli/cli_exception.dart';
 import 'package:flutter_vscode/src/cli/project_descriptor.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -16,14 +17,78 @@ Future<Map<String, Object?>> _parse(String source) async {
 }
 
 Matcher _throwsActionably(String fragment) => throwsA(
-  isA<FormatException>().having(
-    (error) => error.message,
-    'message',
-    contains(fragment),
-  ),
+  isA<CliException>()
+      .having((error) => error.code, 'code', 'INVALID_PROJECT_DATA')
+      .having((error) => error.message, 'message', contains(fragment)),
 );
 
 void main() {
+  test('parses only declared arguments; admission owns the rest', () async {
+    // The parser extracts data; presence, defaults, and unknown-field
+    // rejection are admission facts owned by ManifestProjection. Injecting
+    // constructor defaults here meant hand-mirroring lib/manifest.dart.
+    final project = await _parse('''
+import 'package:flutter_vscode/manifest.dart';
+
+const extension = ExtensionManifest(
+  name: 'my-extension',
+  displayName: 'My Extension',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: [],
+);
+''');
+
+    expect(project.containsKey('commands'), isFalse);
+    expect(project.containsKey('schemaVersion'), isFalse);
+    expect(project.containsKey('viewsContainers'), isFalse);
+  });
+
+  test('leaves unknown arguments for admission to reject', () async {
+    final project = await _parse('''
+import 'package:flutter_vscode/manifest.dart';
+
+const extension = ExtensionManifest(
+  name: 'my-extension',
+  displayName: 'My Extension',
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: [],
+  unknownArgument: 'x',
+);
+''');
+
+    expect(project['unknownArgument'], 'x');
+  });
+
+  test('parse failures carry the stable code at the throw site', () async {
+    // The code used to be attached 300 lines away in bin/'s FormatException
+    // handler; a coded failure is part of the parse interface.
+    await expectLater(
+      _parse('''
+import 'package:flutter_vscode/manifest.dart';
+
+const extension = ExtensionManifest(
+  name: 'my-extension',
+  displayName: computeName(),
+  description: 'A VS Code extension written in Dart.',
+  version: '0.0.1',
+  publisher: 'local',
+  activationEvents: [],
+);
+'''),
+      throwsA(
+        isA<CliException>().having(
+          (error) => error.code,
+          'code',
+          'INVALID_PROJECT_DATA',
+        ),
+      ),
+    );
+  });
+
   test(
     'parses the typed manifest declaration into the descriptor map',
     () async {
@@ -50,7 +115,6 @@ const extension = ExtensionManifest(
 ''');
 
       expect(project, <String, Object?>{
-        'schemaVersion': 1,
         'name': 'my-extension',
         'displayName': 'My Extension',
         'description': 'A VS Code extension written in Dart.',
@@ -67,9 +131,6 @@ const extension = ExtensionManifest(
             'title': 'Say Goodbye',
           },
         ],
-        'viewsContainers': <String, Object?>{},
-        'views': <String, Object?>{},
-        'configuration': null,
       });
     },
   );
@@ -129,37 +190,16 @@ const extension = ExtensionManifest(
           'id': 'my.tree',
           'name': 'My Tree',
           'icon': r'$(list-tree)',
-          'type': null,
-          'when': null,
           'visibility': 'collapsed',
-          'contextualTitle': null,
-          'initialSize': null,
         },
       ],
     });
     expect(project['configuration'], <String, Object?>{
       'title': 'Mine',
-      'order': null,
       'properties': <String, Object?>{
         'my.setting': <String, Object?>{'type': 'string', 'default': 'x'},
       },
     });
-  });
-
-  test('injects the const defaults the manifest type declares', () async {
-    final project = await _parse('''
-const extension = ExtensionManifest(
-  name: 'my-extension',
-  displayName: 'My Extension',
-  description: 'A VS Code extension written in Dart.',
-  version: '0.0.1',
-  publisher: 'local',
-  activationEvents: [],
-);
-''');
-
-    expect(project['schemaVersion'], 1);
-    expect(project['commands'], isEmpty);
   });
 
   test('accepts an explicit const constructor invocation', () async {
@@ -259,23 +299,6 @@ const extension = ExtensionManifest(
     );
   });
 
-  test('rejects unknown named arguments actionably', () {
-    expect(
-      _parse('''
-const extension = ExtensionManifest(
-  name: 'my-extension',
-  displayName: 'My Extension',
-  description: 'A VS Code extension written in Dart.',
-  version: '0.0.1',
-  publisher: 'local',
-  activationEvents: [],
-  colour: 'blue',
-);
-'''),
-      _throwsActionably('colour'),
-    );
-  });
-
   test('rejects positional arguments', () {
     expect(
       _parse('''
@@ -306,57 +329,6 @@ const extension = ExtensionManifest(
 );
 '''),
       _throwsActionably('duplicate'),
-    );
-  });
-
-  test('rejects missing required arguments actionably', () {
-    expect(
-      _parse('''
-const extension = ExtensionManifest(
-  name: 'my-extension',
-  displayName: 'My Extension',
-  description: 'A VS Code extension written in Dart.',
-  version: '0.0.1',
-  activationEvents: [],
-);
-'''),
-      _throwsActionably('publisher'),
-    );
-  });
-
-  test('rejects unknown command arguments actionably', () {
-    expect(
-      _parse('''
-const extension = ExtensionManifest(
-  name: 'my-extension',
-  displayName: 'My Extension',
-  description: 'A VS Code extension written in Dart.',
-  version: '0.0.1',
-  publisher: 'local',
-  activationEvents: [],
-  commands: [
-    ExtensionCommand(command: 'a.b', title: 'T', when: 'never'),
-  ],
-);
-'''),
-      _throwsActionably('when'),
-    );
-  });
-
-  test('rejects a command missing its title', () {
-    expect(
-      _parse('''
-const extension = ExtensionManifest(
-  name: 'my-extension',
-  displayName: 'My Extension',
-  description: 'A VS Code extension written in Dart.',
-  version: '0.0.1',
-  publisher: 'local',
-  activationEvents: [],
-  commands: [ExtensionCommand(command: 'a.b')],
-);
-'''),
-      _throwsActionably('title'),
     );
   });
 

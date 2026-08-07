@@ -376,10 +376,13 @@ void validateProjectDescriptor(Map<String, Object?> project) {
       'Unknown project descriptor fields: ${unexpected.join(', ')}.',
     );
   }
-  if (project['schemaVersion'] != 1) {
+  // The typed descriptor's constructor declares `schemaVersion = 1`; an
+  // absent key admits as revision 1 on every descriptor path.
+  final schemaVersion = project['schemaVersion'] ?? 1;
+  if (schemaVersion != 1) {
     throw ContributionException(
       'INVALID_PROJECT_DESCRIPTOR',
-      'project.schemaVersion must be 1, found ${project['schemaVersion']}.',
+      'project.schemaVersion must be 1, found $schemaVersion.',
     );
   }
 }

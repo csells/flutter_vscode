@@ -148,11 +148,11 @@
     },
     "contributionsManifest": {
       "path": "packages/dart_vscode/lib/src/contributions/manifest_projection.dart",
-      "sha256": "34744a701926578df4012e2e62ec044bbdedcd66daf0cb509512d91243d81a5e"
+      "sha256": "7022166349b0e0de8c74fa7428690e8770393d3c77ecba85bd69b048fd972f61"
     },
     "contributionsProjections": {
       "path": "packages/dart_vscode/lib/src/contributions/projections.dart",
-      "sha256": "6543f3fa542a096babc53d1477ef73aa871c1a8b36bd17630b2966c5bfbd4d59"
+      "sha256": "3986a02f07dea8b04f3cada5c02f5b61b771089d20a3a70e8a096c350d7a94ec"
     },
     "ecmascriptWhitespace": {
       "path": "packages/dart_vscode/lib/src/contributions/ecmascript_whitespace.dart",
@@ -260,7 +260,7 @@
     },
     "projectDescriptor": {
       "path": "packages/flutter_vscode/lib/src/cli/project_descriptor.dart",
-      "sha256": "ef7a778494b4399c96e606d86b35e95a01cade39631d84ff03085695b499e55c"
+      "sha256": "1b5e81118e21ab0c4bec14cddadd90834566a7041a2ff2a4fd05e6b9ac078c33"
     },
     "runner": {
       "path": "scripts/test_host_extension.sh",

@@ -34,6 +34,24 @@ final class ManifestProjection {
     Map<String, Object?> project,
   ) {
     validateProjectDescriptor(project);
+    // Presence is admission: an absent identity field is an author
+    // mistake and carries the author-facing code, not the maintainer
+    // coercion diagnostic a null would produce downstream.
+    for (final field in [
+      'name',
+      'displayName',
+      'description',
+      'version',
+      'publisher',
+      'activationEvents',
+    ]) {
+      if (!project.containsKey(field) || project[field] == null) {
+        throw ContributionException(
+          'INVALID_PROJECT_MANIFEST',
+          'project.$field is required.',
+        );
+      }
+    }
     final name = extensionIdentifierComponent(
       project['name'],
       'project.name',

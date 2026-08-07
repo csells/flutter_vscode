@@ -57,6 +57,39 @@ void main() {
     }
   });
 
+  test('requires each identity field with the platform admission code', () {
+    // Presence is admission, not parse: an author-facing miss must carry
+    // the author-facing code, never the maintainer INVALID_GENERATOR_INPUT.
+    for (final field in [
+      'name',
+      'displayName',
+      'description',
+      'version',
+      'publisher',
+      'activationEvents',
+    ]) {
+      expect(
+        () => ManifestProjection.fromProjectDescriptor(
+          descriptor()..remove(field),
+        ),
+        throwsContribution(
+          'INVALID_PROJECT_MANIFEST',
+          contains('project.$field'),
+        ),
+        reason: field,
+      );
+    }
+  });
+
+  test('defaults schemaVersion the way the typed descriptor does', () {
+    // The Dart descriptor constructor declares `schemaVersion = 1`; an
+    // absent key admits as revision 1 on the JSON path too.
+    final manifest = ManifestProjection.fromProjectDescriptor(
+      descriptor()..remove('schemaVersion'),
+    );
+    expect(manifest.name, 'fixture');
+  });
+
   test('rejects unknown project descriptor fields', () {
     expect(
       () => ManifestProjection.fromProjectDescriptor(
@@ -208,6 +241,26 @@ void main() {
             'admission must fail closed instead of shipping a dead view',
       );
     }
+  });
+
+  test('rejects a command entry missing its title', () {
+    // Nested presence coverage moved here when the Dart-descriptor parse
+    // stopped mirroring constructor shapes.
+    expect(
+      () => ManifestProjection.fromProjectDescriptor(
+        descriptor()
+          ..['commands'] = <Object?>[
+            <String, Object?>{'command': 'test.fixture.ping'},
+          ],
+      ),
+      throwsA(
+        isA<ContributionException>().having(
+          (error) => error.message,
+          'message',
+          contains('project.commands entry.title'),
+        ),
+      ),
+    );
   });
 
   test('rejects whitespace-only required command contribution strings', () {

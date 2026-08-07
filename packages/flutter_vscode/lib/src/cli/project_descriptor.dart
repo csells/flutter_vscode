@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:analyzer/dart/analysis/utilities.dart';
 import 'package:analyzer/dart/ast/ast.dart';
+import 'package:flutter_vscode/src/cli/cli_exception.dart';
 
 /// The one library an extension descriptor may import.
 const _manifestLibrary = 'package:flutter_vscode/manifest.dart';
@@ -19,100 +20,6 @@ const _literalRules =
     'literals; references, interpolation, function calls, and collection '
     'control flow are not supported.';
 
-/// The constant shape of one manifest type the parser reads as data.
-///
-/// [defaults] mirrors the const default values `lib/manifest.dart` declares,
-/// so an omitted optional argument parses to the same data the analyzer
-/// sees; [fieldOrder] fixes the output map's key order.
-final class _ConstShape {
-  const _ConstShape({
-    required this.typeName,
-    required this.requiredFields,
-    required this.defaults,
-    required this.fieldOrder,
-  });
-
-  final String typeName;
-  final Set<String> requiredFields;
-  final Map<String, Object?> defaults;
-  final List<String> fieldOrder;
-}
-
-const _manifestShape = _ConstShape(
-  typeName: 'ExtensionManifest',
-  requiredFields: {
-    'name',
-    'displayName',
-    'description',
-    'version',
-    'publisher',
-    'activationEvents',
-  },
-  defaults: {
-    'schemaVersion': 1,
-    'commands': <Object?>[],
-    'viewsContainers': <String, Object?>{},
-    'views': <String, Object?>{},
-    'configuration': null,
-  },
-  fieldOrder: [
-    'schemaVersion',
-    'name',
-    'displayName',
-    'description',
-    'version',
-    'publisher',
-    'activationEvents',
-    'commands',
-    'viewsContainers',
-    'views',
-    'configuration',
-  ],
-);
-
-const _commandShape = _ConstShape(
-  typeName: 'ExtensionCommand',
-  requiredFields: {'command', 'title'},
-  defaults: {},
-  fieldOrder: ['command', 'title'],
-);
-
-const _viewContainerShape = _ConstShape(
-  typeName: 'ExtensionViewContainer',
-  requiredFields: {'id', 'title', 'icon'},
-  defaults: {},
-  fieldOrder: ['id', 'title', 'icon'],
-);
-
-const _viewShape = _ConstShape(
-  typeName: 'ExtensionView',
-  requiredFields: {'id', 'name', 'icon'},
-  defaults: {
-    'type': null,
-    'when': null,
-    'visibility': null,
-    'contextualTitle': null,
-    'initialSize': null,
-  },
-  fieldOrder: [
-    'id',
-    'name',
-    'icon',
-    'type',
-    'when',
-    'visibility',
-    'contextualTitle',
-    'initialSize',
-  ],
-);
-
-const _configurationShape = _ConstShape(
-  typeName: 'ExtensionConfiguration',
-  requiredFields: {'properties'},
-  defaults: {'title': null, 'order': null},
-  fieldOrder: ['title', 'order', 'properties'],
-);
-
 /// Reads the deliberately restricted Dart-owned extension descriptor.
 ///
 /// The descriptor declares `const extension = ExtensionManifest(...)` using
@@ -120,6 +27,15 @@ const _configurationShape = _ConstShape(
 /// Authors get analyzer completion and type-checking — but the CLI parses
 /// the constant invocation as data. Project code is never loaded or
 /// executed.
+///
+/// This is a parse, not an admission: the returned map carries exactly the
+/// arguments the author wrote, in the order they wrote them. Presence,
+/// defaults, unknown-field rejection, and every platform semantic belong
+/// to `ManifestProjection` in `package:dart_vscode/contributions.dart`,
+/// where the JSON descriptor path is admitted by the same rules.
+///
+/// Every parse failure is a [CliException] with code
+/// `INVALID_PROJECT_DATA`.
 Future<Map<String, Object?>> readProjectDescriptor(File descriptor) async {
   final result = parseString(
     content: await descriptor.readAsString(),
@@ -127,7 +43,7 @@ Future<Map<String, Object?>> readProjectDescriptor(File descriptor) async {
     throwIfDiagnostics: false,
   );
   if (result.errors.isNotEmpty) {
-    throw const FormatException(
+    throw _parseFailure(
       'extension.dart contains a Dart syntax error. $_guidance',
     );
   }
@@ -136,13 +52,13 @@ Future<Map<String, Object?>> readProjectDescriptor(File descriptor) async {
         directive.prefix != null ||
         directive.deferredKeyword != null ||
         directive.uri.stringValue != _manifestLibrary) {
-      throw const FormatException(
+      throw _parseFailure(
         "extension.dart may import only '$_manifestLibrary'. $_guidance",
       );
     }
   }
   if (result.unit.declarations.length != 1) {
-    throw const FormatException(
+    throw _parseFailure(
       'extension.dart must contain exactly one declaration. $_guidance',
     );
   }
@@ -155,7 +71,7 @@ Future<Map<String, Object?>> readProjectDescriptor(File descriptor) async {
       !declaration.variables.isConst ||
       declaration.variables.metadata.isNotEmpty ||
       declaration.variables.variables.length != 1) {
-    throw const FormatException(
+    throw _parseFailure(
       'extension.dart must declare one const value named extension. '
       '$_guidance',
     );
@@ -163,30 +79,47 @@ Future<Map<String, Object?>> readProjectDescriptor(File descriptor) async {
   final variable = declaration.variables.variables.single;
   final initializer = variable.initializer;
   if (variable.name.lexeme != 'extension' || initializer == null) {
-    throw const FormatException(
+    throw _parseFailure(
       'extension.dart must declare one const value named extension. '
       '$_guidance',
     );
   }
   if (initializer is SetOrMapLiteral) {
-    throw const FormatException(
+    throw _parseFailure(
       'extension.dart declares the retired map-literal descriptor. '
       '$_guidance',
     );
   }
-  final manifest = _asInvocationOf(initializer, _manifestShape.typeName);
-  if (manifest == null) {
-    throw FormatException(
+  final manifest = _asConstInvocation(initializer);
+  if (manifest == null || manifest.typeName != 'ExtensionManifest') {
+    throw _parseFailure(
       'extension.dart must initialize extension with '
-      '${_manifestShape.typeName}(...). $_guidance',
+      'ExtensionManifest(...). $_guidance',
     );
   }
-  return _readInvocation(manifest, _manifestShape);
+  return _readInvocation(manifest);
 }
 
-/// Returns [expression]'s argument list when it invokes [typeName] without
-/// a target, prefix, type arguments, or named constructor.
-ArgumentList? _asInvocationOf(Expression expression, String typeName) {
+CliException _parseFailure(String message) =>
+    CliException(message, code: 'INVALID_PROJECT_DATA');
+
+/// One const type invocation read as data: the type's name plus its
+/// argument list.
+final class _ConstInvocation {
+  const _ConstInvocation(this.typeName, this.arguments);
+
+  final String typeName;
+  final ArgumentList arguments;
+}
+
+/// Returns [expression] as a const type invocation when it invokes an
+/// uppercase-initial name without a target, prefix, type arguments, or
+/// named constructor.
+///
+/// Which type names are meaningful is an admission fact: the projection
+/// rejects shapes the platform would reject, so the parse carries any
+/// well-formed invocation through as the map of its named arguments.
+_ConstInvocation? _asConstInvocation(Expression expression) {
   return switch (expression) {
     MethodInvocation(
       target: null,
@@ -194,76 +127,43 @@ ArgumentList? _asInvocationOf(Expression expression, String typeName) {
       :final methodName,
       :final argumentList,
     )
-        when methodName.name == typeName =>
-      argumentList,
+        when methodName.name.startsWith(RegExp('[A-Z]')) =>
+      _ConstInvocation(methodName.name, argumentList),
     InstanceCreationExpression(:final constructorName, :final argumentList)
         when constructorName.type.importPrefix == null &&
-            constructorName.type.name.lexeme == typeName &&
             constructorName.type.typeArguments == null &&
             constructorName.name == null =>
-      argumentList,
+      _ConstInvocation(constructorName.type.name.lexeme, argumentList),
     _ => null,
   };
 }
 
-/// Reads one const invocation of [shape] into its descriptor map.
-Map<String, Object?> _readInvocation(
-  ArgumentList arguments,
-  _ConstShape shape,
-) {
-  final known = {...shape.requiredFields, ...shape.defaults.keys};
+/// Reads one const invocation into the map of its named arguments, in the
+/// order the author wrote them.
+Map<String, Object?> _readInvocation(_ConstInvocation invocation) {
   final values = <String, Object?>{};
-  for (final argument in arguments.arguments) {
+  for (final argument in invocation.arguments.arguments) {
     if (argument is! NamedExpression) {
-      throw FormatException(
-        '${shape.typeName} arguments must all be named, found the '
+      throw _parseFailure(
+        '${invocation.typeName} arguments must all be named, found the '
         'positional argument $argument.',
       );
     }
     final name = argument.name.label.name;
-    if (!known.contains(name)) {
-      final supported = known.toList()..sort();
-      throw FormatException(
-        '${shape.typeName} has no "$name" parameter. Supported parameters: '
-        '${supported.join(', ')}.',
-      );
-    }
     if (values.containsKey(name)) {
-      throw FormatException(
-        '${shape.typeName} passes the duplicate argument "$name".',
+      throw _parseFailure(
+        '${invocation.typeName} passes the duplicate argument "$name".',
       );
     }
     values[name] = _readValue(argument.expression);
   }
-  final missing = shape.requiredFields.difference(values.keys.toSet()).toList()
-    ..sort();
-  if (missing.isNotEmpty) {
-    throw FormatException(
-      '${shape.typeName} is missing the required '
-      '${missing.length == 1 ? 'argument' : 'arguments'} '
-      '${missing.join(', ')}.',
-    );
-  }
-  return {
-    for (final field in shape.fieldOrder)
-      if (values.containsKey(field))
-        field: values[field]
-      else if (shape.defaults.containsKey(field))
-        field: shape.defaults[field],
-  };
+  return values;
 }
 
 Object? _readValue(Expression expression) {
-  for (final shape in const [
-    _commandShape,
-    _viewContainerShape,
-    _viewShape,
-    _configurationShape,
-  ]) {
-    final invocation = _asInvocationOf(expression, shape.typeName);
-    if (invocation != null) {
-      return _readInvocation(invocation, shape);
-    }
+  final invocation = _asConstInvocation(expression);
+  if (invocation != null) {
+    return _readInvocation(invocation);
   }
   return switch (expression) {
     SimpleStringLiteral() => expression.value,
@@ -274,7 +174,7 @@ Object? _readValue(Expression expression) {
     NullLiteral() => null,
     ListLiteral() => _readList(expression),
     SetOrMapLiteral() => _readMap(expression),
-    _ => throw const FormatException(_literalRules),
+    _ => throw _parseFailure(_literalRules),
   };
 }
 
@@ -282,17 +182,17 @@ Map<String, Object?> _readMap(SetOrMapLiteral literal) {
   final values = <String, Object?>{};
   for (final element in literal.elements) {
     if (element is! MapLiteralEntry) {
-      throw const FormatException(_literalRules);
+      throw _parseFailure(_literalRules);
     }
     final key = element.key;
     if (key is! SimpleStringLiteral) {
-      throw const FormatException(
+      throw _parseFailure(
         'extension.dart map keys must be simple string literals. '
         '$_literalRules',
       );
     }
     if (values.containsKey(key.value)) {
-      throw FormatException(
+      throw _parseFailure(
         'extension.dart declares the duplicate map key "${key.value}".',
       );
     }
@@ -305,7 +205,7 @@ String _readAdjacentStrings(AdjacentStrings literal) {
   final parts = StringBuffer();
   for (final part in literal.strings) {
     if (part is! SimpleStringLiteral) {
-      throw const FormatException(_literalRules);
+      throw _parseFailure(_literalRules);
     }
     parts.write(part.value);
   }
@@ -316,7 +216,7 @@ List<Object?> _readList(ListLiteral literal) {
   final values = <Object?>[];
   for (final element in literal.elements) {
     if (element is! Expression) {
-      throw const FormatException(_literalRules);
+      throw _parseFailure(_literalRules);
     }
     values.add(_readValue(element));
   }
